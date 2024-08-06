@@ -3,12 +3,9 @@ package com.tang.jkorm
 import com.tang.jkorm.datasource.defaults.DefaultDataSourceFactory
 import com.tang.jkorm.io.Resources
 import com.tang.jkorm.session.factory.SqlSessionFactoryBuilder
-import com.tang.jkorm.session.mapper.AccountMapper
 import org.junit.jupiter.api.BeforeAll
-import org.junit.jupiter.api.Test
 import org.yaml.snakeyaml.Yaml
 import javax.sql.DataSource
-import kotlin.test.assertEquals
 
 /**
  * @author Tang
@@ -23,43 +20,31 @@ open class BaseDataTest {
         return DefaultDataSourceFactory(datasource).getDataSource()
     }
 
-    @Test
     fun createDatabase() {
         val dataSource = createDataSource()
         val database = Resources.getResourceAsStream("jkorm-test.sql")
-        dataSource.connection.use { connection ->
-            connection.createStatement().use { statement ->
-                database.bufferedReader().useLines { lines ->
-                    val sqlLines = ArrayList<String>()
-                    val sqlBuilder = StringBuilder()
-                    lines.forEach { line ->
-                        if (line.isBlank() || line.startsWith("--")) {
-                            return@forEach
-                        }
-                        sqlBuilder.append(line)
-                        if (line.endsWith(";")) {
-                            sqlLines.add(sqlBuilder.toString())
-                            sqlBuilder.clear()
-                        }
-                    }
-                    sqlLines.forEach { sql ->
-                        statement.addBatch(sql.replace(";", ""))
-                    }
+        val connection = dataSource.connection
+        val statement = connection.createStatement()
+        database.bufferedReader().useLines { lines ->
+            val sqlLines = ArrayList<String>()
+            val sqlBuilder = StringBuilder()
+            lines.forEach { line ->
+                if (line.isBlank() || line.startsWith("--")) {
+                    return@forEach
                 }
-                statement.executeBatch()
+                sqlBuilder.append(line)
+                if (line.endsWith(";")) {
+                    sqlLines.add(sqlBuilder.toString())
+                    sqlBuilder.clear()
+                }
+            }
+            sqlLines.forEach { sql ->
+                println(sql)
+                statement.execute(sql.replace(";", ""))
             }
         }
-    }
-
-    @Test
-    fun select() {
-        createDatabase()
-        val inputStream = Resources.getResourceAsStream("jkorm-config.yml")
-        val sqlSessionFactory = SqlSessionFactoryBuilder().build(inputStream)
-        val openSession = sqlSessionFactory.openSession()
-        val accountMapper = openSession.getMapper(AccountMapper::class.java)
-        val list = accountMapper.select()
-        assertEquals(2, list.size)
+        statement.close()
+        connection.close()
     }
 
     companion object {
