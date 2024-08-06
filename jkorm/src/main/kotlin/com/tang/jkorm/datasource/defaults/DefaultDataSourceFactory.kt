@@ -1,6 +1,5 @@
 package com.tang.jkorm.datasource.defaults
 
-import com.mysql.cj.jdbc.MysqlConnectionPoolDataSource
 import com.tang.jkorm.datasource.DataSourceFactory
 import javax.sql.DataSource
 
@@ -14,11 +13,11 @@ class DefaultDataSourceFactory(private val properties: Map<String, String>) : Da
     }
 
     override fun getDataSource(): DataSource {
-        val dataSource = MysqlConnectionPoolDataSource()
-        dataSource.setURL(properties["url"])
-        dataSource.user = properties["username"]
-        dataSource.password = properties["password"]
-        return dataSource
+        val driver = properties["driver"] ?: throw IllegalArgumentException("driver is required")
+        val url = properties["url"] ?: throw IllegalArgumentException("url is required")
+        val username = properties["username"]
+        val password = properties["password"]
+        return DefaultDataSource(driver, url, username, password)
     }
 
 }
