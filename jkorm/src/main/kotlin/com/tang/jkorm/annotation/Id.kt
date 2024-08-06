@@ -6,4 +6,4 @@ package com.tang.jkorm.annotation
 @Retention(AnnotationRetention.RUNTIME)
 @Target(AnnotationTarget.FIELD)
 @MustBeDocumented
-annotation class Id
+annotation class Id(val autoIncrement: Boolean = true)

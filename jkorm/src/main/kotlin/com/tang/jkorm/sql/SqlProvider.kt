@@ -14,18 +14,24 @@ object SqlProvider {
     fun insert(entity: Any): String {
         val clazz = entity::class.java
         val sql = StringBuilder()
+        val idField = Reflects.getIdField(clazz)
+        val autoIncrementId = Reflects.isAutoIncrementId(clazz)
         sql.append("insert into ${Reflects.getTableName(clazz)} (")
         clazz.declaredFields.forEach {
-            sql.append(it.name).append(",")
+            if (it.name != idField.name || !autoIncrementId) {
+                sql.append(it.name).append(",")
+            }
         }
         sql.deleteCharAt(sql.length - 1)
         sql.append(") values (")
         clazz.declaredFields.forEach {
-            Reflects.makeAccessible(it, entity)
-            if (it.type == String::class.java) {
-                sql.append("'").append(it.get(entity)).append("',")
-            } else {
-                sql.append(it.get(entity)).append(",")
+            if (it.name != idField.name || !autoIncrementId) {
+                Reflects.makeAccessible(it, entity)
+                if (it.type == String::class.java) {
+                    sql.append("'").append(it.get(entity)).append("',")
+                } else {
+                    sql.append(it.get(entity)).append(",")
+                }
             }
         }
         sql.deleteCharAt(sql.length - 1)
