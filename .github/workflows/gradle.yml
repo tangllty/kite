@@ -32,7 +32,9 @@ jobs:
     # See: https://github.com/gradle/actions/blob/main/setup-gradle/README.md
     - name: Setup Gradle
       uses: gradle/actions/setup-gradle@dbbdc275be76ac10734476cc723d82dfe7ec6eda # v3.4.2
-
+    # See: https://github.com/actions/starter-workflows/issues/171
+    - name: Make gradlew executable
+      run: chmod +x ./gradlew
     - name: Build with Gradle Wrapper
       run: ./gradlew build
 
