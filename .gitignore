@@ -37,3 +37,7 @@ bin/
 
 ### Mac OS ###
 .DS_Store
+
+### Derby ###
+jkorm/jkorm/
+derby.log
