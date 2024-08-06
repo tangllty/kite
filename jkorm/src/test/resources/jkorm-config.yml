@@ -1,6 +1,6 @@
 jkorm:
   datasource:
-    driver: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/jkorm-test
-    username: root
-    password: password
+    driver: org.apache.derby.jdbc.EmbeddedDriver
+    url: jdbc:derby:jkorm;create=true
+    username:
+    password:

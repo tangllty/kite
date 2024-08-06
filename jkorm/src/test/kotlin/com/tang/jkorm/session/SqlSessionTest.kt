@@ -1,23 +1,20 @@
 package com.tang.jkorm.session
 
-import com.tang.jkorm.io.Resources
+import com.tang.jkorm.BaseDataTest
 import com.tang.jkorm.session.entity.Account
-import com.tang.jkorm.session.factory.SqlSessionFactoryBuilder
 import com.tang.jkorm.session.mapper.AccountMapper
 import com.tang.jkorm.session.mapper.JavaAccountMapper
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Test
-
-import org.junit.jupiter.api.Assertions.*
 
 /**
  * @author Tang
  */
-class SqlSessionTest {
+class SqlSessionTest : BaseDataTest() {
 
     @Test
     fun getMapper() {
-        val inputStream = Resources.getResourceAsStream("jkorm-config.yml")
-        val sqlSessionFactory = SqlSessionFactoryBuilder().build(inputStream)
         val openSession = sqlSessionFactory.openSession()
         val accountMapper = openSession.getMapper(AccountMapper::class.java)
         assertNotNull(accountMapper)
@@ -25,8 +22,6 @@ class SqlSessionTest {
 
     @Test
     fun insert() {
-        val inputStream = Resources.getResourceAsStream("jkorm-config.yml")
-        val sqlSessionFactory = SqlSessionFactoryBuilder().build(inputStream)
         val openSession = sqlSessionFactory.openSession(true)
         val accountMapper = openSession.getMapper(AccountMapper::class.java)
         val account = Account(username = "tang", password = "123456")
@@ -36,8 +31,6 @@ class SqlSessionTest {
 
     @Test
     fun insertSelective() {
-        val inputStream = Resources.getResourceAsStream("jkorm-config.yml")
-        val sqlSessionFactory = SqlSessionFactoryBuilder().build(inputStream)
         val openSession = sqlSessionFactory.openSession(true)
         val accountMapper = openSession.getMapper(AccountMapper::class.java)
         val account = Account(username = "tang")
@@ -47,8 +40,6 @@ class SqlSessionTest {
 
     @Test
     fun javaInsert() {
-        val inputStream = Resources.getResourceAsStream("jkorm-config.yml")
-        val sqlSessionFactory = SqlSessionFactoryBuilder().build(inputStream)
         val openSession = sqlSessionFactory.openSession(true)
         val accountMapper = openSession.getMapper(JavaAccountMapper::class.java)
         val account = Account(username = "tang", password = "123456")
@@ -58,8 +49,6 @@ class SqlSessionTest {
 
     @Test
     fun insertAccount() {
-        val inputStream = Resources.getResourceAsStream("jkorm-config.yml")
-        val sqlSessionFactory = SqlSessionFactoryBuilder().build(inputStream)
         val openSession = sqlSessionFactory.openSession(true)
         val accountMapper = openSession.getMapper(AccountMapper::class.java)
         val account = Account(username = "tang", password = "123456")
@@ -69,8 +58,6 @@ class SqlSessionTest {
 
     @Test
     fun javaInsertAccount() {
-        val inputStream = Resources.getResourceAsStream("jkorm-config.yml")
-        val sqlSessionFactory = SqlSessionFactoryBuilder().build(inputStream)
         val openSession = sqlSessionFactory.openSession()
         val accountMapper = openSession.getMapper(JavaAccountMapper::class.java)
         val account = Account(username = "tang", password = "123456")
@@ -81,8 +68,6 @@ class SqlSessionTest {
 
     @Test
     fun testMultiSqlSession() {
-        val inputStream = Resources.getResourceAsStream("jkorm-config.yml")
-        val sqlSessionFactory = SqlSessionFactoryBuilder().build(inputStream)
         val session1 = sqlSessionFactory.openSession()
         val session2 = sqlSessionFactory.openSession()
         val accountMapper1 = session1.getMapper(AccountMapper::class.java)
@@ -99,8 +84,6 @@ class SqlSessionTest {
 
     @Test
     fun testMultiInsert() {
-        val inputStream = Resources.getResourceAsStream("jkorm-config.yml")
-        val sqlSessionFactory = SqlSessionFactoryBuilder().build(inputStream)
         val session1 = sqlSessionFactory.openSession()
         val accountMapper1 = session1.getMapper(AccountMapper::class.java)
         val account1 = Account(username = "tang1", password = "123456")
@@ -114,8 +97,6 @@ class SqlSessionTest {
 
     @Test
     fun testUpdate() {
-        val inputStream = Resources.getResourceAsStream("jkorm-config.yml")
-        val sqlSessionFactory = SqlSessionFactoryBuilder().build(inputStream)
         val session = sqlSessionFactory.openSession()
         val accountMapper = session.getMapper(AccountMapper::class.java)
         val account = Account(id = 1, username = "tang", password = "654321")
@@ -126,8 +107,6 @@ class SqlSessionTest {
 
     @Test
     fun testUpdateSelective() {
-        val inputStream = Resources.getResourceAsStream("jkorm-config.yml")
-        val sqlSessionFactory = SqlSessionFactoryBuilder().build(inputStream)
         val session = sqlSessionFactory.openSession()
         val accountMapper = session.getMapper(AccountMapper::class.java)
         val account = Account(id = 1, username = "tang")
@@ -138,8 +117,6 @@ class SqlSessionTest {
 
     @Test
     fun testDelete() {
-        val inputStream = Resources.getResourceAsStream("jkorm-config.yml")
-        val sqlSessionFactory = SqlSessionFactoryBuilder().build(inputStream)
         val session = sqlSessionFactory.openSession()
         val accountMapper = session.getMapper(AccountMapper::class.java)
         val account = Account(id = 1)
@@ -150,8 +127,6 @@ class SqlSessionTest {
 
     @Test
     fun testDeleteById() {
-        val inputStream = Resources.getResourceAsStream("jkorm-config.yml")
-        val sqlSessionFactory = SqlSessionFactoryBuilder().build(inputStream)
         val session = sqlSessionFactory.openSession()
         val accountMapper = session.getMapper(AccountMapper::class.java)
         val rows = accountMapper.deleteById(1L)
@@ -161,8 +136,6 @@ class SqlSessionTest {
 
     @Test
     fun testSelectAll() {
-        val inputStream = Resources.getResourceAsStream("jkorm-config.yml")
-        val sqlSessionFactory = SqlSessionFactoryBuilder().build(inputStream)
         val session = sqlSessionFactory.openSession()
         val accountMapper = session.getMapper(AccountMapper::class.java)
         val accounts = accountMapper.select()
@@ -171,8 +144,6 @@ class SqlSessionTest {
 
     @Test
     fun testSelectById() {
-        val inputStream = Resources.getResourceAsStream("jkorm-config.yml")
-        val sqlSessionFactory = SqlSessionFactoryBuilder().build(inputStream)
         val session = sqlSessionFactory.openSession()
         val accountMapper = session.getMapper(AccountMapper::class.java)
         val account = accountMapper.selectById(1)

@@ -1,7 +1,6 @@
 package com.tang.jkorm.sql
 
 import com.tang.jkorm.session.entity.Account
-import com.tang.jkorm.session.entity.JavaAccount
 import org.junit.jupiter.api.Test
 
 import org.junit.jupiter.api.Assertions.*
@@ -15,7 +14,7 @@ class SqlProviderTest {
     fun insert() {
         val account = Account(username = "tang", password = "123456")
         val sql = SqlProvider.insert(account)
-        assertEquals("insert into account (id,username,password) values (null,'tang','123456')", sql)
+        assertEquals("insert into account (username,password) values ('tang','123456')", sql)
     }
 
     @Test
