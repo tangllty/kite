@@ -45,7 +45,7 @@ jobs:
       with:
         name: Upload Gradle Test Results
         path: |
-          jkorm/build/reports/tests/test/index.html
+          jkorm/build/reports/tests/test/
 
   dependency-submission:
 
