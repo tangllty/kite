@@ -12,9 +12,9 @@ dependencies {
     // https://mvnrepository.com/artifact/org.yaml/snakeyaml
     implementation("org.yaml:snakeyaml:2.2")
     // https://mvnrepository.com/artifact/org.apache.derby/derby
-    implementation("org.apache.derby:derby:10.16.1.1")
+    implementation("org.apache.derby:derby:10.17.1.0")
     // https://mvnrepository.com/artifact/org.apache.derby/derbytools
-    implementation("org.apache.derby:derbytools:10.16.1.1")
+    implementation("org.apache.derby:derbytools:10.17.1.0")
     // https://mvnrepository.com/artifact/com.mysql/mysql-connector-j
     implementation("com.mysql:mysql-connector-j:8.3.0")
     // https://mvnrepository.com/artifact/org.slf4j/slf4j-api
