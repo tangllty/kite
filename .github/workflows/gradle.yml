@@ -38,16 +38,12 @@ jobs:
     - name: Build with Gradle Wrapper
       run: ./gradlew build
 
-    # NOTE: The Gradle Wrapper is the default and recommended way to run Gradle (https://docs.gradle.org/current/userguide/gradle_wrapper.html).
-    # If your project does not have the Gradle Wrapper configured, you can use the following configuration to run Gradle with a specified version.
-    #
-    # - name: Setup Gradle
-    #   uses: gradle/actions/setup-gradle@dbbdc275be76ac10734476cc723d82dfe7ec6eda # v3.4.2
-    #   with:
-    #     gradle-version: '8.5'
-    #
-    # - name: Build with Gradle 8.5
-    #   run: gradle build
+    # Upload build artifacts
+    - uses: actions/upload-artifact@v4
+      with:
+        name: Upload build artifacts
+        path: |
+          jkorm/build/reports/tests/test/index.html
 
   dependency-submission:
 
