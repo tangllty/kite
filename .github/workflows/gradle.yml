@@ -38,10 +38,11 @@ jobs:
     - name: Build with Gradle Wrapper
       run: ./gradlew build
 
-    # Upload build artifacts
-    - uses: actions/upload-artifact@v4
+    # Upload artifacts
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v4
       with:
-        name: Upload build artifacts
+        name: Upload Gradle Test Results
         path: |
           jkorm/build/reports/tests/test/index.html
 
