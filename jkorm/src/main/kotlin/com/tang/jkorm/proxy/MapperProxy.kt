@@ -1,6 +1,7 @@
 package com.tang.jkorm.proxy
 
 import com.tang.jkorm.session.SqlSession
+import com.tang.jkorm.utils.Reflects
 import java.lang.invoke.MethodHandle
 import java.lang.invoke.MethodHandles
 import java.lang.reflect.Constructor
@@ -32,7 +33,7 @@ class MapperProxy<T>(
         }
         return@run runCatching {
             val lookup = MethodHandles.Lookup::class.java.getDeclaredConstructor(Class::class.java, Int::class.java)
-            lookup.isAccessible = true
+            Reflects.makeAccessible(lookup, lookup)
             lookup
         }.getOrNull()
     }
