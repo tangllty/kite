@@ -10,9 +10,10 @@ import java.lang.reflect.Field
 object Reflects {
 
     fun makeAccessible(accessibleObject: AccessibleObject, any: Any) {
-        if (!accessibleObject.isAccessible) {
-            accessibleObject.isAccessible = true
+        if (accessibleObject.canAccess(any)) {
+            return
         }
+        accessibleObject.trySetAccessible()
     }
 
     fun getIdField(clazz: Class<*>): Field {

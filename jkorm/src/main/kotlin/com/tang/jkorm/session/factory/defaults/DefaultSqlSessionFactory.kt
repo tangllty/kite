@@ -3,7 +3,6 @@ package com.tang.jkorm.session.factory.defaults
 import com.tang.jkorm.executor.defaults.DefaultExecutorFactory
 import com.tang.jkorm.session.Configuration
 import com.tang.jkorm.session.SqlSession
-import com.tang.jkorm.session.TransactionIsolationLevel
 import com.tang.jkorm.session.defaults.DefaultSqlSession
 import com.tang.jkorm.session.factory.SqlSessionFactory
 import com.tang.jkorm.transaction.jdbc.JdbcTransactionFactory

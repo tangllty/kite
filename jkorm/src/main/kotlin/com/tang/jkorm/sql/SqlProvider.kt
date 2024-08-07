@@ -88,6 +88,14 @@ object SqlProvider {
         return getSql(sql)
     }
 
+    private fun appendValue(sql: StringBuilder, field: String, value: Any) {
+        if (value is String) {
+            sql.append(field).append("='").append(value).append("',")
+        } else {
+            sql.append(field).append("=").append(value).append(",")
+        }
+    }
+
     fun update(entity: Any): String {
         val clazz = entity::class.java
         val sql = StringBuilder()
@@ -97,11 +105,7 @@ object SqlProvider {
             .filter { it.name != idField.name }
             .forEach {
                 Reflects.makeAccessible(it, entity)
-                if (it.type == String::class.java) {
-                    sql.append(it.name).append("='").append(it.get(entity)).append("',")
-                } else {
-                    sql.append(it.name).append("=").append(it.get(entity)).append(",")
-                }
+                appendValue(sql, it.name, it.get(entity))
         }
         sql.deleteCharAt(sql.length - 1)
         Reflects.makeAccessible(idField, entity)
@@ -119,11 +123,7 @@ object SqlProvider {
             .forEach {
                 Reflects.makeAccessible(it, entity)
                 if (selectiveStrategy(it.get(entity))) {
-                    if (it.type == String::class.java) {
-                        sql.append(it.name).append("='").append(it.get(entity)).append("',")
-                    } else {
-                        sql.append(it.name).append("=").append(it.get(entity)).append(",")
-                    }
+                    appendValue(sql, it.name, it.get(entity))
                 }
             }
         sql.deleteCharAt(sql.length - 1)
