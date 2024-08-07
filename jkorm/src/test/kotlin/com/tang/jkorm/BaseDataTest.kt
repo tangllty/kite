@@ -39,7 +39,6 @@ open class BaseDataTest {
                 }
             }
             sqlLines.forEach { sql ->
-                println(sql)
                 try {
                     statement.execute(sql.replace(";", ""))
                 } catch (_: Exception) {}
