@@ -7,6 +7,8 @@ import com.tang.jkorm.session.mapper.JavaAccountMapper
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Test
+import kotlin.test.assertNotEquals
+import kotlin.test.assertTrue
 
 /**
  * @author Tang

@@ -63,7 +63,7 @@ object BaseMethodName {
 
     fun isBaseMethod(methodName: String): Boolean {
         return when (methodName) {
-            INSERT, INSERT_SELECTIVE, UPDATE, UPDATE_SELECTIVE, DELETE, DELETE_BY_ID, SELECT, SELECT_BY_ID  -> true
+            INSERT, INSERT_SELECTIVE, UPDATE, UPDATE_SELECTIVE, DELETE, DELETE_BY_ID, SELECT, SELECT_BY_ID, COUNT  -> true
             else -> false
         }
     }

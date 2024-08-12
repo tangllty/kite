@@ -25,4 +25,6 @@ interface BaseMapper<T> {
 
     fun count(): Long
 
+    fun count(type: T): Long
+
 }

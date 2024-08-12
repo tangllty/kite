@@ -9,3 +9,4 @@
  * Support function overloading
  * Support select condition query
  * Support count query
+ * Support count condition query
