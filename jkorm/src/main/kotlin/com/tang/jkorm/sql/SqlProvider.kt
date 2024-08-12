@@ -52,9 +52,9 @@ object SqlProvider {
         return true
     }
 
-    private fun getFieldValueMap(entity: Any): Map<String, Any> {
+    private fun getFieldValueMap(entity: Any): Map<String, Any?> {
         val clazz = entity::class.java
-        val map = mutableMapOf<String, Any>()
+        val map = mutableMapOf<String, Any?>()
         clazz.declaredFields.forEach {
             Reflects.makeAccessible(it, entity)
             map[it.name] = it.get(entity)
