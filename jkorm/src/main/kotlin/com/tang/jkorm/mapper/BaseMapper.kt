@@ -23,4 +23,6 @@ interface BaseMapper<T> {
 
     fun selectById(id: Long): T?
 
+    fun count(): Long
+
 }

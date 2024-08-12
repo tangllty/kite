@@ -24,6 +24,21 @@ class DefaultExecutor(
         return transaction.getConnection()
     }
 
+    override fun <T> count(statement: String, type: Class<T>): Long {
+        val connection = getConnection()
+        val preparedStatement = connection.prepareStatement(statement)
+        return runCatching {
+            val resultSet = preparedStatement.executeQuery()
+            return ResultSetHandlers.getCount(resultSet)
+        }.onFailure {
+            it.printStackTrace()
+            connection.rollback()
+        }.also {
+            preparedStatement.close()
+            LOGGER.info("count prepared statement closed")
+        }.getOrDefault(0)
+    }
+
     override fun <T> query(statement: String, type: Class<T>): List<T> {
         val connection = getConnection()
         val preparedStatement = connection.prepareStatement(statement)

@@ -159,4 +159,12 @@ class SqlSessionTest : BaseDataTest() {
         assertNotNull(accounts)
     }
 
+    @Test
+    fun count () {
+        val session = sqlSessionFactory.openSession()
+        val accountMapper = session.getMapper(AccountMapper::class.java)
+        val count = accountMapper.count()
+        assertNotNull(count)
+    }
+
 }

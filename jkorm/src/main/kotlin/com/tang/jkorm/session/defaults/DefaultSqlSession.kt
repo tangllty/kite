@@ -53,6 +53,7 @@ class DefaultSqlSession(
             BaseMethodName.isDeleteById(method) -> deleteById(method, type, getFirstArg(args))
             BaseMethodName.isSelect(method) -> selectList(method, type, args?.first())
             BaseMethodName.isSelectById(method) -> selectById(method, type, getFirstArg(args))
+            BaseMethodName.isCount(method) -> count(method, type, args?.first())
             else -> throw IllegalArgumentException("Unknown method: ${method.name}")
         }
     }
@@ -109,6 +110,11 @@ class DefaultSqlSession(
             return null
         }
         return list.first()
+    }
+
+    override fun <T> count(method: Method, type: Class<T>, parameter: Any?): Long {
+        val count = SqlProvider.count(type, parameter)
+        return executor.count(count, Long::class.java)
     }
 
     override fun commit() {

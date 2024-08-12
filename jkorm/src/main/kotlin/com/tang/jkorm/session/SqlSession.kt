@@ -29,6 +29,8 @@ interface SqlSession {
 
     fun <T> selectById(method: Method, type: Class<T>, parameter: Any): T?
 
+    fun <T> count(method: Method, type: Class<T>, parameter: Any?): Long
+
     fun commit()
 
     fun rollback()

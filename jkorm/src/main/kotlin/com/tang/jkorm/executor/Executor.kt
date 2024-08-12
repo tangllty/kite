@@ -9,6 +9,8 @@ interface Executor {
 
     fun getConnection(): Connection
 
+    fun <T> count(statement: String, type: Class<T>): Long
+
     fun <T> query(statement: String, type: Class<T>): List<T>
 
     fun update(statement: String, parameter: Any): Int

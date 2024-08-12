@@ -163,4 +163,27 @@ object SqlProvider {
         return getSql(sql)
     }
 
+    fun <T> count(clazz: Class<T>, entity: Any?): String {
+        val sql = StringBuilder()
+        sql.append("select count(*) from ${Reflects.getTableName(clazz)}")
+        if (entity == null) {
+            return getSql(sql)
+        }
+        sql.append(" where ")
+        clazz.declaredFields.forEach {
+            Reflects.makeAccessible(it, entity)
+            val value = it.get(entity)
+            if (selectiveStrategy(value)) {
+                sql.append(it.name).append("=")
+                if (it.type == String::class.java) {
+                    sql.append("'").append(value).append("' and ")
+                } else {
+                    sql.append(value).append(" and ")
+                }
+            }
+        }
+        sql.delete(sql.length - 5, sql.length)
+        return getSql(sql)
+    }
+
 }

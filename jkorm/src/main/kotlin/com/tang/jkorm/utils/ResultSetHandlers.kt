@@ -30,4 +30,9 @@ object ResultSetHandlers {
         return entity
     }
 
+    fun getCount(resultSet: ResultSet): Long {
+        resultSet.next()
+        return resultSet.getLong(1)
+    }
+
 }
