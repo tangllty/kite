@@ -19,6 +19,8 @@ interface BaseMapper<T> {
 
     fun select(): List<T>
 
+    fun select(type: T): List<T>
+
     fun selectById(id: Long): T?
 
 }

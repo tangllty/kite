@@ -7,3 +7,4 @@
 ### Features
 
  * Support function overloading
+ * Support select condition query

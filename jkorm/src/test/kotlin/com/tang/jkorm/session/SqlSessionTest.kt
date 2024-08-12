@@ -150,4 +150,13 @@ class SqlSessionTest : BaseDataTest() {
         assertNotNull(account)
     }
 
+    @Test
+    fun selectCondition() {
+        val session = sqlSessionFactory.openSession()
+        val accountMapper = session.getMapper(AccountMapper::class.java)
+        val account = Account(username = "admin")
+        val accounts = accountMapper.select(account)
+        assertNotNull(accounts)
+    }
+
 }
