@@ -1,25 +1,59 @@
 package com.tang.jkorm.constants
 
+import java.lang.reflect.Method
+
 /**
  * @author Tang
  */
 object BaseMethodName {
 
-    const val INSERT = "insert"
+    private const val INSERT = "insert"
 
-    const val INSERT_SELECTIVE = "insertSelective"
+    fun isInsert(method: Method): Boolean {
+        return method.name == INSERT && method.parameterCount == 1 && method.parameterTypes[0] is Any
+    }
 
-    const val UPDATE = "update"
+    private const val INSERT_SELECTIVE = "insertSelective"
 
-    const val UPDATE_SELECTIVE = "updateSelective"
+    fun isInsertSelective(method: Method): Boolean {
+        return method.name == INSERT && method.parameterCount == 1 && method.parameterTypes[0] is Any
+    }
 
-    const val DELETE = "delete"
+    private const val UPDATE = "update"
 
-    const val DELETE_BY_ID = "deleteById"
+    fun isUpdate(method: Method): Boolean {
+        return method.name == UPDATE && method.parameterCount == 1 && method.parameterTypes[0] is Any
+    }
 
-    const val SELECT = "select"
+    private const val UPDATE_SELECTIVE = "updateSelective"
 
-    const val SELECT_BY_ID = "selectById"
+    fun isUpdateSelective(method: Method): Boolean {
+        return method.name == UPDATE_SELECTIVE && method.parameterCount == 1 && method.parameterTypes[0] is Any
+    }
+
+    private const val DELETE = "delete"
+
+    fun isDelete(method: Method): Boolean {
+        return method.name == DELETE && method.parameterCount == 1 && method.parameterTypes[0] is Any
+    }
+
+    private const val DELETE_BY_ID = "deleteById"
+
+    fun isDeleteById(method: Method): Boolean {
+        return method.name == DELETE_BY_ID && method.parameterCount == 1 && method.parameterTypes[0].name == "long"
+    }
+
+    private const val SELECT = "select"
+
+    fun isSelect(method: Method): Boolean {
+        return method.name == SELECT
+    }
+
+    private const val SELECT_BY_ID = "selectById"
+
+    fun isSelectById(method: Method): Boolean {
+        return method.name == SELECT_BY_ID && method.parameterCount == 1 && method.parameterTypes[0].name == "long"
+    }
 
     fun isBaseMethod(methodName: String): Boolean {
         return when (methodName) {

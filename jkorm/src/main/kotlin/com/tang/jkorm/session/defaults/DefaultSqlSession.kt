@@ -44,15 +44,15 @@ class DefaultSqlSession(
 
     override fun <T> execute(method: Method, args: Array<out Any>?, mapperInterface: Class<T>): Any? {
         val type: Class<T> = getGenericType(mapperInterface)
-        return when (method.name) {
-            BaseMethodName.INSERT -> insert(method, getFirstArg(args))
-            BaseMethodName.INSERT_SELECTIVE -> insertSelective(method, getFirstArg(args))
-            BaseMethodName.UPDATE -> update(method, getFirstArg(args))
-            BaseMethodName.UPDATE_SELECTIVE -> updateSelective(method, getFirstArg(args))
-            BaseMethodName.DELETE -> delete(method, type, getFirstArg(args))
-            BaseMethodName.DELETE_BY_ID -> deleteById(method, type, getFirstArg(args))
-            BaseMethodName.SELECT -> selectList(method, type, args?.first())
-            BaseMethodName.SELECT_BY_ID -> selectById(method, type, getFirstArg(args))
+        return when {
+            BaseMethodName.isInsert(method) -> insert(method, getFirstArg(args))
+            BaseMethodName.isInsertSelective(method) -> insertSelective(method, getFirstArg(args))
+            BaseMethodName.isUpdate(method) -> update(method, getFirstArg(args))
+            BaseMethodName.isUpdateSelective(method) -> updateSelective(method, getFirstArg(args))
+            BaseMethodName.isDelete(method) -> delete(method, type, getFirstArg(args))
+            BaseMethodName.isDeleteById(method) -> deleteById(method, type, getFirstArg(args))
+            BaseMethodName.isSelect(method) -> selectList(method, type, args?.first())
+            BaseMethodName.isSelectById(method) -> selectById(method, type, getFirstArg(args))
             else -> throw IllegalArgumentException("Unknown method: ${method.name}")
         }
     }

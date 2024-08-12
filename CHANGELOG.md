@@ -3,3 +3,7 @@
 ### Bug Fixes
 
  * Fix get(...) must not be null error
+
+### Features
+
+ * Support function overloading
