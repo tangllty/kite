@@ -67,7 +67,7 @@ class SqlSessionTest : BaseDataTest() {
     }
 
     @Test
-    fun testMultiSqlSession() {
+    fun multiSqlSession() {
         val session1 = sqlSessionFactory.openSession()
         val session2 = sqlSessionFactory.openSession()
         val accountMapper1 = session1.getMapper(AccountMapper::class.java)
@@ -83,7 +83,7 @@ class SqlSessionTest : BaseDataTest() {
     }
 
     @Test
-    fun testMultiInsert() {
+    fun multiInsert() {
         val session1 = sqlSessionFactory.openSession()
         val accountMapper1 = session1.getMapper(AccountMapper::class.java)
         val account1 = Account(username = "tang1", password = "123456")
@@ -96,7 +96,7 @@ class SqlSessionTest : BaseDataTest() {
     }
 
     @Test
-    fun testUpdate() {
+    fun update() {
         val session = sqlSessionFactory.openSession()
         val accountMapper = session.getMapper(AccountMapper::class.java)
         val account = Account(id = 1, username = "tang", password = "654321")
@@ -106,7 +106,7 @@ class SqlSessionTest : BaseDataTest() {
     }
 
     @Test
-    fun testUpdateSelective() {
+    fun updateSelective() {
         val session = sqlSessionFactory.openSession()
         val accountMapper = session.getMapper(AccountMapper::class.java)
         val account = Account(id = 1, username = "tang")
@@ -116,7 +116,7 @@ class SqlSessionTest : BaseDataTest() {
     }
 
     @Test
-    fun testDelete() {
+    fun delete() {
         val session = sqlSessionFactory.openSession()
         val accountMapper = session.getMapper(AccountMapper::class.java)
         val account = Account(id = 1)
@@ -126,7 +126,7 @@ class SqlSessionTest : BaseDataTest() {
     }
 
     @Test
-    fun testDeleteById() {
+    fun deleteById() {
         val session = sqlSessionFactory.openSession()
         val accountMapper = session.getMapper(AccountMapper::class.java)
         val rows = accountMapper.deleteById(1L)
@@ -135,7 +135,7 @@ class SqlSessionTest : BaseDataTest() {
     }
 
     @Test
-    fun testSelectAll() {
+    fun selectAll() {
         val session = sqlSessionFactory.openSession()
         val accountMapper = session.getMapper(AccountMapper::class.java)
         val accounts = accountMapper.select()
@@ -143,7 +143,7 @@ class SqlSessionTest : BaseDataTest() {
     }
 
     @Test
-    fun testSelectById() {
+    fun selectById() {
         val session = sqlSessionFactory.openSession()
         val accountMapper = session.getMapper(AccountMapper::class.java)
         val account = accountMapper.selectById(1)
