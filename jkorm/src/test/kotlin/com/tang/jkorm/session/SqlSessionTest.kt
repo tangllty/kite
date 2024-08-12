@@ -141,7 +141,7 @@ class SqlSessionTest : BaseDataTest() {
         val session = sqlSessionFactory.openSession()
         val accountMapper = session.getMapper(AccountMapper::class.java)
         val accounts = accountMapper.select()
-        assertNotNull(accounts)
+        assertTrue(accounts.isNotEmpty())
     }
 
     @Test
@@ -158,7 +158,7 @@ class SqlSessionTest : BaseDataTest() {
         val accountMapper = session.getMapper(AccountMapper::class.java)
         val account = Account(username = "admin")
         val accounts = accountMapper.select(account)
-        assertNotNull(accounts)
+        assertTrue(accounts.isNotEmpty())
     }
 
     @Test
@@ -166,7 +166,16 @@ class SqlSessionTest : BaseDataTest() {
         val session = sqlSessionFactory.openSession()
         val accountMapper = session.getMapper(AccountMapper::class.java)
         val count = accountMapper.count()
-        assertNotNull(count)
+        assertNotEquals(0, count)
+    }
+
+    @Test
+    fun countCondition() {
+        val session = sqlSessionFactory.openSession()
+        val accountMapper = session.getMapper(AccountMapper::class.java)
+        val account = Account(username = "admin")
+        val count = accountMapper.count(account)
+        assertNotEquals(0, count)
     }
 
 }
