@@ -126,6 +126,7 @@ class DefaultSqlSession(
     }
 
     override fun close() {
+        rollback()
         executor.close()
     }
 

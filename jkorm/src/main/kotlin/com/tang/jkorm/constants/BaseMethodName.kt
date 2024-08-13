@@ -16,7 +16,7 @@ object BaseMethodName {
     private const val INSERT_SELECTIVE = "insertSelective"
 
     fun isInsertSelective(method: Method): Boolean {
-        return method.name == INSERT && method.parameterCount == 1 && method.parameterTypes[0] is Any
+        return method.name == INSERT_SELECTIVE && method.parameterCount == 1 && method.parameterTypes[0] is Any
     }
 
     private const val UPDATE = "update"
