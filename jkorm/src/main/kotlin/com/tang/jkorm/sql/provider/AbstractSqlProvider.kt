@@ -1,43 +1,34 @@
 package com.tang.jkorm.sql.provider
 
+import com.tang.jkorm.constants.SqlString.AND_BRACKET
+import com.tang.jkorm.constants.SqlString.ASC
+import com.tang.jkorm.constants.SqlString.COMMA
+import com.tang.jkorm.constants.SqlString.DELETE_FROM
+import com.tang.jkorm.constants.SqlString.DESC
+import com.tang.jkorm.constants.SqlString.EQUAL
+import com.tang.jkorm.constants.SqlString.EQUAL_BRACKET
+import com.tang.jkorm.constants.SqlString.INSERT_INTO
+import com.tang.jkorm.constants.SqlString.LEFT_BRACKET
+import com.tang.jkorm.constants.SqlString.LIMIT
+import com.tang.jkorm.constants.SqlString.ORDER_BY
+import com.tang.jkorm.constants.SqlString.RIGHT_BRACKET
+import com.tang.jkorm.constants.SqlString.SELECT_ALL_FROM
+import com.tang.jkorm.constants.SqlString.SELECT_COUNT_FROM
+import com.tang.jkorm.constants.SqlString.SET
+import com.tang.jkorm.constants.SqlString.SINGLE_QUOTE
+import com.tang.jkorm.constants.SqlString.SPACE
+import com.tang.jkorm.constants.SqlString.UPDATE
+import com.tang.jkorm.constants.SqlString.VALUES
+import com.tang.jkorm.constants.SqlString.WHERE
 import com.tang.jkorm.utils.Reflects
+import java.lang.reflect.Field
 
 /**
+ * Abstract SQL provider
+ *
  * @author Tang
  */
 abstract class AbstractSqlProvider : SqlProvider {
-
-    override fun getSql(sql: StringBuilder): String {
-        return sql.toString().lowercase()
-    }
-
-    override fun insert(entity: Any): String {
-        val clazz = entity::class.java
-        val sql = StringBuilder()
-        val idField = Reflects.getIdField(clazz)
-        val autoIncrementId = Reflects.isAutoIncrementId(clazz)
-        sql.append("insert into ${Reflects.getTableName(clazz)} (")
-        clazz.declaredFields.forEach {
-            if (it.name != idField.name || !autoIncrementId) {
-                sql.append(it.name).append(",")
-            }
-        }
-        sql.deleteCharAt(sql.length - 1)
-        sql.append(") values (")
-        clazz.declaredFields.forEach {
-            if (it.name != idField.name || !autoIncrementId) {
-                Reflects.makeAccessible(it, entity)
-                if (it.type == String::class.java) {
-                    sql.append("'").append(it.get(entity)).append("',")
-                } else {
-                    sql.append(it.get(entity)).append(",")
-                }
-            }
-        }
-        sql.deleteCharAt(sql.length - 1)
-        sql.append(")")
-        return getSql(sql)
-    }
 
     fun selectiveStrategy(any: Any?): Boolean {
         if (any == null) {
@@ -52,83 +43,116 @@ abstract class AbstractSqlProvider : SqlProvider {
         return true
     }
 
-    private fun getFieldValueMap(entity: Any): Map<String, Any?> {
-        val clazz = entity::class.java
-        val map = mutableMapOf<String, Any?>()
-        clazz.declaredFields.forEach {
+    fun appendColumns(sql: StringBuilder, fieldList: List<Field>) {
+        fieldList.joinToString(COMMA + SPACE) { it.name }
+            .let { sql.append(it) }
+    }
+
+    fun appendValues(sql: StringBuilder, fieldList: List<Field>, entity: Any) {
+        fieldList.map {
             Reflects.makeAccessible(it, entity)
-            map[it.name] = it.get(entity)
+            if (it.type == String::class.java) {
+                SINGLE_QUOTE + it.get(entity) + SINGLE_QUOTE
+            } else {
+                it.get(entity)
+            }
+        }.joinToString(COMMA + SPACE)
+            .let { sql.append(it) }
+    }
+
+    fun appendSetValues(sql: StringBuilder, fieldList: List<Field>, entity: Any) {
+        fieldList.joinToString(COMMA + SPACE) {
+            Reflects.makeAccessible(it, entity)
+            getEqual(it.name, it.get(entity))
+        }.let { sql.append(it) }
+    }
+
+    fun getValue(value: Any): String {
+        return if (value is String) {
+            SINGLE_QUOTE + value + SINGLE_QUOTE
+        } else {
+            value.toString()
         }
-        return map
+    }
+
+    fun getEqual(field: String, value: Any): String {
+        return if (value is String) {
+            field + EQUAL_BRACKET + SINGLE_QUOTE + value + SINGLE_QUOTE
+        } else {
+            field + EQUAL_BRACKET + value
+        }
+    }
+
+    fun appendValue(sql: StringBuilder, field: String, value: Any) {
+        if (value is String) {
+            sql.append(field).append(EQUAL + SINGLE_QUOTE).append(value).append(SINGLE_QUOTE + COMMA)
+        } else {
+            sql.append(field).append(EQUAL).append(value).append(COMMA)
+        }
+    }
+
+    override fun getSql(sql: StringBuilder): String {
+        return sql.toString().lowercase()
+    }
+
+    override fun insert(entity: Any): String {
+        val clazz = entity::class.java
+        val sql = StringBuilder()
+        val idField = Reflects.getIdField(clazz)
+        val autoIncrementId = Reflects.isAutoIncrementId(clazz)
+        val fieldList = clazz.declaredFields.filter { it.name != idField.name || !autoIncrementId }
+        sql.append(INSERT_INTO + Reflects.getTableName(clazz) + SPACE + LEFT_BRACKET)
+        appendColumns(sql, fieldList)
+        sql.append(RIGHT_BRACKET + VALUES + LEFT_BRACKET)
+        appendValues(sql, fieldList, entity)
+        sql.append(RIGHT_BRACKET)
+        return getSql(sql)
     }
 
     override fun insertSelective(entity: Any): String {
         val clazz = entity::class.java
         val sql = StringBuilder()
-        sql.append("insert into ${Reflects.getTableName(clazz)} (")
-        val fieldMap = getFieldValueMap(entity)
-        fieldMap.forEach {
-            if (selectiveStrategy(it.value)) {
-                sql.append(it.key).append(",")
-            }
-        }
-        sql.deleteCharAt(sql.length - 1)
-        sql.append(") values (")
-        fieldMap.forEach {
-            if (selectiveStrategy(it.value)) {
-                if (it.value is String) {
-                    sql.append("'").append(it.value).append("',")
-                } else {
-                    sql.append(it.value).append(",")
-                }
-            }
-        }
-        sql.deleteCharAt(sql.length - 1)
-        sql.append(")")
+        val fieldMap: Map<Field, Any?> = clazz.declaredFields.associateWith { Reflects.makeAccessible(it, entity); it.get(entity) }
+        sql.append(INSERT_INTO + Reflects.getTableName(clazz) + SPACE + LEFT_BRACKET)
+        fieldMap.filter { selectiveStrategy(it.value) }
+            .map { it.key.name }
+            .joinToString(COMMA + SPACE)
+            .let { sql.append(it) }
+        sql.append(RIGHT_BRACKET + VALUES + LEFT_BRACKET)
+        fieldMap.filter { selectiveStrategy(it.value) }
+            .map { getValue(it.value!!) }
+            .joinToString(COMMA + SPACE)
+            .let { sql.append(it) }
+        sql.append(RIGHT_BRACKET)
         return getSql(sql)
-    }
-
-    private fun appendValue(sql: StringBuilder, field: String, value: Any) {
-        if (value is String) {
-            sql.append(field).append("='").append(value).append("',")
-        } else {
-            sql.append(field).append("=").append(value).append(",")
-        }
     }
 
     override fun update(entity: Any): String {
         val clazz = entity::class.java
         val sql = StringBuilder()
         val idField = Reflects.getIdField(clazz)
-        sql.append("update ${Reflects.getTableName(clazz)} set ")
-        clazz.declaredFields
-            .filter { it.name != idField.name }
-            .forEach {
-                Reflects.makeAccessible(it, entity)
-                appendValue(sql, it.name, it.get(entity))
-            }
-        sql.deleteCharAt(sql.length - 1)
+        val fieldList = clazz.declaredFields.filter { it.name != idField.name }
+        sql.append(UPDATE + Reflects.getTableName(clazz) + SET)
+        appendSetValues(sql, fieldList, entity)
         Reflects.makeAccessible(idField, entity)
-        sql.append(" where ${idField.name} = ${idField.get(entity)}")
+        sql.append(SPACE + WHERE + idField.name + EQUAL_BRACKET).append(idField.get(entity))
         return getSql(sql)
     }
 
     override fun updateSelective(entity: Any): String {
         val clazz = entity::class.java
         val sql = StringBuilder()
-        sql.append("update ${Reflects.getTableName(clazz)} set ")
         val idField = Reflects.getIdField(clazz)
-        clazz.declaredFields
+        val fieldList = clazz.declaredFields
             .filter { it.name != idField.name }
-            .forEach {
+            .filter {
                 Reflects.makeAccessible(it, entity)
-                if (selectiveStrategy(it.get(entity))) {
-                    appendValue(sql, it.name, it.get(entity))
-                }
+                selectiveStrategy(it.get(entity))
             }
-        sql.deleteCharAt(sql.length - 1)
+        sql.append(UPDATE + Reflects.getTableName(clazz) + SET)
+        appendSetValues(sql, fieldList, entity)
         Reflects.makeAccessible(idField, entity)
-        sql.append(" where ${idField.name} = ${idField.get(entity)}")
+        sql.append(SPACE + WHERE + idField.name + EQUAL_BRACKET).append(idField.get(entity))
         return getSql(sql)
     }
 
@@ -136,83 +160,63 @@ abstract class AbstractSqlProvider : SqlProvider {
         val sql = StringBuilder()
         val idField = Reflects.getIdField(clazz)
         Reflects.makeAccessible(idField, entity)
-        sql.append("delete from ${Reflects.getTableName(clazz)} where ${idField.name} = ${idField.get(entity)}")
+        sql.append(DELETE_FROM + Reflects.getTableName(clazz) + SPACE + WHERE)
+            .append(idField.name).append(EQUAL_BRACKET).append(idField.get(entity))
         return getSql(sql)
     }
 
     override fun <T> select(clazz: Class<T>, entity: Any?): String {
         val sql = StringBuilder()
-        sql.append("select * from ${Reflects.getTableName(clazz)}")
+        sql.append(SELECT_ALL_FROM + Reflects.getTableName(clazz))
         if (entity == null) {
             return getSql(sql)
         }
-        sql.append(" where ")
-        clazz.declaredFields.forEach {
+        sql.append(SPACE + WHERE)
+        clazz.declaredFields.filter {
             Reflects.makeAccessible(it, entity)
-            val value = it.get(entity)
-            if (selectiveStrategy(value)) {
-                sql.append(it.name).append("=")
-                if (it.type == String::class.java) {
-                    sql.append("'").append(value).append("' and ")
-                } else {
-                    sql.append(value).append(" and ")
-                }
-            }
-        }
-        sql.delete(sql.length - 5, sql.length)
+            selectiveStrategy(it.get(entity))
+        }.joinToString(AND_BRACKET) {
+            getEqual(it.name, it.get(entity))
+        }.let { sql.append(it) }
         return getSql(sql)
     }
 
     override fun <T> count(clazz: Class<T>, entity: Any?): String {
         val sql = StringBuilder()
-        sql.append("select count(*) from ${Reflects.getTableName(clazz)}")
+        sql.append(SELECT_COUNT_FROM + Reflects.getTableName(clazz))
         if (entity == null) {
             return getSql(sql)
         }
-        sql.append(" where ")
-        clazz.declaredFields.forEach {
+        sql.append(SPACE + WHERE)
+        clazz.declaredFields.filter {
             Reflects.makeAccessible(it, entity)
-            val value = it.get(entity)
-            if (selectiveStrategy(value)) {
-                sql.append(it.name).append("=")
-                if (it.type == String::class.java) {
-                    sql.append("'").append(value).append("' and ")
-                } else {
-                    sql.append(value).append(" and ")
-                }
-            }
-        }
-        sql.delete(sql.length - 5, sql.length)
+            selectiveStrategy(it.get(entity))
+        }.joinToString(AND_BRACKET) {
+            getEqual(it.name, it.get(entity))
+        }.let { sql.append(it) }
         return getSql(sql)
     }
 
     override fun <T> paginate(type: Class<T>, entity: Any?, orderBys: Array<Pair<String, Boolean>>, pageNumber: Long, pageSize: Long): String {
         val sql = StringBuilder()
-        sql.append("select * from ${Reflects.getTableName(type)}")
+        sql.append(SELECT_ALL_FROM + Reflects.getTableName(type))
         if (entity != null) {
-            sql.append(" where ")
-            type.declaredFields.forEach {
-                Reflects.makeAccessible(it, entity)
-                val value = it.get(entity)
-                if (selectiveStrategy(value)) {
-                    sql.append(it.name).append("=")
-                    if (it.type == String::class.java) {
-                        sql.append("'").append(value).append("' and ")
-                    } else {
-                        sql.append(value).append(" and ")
-                    }
-                }
-            }
-            sql.delete(sql.length - 5, sql.length)
-            if (orderBys.isNotEmpty()) {
-                sql.append(" order by ")
-                orderBys.forEach {
-                    sql.append(it.first).append(if (it.second) " asc," else " desc,")
-                }
-                sql.deleteCharAt(sql.length - 1)
-            }
+            sql.append(SPACE + WHERE)
+            type.declaredFields
+                .filter {
+                    Reflects.makeAccessible(it, entity)
+                    selectiveStrategy(it.get(entity))
+                }.joinToString(AND_BRACKET) {
+                    getEqual(it.name, it.get(entity))
+                }.let { sql.append(it) }
         }
-        sql.append(" limit ").append((pageNumber - 1) * pageSize).append(",").append(pageSize)
+        if (orderBys.isNotEmpty()) {
+            sql.append(SPACE + ORDER_BY)
+            orderBys.joinToString(COMMA + SPACE) {
+                it.first + if (it.second) ASC else DESC
+            }.let { sql.append(it) }
+        }
+        sql.append(LIMIT).append((pageNumber - 1) * pageSize).append(COMMA).append(pageSize)
         return getSql(sql)
     }
 
