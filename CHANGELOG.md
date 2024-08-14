@@ -3,6 +3,7 @@
 ### Bug Fixes
 
  * Fix get(...) must not be null error
+ * Fix paginate class cast exception error
 
 ### Features
 

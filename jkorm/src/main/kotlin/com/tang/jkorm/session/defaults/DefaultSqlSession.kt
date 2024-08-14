@@ -128,12 +128,19 @@ class DefaultSqlSession(
         }
         val pageNumber = args[0] as Long
         val pageSize = args[1] as Long
-        val orderBys = if (args.getOrNull(2) != null) {
-            val orderByArray = args[2] as Array<*>
-            orderByArray.filterIsInstance<Pair<String, Boolean>>().toTypedArray()
-        } else emptyArray()
-        val parameter = args.getOrNull(3)
-        return paginate(method, type, pageNumber, pageSize, orderBys, parameter)
+        if (args.size == 2) {
+            return paginate(method, type, pageNumber, pageSize, emptyArray(), null)
+        }
+        if (args[2] is Array<*>) {
+            val orderBys = if (args.getOrNull(2) != null) {
+                val orderByArray = args[2] as Array<*>
+                orderByArray.filterIsInstance<Pair<String, Boolean>>().toTypedArray()
+            } else emptyArray()
+            val parameter = args.getOrNull(3)
+            return paginate(method, type, pageNumber, pageSize, orderBys, parameter)
+        }
+        val parameter = args.getOrNull(2)
+        return paginate(method, type, pageNumber, pageSize, emptyArray(), parameter)
     }
 
     private fun <T> reasonable(method: Method, type: Class<T>, pageNumber: Long, pageSize: Long): Pair<Long, Long> {
