@@ -1,5 +1,6 @@
 package com.tang.jkorm.session
 
+import com.tang.jkorm.sql.provider.SqlProvider
 import javax.sql.DataSource
 
 /**
@@ -8,5 +9,7 @@ import javax.sql.DataSource
 class Configuration(
 
     val dataSource: DataSource,
+
+    val sqlProvider: SqlProvider
 
 )

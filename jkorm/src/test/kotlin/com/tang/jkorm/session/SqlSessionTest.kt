@@ -69,7 +69,7 @@ class SqlSessionTest : BaseDataTest() {
         val accountMapper = session.getMapper(JavaAccountMapper::class.java)
         val account = Account(username = "tang", password = "123456")
         val rows = accountMapper.insertAccount(account)
-        session.rollback()
+        session.commit()
         session.close()
         assertEquals(1, rows)
     }
@@ -193,6 +193,42 @@ class SqlSessionTest : BaseDataTest() {
         val count = accountMapper.count(account)
         session.close()
         assertNotEquals(0, count)
+    }
+
+    @Test
+    fun paginate() {
+        val session = sqlSessionFactory.openSession()
+        val accountMapper = session.getMapper(AccountMapper::class.java)
+        val page = accountMapper.paginate(2, 5)
+        session.close()
+        assertNotEquals(0, page.total)
+    }
+
+    @Test
+    fun paginateCondition() {
+        val session = sqlSessionFactory.openSession()
+        val accountMapper = session.getMapper(AccountMapper::class.java)
+        val page = accountMapper.paginate(2, 5, Account(username = "tang"))
+        session.close()
+        assertNotEquals(0, page.total)
+    }
+
+    @Test
+    fun paginateOderBy() {
+        val session = sqlSessionFactory.openSession()
+        val accountMapper = session.getMapper(AccountMapper::class.java)
+        val page = accountMapper.paginate(2, 5, arrayOf("id" to false))
+        session.close()
+        assertNotEquals(0, page.total)
+    }
+
+    @Test
+    fun paginateOrderByCondition() {
+        val session = sqlSessionFactory.openSession()
+        val accountMapper = session.getMapper(AccountMapper::class.java)
+        val page = accountMapper.paginate(2, 5, arrayOf("id" to false), Account(username = "tang"))
+        session.close()
+        assertNotEquals(0, page.total)
     }
 
 }

@@ -1,8 +1,11 @@
 package com.tang.jkorm.session
 
+import com.tang.jkorm.paginate.Page
 import java.lang.reflect.Method
 
 /**
+ * SQL session
+ *
  * @author Tang
  */
 interface SqlSession {
@@ -30,6 +33,8 @@ interface SqlSession {
     fun <T> selectById(method: Method, type: Class<T>, parameter: Any): T?
 
     fun <T> count(method: Method, type: Class<T>, parameter: Any?): Long
+
+    fun <T> paginate(method: Method, type: Class<T>, pageNumber: Long, pageSize: Long, orderBys: Array<Pair<String, Boolean>>, parameter: Any?): Page<T>
 
     fun commit()
 

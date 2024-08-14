@@ -8,4 +8,7 @@ create table account (
 
 insert into account (username, password) values
 ('admin', 'admin'),
-('user', 'user');
+('user', 'user'),
+('guest', 'guest'),
+('tang', 'tang'),
+('jeo', 'jeo');
