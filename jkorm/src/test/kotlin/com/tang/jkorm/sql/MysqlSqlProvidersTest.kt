@@ -77,27 +77,27 @@ class MysqlSqlProvidersTest {
     @Test
     fun paginate() {
         val sql = sqlProvider.paginate(Account::class.java, null, emptyArray(), 1, 5)
-        assertEquals("select * from account limit 0,5", sql)
+        assertEquals("select * from account limit 0, 5", sql)
     }
 
     @Test
     fun paginateCondition() {
         val account = Account(username = "tang")
         val sql = sqlProvider.paginate(Account::class.java, account, emptyArray(), 1, 5)
-        assertEquals("select * from account where username = 'tang' limit 0,5", sql)
+        assertEquals("select * from account where username = 'tang' limit 0, 5", sql)
     }
 
     @Test
     fun paginateOrderBy() {
         val sql = sqlProvider.paginate(Account::class.java, null, arrayOf("id" to false), 1, 5)
-        assertEquals("select * from account order by id desc limit 0,5", sql)
+        assertEquals("select * from account order by id desc limit 0, 5", sql)
     }
 
     @Test
     fun paginateOrderByCondition() {
         val account = Account(username = "tang")
         val sql = sqlProvider.paginate(Account::class.java, account, arrayOf("id" to false), 1, 5)
-        assertEquals("select * from account where username = 'tang' order by id desc limit 0,5", sql)
+        assertEquals("select * from account where username = 'tang' order by id desc limit 0, 5", sql)
     }
 
 }

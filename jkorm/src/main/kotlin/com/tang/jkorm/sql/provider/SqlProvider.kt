@@ -1,5 +1,7 @@
 package com.tang.jkorm.sql.provider
 
+import java.lang.reflect.Field
+
 /**
  * SQL provider
  *
@@ -7,7 +9,21 @@ package com.tang.jkorm.sql.provider
  */
 interface SqlProvider {
 
+    fun selectiveStrategy(any: Any?): Boolean
+
     fun getSql(sql: StringBuilder): String
+
+    fun appendColumns(sql: StringBuilder, fieldList: List<Field>)
+
+    fun appendValues(sql: StringBuilder, fieldList: List<Field>, entity: Any)
+
+    fun appendSetValues(sql: StringBuilder, fieldList: List<Field>, entity: Any)
+
+    fun appendLimit(sql: StringBuilder, pageNumber: Long, pageSize: Long)
+
+    fun getValue(value: Any): String
+
+    fun getEqual(field: String, value: Any): String
 
     fun insert(entity: Any): String
 
