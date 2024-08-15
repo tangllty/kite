@@ -19,6 +19,8 @@ interface SqlProvider {
 
     fun appendSetValues(sql: StringBuilder, fieldList: List<Field>, entity: Any)
 
+    fun <T> appendWhere(sql: StringBuilder, clazz: Class<T>, entity: Any)
+
     fun appendLimit(sql: StringBuilder, pageNumber: Long, pageSize: Long)
 
     fun getValue(value: Any): String

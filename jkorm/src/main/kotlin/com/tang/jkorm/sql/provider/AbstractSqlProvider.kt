@@ -66,6 +66,16 @@ abstract class AbstractSqlProvider : SqlProvider {
         }.let { sql.append(it) }
     }
 
+    override fun <T> appendWhere(sql: StringBuilder, clazz: Class<T>, entity: Any) {
+        sql.append(WHERE)
+        clazz.declaredFields.filter {
+            Reflects.makeAccessible(it, entity)
+            selectiveStrategy(it.get(entity))
+        }.joinToString(AND_BRACKET) {
+            getEqual(it.name, it.get(entity))
+        }.let { sql.append(it) }
+    }
+
     override fun appendLimit(sql: StringBuilder, pageNumber: Long, pageSize: Long) {
         sql.append(LIMIT).append((pageNumber - 1) * pageSize).append(COMMA_SPACE).append(pageSize)
     }
@@ -163,32 +173,18 @@ abstract class AbstractSqlProvider : SqlProvider {
     override fun <T> select(clazz: Class<T>, entity: Any?): String {
         val sql = StringBuilder()
         sql.append(SELECT_ALL_FROM + Reflects.getTableName(clazz))
-        if (entity == null) {
-            return getSql(sql)
+        entity?.let {
+            appendWhere(sql, clazz, entity)
         }
-        sql.append(WHERE)
-        clazz.declaredFields.filter {
-            Reflects.makeAccessible(it, entity)
-            selectiveStrategy(it.get(entity))
-        }.joinToString(AND_BRACKET) {
-            getEqual(it.name, it.get(entity))
-        }.let { sql.append(it) }
         return getSql(sql)
     }
 
     override fun <T> count(clazz: Class<T>, entity: Any?): String {
         val sql = StringBuilder()
         sql.append(SELECT_COUNT_FROM + Reflects.getTableName(clazz))
-        if (entity == null) {
-            return getSql(sql)
+        entity?.let {
+            appendWhere(sql, clazz, entity)
         }
-        sql.append(WHERE)
-        clazz.declaredFields.filter {
-            Reflects.makeAccessible(it, entity)
-            selectiveStrategy(it.get(entity))
-        }.joinToString(AND_BRACKET) {
-            getEqual(it.name, it.get(entity))
-        }.let { sql.append(it) }
         return getSql(sql)
     }
 
