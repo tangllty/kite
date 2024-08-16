@@ -3,3 +3,4 @@ plugins {
 }
 rootProject.name = "jkorm"
 include("jkorm")
+include("jkorm-spring")

@@ -22,7 +22,7 @@ class Libraries {
     val derbytools = "org.apache.derby:derbytools:${versions.derby}"
     val slf4j = "org.slf4j:slf4j-api:${versions.slf4j}"
     val logback = "ch.qos.logback:logback-classic:${versions.logback}"
-    val springCore = "org.springframework:spring-core:${versions.spring}"
+    val springContext = "org.springframework:spring-context:${versions.spring}"
 }
 
 val versions = Versions()
