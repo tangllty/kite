@@ -12,3 +12,4 @@
  * Support count query
  * Support count condition query
  * Support pagination query
+ * Support spring framework
