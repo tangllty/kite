@@ -39,5 +39,6 @@ bin/
 .DS_Store
 
 ### Derby ###
-**/jkorm/
+jkorm/jkorm/
+jkorm-spring/jkorm
 derby.log
