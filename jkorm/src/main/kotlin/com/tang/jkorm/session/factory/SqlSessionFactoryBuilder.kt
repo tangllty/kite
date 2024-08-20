@@ -1,11 +1,12 @@
 package com.tang.jkorm.session.factory
 
 import com.tang.jkorm.datasource.defaults.DefaultDataSourceFactory
+import com.tang.jkorm.io.Resources
 import com.tang.jkorm.session.Configuration
 import com.tang.jkorm.session.factory.defaults.DefaultSqlSessionFactory
 import com.tang.jkorm.sql.defaults.DefaultSqlProviderFactory
-import org.yaml.snakeyaml.Yaml
 import java.io.InputStream
+import javax.sql.DataSource
 
 /**
  * @author Tang
@@ -13,12 +14,15 @@ import java.io.InputStream
 class SqlSessionFactoryBuilder {
 
     fun build(inputStream: InputStream): SqlSessionFactory {
-        val yaml = Yaml().load<Map<String, Map<String, Map<String, String>>>>(inputStream)
-        val jkorm = yaml["jkorm"]
-        val datasource = jkorm!!["datasource"] as Map<String, String>
+        val datasource = Resources.getDataSourceProperties(inputStream)
         val dataSourceFactory = DefaultDataSourceFactory(datasource)
-        val sqlProvider = DefaultSqlProviderFactory().newSqlProvider(datasource["driver"]!!)
-        return DefaultSqlSessionFactory(Configuration(dataSourceFactory.getDataSource(), sqlProvider))
+        return build(dataSourceFactory.getDataSource())
+    }
+
+    fun build(dataSource: DataSource): SqlSessionFactory {
+        val url = dataSource.connection.use { it.metaData.url }
+        val sqlProvider = DefaultSqlProviderFactory().newSqlProvider(url)
+        return DefaultSqlSessionFactory(Configuration(dataSource, sqlProvider))
     }
 
 }

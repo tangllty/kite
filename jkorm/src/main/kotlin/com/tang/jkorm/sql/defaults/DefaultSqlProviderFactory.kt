@@ -12,12 +12,13 @@ import com.tang.jkorm.sql.provider.mysql.MysqlSqlProvider
  */
 class DefaultSqlProviderFactory : SqlProviderFactory {
 
-    override fun newSqlProvider(driverClass: String): SqlProvider {
-        return when (driverClass) {
-            "com.mysql.cj.jdbc.Driver" -> MysqlSqlProvider()
-            "org.apache.derby.jdbc.EmbeddedDriver" -> DerbySqlProvider()
-            else -> throw IllegalArgumentException("Unsupported driver class: $driverClass")
-        }
+    override fun newSqlProvider(url: String): SqlProvider {
+        val urlProviderMap = mapOf(
+            "mysql" to MysqlSqlProvider(),
+            "derby" to DerbySqlProvider()
+        )
+        val provider = urlProviderMap.entries.find { url.contains(":${it.key}:") }?.value
+        return provider ?: throw IllegalArgumentException("Unsupported database url: $url")
     }
 
 }

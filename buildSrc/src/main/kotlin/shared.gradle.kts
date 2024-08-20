@@ -12,7 +12,7 @@ repositories {
 
 dependencies {
     implementation(libs.slf4j)
-    testImplementation(libs.logback)
+    implementation(libs.logback)
     testImplementation(kotlin("test"))
 }
 

@@ -9,6 +9,6 @@ import com.tang.jkorm.sql.provider.SqlProvider
  */
 interface SqlProviderFactory {
 
-    fun newSqlProvider(driverClass: String): SqlProvider
+    fun newSqlProvider(url: String): SqlProvider
 
 }

@@ -19,6 +19,7 @@ open class ApplicationConfig {
     open fun sqlSessionFactory(): SqlSessionFactory {
         val sqlSessionFactoryBean = SqlSessionFactoryBean()
         sqlSessionFactoryBean.resource = "jkorm-config.yml"
+        sqlSessionFactoryBean.afterResourcesSet()
         sqlSessionFactoryBean.afterPropertiesSet()
         return sqlSessionFactoryBean.getObject()
     }
