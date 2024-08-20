@@ -11,6 +11,8 @@ repositories {
 }
 
 dependencies {
+    implementation(libs.slf4j)
+    testImplementation(libs.logback)
     testImplementation(kotlin("test"))
 }
 
