@@ -5,7 +5,7 @@ import java.sql.Connection
 /**
  * @author Tang
  */
-interface Transaction {
+interface Transaction : AutoCloseable {
 
     fun getConnection(): Connection
 
@@ -13,6 +13,6 @@ interface Transaction {
 
     fun rollback()
 
-    fun close()
+    override fun close()
 
 }

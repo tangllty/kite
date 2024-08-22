@@ -10,7 +10,7 @@ import kotlin.reflect.jvm.javaField
 /**
  * @author Tang
  */
-object FieldUtils {
+object Fields {
 
     private fun <T> getSerializedLambda(function: SFunction<T, *>): SerializedLambda {
         val writeReplaceMethod = function.javaClass.getDeclaredMethod("writeReplace")

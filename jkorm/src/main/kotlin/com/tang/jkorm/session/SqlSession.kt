@@ -8,7 +8,7 @@ import java.lang.reflect.Method
  *
  * @author Tang
  */
-interface SqlSession {
+interface SqlSession : AutoCloseable {
 
     fun <T> getMapper(clazz: Class<T>): T
 
@@ -40,6 +40,6 @@ interface SqlSession {
 
     fun rollback()
 
-    fun close()
+    override fun close()
 
 }

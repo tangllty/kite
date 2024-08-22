@@ -8,17 +8,17 @@ import org.junit.jupiter.api.Assertions.*
 /**
  * @author Tang
  */
-class FieldUtilsTest {
+class FieldsTest {
 
     @Test
     fun getFieldName() {
-        val fieldName = FieldUtils.getFieldName(Account::id)
+        val fieldName = Fields.getFieldName(Account::id)
         assertEquals("id", fieldName)
     }
 
     @Test
     fun getField() {
-        val field = FieldUtils.getField(Account::id)
+        val field = Fields.getField(Account::id)
         assertEquals("id", field.name)
     }
 }

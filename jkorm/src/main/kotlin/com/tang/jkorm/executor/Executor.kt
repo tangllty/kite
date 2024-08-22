@@ -5,7 +5,7 @@ import java.sql.Connection
 /**
  * @author Tang
  */
-interface Executor {
+interface Executor : AutoCloseable {
 
     fun getConnection(): Connection
 
@@ -19,6 +19,6 @@ interface Executor {
 
     fun rollback()
 
-    fun close()
+    override fun close()
 
 }
