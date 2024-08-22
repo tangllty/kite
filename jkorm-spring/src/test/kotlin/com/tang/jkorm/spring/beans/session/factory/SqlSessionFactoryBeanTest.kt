@@ -1,6 +1,7 @@
 package com.tang.jkorm.spring.beans.session.factory
 
 import com.tang.jkorm.spring.ApplicationConfig
+import com.tang.jkorm.spring.constants.BeanNames
 import org.junit.jupiter.api.Test
 import org.springframework.context.annotation.AnnotationConfigApplicationContext
 
@@ -12,8 +13,7 @@ class SqlSessionFactoryBeanTest {
     @Test
     fun sqlSessionFactoryBeanTest() {
         val context = AnnotationConfigApplicationContext(ApplicationConfig::class.java)
-        context.beanDefinitionNames.forEach { println(it) }
-        context.getBean("sqlSessionFactory")
+        context.getBean(BeanNames.SQL_SESSION_FACTORY)
     }
 
 }

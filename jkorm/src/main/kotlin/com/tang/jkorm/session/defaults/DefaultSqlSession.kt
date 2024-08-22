@@ -173,7 +173,9 @@ class DefaultSqlSession(
     }
 
     override fun close() {
-        rollback()
+        if (!executor.getConnection().autoCommit) {
+            rollback()
+        }
         executor.close()
     }
 

@@ -16,7 +16,7 @@ import javax.sql.DataSource
 class SqlSessionFactoryBean : FactoryBean<SqlSessionFactory>, InitializingBean {
 
     lateinit var resource: String
-    private lateinit var dataSource: DataSource
+    lateinit var dataSource: DataSource
     private lateinit var sqlSessionFactory: SqlSessionFactory
 
     override fun getObject(): SqlSessionFactory {

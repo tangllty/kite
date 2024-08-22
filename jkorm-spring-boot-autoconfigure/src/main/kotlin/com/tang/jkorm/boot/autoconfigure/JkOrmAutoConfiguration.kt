@@ -1,27 +1,31 @@
-package com.tang.jkorm.spring
+package com.tang.jkorm.boot.autoconfigure
 
+import com.tang.jkorm.annotation.Slf4j
 import com.tang.jkorm.session.SqlSession
 import com.tang.jkorm.session.factory.SqlSessionFactory
-import com.tang.jkorm.spring.annotation.MapperScan
 import com.tang.jkorm.spring.beans.session.SqlSessionBean
 import com.tang.jkorm.spring.beans.session.factory.SqlSessionFactoryBean
 import com.tang.jkorm.spring.constants.BeanNames
 import org.springframework.beans.factory.annotation.Qualifier
+import org.springframework.boot.autoconfigure.AutoConfiguration
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
 import org.springframework.context.annotation.Bean
-import org.springframework.context.annotation.Configuration
+import javax.sql.DataSource
 
 /**
+ * JkOrm auto configuration
+ *
  * @author Tang
  */
-@Configuration
-@MapperScan(["com.tang.jkorm.spring.mapper"])
-open class ApplicationConfig {
+@Slf4j
+@AutoConfiguration
+@ConditionalOnClass(SqlSessionFactoryBean::class, SqlSessionBean::class)
+open class JkOrmAutoConfiguration {
 
     @Bean(BeanNames.SQL_SESSION_FACTORY)
-    open fun sqlSessionFactory(): SqlSessionFactory {
+    open fun sqlSessionFactory(dataSource: DataSource): SqlSessionFactory {
         val sqlSessionFactoryBean = SqlSessionFactoryBean()
-        sqlSessionFactoryBean.resource = "jkorm-config.yml"
-        sqlSessionFactoryBean.afterResourcesSet()
+        sqlSessionFactoryBean.dataSource = dataSource
         sqlSessionFactoryBean.afterPropertiesSet()
         return sqlSessionFactoryBean.getObject()
     }

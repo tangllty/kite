@@ -13,3 +13,4 @@
  * Support count condition query
  * Support pagination query
  * Support spring framework
+ * Support spring boot

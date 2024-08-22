@@ -4,3 +4,5 @@ plugins {
 rootProject.name = "jkorm"
 include("jkorm")
 include("jkorm-spring")
+include("jkorm-spring-boot-autoconfigure")
+include("jkorm-spring-boot-starter")

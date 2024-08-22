@@ -14,6 +14,8 @@ class Versions {
     val logback = "1.5.6"
     // https://mvnrepository.com/artifact/org.springframework/spring-core
     val spring = "6.1.11"
+    // https://mvnrepository.com/artifact/org.springframework.boot/spring-boot
+    val springBoot = "3.3.2"
 }
 
 class Libraries {
@@ -23,6 +25,11 @@ class Libraries {
     val slf4j = "org.slf4j:slf4j-api:${versions.slf4j}"
     val logback = "ch.qos.logback:logback-classic:${versions.logback}"
     val springContext = "org.springframework:spring-context:${versions.spring}"
+    val springBootStarter = "org.springframework.boot:spring-boot-starter:${versions.springBoot}"
+    val springBootStarterJdbc = "org.springframework.boot:spring-boot-starter-jdbc:${versions.springBoot}"
+    val springBootAutoconfigure = "org.springframework.boot:spring-boot-autoconfigure:${versions.springBoot}"
+    val springBootAutoconfigureProcessor = "org.springframework.boot:spring-boot-autoconfigure-processor:${versions.springBoot}"
+    val springBootStarterTest = "org.springframework.boot:spring-boot-starter-test:${versions.springBoot}"
 }
 
 val versions = Versions()
