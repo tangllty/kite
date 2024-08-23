@@ -1,6 +1,8 @@
 package com.tang.jkorm.annotation
 
 /**
+ * Table annotation
+ *
  * @author Tang
  */
 @Retention(AnnotationRetention.RUNTIME)
