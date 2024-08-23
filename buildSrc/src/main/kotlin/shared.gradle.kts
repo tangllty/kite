@@ -1,5 +1,6 @@
 plugins {
     kotlin("jvm")
+    id("maven-publish")
 }
 
 group = "com.tang"
@@ -27,4 +28,30 @@ kotlin {
 java {
     sourceCompatibility = JavaVersion.VERSION_17
     targetCompatibility = JavaVersion.VERSION_17
+}
+
+tasks.register<Jar>("sourcesJar") {
+    archiveClassifier.set("sources")
+    from(sourceSets["main"].allSource)
+}
+
+tasks.register<Jar>("javadocJar") {
+    dependsOn(tasks["javadoc"])
+    archiveClassifier.set("javadoc")
+    from(tasks["javadoc"])
+}
+
+publishing {
+    publications {
+        create<MavenPublication>("mavenJava") {
+            from(components["java"])
+            artifact(tasks["sourcesJar"])
+            artifact(tasks["javadocJar"])
+        }
+    }
+    repositories {
+        maven {
+            url = uri(layout.buildDirectory.dir("repo"))
+        }
+    }
 }
