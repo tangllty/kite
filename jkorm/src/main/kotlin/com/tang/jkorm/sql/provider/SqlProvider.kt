@@ -1,5 +1,6 @@
 package com.tang.jkorm.sql.provider
 
+import com.tang.jkorm.sql.SqlStatement
 import java.lang.reflect.Field
 
 /**
@@ -15,32 +16,24 @@ interface SqlProvider {
 
     fun appendColumns(sql: StringBuilder, fieldList: List<Field>)
 
-    fun appendValues(sql: StringBuilder, fieldList: List<Field>, entity: Any)
+    fun <T> appendWhere(sql: StringBuilder, parameters: MutableList<Any?>, clazz: Class<T>, entity: Any)
 
-    fun appendSetValues(sql: StringBuilder, fieldList: List<Field>, entity: Any)
+    fun appendLimit(sql: StringBuilder, parameters: MutableList<Any?>, pageNumber: Long, pageSize: Long)
 
-    fun <T> appendWhere(sql: StringBuilder, clazz: Class<T>, entity: Any)
+    fun insert(entity: Any): SqlStatement
 
-    fun appendLimit(sql: StringBuilder, pageNumber: Long, pageSize: Long)
+    fun insertSelective(entity: Any): SqlStatement
 
-    fun getValue(value: Any): String
+    fun update(entity: Any): SqlStatement
 
-    fun getEqual(field: String, value: Any): String
+    fun updateSelective(entity: Any): SqlStatement
 
-    fun insert(entity: Any): String
+    fun <T> delete(clazz: Class<T>, entity: Any): SqlStatement
 
-    fun insertSelective(entity: Any): String
+    fun <T> select(clazz: Class<T>, entity: Any?): SqlStatement
 
-    fun update(entity: Any): String
+    fun <T> count(clazz: Class<T>, entity: Any?): SqlStatement
 
-    fun updateSelective(entity: Any): String
-
-    fun <T> delete(clazz: Class<T>, entity: Any): String
-
-    fun <T> select(clazz: Class<T>, entity: Any?): String
-
-    fun <T> count(clazz: Class<T>, entity: Any?): String
-
-    fun <T> paginate(type: Class<T>, entity: Any?, orderBys: Array<Pair<String, Boolean>>, pageNumber: Long, pageSize: Long): String
+    fun <T> paginate(type: Class<T>, entity: Any?, orderBys: Array<Pair<String, Boolean>>, pageNumber: Long, pageSize: Long): SqlStatement
 
 }

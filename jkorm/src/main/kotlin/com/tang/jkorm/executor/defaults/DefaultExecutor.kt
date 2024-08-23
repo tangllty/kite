@@ -4,8 +4,10 @@ import com.tang.jkorm.annotation.Slf4j
 import com.tang.jkorm.annotation.Slf4j.Companion.LOGGER
 import com.tang.jkorm.executor.Executor
 import com.tang.jkorm.session.Configuration
+import com.tang.jkorm.sql.SqlStatement
 import com.tang.jkorm.transaction.Transaction
 import com.tang.jkorm.utils.ResultSetHandlers
+import com.tang.jkorm.utils.Statements
 import java.sql.Connection
 
 /**
@@ -24,9 +26,10 @@ class DefaultExecutor(
         return transaction.getConnection()
     }
 
-    override fun <T> count(statement: String, type: Class<T>): Long {
+    override fun <T> count(statement: SqlStatement, type: Class<T>): Long {
         val connection = getConnection()
-        val preparedStatement = connection.prepareStatement(statement)
+        val preparedStatement = connection.prepareStatement(statement.sql)
+        statement.setValues(preparedStatement)
         return runCatching {
             val resultSet = preparedStatement.executeQuery()
             return ResultSetHandlers.getCount(resultSet)
@@ -39,9 +42,10 @@ class DefaultExecutor(
         }.getOrDefault(0)
     }
 
-    override fun <T> query(statement: String, type: Class<T>): List<T> {
+    override fun <T> query(statement: SqlStatement, type: Class<T>): List<T> {
         val connection = getConnection()
-        val preparedStatement = connection.prepareStatement(statement)
+        val preparedStatement = connection.prepareStatement(statement.sql)
+        statement.setValues(preparedStatement)
         return runCatching {
             val resultSet = preparedStatement.executeQuery()
             return ResultSetHandlers.getList(resultSet, type)
@@ -54,9 +58,10 @@ class DefaultExecutor(
         }.getOrDefault(emptyList())
     }
 
-    override fun update(statement: String, parameter: Any): Int {
+    override fun update(statement: SqlStatement, parameter: Any): Int {
         val connection = getConnection()
-        val preparedStatement = connection.prepareStatement(statement)
+        val preparedStatement = connection.prepareStatement(statement.sql)
+        statement.setValues(preparedStatement)
         return runCatching {
             preparedStatement.executeUpdate()
         }.onFailure {

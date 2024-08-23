@@ -1,5 +1,6 @@
 package com.tang.jkorm.executor
 
+import com.tang.jkorm.sql.SqlStatement
 import java.sql.Connection
 
 /**
@@ -9,11 +10,11 @@ interface Executor : AutoCloseable {
 
     fun getConnection(): Connection
 
-    fun <T> count(statement: String, type: Class<T>): Long
+    fun <T> count(statement: SqlStatement, type: Class<T>): Long
 
-    fun <T> query(statement: String, type: Class<T>): List<T>
+    fun <T> query(statement: SqlStatement, type: Class<T>): List<T>
 
-    fun update(statement: String, parameter: Any): Int
+    fun update(statement: SqlStatement, parameter: Any): Int
 
     fun commit()
 

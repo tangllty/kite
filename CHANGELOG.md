@@ -14,3 +14,4 @@
  * Support pagination query
  * Support spring framework
  * Support spring boot
+ * Prevent sql injection

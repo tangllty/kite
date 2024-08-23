@@ -231,4 +231,14 @@ class SqlSessionTest : BaseDataTest() {
         assertNotEquals(0, page.total)
     }
 
+    @Test
+    fun sqlInjection() {
+        val session = sqlSessionFactory.openSession()
+        val accountMapper = session.getMapper(AccountMapper::class.java)
+        val account = Account(username = "admin' or '1'='1")
+        val list = accountMapper.select(account)
+        session.close()
+        assertEquals(0, list.size)
+    }
+
 }

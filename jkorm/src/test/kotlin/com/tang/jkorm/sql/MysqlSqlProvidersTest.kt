@@ -16,88 +16,99 @@ class MysqlSqlProvidersTest {
     @Test
     fun insert() {
         val account = Account(username = "tang", password = "123456")
-        val sql = sqlProvider.insert(account)
-        assertEquals("insert into account (username, password) values ('tang', '123456')", sql)
+        val statement = sqlProvider.insert(account)
+        assertEquals("insert into account (username, password) values (?, ?)", statement.sql)
+        assertEquals("insert into account (username, password) values ('tang', '123456')", statement.getActualSql())
     }
 
     @Test
     fun insertSelective() {
         val account = Account(username = "tang", password = "123456")
-        val sql = sqlProvider.insertSelective(account)
-        assertEquals("insert into account (username, password) values ('tang', '123456')", sql)
+        val statement = sqlProvider.insertSelective(account)
+        assertEquals("insert into account (username, password) values (?, ?)", statement.sql)
+        assertEquals("insert into account (username, password) values ('tang', '123456')", statement.getActualSql())
     }
 
     @Test
     fun update() {
         val account = Account(id = 1, username = "tang", password = "123456")
-        val sql = sqlProvider.update(account)
-        assertEquals("update account set username = 'tang', password = '123456' where id = 1", sql)
+        val statement = sqlProvider.update(account)
+        assertEquals("update account set username = ?, password = ? where id = ?", statement.sql)
+        assertEquals("update account set username = 'tang', password = '123456' where id = 1", statement.getActualSql())
     }
 
     @Test
     fun updateSelective() {
         val account = Account(id = 1, password = "123456")
-        val sql = sqlProvider.updateSelective(account)
-        assertEquals("update account set password = '123456' where id = 1", sql)
+        val statement = sqlProvider.updateSelective(account)
+        assertEquals("update account set password = ? where id = ?", statement.sql)
+        assertEquals("update account set password = '123456' where id = 1", statement.getActualSql())
     }
 
     @Test
     fun delete() {
         val account = Account(id = 1)
-        val sql = sqlProvider.delete(Account::class.java, account)
-        assertEquals("delete from account where id = 1", sql)
+        val statement = sqlProvider.delete(Account::class.java, account)
+        assertEquals("delete from account where id = ?", statement.sql)
+        assertEquals("delete from account where id = 1", statement.getActualSql())
     }
 
     @Test
     fun select() {
-        val sql = sqlProvider.select(Account::class.java, null)
-        assertEquals("select * from account", sql)
+        val statement = sqlProvider.select(Account::class.java, null)
+        assertEquals("select * from account", statement.sql)
     }
 
     @Test
     fun selectCondition() {
         val account = Account(username = "tang")
-        val sql = sqlProvider.select(Account::class.java, account)
-        assertEquals("select * from account where username = 'tang'", sql)
+        val statement = sqlProvider.select(Account::class.java, account)
+        assertEquals("select * from account where username = ?", statement.sql)
+        assertEquals("select * from account where username = 'tang'", statement.getActualSql())
     }
 
     @Test
     fun count() {
-        val sql = sqlProvider.count(Account::class.java, null)
-        assertEquals("select count(*) from account", sql)
+        val statement = sqlProvider.count(Account::class.java, null)
+        assertEquals("select count(*) from account", statement.sql)
     }
 
     @Test
     fun countCondition() {
         val account = Account(username = "tang")
-        val sql = sqlProvider.count(Account::class.java, account)
-        assertEquals("select count(*) from account where username = 'tang'", sql)
+        val statement = sqlProvider.count(Account::class.java, account)
+        assertEquals("select count(*) from account where username = ?", statement.sql)
+        assertEquals("select count(*) from account where username = 'tang'", statement.getActualSql())
     }
 
     @Test
     fun paginate() {
-        val sql = sqlProvider.paginate(Account::class.java, null, emptyArray(), 1, 5)
-        assertEquals("select * from account limit 0, 5", sql)
+        val statement = sqlProvider.paginate(Account::class.java, null, emptyArray(), 1, 5)
+        assertEquals("select * from account limit ?, ?", statement.sql)
+        assertEquals("select * from account limit 0, 5", statement.getActualSql())
     }
 
     @Test
     fun paginateCondition() {
         val account = Account(username = "tang")
-        val sql = sqlProvider.paginate(Account::class.java, account, emptyArray(), 1, 5)
-        assertEquals("select * from account where username = 'tang' limit 0, 5", sql)
+        val statement = sqlProvider.paginate(Account::class.java, account, emptyArray(), 1, 5)
+        assertEquals("select * from account where username = ? limit ?, ?", statement.sql)
+        assertEquals("select * from account where username = 'tang' limit 0, 5", statement.getActualSql())
     }
 
     @Test
     fun paginateOrderBy() {
-        val sql = sqlProvider.paginate(Account::class.java, null, arrayOf("id" to false), 1, 5)
-        assertEquals("select * from account order by id desc limit 0, 5", sql)
+        val statement = sqlProvider.paginate(Account::class.java, null, arrayOf("id" to false), 1, 5)
+        assertEquals("select * from account order by id desc limit ?, ?", statement.sql)
+        assertEquals("select * from account order by id desc limit 0, 5", statement.getActualSql())
     }
 
     @Test
     fun paginateOrderByCondition() {
         val account = Account(username = "tang")
-        val sql = sqlProvider.paginate(Account::class.java, account, arrayOf("id" to false), 1, 5)
-        assertEquals("select * from account where username = 'tang' order by id desc limit 0, 5", sql)
+        val statement = sqlProvider.paginate(Account::class.java, account, arrayOf("id" to false), 1, 5)
+        assertEquals("select * from account where username = ? order by id desc limit ?, ?", statement.sql)
+        assertEquals("select * from account where username = 'tang' order by id desc limit 0, 5", statement.getActualSql())
     }
 
 }
