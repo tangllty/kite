@@ -17,8 +17,8 @@ class MysqlSqlProvidersTest {
     fun insert() {
         val account = Account(username = "tang", password = "123456")
         val statement = sqlProvider.insert(account)
-        assertEquals("insert into account (username, password) values (?, ?)", statement.sql)
-        assertEquals("insert into account (username, password) values ('tang', '123456')", statement.getActualSql())
+        assertEquals("insert into account (username, password, create_time, update_time, balance) values (?, ?, ?, ?, ?)", statement.sql)
+        assertEquals("insert into account (username, password, create_time, update_time, balance) values ('tang', '123456', NULL, NULL, NULL)", statement.getActualSql())
     }
 
     @Test
@@ -33,8 +33,8 @@ class MysqlSqlProvidersTest {
     fun update() {
         val account = Account(id = 1, username = "tang", password = "123456")
         val statement = sqlProvider.update(account)
-        assertEquals("update account set username = ?, password = ? where id = ?", statement.sql)
-        assertEquals("update account set username = 'tang', password = '123456' where id = 1", statement.getActualSql())
+        assertEquals("update account set username = ?, password = ?, create_time = ?, update_time = ?, balance = ? where id = ?", statement.sql)
+        assertEquals("update account set username = 'tang', password = '123456', create_time = NULL, update_time = NULL, balance = NULL where id = 1", statement.getActualSql())
     }
 
     @Test

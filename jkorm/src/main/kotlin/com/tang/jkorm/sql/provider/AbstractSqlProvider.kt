@@ -1,5 +1,7 @@
 package com.tang.jkorm.sql.provider
 
+import com.google.common.base.CaseFormat
+import com.tang.jkorm.annotation.Column
 import com.tang.jkorm.constants.SqlString.AND_BRACKET
 import com.tang.jkorm.constants.SqlString.ASC
 import com.tang.jkorm.constants.SqlString.COMMA_SPACE
@@ -21,6 +23,7 @@ import com.tang.jkorm.constants.SqlString.VALUES
 import com.tang.jkorm.constants.SqlString.WHERE
 import com.tang.jkorm.sql.SqlStatement
 import com.tang.jkorm.utils.Reflects
+import com.tang.jkorm.utils.Reflects.getColumnName
 import java.lang.reflect.Field
 
 /**
@@ -44,8 +47,7 @@ abstract class AbstractSqlProvider : SqlProvider {
     }
 
     override fun appendColumns(sql: StringBuilder, fieldList: List<Field>) {
-        fieldList.joinToString(COMMA_SPACE) { it.name }
-            .let { sql.append(it) }
+        fieldList.joinToString(COMMA_SPACE) { getColumnName(it) }.let { sql.append(it) }
     }
 
     override fun <T> appendWhere(sql: StringBuilder, parameters: MutableList<Any?>, clazz: Class<T>, entity: Any) {
@@ -55,7 +57,7 @@ abstract class AbstractSqlProvider : SqlProvider {
             selectiveStrategy(it.get(entity))
         }.joinToString(AND_BRACKET) {
             parameters.add(it.get(entity))
-            it.name + EQUAL_BRACKET + QUESTION_MARK
+            getColumnName(it) + EQUAL_BRACKET + QUESTION_MARK
         }.let { sql.append(it) }
     }
 
@@ -75,7 +77,7 @@ abstract class AbstractSqlProvider : SqlProvider {
         val parameters = mutableListOf<Any?>()
         val idField = Reflects.getIdField(clazz)
         val autoIncrementId = Reflects.isAutoIncrementId(clazz)
-        val fieldList = clazz.declaredFields.filter { it.name != idField.name || !autoIncrementId }
+        val fieldList = clazz.declaredFields.filter { getColumnName(it) != getColumnName(idField) || !autoIncrementId }
         sql.append(INSERT_INTO + Reflects.getTableName(clazz) + SPACE + LEFT_BRACKET)
         appendColumns(sql, fieldList)
         sql.append(RIGHT_BRACKET + VALUES + LEFT_BRACKET)
@@ -95,7 +97,7 @@ abstract class AbstractSqlProvider : SqlProvider {
         val fieldMap: Map<Field, Any?> = clazz.declaredFields.associateWith { Reflects.makeAccessible(it, entity); it.get(entity) }
         sql.append(INSERT_INTO + Reflects.getTableName(clazz) + SPACE + LEFT_BRACKET)
         fieldMap.filter { selectiveStrategy(it.value) }
-            .map { it.key.name }
+            .map { getColumnName(it.key) }
             .joinToString(COMMA_SPACE)
             .let { sql.append(it) }
         sql.append(RIGHT_BRACKET + VALUES + LEFT_BRACKET)
@@ -123,7 +125,7 @@ abstract class AbstractSqlProvider : SqlProvider {
         val parameters = mutableListOf<Any?>()
         val idField = Reflects.getIdField(clazz)
         val fieldList = clazz.declaredFields
-            .filter { it.name != idField.name }
+            .filter { getColumnName(it) != getColumnName(idField) }
             .filter {
                 Reflects.makeAccessible(it, entity)
                 strategy(it.get(entity))
@@ -131,7 +133,7 @@ abstract class AbstractSqlProvider : SqlProvider {
         sql.append(UPDATE + Reflects.getTableName(clazz) + SET)
         appendSetValues(sql, parameters, fieldList, entity)
         Reflects.makeAccessible(idField, entity)
-        sql.append(WHERE + idField.name + EQUAL_BRACKET).append(QUESTION_MARK)
+        sql.append(WHERE + getColumnName(idField) + EQUAL_BRACKET).append(QUESTION_MARK)
         parameters.add(idField.get(entity))
         return SqlStatement(getSql(sql), parameters)
     }
@@ -140,7 +142,7 @@ abstract class AbstractSqlProvider : SqlProvider {
         fieldList.joinToString(COMMA_SPACE) {
             Reflects.makeAccessible(it, entity)
             parameters.add(it.get(entity))
-            it.name + EQUAL_BRACKET + QUESTION_MARK
+            getColumnName(it) + EQUAL_BRACKET + QUESTION_MARK
         }.let { sql.append(it) }
     }
 
@@ -150,7 +152,7 @@ abstract class AbstractSqlProvider : SqlProvider {
         val idField = Reflects.getIdField(clazz)
         Reflects.makeAccessible(idField, entity)
         sql.append(DELETE_FROM + Reflects.getTableName(clazz) + WHERE)
-            .append(idField.name).append(EQUAL_BRACKET).append(QUESTION_MARK)
+            .append(getColumnName(idField)).append(EQUAL_BRACKET).append(QUESTION_MARK)
         parameters.add(idField.get(entity))
         return SqlStatement(getSql(sql), parameters)
     }

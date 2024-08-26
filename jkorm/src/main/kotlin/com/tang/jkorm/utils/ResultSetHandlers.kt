@@ -22,7 +22,7 @@ object ResultSetHandlers {
         val entity = type.getDeclaredConstructor().newInstance()
         for (i in 1..columnCount) {
             val columnName = metaData.getColumnName(i)
-            val field = type.getDeclaredField(columnName.lowercase())
+            val field = Reflects.getField(type, columnName)
             Reflects.makeAccessible(field, entity as Any)
             val columnValue = resultSet.getObject(columnName)
             field.set(entity, columnValue)

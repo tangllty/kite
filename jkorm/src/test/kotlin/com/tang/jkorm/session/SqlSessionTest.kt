@@ -7,6 +7,8 @@ import com.tang.jkorm.session.mapper.JavaAccountMapper
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Test
+import java.math.BigDecimal
+import java.sql.Date
 import kotlin.test.assertNotEquals
 import kotlin.test.assertTrue
 
@@ -57,7 +59,13 @@ class SqlSessionTest : BaseDataTest() {
     fun insertAccount() {
         val session = sqlSessionFactory.openSession(true)
         val accountMapper = session.getMapper(AccountMapper::class.java)
-        val account = Account(username = "tang", password = "123456")
+        val account = Account(
+            username = "tang",
+            password = "123456",
+            createTime = Date(System.currentTimeMillis()),
+            updateTime = null,
+            balance = BigDecimal(100.00)
+        )
         val rows = accountMapper.insertAccount(account)
         session.close()
         assertEquals(1, rows)

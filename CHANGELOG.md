@@ -15,3 +15,4 @@
  * Support spring framework
  * Support spring boot
  * Prevent sql injection
+ * Add `Column` annotation
