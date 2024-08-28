@@ -22,6 +22,8 @@ interface SqlSession : AutoCloseable {
 
     fun update(method: Method, parameter: Any): Int
 
+    fun update(method: Method, parameter: Any, condition: Any): Int
+
     fun updateSelective(method: Method, parameter: Any): Int
 
     fun <T> delete(method: Method, type: Class<T>, parameter: Any): Int

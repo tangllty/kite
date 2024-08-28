@@ -126,6 +126,18 @@ class SqlSessionTest : BaseDataTest() {
     }
 
     @Test
+    fun updateCondition() {
+        val session = sqlSessionFactory.openSession()
+        val accountMapper = session.getMapper(AccountMapper::class.java)
+        val account = Account(username = "tang", password = "654321")
+        val condition = Account(id = 1)
+        val rows = accountMapper.update(account, condition)
+        session.rollback()
+        session.close()
+        assertEquals(1, rows)
+    }
+
+    @Test
     fun updateSelective() {
         val session = sqlSessionFactory.openSession()
         val accountMapper = session.getMapper(AccountMapper::class.java)

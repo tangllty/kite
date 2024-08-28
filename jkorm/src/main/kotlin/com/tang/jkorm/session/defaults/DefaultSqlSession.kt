@@ -38,6 +38,14 @@ class DefaultSqlSession(
         return args?.first() ?: throw IllegalArgumentException("Fist parameter is null")
     }
 
+    private fun getSecondArg(args: Array<out Any>?): Any {
+        return args?.get(1) ?: throw IllegalArgumentException("Second parameter is null")
+    }
+
+    private fun getThirdArg(args: Array<out Any>?): Any {
+        return args?.get(2) ?: throw IllegalArgumentException("Third parameter is null")
+    }
+
     @Deprecated("This function has unchecked cast warning and I don't know how to fix it.")
     private fun <M, T> getGenericType(mapperInterface: Class<M>): Class<T> {
         val baseMapper = mapperInterface.genericInterfaces[0]
@@ -52,6 +60,7 @@ class DefaultSqlSession(
             BaseMethodName.isInsert(method) -> insert(method, getFirstArg(args))
             BaseMethodName.isInsertSelective(method) -> insertSelective(method, getFirstArg(args))
             BaseMethodName.isUpdate(method) -> update(method, getFirstArg(args))
+            BaseMethodName.isUpdateCondition(method) -> update(method, getFirstArg(args), getSecondArg(args))
             BaseMethodName.isUpdateSelective(method) -> updateSelective(method, getFirstArg(args))
             BaseMethodName.isDelete(method) -> delete(method, type, getFirstArg(args))
             BaseMethodName.isDeleteById(method) -> deleteById(method, type, getFirstArg(args))
@@ -75,6 +84,11 @@ class DefaultSqlSession(
 
     override fun update(method: Method, parameter: Any): Int {
         val update = sqlProvider.update(parameter)
+        return executor.update(update, parameter)
+    }
+
+    override fun update(method: Method, parameter: Any, condition: Any): Int {
+        val update = sqlProvider.update(parameter, condition)
         return executor.update(update, parameter)
     }
 

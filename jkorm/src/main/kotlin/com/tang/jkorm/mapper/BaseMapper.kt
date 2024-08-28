@@ -19,35 +19,45 @@ interface BaseMapper<T> {
     fun insert(type: T): Int
 
     /**
-     * Insert entity selective
+     * Insert entity selective, ignore null value
      *
      * @param type Entity
      */
     fun insertSelective(type: T): Int
 
     /**
-     * Update entity
+     * Update entity by primary key
      *
      * @param type Entity
      */
     fun update(type: T): Int
 
     /**
-     * Update entity selective
+     * Update entity by where entity condition, ignore null value
+     *
+     * The primary key will also be updated, if set in the value entity
+     *
+     * @param type Value entity
+     * @param condition Condition entity
+     */
+    fun update(type: T, condition: T): Int
+
+    /**
+     * Update entity selective by primary key, ignore null value
      *
      * @param type Entity
      */
     fun updateSelective(type: T): Int
 
     /**
-     * Delete entity
+     * Delete entity by condition, all fields are used as condition, ignore null value
      *
      * @param type Entity
      */
     fun delete(type: T): Int
 
     /**
-     * Delete entity by id
+     * Delete entity by primary key
      *
      * @param id Entity id
      */
@@ -59,14 +69,14 @@ interface BaseMapper<T> {
     fun select(): List<T>
 
     /**
-     * Select by condition
+     * Select by condition, ignore null value
      *
      * @param type Entity
      */
     fun select(type: T): List<T>
 
     /**
-     * Select by id
+     * Select by primary key
      *
      * @param id Entity id
      */
@@ -78,14 +88,14 @@ interface BaseMapper<T> {
     fun count(): Long
 
     /**
-     * Count by condition
+     * Count by condition, ignore null value
      *
      * @param type Entity
      */
     fun count(type: T): Long
 
     /**
-     * Paginate
+     * Paginate by page number and page size
      *
      * @param pageNumber Page number
      * @param pageSize Page size
@@ -93,7 +103,7 @@ interface BaseMapper<T> {
     fun paginate(pageNumber: Long, pageSize: Long): Page<T>
 
     /**
-     * Paginate
+     * Paginate by page number, page size and condition, ignore null value
      *
      * @param pageNumber Page number
      * @param pageSize Page size
@@ -102,7 +112,7 @@ interface BaseMapper<T> {
     fun paginate(pageNumber: Long, pageSize: Long, type: T): Page<T>
 
     /**
-     * Paginate
+     * Paginate by page number, page size and order by
      *
      * @param pageNumber Page number
      * @param pageSize Page size
@@ -111,7 +121,7 @@ interface BaseMapper<T> {
     fun paginate(pageNumber: Long, pageSize: Long, orderBys: Array<Pair<String, Boolean>>): Page<T>
 
     /**
-     * Paginate
+     * Paginate by page number, page size, order by and condition, ignore null value
      *
      * @param pageNumber Page number
      * @param pageSize Page size

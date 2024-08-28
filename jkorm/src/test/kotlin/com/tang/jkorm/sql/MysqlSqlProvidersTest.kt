@@ -38,6 +38,15 @@ class MysqlSqlProvidersTest {
     }
 
     @Test
+    fun updateCondition() {
+        val account = Account(username = "tang", password = "123456")
+        val condition = Account(id = 1)
+        val statement = sqlProvider.update(account, condition)
+        assertEquals("update account set username = ?, password = ? where id = ?", statement.sql)
+        assertEquals("update account set username = 'tang', password = '123456' where id = 1", statement.getActualSql())
+    }
+
+    @Test
     fun updateSelective() {
         val account = Account(id = 1, password = "123456")
         val statement = sqlProvider.updateSelective(account)

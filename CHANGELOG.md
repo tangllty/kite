@@ -17,3 +17,4 @@
  * Support spring boot
  * Prevent sql injection
  * Add `Column` annotation
+ * Add overloading method for `update` method to update column by multiple condition

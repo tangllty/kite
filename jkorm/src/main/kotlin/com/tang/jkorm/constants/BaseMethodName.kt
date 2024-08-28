@@ -25,6 +25,10 @@ object BaseMethodName {
         return method.name == UPDATE && method.parameterCount == 1 && method.parameterTypes[0] is Any
     }
 
+    fun isUpdateCondition(method: Method): Boolean {
+        return method.name == UPDATE && method.parameterCount == 2 && method.parameterTypes[0] is Any && method.parameterTypes[1] is Any
+    }
+
     private const val UPDATE_SELECTIVE = "updateSelective"
 
     fun isUpdateSelective(method: Method): Boolean {

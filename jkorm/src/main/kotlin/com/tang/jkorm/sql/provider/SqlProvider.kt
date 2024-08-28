@@ -26,6 +26,8 @@ interface SqlProvider {
 
     fun update(entity: Any): SqlStatement
 
+    fun update(entity: Any, where: Any): SqlStatement
+
     fun updateSelective(entity: Any): SqlStatement
 
     fun <T> delete(clazz: Class<T>, entity: Any): SqlStatement

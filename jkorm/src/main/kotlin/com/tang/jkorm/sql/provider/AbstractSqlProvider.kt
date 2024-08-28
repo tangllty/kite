@@ -113,6 +113,29 @@ abstract class AbstractSqlProvider : SqlProvider {
         return update(entity) { true }
     }
 
+    override fun update(entity: Any, where: Any): SqlStatement {
+        val clazz = entity::class.java
+        val sql = StringBuilder()
+        val parameters = mutableListOf<Any?>()
+        val fieldList = clazz.declaredFields.filter {
+            Reflects.makeAccessible(it, entity)
+            selectiveStrategy(it.get(entity))
+        }
+        val whereFieldList = where::class.java.declaredFields.filter {
+            Reflects.makeAccessible(it, where)
+            selectiveStrategy(it.get(where))
+        }
+        sql.append(UPDATE + Reflects.getTableName(clazz) + SET)
+        appendSetValues(sql, parameters, fieldList, entity)
+        sql.append(WHERE)
+        whereFieldList.joinToString(AND_BRACKET) {
+            Reflects.makeAccessible(it, where)
+            parameters.add(it.get(where))
+            getColumnName(it) + EQUAL_BRACKET + QUESTION_MARK
+        }.let { sql.append(it) }
+        return SqlStatement(getSql(sql), parameters)
+    }
+
     override fun updateSelective(entity: Any): SqlStatement {
         return update(entity) { selectiveStrategy(it) }
     }
