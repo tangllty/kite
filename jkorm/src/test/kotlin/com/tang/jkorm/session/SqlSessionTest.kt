@@ -238,7 +238,7 @@ class SqlSessionTest : BaseDataTest() {
     fun paginateOderBy() {
         val session = sqlSessionFactory.openSession()
         val accountMapper = session.getMapper(AccountMapper::class.java)
-        val page = accountMapper.paginate(2, 5, arrayOf("id" to false))
+        val page = accountMapper.paginate(2, 5, listOf("id" to false))
         session.close()
         assertNotEquals(0, page.total)
     }

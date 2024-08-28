@@ -121,6 +121,17 @@ interface BaseMapper<T> {
     fun paginate(pageNumber: Long, pageSize: Long, orderBys: Array<Pair<String, Boolean>>): Page<T>
 
     /**
+     * Paginate by page number, page size and order by
+     *
+     * @param pageNumber Page number
+     * @param pageSize Page size
+     * @param orderBys Order by
+     */
+    fun paginate(pageNumber: Long, pageSize: Long, orderBys: List<Pair<String, Boolean>>): Page<T> {
+        return paginate(pageNumber, pageSize, orderBys.toTypedArray())
+    }
+
+    /**
      * Paginate by page number, page size, order by and condition, ignore null value
      *
      * @param pageNumber Page number
@@ -129,5 +140,17 @@ interface BaseMapper<T> {
      * @param type Entity
      */
     fun paginate(pageNumber: Long, pageSize: Long, orderBys: Array<Pair<String, Boolean>>, type: T): Page<T>
+
+    /**
+     * Paginate by page number, page size, order by and condition, ignore null value
+     *
+     * @param pageNumber Page number
+     * @param pageSize Page size
+     * @param orderBys Order by
+     * @param type Entity
+     */
+    fun paginate(pageNumber: Long, pageSize: Long, orderBys: List<Pair<String, Boolean>>, type: T): Page<T> {
+        return paginate(pageNumber, pageSize, orderBys.toTypedArray(), type)
+    }
 
 }
