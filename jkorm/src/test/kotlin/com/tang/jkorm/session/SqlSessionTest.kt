@@ -174,6 +174,7 @@ class SqlSessionTest : BaseDataTest() {
         val session = sqlSessionFactory.openSession()
         val accountMapper = session.getMapper(AccountMapper::class.java)
         val accounts = accountMapper.select()
+        session.close()
         assertTrue(accounts.isNotEmpty())
     }
 
