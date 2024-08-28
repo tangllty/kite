@@ -47,6 +47,14 @@ class MysqlSqlProvidersTest {
 
     @Test
     fun delete() {
+        val account = Account(id = 1, username = "tang")
+        val statement = sqlProvider.delete(Account::class.java, account)
+        assertEquals("delete from account where id = ? and username = ?", statement.sql)
+        assertEquals("delete from account where id = 1 and username = 'tang'", statement.getActualSql())
+    }
+
+    @Test
+    fun deleteById() {
         val account = Account(id = 1)
         val statement = sqlProvider.delete(Account::class.java, account)
         assertEquals("delete from account where id = ?", statement.sql)

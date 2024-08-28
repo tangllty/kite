@@ -7,7 +7,6 @@ import com.tang.jkorm.session.Configuration
 import com.tang.jkorm.sql.SqlStatement
 import com.tang.jkorm.transaction.Transaction
 import com.tang.jkorm.utils.ResultSetHandlers
-import com.tang.jkorm.utils.Statements
 import java.sql.Connection
 
 /**

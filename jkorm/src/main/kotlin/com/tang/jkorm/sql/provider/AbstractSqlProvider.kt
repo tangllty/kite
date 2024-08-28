@@ -1,7 +1,5 @@
 package com.tang.jkorm.sql.provider
 
-import com.google.common.base.CaseFormat
-import com.tang.jkorm.annotation.Column
 import com.tang.jkorm.constants.SqlString.AND_BRACKET
 import com.tang.jkorm.constants.SqlString.ASC
 import com.tang.jkorm.constants.SqlString.COMMA_SPACE
@@ -152,8 +150,15 @@ abstract class AbstractSqlProvider : SqlProvider {
         val idField = Reflects.getIdField(clazz)
         Reflects.makeAccessible(idField, entity)
         sql.append(DELETE_FROM + Reflects.getTableName(clazz) + WHERE)
-            .append(getColumnName(idField)).append(EQUAL_BRACKET).append(QUESTION_MARK)
-        parameters.add(idField.get(entity))
+        val fieldList = clazz.declaredFields.filter {
+            Reflects.makeAccessible(it, entity)
+            selectiveStrategy(it.get(entity))
+        }
+        fieldList.joinToString(AND_BRACKET) {
+            Reflects.makeAccessible(it, entity)
+            parameters.add(it.get(entity))
+            getColumnName(it) + EQUAL_BRACKET + QUESTION_MARK
+        }.let { sql.append(it) }
         return SqlStatement(getSql(sql), parameters)
     }
 
