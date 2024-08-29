@@ -12,5 +12,4 @@ dependencies {
     testImplementation(libs.derby)
     testImplementation(libs.derbytools)
     testImplementation(libs.springBootStarterTest)
-
 }

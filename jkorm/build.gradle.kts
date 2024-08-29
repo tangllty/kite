@@ -3,9 +3,9 @@ plugins {
 }
 
 dependencies {
-    implementation(libs.snakeyaml)
-    implementation(kotlin("reflect"))
-    implementation(libs.guava)
+    api(libs.snakeyaml)
+    api(kotlin("reflect"))
+    api(libs.guava)
     testImplementation(libs.derby)
     testImplementation(libs.derbytools)
 }
