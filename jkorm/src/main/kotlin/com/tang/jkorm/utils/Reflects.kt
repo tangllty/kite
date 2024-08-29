@@ -3,6 +3,7 @@ package com.tang.jkorm.utils
 import com.google.common.base.CaseFormat
 import com.tang.jkorm.annotation.Column
 import com.tang.jkorm.annotation.Id
+import com.tang.jkorm.annotation.Table
 import java.lang.reflect.AccessibleObject
 import java.lang.reflect.Field
 
@@ -36,7 +37,7 @@ object Reflects {
     }
 
     fun getTableName(clazz: Class<*>): String {
-        val table = clazz.getAnnotation(com.tang.jkorm.annotation.Table::class.java)
+        val table = clazz.getAnnotation(Table::class.java)
         return table?.value ?: clazz.simpleName.lowercase()
     }
 

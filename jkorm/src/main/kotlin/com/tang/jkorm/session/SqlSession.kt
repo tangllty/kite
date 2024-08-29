@@ -16,27 +16,27 @@ interface SqlSession : AutoCloseable {
 
     fun <T> execute(method: Method, args: Array<out Any>?, mapperInterface: Class<T>): Any?
 
-    fun insert(method: Method, parameter: Any): Int
+    fun <T> insert(method: Method, mapperInterface: Class<T>, parameter: Any): Int
 
-    fun insertSelective(method: Method, parameter: Any): Int
+    fun <T> insertSelective(method: Method, mapperInterface: Class<T>, parameter: Any): Int
 
-    fun update(method: Method, parameter: Any): Int
+    fun <T> update(method: Method, mapperInterface: Class<T>, parameter: Any): Int
 
-    fun update(method: Method, parameter: Any, condition: Any): Int
+    fun <T> update(method: Method, mapperInterface: Class<T>, parameter: Any, condition: Any): Int
 
-    fun updateSelective(method: Method, parameter: Any): Int
+    fun <T> updateSelective(method: Method, mapperInterface: Class<T>, parameter: Any): Int
 
-    fun <T> delete(method: Method, type: Class<T>, parameter: Any): Int
+    fun <T> delete(method: Method, mapperInterface: Class<T>, type: Class<T>, parameter: Any): Int
 
-    fun <T> deleteById(method: Method, type: Class<T>, parameter: Any): Int
+    fun <T> deleteById(method: Method, mapperInterface: Class<T>, type: Class<T>, parameter: Any): Int
 
-    fun <T> selectList(method: Method, type: Class<T>, parameter: Any?): List<T>
+    fun <T> selectList(method: Method, mapperInterface: Class<T>, type: Class<T>, parameter: Any?): List<T>
 
-    fun <T> selectById(method: Method, type: Class<T>, parameter: Any): T?
+    fun <T> selectById(method: Method, mapperInterface: Class<T>, type: Class<T>, parameter: Any): T?
 
-    fun <T> count(method: Method, type: Class<T>, parameter: Any?): Long
+    fun <T> count(method: Method, mapperInterface: Class<T>, type: Class<T>, parameter: Any?): Long
 
-    fun <T> paginate(method: Method, type: Class<T>, pageNumber: Long, pageSize: Long, orderBys: Array<Pair<String, Boolean>>, parameter: Any?): Page<T>
+    fun <T> paginate(method: Method, mapperInterface: Class<T>, type: Class<T>, pageNumber: Long, pageSize: Long, orderBys: Array<Pair<String, Boolean>>, parameter: Any?): Page<T>
 
     fun commit()
 

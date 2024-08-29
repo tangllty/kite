@@ -7,8 +7,10 @@ import com.tang.jkorm.paginate.Page
 import com.tang.jkorm.proxy.MapperProxyFactory
 import com.tang.jkorm.session.Configuration
 import com.tang.jkorm.session.SqlSession
+import com.tang.jkorm.sql.SqlStatement
 import com.tang.jkorm.sql.provider.SqlProvider
 import com.tang.jkorm.utils.Reflects
+import org.slf4j.LoggerFactory
 import java.lang.reflect.Method
 import java.lang.reflect.ParameterizedType
 
@@ -54,74 +56,113 @@ class DefaultSqlSession(
         return type as Class<T>
     }
 
+    private fun parameterToString(parameter: Any?): String {
+        return parameter?.let { "$it(${it.javaClass.simpleName})" } ?: "null"
+    }
+
+    private fun log(method: Method, mapperInterface: Class<*>, sqlStatement: SqlStatement, rows: Long) {
+        val logger = LoggerFactory.getLogger(mapperInterface.canonicalName + "." + method.name)
+        val preparing = "==>  Preparing: ${sqlStatement.sql}"
+        val parameters = "==> Parameters: ${sqlStatement.parameters.joinToString { parameterToString(it) }}"
+        val total = "<==      Total: $rows"
+        val updates = "<==    Updates: $rows"
+        val result = if (sqlStatement.sql.lowercase().startsWith("update")) updates else total
+        logger.debug(preparing)
+        logger.debug(parameters)
+        logger.debug(result)
+    }
+
+    private fun log(method: Method, mapperInterface: Class<*>, sqlStatement: SqlStatement, rows: Int) {
+        log(method, mapperInterface, sqlStatement, rows.toLong())
+    }
+
+    private fun returnRows(method: Method, mapperInterface: Class<*>, sqlStatement: SqlStatement, rows: Long): Long {
+        log(method, mapperInterface, sqlStatement, rows)
+        return rows
+    }
+
+    private fun returnRows(method: Method, mapperInterface: Class<*>, sqlStatement: SqlStatement, rows: Int): Int {
+        log(method, mapperInterface, sqlStatement, rows)
+        return rows
+    }
+
     override fun <T> execute(method: Method, args: Array<out Any>?, mapperInterface: Class<T>): Any? {
         val type: Class<T> = getGenericType(mapperInterface)
         return when {
-            BaseMethodName.isInsert(method) -> insert(method, getFirstArg(args))
-            BaseMethodName.isInsertSelective(method) -> insertSelective(method, getFirstArg(args))
-            BaseMethodName.isUpdate(method) -> update(method, getFirstArg(args))
-            BaseMethodName.isUpdateCondition(method) -> update(method, getFirstArg(args), getSecondArg(args))
-            BaseMethodName.isUpdateSelective(method) -> updateSelective(method, getFirstArg(args))
-            BaseMethodName.isDelete(method) -> delete(method, type, getFirstArg(args))
-            BaseMethodName.isDeleteById(method) -> deleteById(method, type, getFirstArg(args))
-            BaseMethodName.isSelect(method) -> selectList(method, type, args?.first())
-            BaseMethodName.isSelectById(method) -> selectById(method, type, getFirstArg(args))
-            BaseMethodName.isCount(method) -> count(method, type, args?.first())
-            BaseMethodName.isPaginate(method) -> processPaginate(method, type, args)
+            BaseMethodName.isInsert(method) -> insert(method, mapperInterface, getFirstArg(args))
+            BaseMethodName.isInsertSelective(method) -> insertSelective(method, mapperInterface, getFirstArg(args))
+            BaseMethodName.isUpdate(method) -> update(method, mapperInterface, getFirstArg(args))
+            BaseMethodName.isUpdateCondition(method) -> update(method, mapperInterface, getFirstArg(args), getSecondArg(args))
+            BaseMethodName.isUpdateSelective(method) -> updateSelective(method, mapperInterface, getFirstArg(args))
+            BaseMethodName.isDelete(method) -> delete(method, mapperInterface, type, getFirstArg(args))
+            BaseMethodName.isDeleteById(method) -> deleteById(method, mapperInterface, type, getFirstArg(args))
+            BaseMethodName.isSelect(method) -> selectList(method, mapperInterface, type, args?.first())
+            BaseMethodName.isSelectById(method) -> selectById(method, mapperInterface, type, getFirstArg(args))
+            BaseMethodName.isCount(method) -> count(method, mapperInterface, type, args?.first())
+            BaseMethodName.isPaginate(method) -> processPaginate(method, mapperInterface, type, args)
             else -> throw IllegalArgumentException("Unknown method: ${method.name}")
         }
     }
 
-    override fun insert(method: Method, parameter: Any): Int {
+    override fun <T> insert(method: Method, mapperInterface: Class<T>, parameter: Any): Int {
         val insert = sqlProvider.insert(parameter)
-        return executor.update(insert, parameter)
+        val rows = executor.update(insert, parameter)
+        return returnRows(method, mapperInterface, insert, rows)
     }
 
-    override fun insertSelective(method: Method, parameter: Any): Int {
+    override fun <T> insertSelective(method: Method, mapperInterface: Class<T>, parameter: Any): Int {
         val insert = sqlProvider.insertSelective(parameter)
-        return executor.update(insert, parameter)
+        val rows = executor.update(insert, parameter)
+        return returnRows(method, mapperInterface, insert, rows)
     }
 
-    override fun update(method: Method, parameter: Any): Int {
+    override fun <T> update(method: Method, mapperInterface: Class<T>, parameter: Any): Int {
         val update = sqlProvider.update(parameter)
-        return executor.update(update, parameter)
+        val rows = executor.update(update, parameter)
+        return returnRows(method, mapperInterface, update, rows)
     }
 
-    override fun update(method: Method, parameter: Any, condition: Any): Int {
+    override fun <T> update(method: Method, mapperInterface: Class<T>, parameter: Any, condition: Any): Int {
         val update = sqlProvider.update(parameter, condition)
-        return executor.update(update, parameter)
+        val rows = executor.update(update, parameter)
+        return returnRows(method, mapperInterface, update, rows)
     }
 
-    override fun updateSelective(method: Method, parameter: Any): Int {
+    override fun <T> updateSelective(method: Method, mapperInterface: Class<T>, parameter: Any): Int {
         val update = sqlProvider.updateSelective(parameter)
-        return executor.update(update, parameter)
+        val rows = executor.update(update, parameter)
+        return returnRows(method, mapperInterface, update, rows)
     }
 
-    override fun <T> delete(method: Method, type: Class<T>, parameter: Any): Int {
+    override fun <T> delete(method: Method, mapperInterface: Class<T>, type: Class<T>, parameter: Any): Int {
         val delete = sqlProvider.delete(type, parameter)
-        return executor.update(delete, parameter)
+        val rows = executor.update(delete, parameter)
+        return returnRows(method, mapperInterface, delete, rows)
     }
 
-    override fun <T> deleteById(method: Method, type: Class<T>, parameter: Any): Int {
+    override fun <T> deleteById(method: Method, mapperInterface: Class<T>, type: Class<T>, parameter: Any): Int {
         val entity = type.getDeclaredConstructor().newInstance()
         val idField = Reflects.getIdField(type)
         Reflects.makeAccessible(idField, entity as Any)
         idField.set(entity, parameter)
         val delete = sqlProvider.delete(type, entity as Any)
-        return executor.update(delete, parameter)
+        val rows = executor.update(delete, parameter)
+        return returnRows(method, mapperInterface, delete, rows)
     }
 
-    override fun <T> selectList(method: Method, type: Class<T>, parameter: Any?): List<T> {
+    override fun <T> selectList(method: Method, mapperInterface: Class<T>, type: Class<T>, parameter: Any?): List<T> {
         val select = sqlProvider.select(type, parameter)
-        return executor.query(select, type)
+        val result = executor.query(select, type)
+        log(method, mapperInterface, select, result.size)
+        return result
     }
 
-    override fun <T> selectById(method: Method, type: Class<T>, parameter: Any): T? {
+    override fun <T> selectById(method: Method, mapperInterface: Class<T>, type: Class<T>, parameter: Any): T? {
         val entity = type.getDeclaredConstructor().newInstance()
         val idField = Reflects.getIdField(type)
         Reflects.makeAccessible(idField, entity as Any)
         idField.set(entity, parameter)
-        val list = selectList(method, type, entity)
+        val list = selectList(method, mapperInterface, type, entity)
         if (list.size > 1) {
             throw IllegalArgumentException("Too many results, expected one, but got ${list.size}")
         }
@@ -131,19 +172,20 @@ class DefaultSqlSession(
         return list.first()
     }
 
-    override fun <T> count(method: Method, type: Class<T>, parameter: Any?): Long {
+    override fun <T> count(method: Method, mapperInterface: Class<T>, type: Class<T>, parameter: Any?): Long {
         val count = sqlProvider.count(type, parameter)
-        return executor.count(count, Long::class.java)
+        val total = executor.count(count, Long::class.java)
+        return returnRows(method, mapperInterface, count, total)
     }
 
-    private fun <T> processPaginate(method: Method, type: Class<T>, args: Array<out Any>?): Page<T> {
+    private fun <T> processPaginate(method: Method, mapperInterface: Class<T>, type: Class<T>, args: Array<out Any>?): Page<T> {
         if (args == null || args.isEmpty()) {
-            return paginate(method, type, DefaultConfig.PAGE_NUMBER, DefaultConfig.PAGE_SIZE, emptyArray(), null)
+            return paginate(method, mapperInterface, type, DefaultConfig.PAGE_NUMBER, DefaultConfig.PAGE_SIZE, emptyArray(), null)
         }
         val pageNumber = args[0] as Long
         val pageSize = args[1] as Long
         if (args.size == 2) {
-            return paginate(method, type, pageNumber, pageSize, emptyArray(), null)
+            return paginate(method, mapperInterface, type, pageNumber, pageSize, emptyArray(), null)
         }
         if (args[2] is Array<*>) {
             val orderBys = if (args.getOrNull(2) != null) {
@@ -151,25 +193,26 @@ class DefaultSqlSession(
                 orderByArray.filterIsInstance<Pair<String, Boolean>>().toTypedArray()
             } else emptyArray()
             val parameter = args.getOrNull(3)
-            return paginate(method, type, pageNumber, pageSize, orderBys, parameter)
+            return paginate(method, mapperInterface, type, pageNumber, pageSize, orderBys, parameter)
         }
         val parameter = args.getOrNull(2)
-        return paginate(method, type, pageNumber, pageSize, emptyArray(), parameter)
+        return paginate(method, mapperInterface, type, pageNumber, pageSize, emptyArray(), parameter)
     }
 
-    private fun <T> reasonable(method: Method, type: Class<T>, pageNumber: Long, pageSize: Long): Pair<Long, Long> {
-        val count = count(method, type, null)
+    private fun <T> reasonable(method: Method, mapperInterface: Class<T>, type: Class<T>, pageNumber: Long, pageSize: Long): Pair<Long, Long> {
+        val count = count(method, mapperInterface, type, null)
         val totalPage = (count / pageSize).toInt() + if (count % pageSize == 0L) 0 else 1
         val reasonablePageNumber = if (pageNumber > totalPage) totalPage else if (pageNumber < 1) DefaultConfig.PAGE_NUMBER else pageNumber
         return Pair(reasonablePageNumber.toLong(), count)
     }
 
-    override fun <T> paginate(method: Method, type: Class<T>, pageNumber: Long, pageSize: Long, orderBys: Array<Pair<String, Boolean>>, parameter: Any?): Page<T> {
-        val reasonable = reasonable(method, type, pageNumber, pageSize)
+    override fun <T> paginate(method: Method, mapperInterface: Class<T>, type: Class<T>, pageNumber: Long, pageSize: Long, orderBys: Array<Pair<String, Boolean>>, parameter: Any?): Page<T> {
+        val reasonable = reasonable(method, mapperInterface, type, pageNumber, pageSize)
         val reasonablePageNumber = reasonable.first
         val total = reasonable.second
         val paginate = sqlProvider.paginate(type, parameter, orderBys, reasonablePageNumber, pageSize)
         val list = executor.query(paginate, type)
+        log(method, mapperInterface, paginate, list.size)
         val page = Page<T>()
         page.rows = list
         page.total = total
