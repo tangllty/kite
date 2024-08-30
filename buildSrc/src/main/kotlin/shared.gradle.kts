@@ -61,13 +61,13 @@ publishing {
                 password = System.getenv("SONATYPE_TOKEN")
             }
         }
-        maven {
-            name = "GitHubPackages"
-            url = uri("https://maven.pkg.github.com/tangllty/jkorm")
-            credentials {
-                username = System.getenv("PACKAGES_ACTOR")
-                password = System.getenv("PACKAGES_PASSWORD")
-            }
-        }
+//        maven {
+//            name = "GitHubPackages"
+//            url = uri("https://maven.pkg.github.com/tangllty/jkorm")
+//            credentials {
+//                username = System.getenv("PACKAGES_ACTOR")
+//                password = System.getenv("PACKAGES_PASSWORD")
+//            }
+//        }
     }
 }
