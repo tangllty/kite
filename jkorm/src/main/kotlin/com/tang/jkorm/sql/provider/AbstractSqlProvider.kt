@@ -1,18 +1,19 @@
 package com.tang.jkorm.sql.provider
 
-import com.tang.jkorm.constants.SqlString.AND_BRACKET
+import com.tang.jkorm.constants.SqlString.AND
 import com.tang.jkorm.constants.SqlString.ASC
 import com.tang.jkorm.constants.SqlString.COMMA_SPACE
 import com.tang.jkorm.constants.SqlString.DELETE_FROM
 import com.tang.jkorm.constants.SqlString.DESC
 import com.tang.jkorm.constants.SqlString.EQUAL_BRACKET
+import com.tang.jkorm.constants.SqlString.FROM
 import com.tang.jkorm.constants.SqlString.INSERT_INTO
 import com.tang.jkorm.constants.SqlString.LEFT_BRACKET
 import com.tang.jkorm.constants.SqlString.LIMIT
 import com.tang.jkorm.constants.SqlString.ORDER_BY
 import com.tang.jkorm.constants.SqlString.QUESTION_MARK
 import com.tang.jkorm.constants.SqlString.RIGHT_BRACKET
-import com.tang.jkorm.constants.SqlString.SELECT_ALL_FROM
+import com.tang.jkorm.constants.SqlString.SELECT
 import com.tang.jkorm.constants.SqlString.SELECT_COUNT_FROM
 import com.tang.jkorm.constants.SqlString.SET
 import com.tang.jkorm.constants.SqlString.SPACE
@@ -53,7 +54,7 @@ abstract class AbstractSqlProvider : SqlProvider {
         clazz.declaredFields.filter {
             Reflects.makeAccessible(it, entity)
             selectiveStrategy(it.get(entity))
-        }.joinToString(AND_BRACKET) {
+        }.joinToString(AND) {
             parameters.add(it.get(entity))
             getColumnName(it) + EQUAL_BRACKET + QUESTION_MARK
         }.let { sql.append(it) }
@@ -128,7 +129,7 @@ abstract class AbstractSqlProvider : SqlProvider {
         sql.append(UPDATE + Reflects.getTableName(clazz) + SET)
         appendSetValues(sql, parameters, fieldList, entity)
         sql.append(WHERE)
-        whereFieldList.joinToString(AND_BRACKET) {
+        whereFieldList.joinToString(AND) {
             Reflects.makeAccessible(it, where)
             parameters.add(it.get(where))
             getColumnName(it) + EQUAL_BRACKET + QUESTION_MARK
@@ -177,7 +178,7 @@ abstract class AbstractSqlProvider : SqlProvider {
             Reflects.makeAccessible(it, entity)
             selectiveStrategy(it.get(entity))
         }
-        fieldList.joinToString(AND_BRACKET) {
+        fieldList.joinToString(AND) {
             Reflects.makeAccessible(it, entity)
             parameters.add(it.get(entity))
             getColumnName(it) + EQUAL_BRACKET + QUESTION_MARK
@@ -188,7 +189,9 @@ abstract class AbstractSqlProvider : SqlProvider {
     override fun <T> select(clazz: Class<T>, entity: Any?): SqlStatement {
         val sql = StringBuilder()
         val parameters = mutableListOf<Any?>()
-        sql.append(SELECT_ALL_FROM + Reflects.getTableName(clazz))
+        sql.append(SELECT)
+        appendColumns(sql, listOf(*clazz.declaredFields))
+        sql.append(SPACE + FROM + Reflects.getTableName(clazz))
         entity?.let {
             appendWhere(sql, parameters, clazz, entity)
         }
@@ -205,12 +208,14 @@ abstract class AbstractSqlProvider : SqlProvider {
         return SqlStatement(getSql(sql), parameters)
     }
 
-    override fun <T> paginate(type: Class<T>, entity: Any?, orderBys: Array<Pair<String, Boolean>>, pageNumber: Long, pageSize: Long): SqlStatement {
+    override fun <T> paginate(clazz: Class<T>, entity: Any?, orderBys: Array<Pair<String, Boolean>>, pageNumber: Long, pageSize: Long): SqlStatement {
         val sql = StringBuilder()
         val parameters = mutableListOf<Any?>()
-        sql.append(SELECT_ALL_FROM + Reflects.getTableName(type))
+        sql.append(SELECT)
+        appendColumns(sql, listOf(*clazz.declaredFields))
+        sql.append(SPACE + FROM + Reflects.getTableName(clazz))
         if (entity != null) {
-            appendWhere(sql, parameters, type, entity)
+            appendWhere(sql, parameters, clazz, entity)
         }
         if (orderBys.isNotEmpty()) {
             sql.append(SPACE + ORDER_BY)

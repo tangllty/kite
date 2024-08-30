@@ -11,6 +11,8 @@ import org.junit.jupiter.api.Assertions.*
  */
 class MysqlSqlProvidersTest {
 
+    private val columns = "id, username, password, create_time, update_time, balance"
+
     private val sqlProvider = MysqlSqlProvider()
 
     @Test
@@ -73,15 +75,15 @@ class MysqlSqlProvidersTest {
     @Test
     fun select() {
         val statement = sqlProvider.select(Account::class.java, null)
-        assertEquals("select * from account", statement.sql)
+        assertEquals("select $columns from account", statement.sql)
     }
 
     @Test
     fun selectCondition() {
         val account = Account(username = "tang")
         val statement = sqlProvider.select(Account::class.java, account)
-        assertEquals("select * from account where username = ?", statement.sql)
-        assertEquals("select * from account where username = 'tang'", statement.getActualSql())
+        assertEquals("select $columns from account where username = ?", statement.sql)
+        assertEquals("select $columns from account where username = 'tang'", statement.getActualSql())
     }
 
     @Test
@@ -101,31 +103,31 @@ class MysqlSqlProvidersTest {
     @Test
     fun paginate() {
         val statement = sqlProvider.paginate(Account::class.java, null, emptyArray(), 1, 5)
-        assertEquals("select * from account limit ?, ?", statement.sql)
-        assertEquals("select * from account limit 0, 5", statement.getActualSql())
+        assertEquals("select $columns from account limit ?, ?", statement.sql)
+        assertEquals("select $columns from account limit 0, 5", statement.getActualSql())
     }
 
     @Test
     fun paginateCondition() {
         val account = Account(username = "tang")
         val statement = sqlProvider.paginate(Account::class.java, account, emptyArray(), 1, 5)
-        assertEquals("select * from account where username = ? limit ?, ?", statement.sql)
-        assertEquals("select * from account where username = 'tang' limit 0, 5", statement.getActualSql())
+        assertEquals("select $columns from account where username = ? limit ?, ?", statement.sql)
+        assertEquals("select $columns from account where username = 'tang' limit 0, 5", statement.getActualSql())
     }
 
     @Test
     fun paginateOrderBy() {
         val statement = sqlProvider.paginate(Account::class.java, null, arrayOf("id" to false), 1, 5)
-        assertEquals("select * from account order by id desc limit ?, ?", statement.sql)
-        assertEquals("select * from account order by id desc limit 0, 5", statement.getActualSql())
+        assertEquals("select $columns from account order by id desc limit ?, ?", statement.sql)
+        assertEquals("select $columns from account order by id desc limit 0, 5", statement.getActualSql())
     }
 
     @Test
     fun paginateOrderByCondition() {
         val account = Account(username = "tang")
         val statement = sqlProvider.paginate(Account::class.java, account, arrayOf("id" to false), 1, 5)
-        assertEquals("select * from account where username = ? order by id desc limit ?, ?", statement.sql)
-        assertEquals("select * from account where username = 'tang' order by id desc limit 0, 5", statement.getActualSql())
+        assertEquals("select $columns from account where username = ? order by id desc limit ?, ?", statement.sql)
+        assertEquals("select $columns from account where username = 'tang' order by id desc limit 0, 5", statement.getActualSql())
     }
 
 }

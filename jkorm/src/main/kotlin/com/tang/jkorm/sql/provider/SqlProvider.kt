@@ -36,6 +36,6 @@ interface SqlProvider {
 
     fun <T> count(clazz: Class<T>, entity: Any?): SqlStatement
 
-    fun <T> paginate(type: Class<T>, entity: Any?, orderBys: Array<Pair<String, Boolean>>, pageNumber: Long, pageSize: Long): SqlStatement
+    fun <T> paginate(clazz: Class<T>, entity: Any?, orderBys: Array<Pair<String, Boolean>>, pageNumber: Long, pageSize: Long): SqlStatement
 
 }
