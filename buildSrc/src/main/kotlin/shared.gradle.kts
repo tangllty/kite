@@ -4,7 +4,7 @@ plugins {
 }
 
 group = "com.tang"
-version = "1.0.0-ALPHA"
+version = "1.0.0-beta1"
 
 repositories {
     gradlePluginPortal()
