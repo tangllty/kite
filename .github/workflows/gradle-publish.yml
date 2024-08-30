@@ -42,5 +42,7 @@ jobs:
     - name: Publish to GitHub Packages
       run: ./gradlew publish
       env:
-        USERNAME: ${{ secrets.SONATYPE_USERNAME }}
-        TOKEN: ${{ secrets.SONATYPE_TOKEN }}
+        SONATYPE_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
+        SONATYPE_TOKEN: ${{ secrets.SONATYPE_TOKEN }}
+        PACKAGES_ACTOR: ${{ secrets.PACKAGES_ACTOR }}
+        PACKAGES_PASSWORD: ${{ secrets.PACKAGES_PASSWORD }}
