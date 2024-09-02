@@ -2,8 +2,8 @@ package com.tang.jkorm.session
 
 import com.tang.jkorm.BaseDataTest
 import com.tang.jkorm.session.entity.Account
+import com.tang.jkorm.session.mapper.AccountJavaMapper
 import com.tang.jkorm.session.mapper.AccountMapper
-import com.tang.jkorm.session.mapper.JavaAccountMapper
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Test
@@ -48,7 +48,7 @@ class SqlSessionTest : BaseDataTest() {
     @Test
     fun javaInsert() {
         val session = sqlSessionFactory.openSession(true)
-        val accountMapper = session.getMapper(JavaAccountMapper::class.java)
+        val accountMapper = session.getMapper(AccountJavaMapper::class.java)
         val account = Account(username = "tang", password = "123456")
         val rows = accountMapper.insert(account)
         session.close()
@@ -74,7 +74,7 @@ class SqlSessionTest : BaseDataTest() {
     @Test
     fun javaInsertAccount() {
         val session = sqlSessionFactory.openSession()
-        val accountMapper = session.getMapper(JavaAccountMapper::class.java)
+        val accountMapper = session.getMapper(AccountJavaMapper::class.java)
         val account = Account(username = "tang", password = "123456")
         val rows = accountMapper.insertAccount(account)
         session.commit()

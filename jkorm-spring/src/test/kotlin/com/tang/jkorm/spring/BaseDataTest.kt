@@ -2,7 +2,6 @@ package com.tang.jkorm.spring
 
 import com.tang.jkorm.datasource.defaults.DefaultDataSourceFactory
 import com.tang.jkorm.io.Resources
-import com.tang.jkorm.session.factory.SqlSessionFactoryBuilder
 import org.junit.jupiter.api.BeforeAll
 import org.yaml.snakeyaml.Yaml
 import javax.sql.DataSource
@@ -56,12 +55,6 @@ open class BaseDataTest {
             val baseDataTest = BaseDataTest()
             baseDataTest.createDatabase()
         }
-
-        private val resource = Resources.getResourceAsStream("jkorm-config.yml")
-
-        val sqlSessionFactoryBuild = SqlSessionFactoryBuilder().build(resource)
-
-        val sqlSessionFactory inline get() = sqlSessionFactoryBuild
 
     }
 
