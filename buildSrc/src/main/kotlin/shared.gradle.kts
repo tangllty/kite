@@ -4,7 +4,7 @@ plugins {
 }
 
 group = "com.tang"
-version = "1.0.0-beta6"
+version = "1.0.0-beta7"
 
 repositories {
     gradlePluginPortal()
@@ -57,8 +57,10 @@ publishing {
             name = "OSSRH"
             url = uri("https://oss.sonatype.org/service/local/staging/deploy/maven2/")
             credentials {
-                username = System.getenv("SONATYPE_USERNAME")
-                password = System.getenv("SONATYPE_TOKEN")
+//                username = System.getenv("SONATYPE_USERNAME")
+//                password = System.getenv("SONATYPE_TOKEN")
+                username = "UeHhSBdJ"
+                password = "dJaS7nbrFfKNkaOTXw/wcZu1wLbm7KL5i0pqJAodSa0g"
             }
         }
 //        maven {
