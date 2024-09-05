@@ -1,8 +1,9 @@
 package com.tang.jkorm.spring.registrar
 
+import com.tang.jkorm.logging.LOGGER
 import com.tang.jkorm.mapper.BaseMapper
-import com.tang.jkorm.spring.beans.MapperFactoryBean
 import com.tang.jkorm.spring.annotation.MapperScan
+import com.tang.jkorm.spring.beans.MapperFactoryBean
 import com.tang.jkorm.spring.constants.BeanNames
 import org.springframework.beans.factory.support.BeanDefinitionBuilder
 import org.springframework.beans.factory.support.BeanDefinitionRegistry
@@ -53,6 +54,7 @@ class MapperScannerRegistrar : ImportBeanDefinitionRegistrar {
         builder.addConstructorArgValue(clazz)
         builder.addConstructorArgReference(BeanNames.SQL_SESSION_FACTORY)
         registry.registerBeanDefinition(className, builder.beanDefinition)
+        LOGGER.debug("Registered mapper bean definition: $className")
     }
 
 }

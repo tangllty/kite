@@ -1,8 +1,7 @@
 package com.tang.jkorm.executor.defaults
 
-import com.tang.jkorm.annotation.Slf4j
-import com.tang.jkorm.annotation.Slf4j.Companion.LOGGER
 import com.tang.jkorm.executor.Executor
+import com.tang.jkorm.logging.getLogger
 import com.tang.jkorm.session.Configuration
 import com.tang.jkorm.sql.SqlStatement
 import com.tang.jkorm.transaction.Transaction
@@ -12,7 +11,6 @@ import java.sql.Connection
 /**
  * @author Tang
  */
-@Slf4j
 class DefaultExecutor(
 
     private val configuration: Configuration,
@@ -20,6 +18,10 @@ class DefaultExecutor(
     private val transaction: Transaction
 
 ) : Executor {
+
+    companion object {
+        val LOGGER = getLogger
+    }
 
     override fun getConnection(): Connection {
         return transaction.getConnection()
