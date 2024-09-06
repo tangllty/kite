@@ -20,7 +20,7 @@ class DefaultExecutor(
 ) : Executor {
 
     companion object {
-        val LOGGER = getLogger
+        private val LOGGER = getLogger
     }
 
     override fun getConnection(): Connection {

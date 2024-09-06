@@ -57,7 +57,7 @@ class DefaultSqlSession(
     }
 
     private fun parameterToString(parameter: Any?): String {
-        return parameter?.let { "$it(${it.javaClass.simpleName})" } ?: "null"
+        return parameter?.let { "$it(${it.javaClass.simpleName})" } ?: null.toString()
     }
 
     private fun log(method: Method, mapperInterface: Class<*>, sqlStatement: SqlStatement, rows: Long) {

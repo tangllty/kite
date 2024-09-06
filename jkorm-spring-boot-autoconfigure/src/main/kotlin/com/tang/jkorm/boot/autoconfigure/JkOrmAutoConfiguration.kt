@@ -9,9 +9,11 @@ import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
+import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties
 import org.springframework.context.annotation.Bean
+import org.springframework.context.annotation.DependsOn
 import javax.sql.DataSource
 
 /**
@@ -19,10 +21,12 @@ import javax.sql.DataSource
  *
  * @author Tang
  */
-@AutoConfiguration(after = [DataSourceAutoConfiguration::class, DataSource::class, DataSourceProperties::class])
+@AutoConfiguration(after = [DataSourceAutoConfiguration::class, DataSourceProperties::class])
 @ConditionalOnClass(SqlSessionFactoryBean::class, SqlSessionBean::class)
+@ConditionalOnSingleCandidate(DataSource::class)
 open class JkOrmAutoConfiguration {
 
+    @DependsOn(BeanNames.DATA_SOURCE)
     @Bean(BeanNames.SQL_SESSION_FACTORY)
     @ConditionalOnMissingBean
     open fun sqlSessionFactory(dataSource: DataSource): SqlSessionFactory {
