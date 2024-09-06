@@ -33,11 +33,7 @@ class MapperScannerRegistrar : ImportBeanDefinitionRegistrar {
         registry.registerBeanDefinition(MapperScannerRegistrarPostProcessor::class.java.canonicalName, beanDefinition.beanDefinition)
     }
 
-    class MapperScannerRegistrarPostProcessor(
-
-        val basePackages: Array<String>
-
-    ) : BeanDefinitionRegistryPostProcessor {
+    class MapperScannerRegistrarPostProcessor(val basePackages: Array<String>) : BeanDefinitionRegistryPostProcessor {
 
         private val metadataReaderFactory = CachingMetadataReaderFactory()
 
@@ -49,12 +45,16 @@ class MapperScannerRegistrar : ImportBeanDefinitionRegistrar {
                 resources.forEach { resource ->
                     val metadataReader = metadataReaderFactory.getMetadataReader(resource)
                     val className = metadataReader.classMetadata.className
-                    val clazz = Class.forName(className)
-                    if (BaseMapper::class.java.isAssignableFrom(clazz)) {
+                    if (isMapperInterface(className)) {
                         registerBeanDefinition(registry, className)
                     }
                 }
             }
+        }
+
+        private fun isMapperInterface(className: String): Boolean {
+            val clazz = Class.forName(className)
+            return BaseMapper::class.java.isAssignableFrom(clazz)
         }
 
         private fun registerBeanDefinition(registry: BeanDefinitionRegistry, className: String) {
