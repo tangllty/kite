@@ -7,9 +7,9 @@ import com.tang.jkorm.spring.beans.MapperFactoryBean
 import com.tang.jkorm.spring.constants.BeanNames
 import org.springframework.beans.factory.support.BeanDefinitionBuilder
 import org.springframework.beans.factory.support.BeanDefinitionRegistry
+import org.springframework.beans.factory.support.BeanDefinitionRegistryPostProcessor
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar
 import org.springframework.core.annotation.AnnotationAttributes
-import org.springframework.core.io.Resource
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver
 import org.springframework.core.io.support.ResourcePatternResolver
 import org.springframework.core.type.AnnotationMetadata
@@ -23,38 +23,48 @@ import org.springframework.util.ClassUtils
  */
 class MapperScannerRegistrar : ImportBeanDefinitionRegistrar {
 
-    private val metadataReaderFactory = CachingMetadataReaderFactory()
-
     override fun registerBeanDefinitions(importingClassMetadata: AnnotationMetadata, registry: BeanDefinitionRegistry) {
         val name = MapperScan::class.java.name
         val attributes = importingClassMetadata.getAnnotationAttributes(name)
         val fromMap = AnnotationAttributes.fromMap(attributes) ?: return
         val basePackages = fromMap.getStringArray("basePackages")
-        basePackages.forEach { basePackage ->
-            val resources: Array<Resource> = PathMatchingResourcePatternResolver()
-                .getResources((ResourcePatternResolver.CLASSPATH_ALL_URL_PREFIX + ClassUtils.convertClassNameToResourcePath(basePackage) + "/**/*.class"))
-            resources.filter {
-                val metadataReader = metadataReaderFactory.getMetadataReader(it)
-                val className = metadataReader.classMetadata.className
-                val clazz = Class.forName(className)
-                clazz.interfaces.any { inter -> BaseMapper::class.java.isAssignableFrom(inter) }
-            }.forEach {
-                val metadataReader = metadataReaderFactory.getMetadataReader(it)
-                val className = metadataReader.classMetadata.className
-                val clazz = Class.forName(className)
-                val interfaces = clazz.interfaces
-                interfaces.filter { inter -> BaseMapper::class.java.isAssignableFrom(inter) }
-                    .forEach { _ -> registerBeanDefinition(registry, className, clazz) }
-            }
-        }
+        val beanDefinition = BeanDefinitionBuilder.genericBeanDefinition(MapperScannerRegistrarPostProcessor::class.java)
+        beanDefinition.addConstructorArgValue(basePackages)
+        registry.registerBeanDefinition(MapperScannerRegistrarPostProcessor::class.java.canonicalName, beanDefinition.beanDefinition)
     }
 
-    private fun registerBeanDefinition(registry: BeanDefinitionRegistry, className: String, clazz: Class<*>) {
-        val builder = BeanDefinitionBuilder.genericBeanDefinition(MapperFactoryBean::class.java)
-        builder.addConstructorArgValue(clazz)
-        builder.addConstructorArgReference(BeanNames.SQL_SESSION_FACTORY)
-        registry.registerBeanDefinition(className, builder.beanDefinition)
-        LOGGER.debug("Registered mapper bean definition: $className")
+    class MapperScannerRegistrarPostProcessor(
+
+        val basePackages: Array<String>
+
+    ) : BeanDefinitionRegistryPostProcessor {
+
+        private val metadataReaderFactory = CachingMetadataReaderFactory()
+
+        override fun postProcessBeanDefinitionRegistry(registry: BeanDefinitionRegistry) {
+            basePackages.forEach { basePackage ->
+                val resourcePath = ClassUtils.convertClassNameToResourcePath(basePackage)
+                val locationPattern = ResourcePatternResolver.CLASSPATH_ALL_URL_PREFIX + resourcePath + "/**/*.class"
+                val resources = PathMatchingResourcePatternResolver().getResources(locationPattern)
+                resources.forEach { resource ->
+                    val metadataReader = metadataReaderFactory.getMetadataReader(resource)
+                    val className = metadataReader.classMetadata.className
+                    val clazz = Class.forName(className)
+                    if (BaseMapper::class.java.isAssignableFrom(clazz)) {
+                        registerBeanDefinition(registry, className)
+                    }
+                }
+            }
+        }
+
+        private fun registerBeanDefinition(registry: BeanDefinitionRegistry, className: String) {
+            val builder = BeanDefinitionBuilder.genericBeanDefinition(MapperFactoryBean::class.java)
+            builder.addConstructorArgValue(className)
+            builder.addConstructorArgReference(BeanNames.SQL_SESSION_FACTORY)
+            registry.registerBeanDefinition(className, builder.beanDefinition)
+            LOGGER.debug("Registered mapper bean definition: $className")
+        }
+
     }
 
 }

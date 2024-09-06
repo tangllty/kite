@@ -5,6 +5,7 @@
  * Fix get(...) must not be null error
  * Fix paginate class cast exception error
  * Fix delete method only delete by primary key
+ * Fix `getBean` hash code mismatch error
 
 ### Features
 
