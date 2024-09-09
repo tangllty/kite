@@ -54,22 +54,12 @@ publishing {
             url = uri(layout.buildDirectory.dir("repo"))
         }
         maven {
-            name = "OSSRH"
-            url = uri("https://oss.sonatype.org/service/local/staging/deploy/maven2/")
+            name = "GitHubPackages"
+            url = uri("https://maven.pkg.github.com/tangllty/jkorm")
             credentials {
-//                username = System.getenv("SONATYPE_USERNAME")
-//                password = System.getenv("SONATYPE_TOKEN")
-                username = "UeHhSBdJ"
-                password = "dJaS7nbrFfKNkaOTXw/wcZu1wLbm7KL5i0pqJAodSa0g"
+                username = System.getenv("PACKAGES_ACTOR")
+                password = System.getenv("PACKAGES_PASSWORD")
             }
         }
-//        maven {
-//            name = "GitHubPackages"
-//            url = uri("https://maven.pkg.github.com/tangllty/jkorm")
-//            credentials {
-//                username = System.getenv("PACKAGES_ACTOR")
-//                password = System.getenv("PACKAGES_PASSWORD")
-//            }
-//        }
     }
 }
