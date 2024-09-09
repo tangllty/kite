@@ -33,6 +33,10 @@ object Reflects {
 
     fun isAutoIncrementId(clazz: Class<*>): Boolean {
         val idField = getIdField(clazz)
+        return isAutoIncrementId(idField)
+    }
+
+    fun isAutoIncrementId(idField: Field): Boolean {
         return idField.getAnnotation(Id::class.java).autoIncrement
     }
 
@@ -65,6 +69,16 @@ object Reflects {
             return field.getAnnotation(Column::class.java).value
         }
         return CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, field.name)
+    }
+
+    fun getGeneratedId(clazz: Class<*>): Any {
+        val idField = getIdField(clazz)
+        return getGeneratedId(idField)
+    }
+
+    fun getGeneratedId(idField: Field): Any {
+        val idStrategy = idField.getAnnotation(Id::class.java).idStrategy
+        return idStrategy.java.getDeclaredConstructor().newInstance().getId(idField)
     }
 
 }

@@ -2,8 +2,10 @@ package com.tang.jkorm.session
 
 import com.tang.jkorm.BaseDataTest
 import com.tang.jkorm.session.entity.Account
+import com.tang.jkorm.session.entity.Role
 import com.tang.jkorm.session.mapper.AccountJavaMapper
 import com.tang.jkorm.session.mapper.AccountMapper
+import com.tang.jkorm.session.mapper.RoleMapper
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Test
@@ -260,6 +262,17 @@ class SqlSessionTest : BaseDataTest() {
         val list = accountMapper.select(account)
         session.close()
         assertEquals(0, list.size)
+    }
+
+    @Test
+    fun autoFillId() {
+        val session = sqlSessionFactory.openSession()
+        val roleMapper = session.getMapper(RoleMapper::class.java)
+        val role = Role(name = "tang")
+        val rows = roleMapper.insert(role)
+        session.commit()
+        session.close()
+        assertEquals(1, rows)
     }
 
 }

@@ -20,3 +20,4 @@
  * Add `Column` annotation
  * Add overloading method for `update` method to update column by multiple condition
  * Log sql info
+ * Add id generator strategy for `@Id` field

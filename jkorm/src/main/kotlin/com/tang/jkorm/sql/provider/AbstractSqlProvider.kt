@@ -75,14 +75,18 @@ abstract class AbstractSqlProvider : SqlProvider {
         val sql = StringBuilder()
         val parameters = mutableListOf<Any?>()
         val idField = Reflects.getIdField(clazz)
-        val autoIncrementId = Reflects.isAutoIncrementId(clazz)
+        val autoIncrementId = Reflects.isAutoIncrementId(idField)
         val fieldList = clazz.declaredFields.filter { getColumnName(it) != getColumnName(idField) || !autoIncrementId }
         sql.append(INSERT_INTO + Reflects.getTableName(clazz) + SPACE + LEFT_BRACKET)
         appendColumns(sql, fieldList)
         sql.append(RIGHT_BRACKET + VALUES + LEFT_BRACKET)
         fieldList.joinToString {
             Reflects.makeAccessible(it, entity)
-            parameters.add(it.get(entity))
+            if (it == idField && !autoIncrementId) {
+                parameters.add(Reflects.getGeneratedId(idField))
+            } else {
+                parameters.add(it.get(entity))
+            }
             QUESTION_MARK
         }.let { sql.append(it) }
         sql.append(RIGHT_BRACKET)
