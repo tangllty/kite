@@ -25,6 +25,8 @@ class MapperProxy<T>(
 
     private val methodHandleMap: ConcurrentMap<Method, MethodHandle> = ConcurrentHashMap()
 
+    private val classCache: ConcurrentMap<String, Class<*>> = ConcurrentHashMap()
+
     private val allowedModes = MethodHandles.Lookup.PRIVATE or MethodHandles.Lookup.PROTECTED or MethodHandles.Lookup.PACKAGE or MethodHandles.Lookup.PUBLIC
 
     private val lookupConstructor: Constructor<MethodHandles.Lookup>? = run {
@@ -86,23 +88,29 @@ class MapperProxy<T>(
         return defaultMethodHandle.invokeWithArguments(*(args ?: arrayOf()))
     }
 
+    private fun getKotlinImpl(method: Method): Class<*> {
+        return classCache.computeIfAbsent("${method.declaringClass.name}$defaultImplsSuffix") {
+            Class.forName(it)
+        }
+    }
+
     private fun isKotlinDefaultMethod(method: Method): Boolean {
         return runCatching {
-            val impl = Class.forName("${method.declaringClass.name}$defaultImplsSuffix")
+            val impl = getKotlinImpl(method)
             return impl.methods.any { isSameMethod(it, method) }
         }.getOrDefault(false)
+    }
+
+    private fun kotlinInvoker(proxy: Any, method: Method, args: Array<out Any>?): Any {
+        val impl = getKotlinImpl(method)
+        val defaultMethod = impl.methods.first { isSameMethod(it, method) }
+        return defaultMethod.invoke(null, proxy, *(args ?: arrayOf()))
     }
 
     private fun isSameMethod(methodImpl: Method, methodSource: Method): Boolean {
         return methodImpl.name == methodSource.name
             && methodImpl.returnType == methodSource.returnType
             && methodImpl.parameterTypes.contentEquals(arrayOf(methodSource.declaringClass, *methodSource.parameterTypes))
-    }
-
-    private fun kotlinInvoker(proxy: Any, method: Method, args: Array<out Any>?): Any {
-        val impl = Class.forName("${method.declaringClass.name}$defaultImplsSuffix")
-        val defaultMethod = impl.methods.first { isSameMethod(it, method) }
-        return defaultMethod.invoke(null, proxy, *(args ?: arrayOf()))
     }
 
     private fun baseMethodInvoker(method: Method, args: Array<out Any>?): Any? {
