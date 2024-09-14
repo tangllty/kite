@@ -32,6 +32,8 @@ import java.lang.reflect.Field
  */
 abstract class AbstractSqlProvider : SqlProvider {
 
+    abstract override fun providerType(): ProviderType
+
     override fun selectiveStrategy(any: Any?): Boolean {
         if (any == null) {
             return false

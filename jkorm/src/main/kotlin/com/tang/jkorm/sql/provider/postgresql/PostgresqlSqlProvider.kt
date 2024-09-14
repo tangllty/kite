@@ -1,17 +1,17 @@
-package com.tang.jkorm.sql.provider.mysql
+package com.tang.jkorm.sql.provider.postgresql
 
 import com.tang.jkorm.sql.provider.AbstractSqlProvider
 import com.tang.jkorm.sql.provider.ProviderType
 
 /**
- * MySQL SQL provider
+ * PostgreSQL SQL provider
  *
  * @author Tang
  */
-class MysqlSqlProvider : AbstractSqlProvider() {
+class PostgresqlSqlProvider : AbstractSqlProvider() {
 
     override fun providerType(): ProviderType {
-        return ProviderType.MYSQL
+        return ProviderType.POSTGRESQL
     }
 
 }

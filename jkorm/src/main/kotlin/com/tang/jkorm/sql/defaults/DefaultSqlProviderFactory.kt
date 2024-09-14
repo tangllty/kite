@@ -4,6 +4,7 @@ import com.tang.jkorm.sql.SqlProviderFactory
 import com.tang.jkorm.sql.provider.SqlProvider
 import com.tang.jkorm.sql.provider.derby.DerbySqlProvider
 import com.tang.jkorm.sql.provider.mysql.MysqlSqlProvider
+import com.tang.jkorm.sql.provider.postgresql.PostgresqlSqlProvider
 
 /**
  * Default SQL provider factory
@@ -14,6 +15,7 @@ class DefaultSqlProviderFactory : SqlProviderFactory {
 
     override fun newSqlProvider(url: String): SqlProvider {
         val urlProviderMap = mapOf(
+            "postgresql" to PostgresqlSqlProvider(),
             "mysql" to MysqlSqlProvider(),
             "derby" to DerbySqlProvider()
         )

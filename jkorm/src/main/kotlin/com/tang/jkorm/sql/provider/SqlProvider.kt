@@ -10,6 +10,8 @@ import java.lang.reflect.Field
  */
 interface SqlProvider {
 
+    fun providerType(): ProviderType
+
     fun selectiveStrategy(any: Any?): Boolean
 
     fun getSql(sql: StringBuilder): String
