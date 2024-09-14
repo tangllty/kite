@@ -91,6 +91,8 @@ class DefaultSqlSession(
         return when {
             BaseMethodName.isInsert(method) -> insert(method, mapperInterface, getFirstArg(args))
             BaseMethodName.isInsertSelective(method) -> insertSelective(method, mapperInterface, getFirstArg(args))
+            BaseMethodName.isBatchInsert(method) -> batchInsert(method, mapperInterface, getFirstArg(args))
+            BaseMethodName.isBatchInsertSelective(method) -> batchInsertSelective(method, mapperInterface, getFirstArg(args))
             BaseMethodName.isUpdate(method) -> update(method, mapperInterface, getFirstArg(args))
             BaseMethodName.isUpdateCondition(method) -> update(method, mapperInterface, getFirstArg(args), getSecondArg(args))
             BaseMethodName.isUpdateSelective(method) -> updateSelective(method, mapperInterface, getFirstArg(args))
@@ -112,6 +114,27 @@ class DefaultSqlSession(
 
     override fun <T> insertSelective(method: Method, mapperInterface: Class<T>, parameter: Any): Int {
         val insert = sqlProvider.insertSelective(parameter)
+        val rows = executor.update(insert, parameter)
+        return returnRows(method, mapperInterface, insert, rows)
+    }
+
+    private fun asIterable(arg: Any): Iterable<Any> {
+        val its = when (arg) {
+            is Iterable<*> -> arg
+            is Array<*> -> arg.toList()
+            else -> throw IllegalArgumentException("Unsupported type: ${arg.javaClass.simpleName}")
+        }
+        return its.map { it as Any }
+    }
+
+    override fun <T> batchInsert(method: Method, mapperInterface: Class<T>, parameter: Any): Int {
+        val insert = sqlProvider.batchInsert(asIterable(parameter))
+        val rows = executor.update(insert, parameter)
+        return returnRows(method, mapperInterface, insert, rows)
+    }
+
+    override fun <T> batchInsertSelective(method: Method, mapperInterface: Class<T>, parameter: Any): Int {
+        val insert = sqlProvider.batchInsertSelective(asIterable(parameter))
         val rows = executor.update(insert, parameter)
         return returnRows(method, mapperInterface, insert, rows)
     }

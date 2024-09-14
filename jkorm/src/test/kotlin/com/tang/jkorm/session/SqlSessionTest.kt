@@ -117,6 +117,34 @@ class SqlSessionTest : BaseDataTest() {
     }
 
     @Test
+    fun batchInsert() {
+        val session = sqlSessionFactory.openSession()
+        val accountMapper = session.getMapper(AccountMapper::class.java)
+        val accounts = listOf(
+            Account(username = "tang1", password = "123456"),
+            Account(username = "tang2", password = "123456")
+        )
+        val rows = accountMapper.batchInsert(accounts.toTypedArray())
+        session.commit()
+        session.close()
+        assertEquals(2, rows)
+    }
+
+    @Test
+    fun batchInsertSelective() {
+        val session = sqlSessionFactory.openSession()
+        val accountMapper = session.getMapper(AccountMapper::class.java)
+        val accounts = listOf(
+            Account(username = "tang1"),
+            Account(username = "tang2")
+        )
+        val rows = accountMapper.batchInsertSelective(accounts.toTypedArray())
+        session.commit()
+        session.close()
+        assertEquals(2, rows)
+    }
+
+    @Test
     fun update() {
         val session = sqlSessionFactory.openSession()
         val accountMapper = session.getMapper(AccountMapper::class.java)

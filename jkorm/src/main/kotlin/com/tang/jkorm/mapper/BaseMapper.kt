@@ -25,6 +25,18 @@ interface BaseMapper<T> {
      */
     fun insertSelective(type: T): Int
 
+    fun batchInsert(list: Iterable<T>): Int
+
+    fun batchInsert(list: Array<T>): Int {
+        return batchInsert(list.toList())
+    }
+
+    fun batchInsertSelective(list: Iterable<T>): Int
+
+    fun batchInsertSelective(list: Array<T>): Int {
+        return batchInsertSelective(list.toList())
+    }
+
     /**
      * Update entity by primary key
      *

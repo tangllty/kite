@@ -93,11 +93,15 @@ abstract class AbstractSqlProvider : SqlProvider {
         return SqlStatement(getSql(sql), parameters)
     }
 
+    private fun getFieldValueMap(entity: Any): Map<Field, Any?> {
+        return entity::class.java.declaredFields.associateWith { Reflects.makeAccessible(it, entity); it.get(entity) }
+    }
+
     override fun insertSelective(entity: Any): SqlStatement {
         val clazz = entity::class.java
         val sql = StringBuilder()
         val parameters = mutableListOf<Any?>()
-        val fieldMap: Map<Field, Any?> = clazz.declaredFields.associateWith { Reflects.makeAccessible(it, entity); it.get(entity) }
+        val fieldMap: Map<Field, Any?> = getFieldValueMap(entity)
         sql.append(INSERT_INTO + Reflects.getTableName(clazz) + SPACE + LEFT_BRACKET)
         fieldMap.filter { selectiveStrategy(it.value) }
             .map { getColumnName(it.key) }
@@ -111,6 +115,59 @@ abstract class AbstractSqlProvider : SqlProvider {
             }.joinToString(COMMA_SPACE)
             .let { sql.append(it) }
         sql.append(RIGHT_BRACKET)
+        return SqlStatement(getSql(sql), parameters)
+    }
+
+    override fun batchInsert(entities: Iterable<Any>): SqlStatement {
+        val sql = StringBuilder()
+        val fieldNameList = arrayListOf<String>()
+        val parameters = mutableListOf<Any?>()
+        entities.first().let { entity ->
+            val clazz = entity::class.java
+            val idField = Reflects.getIdField(clazz)
+            val autoIncrementId = Reflects.isAutoIncrementId(idField)
+            val fieldList = clazz.declaredFields.filter { getColumnName(it) != getColumnName(idField) || !autoIncrementId }
+            sql.append(INSERT_INTO + Reflects.getTableName(clazz) + SPACE + LEFT_BRACKET)
+            appendColumns(sql, fieldList)
+            fieldNameList.addAll(fieldList.map { getColumnName(it) })
+            sql.append(RIGHT_BRACKET + VALUES)
+        }
+        entities.map { entity ->
+            val fieldList = entity::class.java.declaredFields.filter { getColumnName(it) in fieldNameList }
+            fieldList.joinToString { field ->
+                Reflects.makeAccessible(field, entity)
+                parameters.add(field.get(entity))
+                QUESTION_MARK
+            }
+        }.joinToString("$RIGHT_BRACKET$COMMA_SPACE$LEFT_BRACKET", LEFT_BRACKET, RIGHT_BRACKET)
+            .let { sql.append(it) }
+        return SqlStatement(getSql(sql), parameters)
+    }
+
+    override fun batchInsertSelective(entities: Iterable<Any>): SqlStatement {
+        val sql = StringBuilder()
+        val fieldNameList = arrayListOf<String>()
+        val parameters = mutableListOf<Any?>()
+        entities.first().let { entity ->
+            val clazz = entity::class.java
+            val fieldMap: Map<Field, Any?> = getFieldValueMap(entity)
+            sql.append(INSERT_INTO + Reflects.getTableName(clazz) + SPACE + LEFT_BRACKET)
+            fieldMap.filter { selectiveStrategy(it.value) }
+                .map { getColumnName(it.key) }
+                .joinToString(COMMA_SPACE)
+                .let { sql.append(it) }
+            fieldNameList.addAll(fieldMap.filter { selectiveStrategy(it.value) }.map { getColumnName(it.key) })
+            sql.append(RIGHT_BRACKET + VALUES)
+        }
+        entities.map { entity ->
+            val fieldMap: Map<Field, Any?> = entity::class.java.declaredFields.associateWith { Reflects.makeAccessible(it, entity); it.get(entity) }
+            fieldMap.filter { selectiveStrategy(it.value) }
+                .map {
+                    parameters.add(it.value)
+                    QUESTION_MARK
+                }.joinToString(COMMA_SPACE)
+        }.joinToString("$RIGHT_BRACKET$COMMA_SPACE$LEFT_BRACKET", LEFT_BRACKET, RIGHT_BRACKET)
+            .let { sql.append(it) }
         return SqlStatement(getSql(sql), parameters)
     }
 

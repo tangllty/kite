@@ -20,6 +20,10 @@ interface SqlSession : AutoCloseable {
 
     fun <T> insertSelective(method: Method, mapperInterface: Class<T>, parameter: Any): Int
 
+    fun <T> batchInsert(method: Method, mapperInterface: Class<T>, parameter: Any): Int
+
+    fun <T> batchInsertSelective(method: Method, mapperInterface: Class<T>, parameter: Any): Int
+
     fun <T> update(method: Method, mapperInterface: Class<T>, parameter: Any): Int
 
     fun <T> update(method: Method, mapperInterface: Class<T>, parameter: Any, condition: Any): Int

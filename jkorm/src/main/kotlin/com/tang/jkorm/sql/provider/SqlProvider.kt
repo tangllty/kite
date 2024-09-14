@@ -24,6 +24,10 @@ interface SqlProvider {
 
     fun insertSelective(entity: Any): SqlStatement
 
+    fun batchInsert(entities: Iterable<Any>): SqlStatement
+
+    fun batchInsertSelective(entities: Iterable<Any>): SqlStatement
+
     fun update(entity: Any): SqlStatement
 
     fun update(entity: Any, where: Any): SqlStatement

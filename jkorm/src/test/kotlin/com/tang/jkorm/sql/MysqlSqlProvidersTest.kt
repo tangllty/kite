@@ -11,7 +11,9 @@ import org.junit.jupiter.api.Assertions.*
  */
 class MysqlSqlProvidersTest {
 
-    private val columns = "id, username, password, create_time, update_time, balance"
+    private val columnsWithoutId = "username, password, create_time, update_time, balance"
+
+    private val columns = "id, $columnsWithoutId"
 
     private val sqlProvider = MysqlSqlProvider()
 
@@ -19,8 +21,8 @@ class MysqlSqlProvidersTest {
     fun insert() {
         val account = Account(username = "tang", password = "123456")
         val statement = sqlProvider.insert(account)
-        assertEquals("insert into account (username, password, create_time, update_time, balance) values (?, ?, ?, ?, ?)", statement.sql)
-        assertEquals("insert into account (username, password, create_time, update_time, balance) values ('tang', '123456', NULL, NULL, NULL)", statement.getActualSql())
+        assertEquals("insert into account ($columnsWithoutId) values (?, ?, ?, ?, ?)", statement.sql)
+        assertEquals("insert into account ($columnsWithoutId) values ('tang', '123456', NULL, NULL, NULL)", statement.getActualSql())
     }
 
     @Test
@@ -29,6 +31,28 @@ class MysqlSqlProvidersTest {
         val statement = sqlProvider.insertSelective(account)
         assertEquals("insert into account (username, password) values (?, ?)", statement.sql)
         assertEquals("insert into account (username, password) values ('tang', '123456')", statement.getActualSql())
+    }
+
+    @Test
+    fun batchInsert() {
+        val accounts = listOf(
+            Account(username = "tang", password = "123456"),
+            Account(username = "tang", password = "123456")
+        )
+        val statement = sqlProvider.batchInsert(accounts)
+        assertEquals("insert into account ($columnsWithoutId) values (?, ?, ?, ?, ?), (?, ?, ?, ?, ?)", statement.sql)
+        assertEquals("insert into account ($columnsWithoutId) values ('tang', '123456', NULL, NULL, NULL), ('tang', '123456', NULL, NULL, NULL)", statement.getActualSql())
+    }
+
+    @Test
+    fun batchInsertSelective() {
+        val accounts = listOf(
+            Account(username = "tang", password = "123456"),
+            Account(username = "tang", password = "123456")
+        )
+        val statement = sqlProvider.batchInsertSelective(accounts)
+        assertEquals("insert into account (username, password) values (?, ?), (?, ?)", statement.sql)
+        assertEquals("insert into account (username, password) values ('tang', '123456'), ('tang', '123456')", statement.getActualSql())
     }
 
     @Test
