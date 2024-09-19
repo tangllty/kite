@@ -4,7 +4,8 @@ plugins {
 
 dependencies {
     api(project(":jkorm"))
-    implementation(libs.springContext)
+    api(libs.springContext)
+    api(libs.springWeb)
     testImplementation(libs.derby)
     testImplementation(libs.derbytools)
 }

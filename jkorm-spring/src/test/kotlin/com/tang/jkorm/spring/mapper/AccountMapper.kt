@@ -1,6 +1,5 @@
 package com.tang.jkorm.spring.mapper
 
-import com.tang.jkorm.mapper.BaseMapper
 import com.tang.jkorm.spring.entity.Account
 
 /**
