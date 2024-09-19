@@ -14,6 +14,8 @@ class Versions {
     val logback = "1.5.6"
     // https://mvnrepository.com/artifact/com.google.guava/guava
     val guava = "33.3.0-jre"
+    // https://mvnrepository.com/artifact/jakarta.servlet/jakarta.servlet-api
+    val servlet = "6.1.0"
     // https://mvnrepository.com/artifact/org.springframework/spring-core
     val spring = "6.1.11"
     // https://mvnrepository.com/artifact/org.springframework.boot/spring-boot
@@ -27,6 +29,7 @@ class Libraries {
     val slf4j = "org.slf4j:slf4j-api:${versions.slf4j}"
     val logback = "ch.qos.logback:logback-classic:${versions.logback}"
     val guava = "com.google.guava:guava:${versions.guava}"
+    val servlet = "jakarta.servlet:jakarta.servlet-api:${versions.servlet}"
     val springContext = "org.springframework:spring-context:${versions.spring}"
     val springBootStarter = "org.springframework.boot:spring-boot-starter:${versions.springBoot}"
     val springBootStarterJdbc = "org.springframework.boot:spring-boot-starter-jdbc:${versions.springBoot}"

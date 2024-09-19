@@ -303,4 +303,13 @@ class SqlSessionTest : BaseDataTest() {
         assertEquals(1, rows)
     }
 
+    @Test
+    fun paginateRequest() {
+        val session = sqlSessionFactory.openSession()
+        val accountMapper = session.getMapper(AccountMapper::class.java)
+        val page = accountMapper.paginate(request)
+        session.close()
+        assertNotEquals(0, page.total)
+    }
+
 }

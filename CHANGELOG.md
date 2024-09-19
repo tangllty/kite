@@ -22,3 +22,4 @@
  * Log sql info
  * Add id generator strategy for `@Id` field
  * Add batch insert
+ * Support get `pageNumber` and `pageSize` from `HttpServletRequest`

@@ -3,8 +3,27 @@ package com.tang.jkorm
 import com.tang.jkorm.datasource.defaults.DefaultDataSourceFactory
 import com.tang.jkorm.io.Resources
 import com.tang.jkorm.session.factory.SqlSessionFactoryBuilder
+import jakarta.servlet.AsyncContext
+import jakarta.servlet.DispatcherType
+import jakarta.servlet.RequestDispatcher
+import jakarta.servlet.ServletConnection
+import jakarta.servlet.ServletContext
+import jakarta.servlet.ServletInputStream
+import jakarta.servlet.ServletRequest
+import jakarta.servlet.ServletResponse
+import jakarta.servlet.http.Cookie
+import jakarta.servlet.http.HttpServletRequest
+import jakarta.servlet.http.HttpServletRequestWrapper
+import jakarta.servlet.http.HttpServletResponse
+import jakarta.servlet.http.HttpSession
+import jakarta.servlet.http.HttpUpgradeHandler
+import jakarta.servlet.http.Part
 import org.junit.jupiter.api.BeforeAll
 import org.yaml.snakeyaml.Yaml
+import java.io.BufferedReader
+import java.security.Principal
+import java.util.Enumeration
+import java.util.Locale
 import javax.sql.DataSource
 
 /**
@@ -62,6 +81,8 @@ open class BaseDataTest {
         val sqlSessionFactoryBuild = SqlSessionFactoryBuilder().build(resource)
 
         val sqlSessionFactory inline get() = sqlSessionFactoryBuild
+
+        val request = HttpServletRequestWrapper(MockHttpServletRequest())
 
     }
 

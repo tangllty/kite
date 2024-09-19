@@ -1,6 +1,7 @@
 package com.tang.jkorm.mapper
 
 import com.tang.jkorm.paginate.Page
+import jakarta.servlet.http.HttpServletRequest
 
 /**
  * Base mapper
@@ -163,6 +164,38 @@ interface BaseMapper<T> {
      */
     fun paginate(pageNumber: Long, pageSize: Long, orderBys: List<Pair<String, Boolean>>, type: T): Page<T> {
         return paginate(pageNumber, pageSize, orderBys.toTypedArray(), type)
+    }
+
+    fun paginate(request: HttpServletRequest): Page<T> {
+        return paginate(getPageNumber(request), getPageSize(request))
+    }
+
+    fun paginate(request: HttpServletRequest, type: T): Page<T> {
+        return paginate(getPageNumber(request), getPageSize(request), type)
+    }
+
+    fun paginate(request: HttpServletRequest, orderBys: Array<Pair<String, Boolean>>): Page<T> {
+        return paginate(getPageNumber(request), getPageSize(request), orderBys)
+    }
+
+    fun paginate(request: HttpServletRequest, orderBys: List<Pair<String, Boolean>>): Page<T> {
+        return paginate(request, orderBys.toTypedArray())
+    }
+
+    fun paginate(request: HttpServletRequest, orderBys: Array<Pair<String, Boolean>>, type: T): Page<T> {
+        return paginate(getPageNumber(request), getPageSize(request), orderBys, type)
+    }
+
+    fun paginate(request: HttpServletRequest, orderBys: List<Pair<String, Boolean>>, type: T): Page<T> {
+        return paginate(request, orderBys.toTypedArray(), type)
+    }
+
+    fun getPageNumber(request: HttpServletRequest): Long {
+        return request.getParameter("pageNumber")?.toLong() ?: 1
+    }
+
+    fun getPageSize(request: HttpServletRequest): Long {
+        return request.getParameter("pageSize")?.toLong() ?: 10
     }
 
 }
