@@ -1,6 +1,6 @@
 package com.tang.jkorm.session.defaults
 
-import com.tang.jkorm.config.DefaultConfig
+import com.tang.jkorm.config.JkOrmConfig
 import com.tang.jkorm.constants.BaseMethodName
 import com.tang.jkorm.executor.Executor
 import com.tang.jkorm.paginate.Page
@@ -203,7 +203,7 @@ class DefaultSqlSession(
 
     private fun <T> processPaginate(method: Method, mapperInterface: Class<T>, type: Class<T>, args: Array<out Any>?): Page<T> {
         if (args == null || args.isEmpty()) {
-            return paginate(method, mapperInterface, type, DefaultConfig.PAGE_NUMBER, DefaultConfig.PAGE_SIZE, emptyArray(), null)
+            return paginate(method, mapperInterface, type, JkOrmConfig.INSTANCE.pageNumber, JkOrmConfig.INSTANCE.pageSize, emptyArray(), null)
         }
         val pageNumber = args[0] as Long
         val pageSize = args[1] as Long
@@ -225,7 +225,7 @@ class DefaultSqlSession(
     private fun <T> reasonable(method: Method, mapperInterface: Class<T>, type: Class<T>, pageNumber: Long, pageSize: Long): Pair<Long, Long> {
         val count = count(method, mapperInterface, type, null)
         val totalPage = (count / pageSize).toInt() + if (count % pageSize == 0L) 0 else 1
-        val reasonablePageNumber = if (pageNumber > totalPage) totalPage else if (pageNumber < 1) DefaultConfig.PAGE_NUMBER else pageNumber
+        val reasonablePageNumber = if (pageNumber > totalPage) totalPage else if (pageNumber < 1) JkOrmConfig.INSTANCE.pageNumber else pageNumber
         return Pair(reasonablePageNumber.toLong(), count)
     }
 

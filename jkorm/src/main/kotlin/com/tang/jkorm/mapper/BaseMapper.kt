@@ -1,5 +1,6 @@
 package com.tang.jkorm.mapper
 
+import com.tang.jkorm.config.JkOrmConfig
 import com.tang.jkorm.paginate.Page
 import jakarta.servlet.http.HttpServletRequest
 
@@ -191,11 +192,11 @@ interface BaseMapper<T> {
     }
 
     fun getPageNumber(request: HttpServletRequest): Long {
-        return request.getParameter("pageNumber")?.toLong() ?: 1
+        return request.getParameter(JkOrmConfig.INSTANCE.pageNumberParameter)?.toLong() ?: JkOrmConfig.INSTANCE.pageNumber
     }
 
     fun getPageSize(request: HttpServletRequest): Long {
-        return request.getParameter("pageSize")?.toLong() ?: 10
+        return request.getParameter(JkOrmConfig.INSTANCE.pageSizeParameter)?.toLong() ?: JkOrmConfig.INSTANCE.pageSize
     }
 
 }
