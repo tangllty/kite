@@ -1,9 +1,10 @@
 plugins {
     kotlin("jvm")
     id("maven-publish")
+    signing
 }
 
-group = "com.tang"
+group = "io.github.tangllty"
 version = "1.0.0-beta8"
 
 repositories {
@@ -47,11 +48,35 @@ publishing {
             from(components["java"])
             artifact(tasks["sourcesJar"])
             artifact(tasks["javadocJar"])
+            pom {
+                name.set("jkorm")
+                description.set("A simple ORM framework for Kotlin")
+                url.set("https://github.com/tangllty/jkorm")
+                licenses {
+                    license {
+                        name.set("MIT License")
+                        url.set("https://opensource.org/licenses/MIT")
+                    }
+                }
+                developers {
+                    developer {
+                        id.set("tangllty")
+                        name.set("tangllty")
+                        email.set("tanglly@163.com")
+                    }
+                }
+                scm {
+                    connection.set("scm:git:git://github.com/tangllty/jkorm.git")
+                    developerConnection.set("scm:git:ssh://github.com/tangllty/jkorm.git")
+                    url.set("http://github.com/tangllty/jkorm")
+                }
+            }
         }
     }
     repositories {
         maven {
-            url = uri(layout.buildDirectory.dir("repo"))
+            name = "Project"
+            url = uri(layout.buildDirectory.dir("repositories"))
         }
         maven {
             name = "GitHubPackages"
@@ -61,5 +86,21 @@ publishing {
                 password = System.getenv("PACKAGES_PASSWORD")
             }
         }
+    }
+}
+
+signing {
+    useGpgCmd()
+    sign(publishing.publications["mavenJava"])
+}
+
+tasks.register<SonatypeCentralPublishTask>("publishToSonatypeCentral") {
+    username = "xxxxxxxx"
+    password = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+}
+
+tasks.javadoc {
+    if (JavaVersion.current().isJava9Compatible) {
+        (options as StandardJavadocDocletOptions).addBooleanOption("html5", true)
     }
 }
