@@ -40,12 +40,12 @@ object BaseMethodName {
         return parameterTypes[1].name == Long::class.java.name
     }
 
-    private fun isAny(type: Class<*>): Boolean {
-        return type == Any::class.java
+    private fun Method.thirdParameterIsAny(): Boolean {
+        return isAny(parameterTypes[2])
     }
 
-    private fun isPrimitiveLong(type: Class<*>): Boolean {
-        return type.name == Long::class.java.name
+    private fun isAny(type: Class<*>): Boolean {
+        return type == Any::class.java
     }
 
     private const val INSERT = "insert"
@@ -121,11 +121,21 @@ object BaseMethodName {
     private const val PAGINATE = "paginate"
 
     fun isPaginate(method: Method): Boolean {
-        val twoParameters = method.firstParameterIsLong() && method.secondParameterIsLong()
-        val threeParameters = twoParameters && method.firstParameterIsLong() && method.secondParameterIsLong()
-        return method.name == PAGINATE && (twoParameters || threeParameters)
-
-        return method.name == PAGINATE && method.countIsTwo() && method.firstParameterIsLong() && method.secondParameterIsLong()
+        if (method.name != PAGINATE) {
+            return false
+        }
+        if (method.countIsTwo() && method.firstParameterIsLong() && method.secondParameterIsLong()) {
+            return true
+        }
+        if (method.parameterCount == 3 && method.firstParameterIsLong() && method.secondParameterIsLong()
+            && (method.thirdParameterIsAny() || method.parameterTypes[2].componentType == Pair::class.java)) {
+            return true
+        }
+        if (method.parameterCount == 4 && method.firstParameterIsLong() && method.secondParameterIsLong()
+            && method.parameterTypes[2].componentType == Pair::class.java && isAny(method.parameterTypes[3])) {
+            return true
+        }
+        return false
     }
 
     fun isBaseMethod(methodName: String): Boolean {
