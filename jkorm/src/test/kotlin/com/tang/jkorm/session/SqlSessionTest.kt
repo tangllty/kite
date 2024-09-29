@@ -6,6 +6,7 @@ import com.tang.jkorm.session.entity.Role
 import com.tang.jkorm.session.mapper.AccountJavaMapper
 import com.tang.jkorm.session.mapper.AccountMapper
 import com.tang.jkorm.session.mapper.RoleMapper
+import com.tang.jkorm.utils.Pairs
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Test
@@ -269,6 +270,15 @@ class SqlSessionTest : BaseDataTest() {
         val session = sqlSessionFactory.openSession()
         val accountMapper = session.getMapper(AccountMapper::class.java)
         val page = accountMapper.paginate(2, 5, "id" to false)
+        session.close()
+        assertNotEquals(0, page.total)
+    }
+
+    @Test
+    fun paginateOderByPairs() {
+        val session = sqlSessionFactory.openSession()
+        val accountMapper = session.getMapper(AccountMapper::class.java)
+        val page = accountMapper.paginate(2, 5, Pairs.of("id", false))
         session.close()
         assertNotEquals(0, page.total)
     }

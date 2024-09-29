@@ -26,3 +26,4 @@
  * Support get `pageNumber` and `pageSize` from `RequestContextHolder`
  * Add banner
  * Support for configuration using spring boot
+ * Add `Pairs` class to simplify `Pair` operation in Kotlin
