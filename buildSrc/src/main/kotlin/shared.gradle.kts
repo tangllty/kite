@@ -90,7 +90,7 @@ publishing {
 }
 
 signing {
-    useGpgCmd()
+    useInMemoryPgpKeys(System.getenv("SIGNING_SECRET_KEY"), System.getenv("SIGNING_PASSWORD"))
     sign(publishing.publications["mavenJava"])
 }
 

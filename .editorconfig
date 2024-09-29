@@ -12,5 +12,5 @@ trim_trailing_whitespace = true
 ij_kotlin_imports_layout = *,java.**,javax.**,kotlin.**,^
 ij_any_blank_lines_around_class = 1
 
-[*.{yml,yaml}]
+[*.{yml,yaml,json}]
 indent_size = 2
