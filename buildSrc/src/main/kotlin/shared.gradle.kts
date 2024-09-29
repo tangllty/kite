@@ -50,7 +50,7 @@ publishing {
             artifact(tasks["javadocJar"])
             pom {
                 name.set("jkorm")
-                description.set("A simple ORM framework for Kotlin")
+                description.set("A simple ORM framework written in Kotlin")
                 url.set("https://github.com/tangllty/jkorm")
                 licenses {
                     license {

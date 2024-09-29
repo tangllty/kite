@@ -1,6 +1,7 @@
 plugins {
     id("shared")
 }
+
 dependencies {
     api(project(":jkorm"))
     api(project(":jkorm-spring"))
