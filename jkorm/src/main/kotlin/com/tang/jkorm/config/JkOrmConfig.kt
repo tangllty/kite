@@ -7,6 +7,8 @@ package com.tang.jkorm.config
  */
 class JkOrmConfig {
 
+    var banner = true
+
     var pageNumber = 1L
 
     var pageSize = 10L
