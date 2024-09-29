@@ -24,3 +24,5 @@
  * Add batch insert
  * Support get `pageNumber` and `pageSize` from `HttpServletRequest`
  * Support get `pageNumber` and `pageSize` from `RequestContextHolder`
+ * Add banner
+ * Support for configuration using spring boot

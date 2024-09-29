@@ -14,6 +14,7 @@ class JkOrmAutoConfigurationTest {
 
     private val contextRunner = ApplicationContextRunner()
             .withUserConfiguration(DataSourceAutoConfiguration::class.java, JkOrmAutoConfiguration::class.java)
+            .withPropertyValues("jkorm.banner=false")
 
     @Test
     fun sqlSessionFactory() {

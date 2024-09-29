@@ -12,6 +12,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties
+import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.DependsOn
 import javax.sql.DataSource
@@ -24,7 +25,12 @@ import javax.sql.DataSource
 @AutoConfiguration(after = [DataSourceAutoConfiguration::class, DataSourceProperties::class])
 @ConditionalOnClass(SqlSessionFactoryBean::class, SqlSessionBean::class)
 @ConditionalOnSingleCandidate(DataSource::class)
+@EnableConfigurationProperties(JkOrmProperties::class)
 open class JkOrmAutoConfiguration {
+
+    constructor(jkOrmProperties: JkOrmProperties) {
+        jkOrmProperties.apply()
+    }
 
     @DependsOn(BeanNames.DATA_SOURCE)
     @Bean(BeanNames.SQL_SESSION_FACTORY)
