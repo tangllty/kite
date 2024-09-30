@@ -1,5 +1,6 @@
 package com.tang.jkorm.sql
 
+import com.tang.jkorm.paginate.OrderItem
 import com.tang.jkorm.session.entity.Account
 import com.tang.jkorm.sql.provider.mysql.MysqlSqlProvider
 import org.junit.jupiter.api.Test
@@ -141,7 +142,7 @@ class MysqlSqlProvidersTest {
 
     @Test
     fun paginateOrderBy() {
-        val statement = sqlProvider.paginate(Account::class.java, null, arrayOf("id" to false), 1, 5)
+        val statement = sqlProvider.paginate(Account::class.java, null, arrayOf(OrderItem("id", false)), 1, 5)
         assertEquals("select $columns from account order by id desc limit ?, ?", statement.sql)
         assertEquals("select $columns from account order by id desc limit 0, 5", statement.getActualSql())
     }
@@ -149,7 +150,7 @@ class MysqlSqlProvidersTest {
     @Test
     fun paginateOrderByCondition() {
         val account = Account(username = "tang")
-        val statement = sqlProvider.paginate(Account::class.java, account, arrayOf("id" to false), 1, 5)
+        val statement = sqlProvider.paginate(Account::class.java, account, arrayOf(OrderItem("id", false)), 1, 5)
         assertEquals("select $columns from account where username = ? order by id desc limit ?, ?", statement.sql)
         assertEquals("select $columns from account where username = 'tang' order by id desc limit 0, 5", statement.getActualSql())
     }
