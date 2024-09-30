@@ -18,7 +18,7 @@ public class SqlSessionJavaTest extends BaseDataTest {
     public void paginateOrderByList() {
         var session = Companion.getSqlSessionFactory().openSession();
         var accountMapper = session.getMapper(AccountMapper.class);
-        var page = accountMapper.paginate(2, 5, new OrderItem("id", false));
+        var page = accountMapper.paginate(2, 5, new OrderItem<>("id", false));
         session.close();
         assertNotEquals(0, page.getTotal());
     }
@@ -27,7 +27,7 @@ public class SqlSessionJavaTest extends BaseDataTest {
     public void paginateOrderBysList() {
         var session = Companion.getSqlSessionFactory().openSession();
         var accountMapper = session.getMapper(AccountMapper.class);
-        var page = accountMapper.paginate(2, 5, List.of(new OrderItem("id", false), new OrderItem("username", true)));
+        var page = accountMapper.paginate(2, 5, List.of(new OrderItem<>("id", false), new OrderItem<>("username", true)));
         session.close();
         assertNotEquals(0, page.getTotal());
     }

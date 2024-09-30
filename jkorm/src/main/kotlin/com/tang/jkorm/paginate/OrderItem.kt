@@ -5,13 +5,13 @@ package com.tang.jkorm.paginate
  *
  * @author Tang
  */
-class OrderItem {
+class OrderItem<T> {
 
     var column: String = ""
 
     var asc: Boolean = true
 
-    constructor(column: String, asc: Boolean) {
+    constructor(column: String, asc: Boolean = true) {
         this.column = column
         this.asc = asc
     }

@@ -272,7 +272,7 @@ abstract class AbstractSqlProvider : SqlProvider {
         return SqlStatement(getSql(sql), parameters)
     }
 
-    override fun <T> paginate(clazz: Class<T>, entity: Any?, orderBys: Array<OrderItem>, pageNumber: Long, pageSize: Long): SqlStatement {
+    override fun <T> paginate(clazz: Class<T>, entity: Any?, orderBys: Array<OrderItem<T>>, pageNumber: Long, pageSize: Long): SqlStatement {
         val sql = StringBuilder()
         val parameters = mutableListOf<Any?>()
         sql.append(SELECT)

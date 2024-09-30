@@ -215,7 +215,7 @@ class DefaultSqlSession(
             return paginate(method, mapperInterface, type, pageNumber, pageSize, args[2], emptyArray())
         }
         val orderByArray = args[2] as Array<*>
-        val orderBys = orderByArray.filterIsInstance<OrderItem>().toTypedArray()
+        val orderBys = orderByArray.filterIsInstance<OrderItem<T>>().toTypedArray()
         val parameter = args.getOrNull(3)
         return paginate(method, mapperInterface, type, pageNumber, pageSize, parameter, orderBys)
     }
@@ -227,7 +227,7 @@ class DefaultSqlSession(
         return Pair(reasonablePageNumber.toLong(), count)
     }
 
-    override fun <T> paginate(method: Method, mapperInterface: Class<T>, type: Class<T>, pageNumber: Long, pageSize: Long, parameter: Any?, orderBys: Array<OrderItem>): Page<T> {
+    override fun <T> paginate(method: Method, mapperInterface: Class<T>, type: Class<T>, pageNumber: Long, pageSize: Long, parameter: Any?, orderBys: Array<OrderItem<T>>): Page<T> {
         val reasonable = reasonable(method, mapperInterface, type, pageNumber, pageSize)
         val reasonablePageNumber = reasonable.first
         val total = reasonable.second

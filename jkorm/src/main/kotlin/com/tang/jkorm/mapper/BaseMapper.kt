@@ -174,7 +174,7 @@ interface BaseMapper<T> {
      * @param orderBy Order by
      * @return Page
      */
-    fun paginate(pageNumber: Long, pageSize: Long, orderBy: OrderItem): Page<T> {
+    fun paginate(pageNumber: Long, pageSize: Long, orderBy: OrderItem<T>): Page<T> {
         return paginate(pageNumber, pageSize, arrayOf(orderBy))
     }
 
@@ -186,7 +186,7 @@ interface BaseMapper<T> {
      * @param orderBys Order by array
      * @return Page
      */
-    fun paginate(pageNumber: Long, pageSize: Long, orderBys: Array<OrderItem>): Page<T>
+    fun paginate(pageNumber: Long, pageSize: Long, orderBys: Array<OrderItem<T>>): Page<T>
 
     /**
      * Paginate by page number, page size and order by
@@ -196,7 +196,7 @@ interface BaseMapper<T> {
      * @param orderBys Order by list
      * @return Page
      */
-    fun paginate(pageNumber: Long, pageSize: Long, orderBys: List<OrderItem>): Page<T> {
+    fun paginate(pageNumber: Long, pageSize: Long, orderBys: List<OrderItem<T>>): Page<T> {
         return paginate(pageNumber, pageSize, orderBys.toTypedArray())
     }
 
@@ -209,7 +209,7 @@ interface BaseMapper<T> {
      * @param orderBy Order by
      * @return Page
      */
-    fun paginate(pageNumber: Long, pageSize: Long, type: T, orderBy: OrderItem): Page<T> {
+    fun paginate(pageNumber: Long, pageSize: Long, type: T, orderBy: OrderItem<T>): Page<T> {
         return paginate(pageNumber, pageSize, type, arrayOf(orderBy))
     }
 
@@ -222,7 +222,7 @@ interface BaseMapper<T> {
      * @param orderBys Order by array
      * @return Page
      */
-    fun paginate(pageNumber: Long, pageSize: Long, type: T, orderBys: Array<OrderItem>): Page<T>
+    fun paginate(pageNumber: Long, pageSize: Long, type: T, orderBys: Array<OrderItem<T>>): Page<T>
 
     /**
      * Paginate by page number, page size, order by and condition, ignore null value
@@ -233,7 +233,7 @@ interface BaseMapper<T> {
      * @param orderBys Order by list
      * @return Page
      */
-    fun paginate(pageNumber: Long, pageSize: Long, type: T, orderBys: List<OrderItem>): Page<T> {
+    fun paginate(pageNumber: Long, pageSize: Long, type: T, orderBys: List<OrderItem<T>>): Page<T> {
         return paginate(pageNumber, pageSize, type, orderBys.toTypedArray())
     }
 
@@ -265,7 +265,7 @@ interface BaseMapper<T> {
      * @param orderBy Order by
      * @return Page
      */
-    fun paginate(request: HttpServletRequest, orderBy: OrderItem): Page<T> {
+    fun paginate(request: HttpServletRequest, orderBy: OrderItem<T>): Page<T> {
         return paginate(request, arrayOf(orderBy))
     }
 
@@ -276,7 +276,7 @@ interface BaseMapper<T> {
      * @param orderBys Order by array
      * @return Page
      */
-    fun paginate(request: HttpServletRequest, orderBys: Array<OrderItem>): Page<T> {
+    fun paginate(request: HttpServletRequest, orderBys: Array<OrderItem<T>>): Page<T> {
         return paginate(getPageNumber(request), getPageSize(request), orderBys)
     }
 
@@ -287,7 +287,7 @@ interface BaseMapper<T> {
      * @param orderBys Order by list
      * @return Page
      */
-    fun paginate(request: HttpServletRequest, orderBys: List<OrderItem>): Page<T> {
+    fun paginate(request: HttpServletRequest, orderBys: List<OrderItem<T>>): Page<T> {
         return paginate(request, orderBys.toTypedArray())
     }
 
@@ -299,7 +299,7 @@ interface BaseMapper<T> {
      * @param orderBy Order by
      * @return Page
      */
-    fun paginate(request: HttpServletRequest, type: T, orderBy: OrderItem): Page<T> {
+    fun paginate(request: HttpServletRequest, type: T, orderBy: OrderItem<T>): Page<T> {
         return paginate(request, type, arrayOf(orderBy))
     }
 
@@ -311,7 +311,7 @@ interface BaseMapper<T> {
      * @param orderBys Order by array
      * @return Page
      */
-    fun paginate(request: HttpServletRequest, type: T, orderBys: Array<OrderItem>): Page<T> {
+    fun paginate(request: HttpServletRequest, type: T, orderBys: Array<OrderItem<T>>): Page<T> {
         return paginate(getPageNumber(request), getPageSize(request), type, orderBys)
     }
 
@@ -323,7 +323,7 @@ interface BaseMapper<T> {
      * @param orderBys Order by list
      * @return Page
      */
-    fun paginate(request: HttpServletRequest, type: T, orderBys: List<OrderItem>): Page<T> {
+    fun paginate(request: HttpServletRequest, type: T, orderBys: List<OrderItem<T>>): Page<T> {
         return paginate(request, type, orderBys.toTypedArray())
     }
 

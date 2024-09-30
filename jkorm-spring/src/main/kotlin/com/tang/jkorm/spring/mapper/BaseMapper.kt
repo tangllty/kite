@@ -38,7 +38,7 @@ interface BaseMapper<T> : com.tang.jkorm.mapper.BaseMapper<T> {
      * @param orderBy Order by
      * @return Page
      */
-    fun paginate(orderBy: OrderItem): Page<T> {
+    fun paginate(orderBy: OrderItem<T>): Page<T> {
         return paginate(getRequest(), arrayOf(orderBy))
     }
 
@@ -48,7 +48,7 @@ interface BaseMapper<T> : com.tang.jkorm.mapper.BaseMapper<T> {
      * @param orderBys Order by array
      * @return Page
      */
-    fun paginate(orderBys: Array<OrderItem>): Page<T> {
+    fun paginate(orderBys: Array<OrderItem<T>>): Page<T> {
         return paginate(getRequest(), orderBys)
     }
 
@@ -58,7 +58,7 @@ interface BaseMapper<T> : com.tang.jkorm.mapper.BaseMapper<T> {
      * @param orderBys Order by list
      * @return Page
      */
-    fun paginate(orderBys: List<OrderItem>): Page<T> {
+    fun paginate(orderBys: List<OrderItem<T>>): Page<T> {
         return paginate(getRequest(), orderBys.toTypedArray())
     }
 
@@ -69,7 +69,7 @@ interface BaseMapper<T> : com.tang.jkorm.mapper.BaseMapper<T> {
      * @param orderBy Order by
      * @return Page
      */
-    fun paginate(type: T, orderBy: OrderItem): Page<T> {
+    fun paginate(type: T, orderBy: OrderItem<T>): Page<T> {
         return paginate(getRequest(), type, arrayOf(orderBy))
     }
 
@@ -80,7 +80,7 @@ interface BaseMapper<T> : com.tang.jkorm.mapper.BaseMapper<T> {
      * @param orderBys Order by array
      * @return Page
      */
-    fun paginate(type: T, orderBys: Array<OrderItem>): Page<T> {
+    fun paginate(type: T, orderBys: Array<OrderItem<T>>): Page<T> {
         return paginate(getRequest(), type, orderBys)
     }
 
@@ -91,7 +91,7 @@ interface BaseMapper<T> : com.tang.jkorm.mapper.BaseMapper<T> {
      * @param orderBys Order by list
      * @return Page
      */
-    fun paginate(type: T, orderBys: List<OrderItem>): Page<T> {
+    fun paginate(type: T, orderBys: List<OrderItem<T>>): Page<T> {
         return paginate(getRequest(), type, orderBys.toTypedArray())
     }
 
