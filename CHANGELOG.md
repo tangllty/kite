@@ -27,3 +27,4 @@
  * Add banner
  * Support for configuration using spring boot
  * Add `Pairs` class to simplify `Pair` operation in Kotlin
+ * Add `OrderItem` for paginate order by

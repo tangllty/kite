@@ -275,7 +275,7 @@ class SqlSessionTest : BaseDataTest() {
     }
 
     @Test
-    fun paginateOderByPairs() {
+    fun paginateOderByOrderBy() {
         val session = sqlSessionFactory.openSession()
         val accountMapper = session.getMapper(AccountMapper::class.java)
         val page = accountMapper.paginate(2, 5, OrderItem("id", false))
