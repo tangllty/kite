@@ -1,12 +1,12 @@
 package com.tang.jkorm.session
 
 import com.tang.jkorm.BaseDataTest
+import com.tang.jkorm.paginate.OrderItem
 import com.tang.jkorm.session.entity.Account
 import com.tang.jkorm.session.entity.Role
 import com.tang.jkorm.session.mapper.AccountJavaMapper
 import com.tang.jkorm.session.mapper.AccountMapper
 import com.tang.jkorm.session.mapper.RoleMapper
-import com.tang.jkorm.utils.Pairs
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Test
@@ -269,7 +269,7 @@ class SqlSessionTest : BaseDataTest() {
     fun paginateOderBy() {
         val session = sqlSessionFactory.openSession()
         val accountMapper = session.getMapper(AccountMapper::class.java)
-        val page = accountMapper.paginate(2, 5, "id" to false)
+        val page = accountMapper.paginate(2, 5, OrderItem("id", false))
         session.close()
         assertNotEquals(0, page.total)
     }
@@ -278,16 +278,16 @@ class SqlSessionTest : BaseDataTest() {
     fun paginateOderByPairs() {
         val session = sqlSessionFactory.openSession()
         val accountMapper = session.getMapper(AccountMapper::class.java)
-        val page = accountMapper.paginate(2, 5, Pairs.of("id", false))
+        val page = accountMapper.paginate(2, 5, OrderItem("id", false))
         session.close()
         assertNotEquals(0, page.total)
     }
 
     @Test
-    fun paginateOderBys() {
+    fun paginateOrderBys() {
         val session = sqlSessionFactory.openSession()
         val accountMapper = session.getMapper(AccountMapper::class.java)
-        val page = accountMapper.paginate(2, 5, arrayOf("id" to false, "username" to true))
+        val page = accountMapper.paginate(2, 5, listOf(OrderItem("id", false), OrderItem("username", true)))
         session.close()
         assertNotEquals(0, page.total)
     }
@@ -296,7 +296,7 @@ class SqlSessionTest : BaseDataTest() {
     fun paginateOrderBysCondition() {
         val session = sqlSessionFactory.openSession()
         val accountMapper = session.getMapper(AccountMapper::class.java)
-        val page = accountMapper.paginate(2, 5, arrayOf("id" to false), Account(username = "tang"))
+        val page = accountMapper.paginate(2, 5, Account(username = "tang"), arrayOf(OrderItem("id", false)))
         session.close()
         assertNotEquals(0, page.total)
     }

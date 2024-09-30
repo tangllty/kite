@@ -1,5 +1,6 @@
 package com.tang.jkorm.sql.provider
 
+import com.tang.jkorm.paginate.OrderItem
 import com.tang.jkorm.sql.SqlStatement
 import java.lang.reflect.Field
 
@@ -42,6 +43,6 @@ interface SqlProvider {
 
     fun <T> count(clazz: Class<T>, entity: Any?): SqlStatement
 
-    fun <T> paginate(clazz: Class<T>, entity: Any?, orderBys: Array<Pair<String, Boolean>>, pageNumber: Long, pageSize: Long): SqlStatement
+    fun <T> paginate(clazz: Class<T>, entity: Any?, orderBys: Array<OrderItem>, pageNumber: Long, pageSize: Long): SqlStatement
 
 }

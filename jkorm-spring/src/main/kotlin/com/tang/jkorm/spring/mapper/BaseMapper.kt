@@ -1,5 +1,6 @@
 package com.tang.jkorm.spring.mapper
 
+import com.tang.jkorm.paginate.OrderItem
 import com.tang.jkorm.paginate.Page
 import jakarta.servlet.http.HttpServletRequest
 import org.springframework.web.context.request.RequestContextHolder
@@ -37,7 +38,7 @@ interface BaseMapper<T> : com.tang.jkorm.mapper.BaseMapper<T> {
      * @param orderBy Order by
      * @return Page
      */
-    fun paginate(orderBy: Pair<String, Boolean>): Page<T> {
+    fun paginate(orderBy: OrderItem): Page<T> {
         return paginate(getRequest(), arrayOf(orderBy))
     }
 
@@ -47,7 +48,7 @@ interface BaseMapper<T> : com.tang.jkorm.mapper.BaseMapper<T> {
      * @param orderBys Order by array
      * @return Page
      */
-    fun paginate(orderBys: Array<Pair<String, Boolean>>): Page<T> {
+    fun paginate(orderBys: Array<OrderItem>): Page<T> {
         return paginate(getRequest(), orderBys)
     }
 
@@ -57,7 +58,7 @@ interface BaseMapper<T> : com.tang.jkorm.mapper.BaseMapper<T> {
      * @param orderBys Order by list
      * @return Page
      */
-    fun paginate(orderBys: List<Pair<String, Boolean>>): Page<T> {
+    fun paginate(orderBys: List<OrderItem>): Page<T> {
         return paginate(getRequest(), orderBys.toTypedArray())
     }
 
@@ -68,30 +69,30 @@ interface BaseMapper<T> : com.tang.jkorm.mapper.BaseMapper<T> {
      * @param orderBy Order by
      * @return Page
      */
-    fun paginate(orderBy: Pair<String, Boolean>, type: T): Page<T> {
-        return paginate(getRequest(), arrayOf(orderBy), type)
+    fun paginate(type: T, orderBy: OrderItem): Page<T> {
+        return paginate(getRequest(), type, arrayOf(orderBy))
     }
 
     /**
      * Paginate by order by and condition, ignore null value
      *
+     * @param type Entity type
      * @param orderBys Order by array
-     * @param type Entity type
      * @return Page
      */
-    fun paginate(orderBys: Array<Pair<String, Boolean>>, type: T): Page<T> {
-        return paginate(getRequest(), orderBys, type)
+    fun paginate(type: T, orderBys: Array<OrderItem>): Page<T> {
+        return paginate(getRequest(), type, orderBys)
     }
 
     /**
      * Paginate by order by and condition, ignore null value
      *
-     * @param orderBys Order by list
      * @param type Entity type
+     * @param orderBys Order by list
      * @return Page
      */
-    fun paginate(orderBys: List<Pair<String, Boolean>>, type: T): Page<T> {
-        return paginate(getRequest(), orderBys.toTypedArray(), type)
+    fun paginate(type: T, orderBys: List<OrderItem>): Page<T> {
+        return paginate(getRequest(), type, orderBys.toTypedArray())
     }
 
     /**

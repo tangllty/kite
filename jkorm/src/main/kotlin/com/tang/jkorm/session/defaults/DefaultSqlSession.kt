@@ -3,6 +3,7 @@ package com.tang.jkorm.session.defaults
 import com.tang.jkorm.config.JkOrmConfig
 import com.tang.jkorm.constants.BaseMethodName
 import com.tang.jkorm.executor.Executor
+import com.tang.jkorm.paginate.OrderItem
 import com.tang.jkorm.paginate.Page
 import com.tang.jkorm.proxy.MapperProxyFactory
 import com.tang.jkorm.session.Configuration
@@ -203,23 +204,20 @@ class DefaultSqlSession(
 
     private fun <T> processPaginate(method: Method, mapperInterface: Class<T>, type: Class<T>, args: Array<out Any>?): Page<T> {
         if (args == null || args.isEmpty()) {
-            return paginate(method, mapperInterface, type, JkOrmConfig.INSTANCE.pageNumber, JkOrmConfig.INSTANCE.pageSize, emptyArray(), null)
+            return paginate(method, mapperInterface, type, JkOrmConfig.INSTANCE.pageNumber, JkOrmConfig.INSTANCE.pageSize, null, emptyArray())
         }
         val pageNumber = args[0] as Long
         val pageSize = args[1] as Long
         if (args.size == 2) {
-            return paginate(method, mapperInterface, type, pageNumber, pageSize, emptyArray(), null)
+            return paginate(method, mapperInterface, type, pageNumber, pageSize, null, emptyArray())
         }
-        if (args[2] is Array<*>) {
-            val orderBys = if (args.getOrNull(2) != null) {
-                val orderByArray = args[2] as Array<*>
-                orderByArray.filterIsInstance<Pair<String, Boolean>>().toTypedArray()
-            } else emptyArray()
-            val parameter = args.getOrNull(3)
-            return paginate(method, mapperInterface, type, pageNumber, pageSize, orderBys, parameter)
+        if (!args[2].javaClass.isArray) {
+            return paginate(method, mapperInterface, type, pageNumber, pageSize, args[2], emptyArray())
         }
-        val parameter = args.getOrNull(2)
-        return paginate(method, mapperInterface, type, pageNumber, pageSize, emptyArray(), parameter)
+        val orderByArray = args[2] as Array<*>
+        val orderBys = orderByArray.filterIsInstance<OrderItem>().toTypedArray()
+        val parameter = args.getOrNull(3)
+        return paginate(method, mapperInterface, type, pageNumber, pageSize, parameter, orderBys)
     }
 
     private fun <T> reasonable(method: Method, mapperInterface: Class<T>, type: Class<T>, pageNumber: Long, pageSize: Long): Pair<Long, Long> {
@@ -229,7 +227,7 @@ class DefaultSqlSession(
         return Pair(reasonablePageNumber.toLong(), count)
     }
 
-    override fun <T> paginate(method: Method, mapperInterface: Class<T>, type: Class<T>, pageNumber: Long, pageSize: Long, orderBys: Array<Pair<String, Boolean>>, parameter: Any?): Page<T> {
+    override fun <T> paginate(method: Method, mapperInterface: Class<T>, type: Class<T>, pageNumber: Long, pageSize: Long, parameter: Any?, orderBys: Array<OrderItem>): Page<T> {
         val reasonable = reasonable(method, mapperInterface, type, pageNumber, pageSize)
         val reasonablePageNumber = reasonable.first
         val total = reasonable.second

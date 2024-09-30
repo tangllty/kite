@@ -20,6 +20,7 @@ import com.tang.jkorm.constants.SqlString.SPACE
 import com.tang.jkorm.constants.SqlString.UPDATE
 import com.tang.jkorm.constants.SqlString.VALUES
 import com.tang.jkorm.constants.SqlString.WHERE
+import com.tang.jkorm.paginate.OrderItem
 import com.tang.jkorm.sql.SqlStatement
 import com.tang.jkorm.utils.Reflects
 import com.tang.jkorm.utils.Reflects.getColumnName
@@ -271,7 +272,7 @@ abstract class AbstractSqlProvider : SqlProvider {
         return SqlStatement(getSql(sql), parameters)
     }
 
-    override fun <T> paginate(clazz: Class<T>, entity: Any?, orderBys: Array<Pair<String, Boolean>>, pageNumber: Long, pageSize: Long): SqlStatement {
+    override fun <T> paginate(clazz: Class<T>, entity: Any?, orderBys: Array<OrderItem>, pageNumber: Long, pageSize: Long): SqlStatement {
         val sql = StringBuilder()
         val parameters = mutableListOf<Any?>()
         sql.append(SELECT)
@@ -283,7 +284,7 @@ abstract class AbstractSqlProvider : SqlProvider {
         if (orderBys.isNotEmpty()) {
             sql.append(SPACE + ORDER_BY)
             orderBys.joinToString(COMMA_SPACE) {
-                it.first + if (it.second) ASC else DESC
+                it.column + if (it.asc) ASC else DESC
             }.let { sql.append(it) }
         }
         appendLimit(sql, parameters, pageNumber, pageSize)

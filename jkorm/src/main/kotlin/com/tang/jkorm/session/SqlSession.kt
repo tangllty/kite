@@ -1,5 +1,6 @@
 package com.tang.jkorm.session
 
+import com.tang.jkorm.paginate.OrderItem
 import com.tang.jkorm.paginate.Page
 import java.lang.reflect.Method
 
@@ -40,7 +41,7 @@ interface SqlSession : AutoCloseable {
 
     fun <T> count(method: Method, mapperInterface: Class<T>, type: Class<T>, parameter: Any?): Long
 
-    fun <T> paginate(method: Method, mapperInterface: Class<T>, type: Class<T>, pageNumber: Long, pageSize: Long, orderBys: Array<Pair<String, Boolean>>, parameter: Any?): Page<T>
+    fun <T> paginate(method: Method, mapperInterface: Class<T>, type: Class<T>, pageNumber: Long, pageSize: Long, parameter: Any?, orderBys: Array<OrderItem>): Page<T>
 
     fun commit()
 

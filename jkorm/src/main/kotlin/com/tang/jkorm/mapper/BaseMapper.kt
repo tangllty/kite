@@ -1,6 +1,7 @@
 package com.tang.jkorm.mapper
 
 import com.tang.jkorm.config.JkOrmConfig
+import com.tang.jkorm.paginate.OrderItem
 import com.tang.jkorm.paginate.Page
 import jakarta.servlet.http.HttpServletRequest
 
@@ -173,7 +174,7 @@ interface BaseMapper<T> {
      * @param orderBy Order by
      * @return Page
      */
-    fun paginate(pageNumber: Long, pageSize: Long, orderBy: Pair<String, Boolean>): Page<T> {
+    fun paginate(pageNumber: Long, pageSize: Long, orderBy: OrderItem): Page<T> {
         return paginate(pageNumber, pageSize, arrayOf(orderBy))
     }
 
@@ -185,7 +186,7 @@ interface BaseMapper<T> {
      * @param orderBys Order by array
      * @return Page
      */
-    fun paginate(pageNumber: Long, pageSize: Long, orderBys: Array<Pair<String, Boolean>>): Page<T>
+    fun paginate(pageNumber: Long, pageSize: Long, orderBys: Array<OrderItem>): Page<T>
 
     /**
      * Paginate by page number, page size and order by
@@ -195,7 +196,7 @@ interface BaseMapper<T> {
      * @param orderBys Order by list
      * @return Page
      */
-    fun paginate(pageNumber: Long, pageSize: Long, orderBys: List<Pair<String, Boolean>>): Page<T> {
+    fun paginate(pageNumber: Long, pageSize: Long, orderBys: List<OrderItem>): Page<T> {
         return paginate(pageNumber, pageSize, orderBys.toTypedArray())
     }
 
@@ -204,12 +205,12 @@ interface BaseMapper<T> {
      *
      * @param pageNumber Page number
      * @param pageSize Page size
-     * @param orderBy Order by
      * @param type Entity
+     * @param orderBy Order by
      * @return Page
      */
-    fun paginate(pageNumber: Long, pageSize: Long, orderBy: Pair<String, Boolean>, type: T): Page<T> {
-        return paginate(pageNumber, pageSize, arrayOf(orderBy), type)
+    fun paginate(pageNumber: Long, pageSize: Long, type: T, orderBy: OrderItem): Page<T> {
+        return paginate(pageNumber, pageSize, type, arrayOf(orderBy))
     }
 
     /**
@@ -217,23 +218,23 @@ interface BaseMapper<T> {
      *
      * @param pageNumber Page number
      * @param pageSize Page size
-     * @param orderBys Order by array
      * @param type Entity
+     * @param orderBys Order by array
      * @return Page
      */
-    fun paginate(pageNumber: Long, pageSize: Long, orderBys: Array<Pair<String, Boolean>>, type: T): Page<T>
+    fun paginate(pageNumber: Long, pageSize: Long, type: T, orderBys: Array<OrderItem>): Page<T>
 
     /**
      * Paginate by page number, page size, order by and condition, ignore null value
      *
      * @param pageNumber Page number
      * @param pageSize Page size
-     * @param orderBys Order by list
      * @param type Entity
+     * @param orderBys Order by list
      * @return Page
      */
-    fun paginate(pageNumber: Long, pageSize: Long, orderBys: List<Pair<String, Boolean>>, type: T): Page<T> {
-        return paginate(pageNumber, pageSize, orderBys.toTypedArray(), type)
+    fun paginate(pageNumber: Long, pageSize: Long, type: T, orderBys: List<OrderItem>): Page<T> {
+        return paginate(pageNumber, pageSize, type, orderBys.toTypedArray())
     }
 
     /**
@@ -264,7 +265,7 @@ interface BaseMapper<T> {
      * @param orderBy Order by
      * @return Page
      */
-    fun paginate(request: HttpServletRequest, orderBy: Pair<String, Boolean>): Page<T> {
+    fun paginate(request: HttpServletRequest, orderBy: OrderItem): Page<T> {
         return paginate(request, arrayOf(orderBy))
     }
 
@@ -275,7 +276,7 @@ interface BaseMapper<T> {
      * @param orderBys Order by array
      * @return Page
      */
-    fun paginate(request: HttpServletRequest, orderBys: Array<Pair<String, Boolean>>): Page<T> {
+    fun paginate(request: HttpServletRequest, orderBys: Array<OrderItem>): Page<T> {
         return paginate(getPageNumber(request), getPageSize(request), orderBys)
     }
 
@@ -286,7 +287,7 @@ interface BaseMapper<T> {
      * @param orderBys Order by list
      * @return Page
      */
-    fun paginate(request: HttpServletRequest, orderBys: List<Pair<String, Boolean>>): Page<T> {
+    fun paginate(request: HttpServletRequest, orderBys: List<OrderItem>): Page<T> {
         return paginate(request, orderBys.toTypedArray())
     }
 
@@ -294,36 +295,36 @@ interface BaseMapper<T> {
      * Paginate by request, order by and condition, ignore null value
      *
      * @param request HttpServletRequest
+     * @param type Entity
      * @param orderBy Order by
-     * @param type Entity
      * @return Page
      */
-    fun paginate(request: HttpServletRequest, orderBy: Pair<String, Boolean>, type: T): Page<T> {
-        return paginate(request, arrayOf(orderBy), type)
+    fun paginate(request: HttpServletRequest, type: T, orderBy: OrderItem): Page<T> {
+        return paginate(request, type, arrayOf(orderBy))
     }
 
     /**
      * Paginate by request, order by and condition, ignore null value
      *
      * @param request HttpServletRequest
+     * @param type Entity
      * @param orderBys Order by array
-     * @param type Entity
      * @return Page
      */
-    fun paginate(request: HttpServletRequest, orderBys: Array<Pair<String, Boolean>>, type: T): Page<T> {
-        return paginate(getPageNumber(request), getPageSize(request), orderBys, type)
+    fun paginate(request: HttpServletRequest, type: T, orderBys: Array<OrderItem>): Page<T> {
+        return paginate(getPageNumber(request), getPageSize(request), type, orderBys)
     }
 
     /**
      * Paginate by request, order by and condition, ignore null value
      *
      * @param request HttpServletRequest
-     * @param orderBys Order by list
      * @param type Entity
+     * @param orderBys Order by list
      * @return Page
      */
-    fun paginate(request: HttpServletRequest, orderBys: List<Pair<String, Boolean>>, type: T): Page<T> {
-        return paginate(request, orderBys.toTypedArray(), type)
+    fun paginate(request: HttpServletRequest, type: T, orderBys: List<OrderItem>): Page<T> {
+        return paginate(request, type, orderBys.toTypedArray())
     }
 
     /**

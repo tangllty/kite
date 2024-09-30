@@ -1,5 +1,6 @@
 package com.tang.jkorm.constants
 
+import com.tang.jkorm.paginate.OrderItem
 import java.lang.reflect.Method
 
 /**
@@ -46,6 +47,10 @@ object BaseMethodName {
 
     private fun isAny(type: Class<*>): Boolean {
         return type == Any::class.java
+    }
+
+    private fun isOrderItem(type: Class<*>): Boolean {
+        return type == OrderItem::class.java
     }
 
     private const val INSERT = "insert"
@@ -128,11 +133,11 @@ object BaseMethodName {
             return true
         }
         if (method.parameterCount == 3 && method.firstParameterIsLong() && method.secondParameterIsLong()
-            && (method.thirdParameterIsAny() || method.parameterTypes[2].componentType == Pair::class.java)) {
+            && (method.thirdParameterIsAny() || isOrderItem(method.parameterTypes[2].componentType))) {
             return true
         }
         if (method.parameterCount == 4 && method.firstParameterIsLong() && method.secondParameterIsLong()
-            && method.parameterTypes[2].componentType == Pair::class.java && isAny(method.parameterTypes[3])) {
+            && isAny(method.parameterTypes[2]) && isOrderItem(method.parameterTypes[3].componentType)) {
             return true
         }
         return false
