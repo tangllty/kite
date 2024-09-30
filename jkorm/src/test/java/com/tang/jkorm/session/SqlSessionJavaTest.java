@@ -2,6 +2,7 @@ package com.tang.jkorm.session;
 
 import com.tang.jkorm.BaseDataTest;
 import com.tang.jkorm.paginate.OrderItem;
+import com.tang.jkorm.session.entity.Account;
 import com.tang.jkorm.session.mapper.AccountMapper;
 import org.junit.jupiter.api.Test;
 
@@ -28,6 +29,15 @@ public class SqlSessionJavaTest extends BaseDataTest {
         var session = Companion.getSqlSessionFactory().openSession();
         var accountMapper = session.getMapper(AccountMapper.class);
         var page = accountMapper.paginate(2, 5, List.of(new OrderItem<>("id", false), new OrderItem<>("username", true)));
+        session.close();
+        assertNotEquals(0, page.getTotal());
+    }
+
+    @Test
+    public void paginateOrderByFunction() {
+        var session = Companion.getSqlSessionFactory().openSession();
+        var accountMapper = session.getMapper(AccountMapper.class);
+        var page = accountMapper.paginate(2, 5, new OrderItem<>(Account::getUpdateTime, false));
         session.close();
         assertNotEquals(0, page.getTotal());
     }

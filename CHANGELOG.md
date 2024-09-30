@@ -29,3 +29,4 @@
  * Add `Pairs` class to simplify `Pair` operation in Kotlin
  * Add `OrderItem` for paginate order by
  * Add `OrderItem` for paginate order by with generics
+ * Add property reference in `OrderItem`

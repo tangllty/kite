@@ -275,10 +275,10 @@ class SqlSessionTest : BaseDataTest() {
     }
 
     @Test
-    fun paginateOderByOrderBy() {
+    fun paginateOderByKMutableProperty1() {
         val session = sqlSessionFactory.openSession()
         val accountMapper = session.getMapper(AccountMapper::class.java)
-        val page = accountMapper.paginate(2, 5, OrderItem("id", false))
+        val page = accountMapper.paginate(2, 5, OrderItem(Account::updateTime, false))
         session.close()
         assertNotEquals(0, page.total)
     }
