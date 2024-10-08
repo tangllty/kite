@@ -23,7 +23,7 @@ interface BaseMapper<T> {
     fun insert(type: T): Int
 
     /**
-     * Insert entity selective, ignore null value
+     * Insert entity selective, ignore [JkOrmConfig.selectiveStrategy] value
      *
      * @param type Entity
      * @return Inserted count
@@ -49,7 +49,7 @@ interface BaseMapper<T> {
     }
 
     /**
-     * Batch insert entity selective, ignore null value
+     * Batch insert entity selective, ignore [JkOrmConfig.selectiveStrategy] value
      *
      * @param list Entity list
      * @return Inserted count
@@ -57,7 +57,7 @@ interface BaseMapper<T> {
     fun batchInsertSelective(list: Iterable<T>): Int
 
     /**
-     * Batch insert entity selective, ignore null value
+     * Batch insert entity selective, ignore [JkOrmConfig.selectiveStrategy] value
      *
      * @param list Entity list
      * @return Inserted count
@@ -75,7 +75,7 @@ interface BaseMapper<T> {
     fun update(type: T): Int
 
     /**
-     * Update entity by where entity condition, ignore null value
+     * Update entity by where entity condition, ignore [JkOrmConfig.selectiveStrategy] value
      *
      * The primary key will also be updated, if set in the value entity
      *
@@ -86,7 +86,7 @@ interface BaseMapper<T> {
     fun update(type: T, condition: T): Int
 
     /**
-     * Update entity selective by primary key, ignore null value
+     * Update entity selective by primary key, ignore [JkOrmConfig.selectiveStrategy] value
      *
      * @param type Entity
      * @return Updated count
@@ -94,7 +94,7 @@ interface BaseMapper<T> {
     fun updateSelective(type: T): Int
 
     /**
-     * Delete entity by condition, all fields are used as condition, ignore null value
+     * Delete entity by condition, all fields are used as condition, ignore [JkOrmConfig.selectiveStrategy] value
      *
      * @param type Entity
      * @return Deleted count
@@ -117,7 +117,7 @@ interface BaseMapper<T> {
     fun select(): List<T>
 
     /**
-     * Select by condition, ignore null value
+     * Select by condition, ignore [JkOrmConfig.selectiveStrategy] value
      *
      * @param type Entity
      * @return Entity list
@@ -140,7 +140,7 @@ interface BaseMapper<T> {
     fun count(): Long
 
     /**
-     * Count by condition, ignore null value
+     * Count by condition, ignore [JkOrmConfig.selectiveStrategy] value
      *
      * @param type Entity
      * @return Count
@@ -157,7 +157,7 @@ interface BaseMapper<T> {
     fun paginate(pageNumber: Long, pageSize: Long): Page<T>
 
     /**
-     * Paginate by page number, page size and condition, ignore null value
+     * Paginate by page number, page size and condition, ignore [JkOrmConfig.selectiveStrategy] value
      *
      * @param pageNumber Page number
      * @param pageSize Page size
@@ -201,7 +201,7 @@ interface BaseMapper<T> {
     }
 
     /**
-     * Paginate by page number, page size, order by and condition, ignore null value
+     * Paginate by page number, page size, order by and condition, ignore [JkOrmConfig.selectiveStrategy] value
      *
      * @param pageNumber Page number
      * @param pageSize Page size
@@ -214,7 +214,7 @@ interface BaseMapper<T> {
     }
 
     /**
-     * Paginate by page number, page size, order by and condition, ignore null value
+     * Paginate by page number, page size, order by and condition, ignore [JkOrmConfig.selectiveStrategy] value
      *
      * @param pageNumber Page number
      * @param pageSize Page size
@@ -225,7 +225,7 @@ interface BaseMapper<T> {
     fun paginate(pageNumber: Long, pageSize: Long, type: T, orderBys: Array<OrderItem<T>>): Page<T>
 
     /**
-     * Paginate by page number, page size, order by and condition, ignore null value
+     * Paginate by page number, page size, order by and condition, ignore [JkOrmConfig.selectiveStrategy] value
      *
      * @param pageNumber Page number
      * @param pageSize Page size
@@ -248,7 +248,7 @@ interface BaseMapper<T> {
     }
 
     /**
-     * Paginate by request and condition, ignore null value
+     * Paginate by request and condition, ignore [JkOrmConfig.selectiveStrategy] value
      *
      * @param request HttpServletRequest
      * @param type Entity
@@ -292,7 +292,7 @@ interface BaseMapper<T> {
     }
 
     /**
-     * Paginate by request, order by and condition, ignore null value
+     * Paginate by request, order by and condition, ignore [JkOrmConfig.selectiveStrategy] value
      *
      * @param request HttpServletRequest
      * @param type Entity
@@ -304,7 +304,7 @@ interface BaseMapper<T> {
     }
 
     /**
-     * Paginate by request, order by and condition, ignore null value
+     * Paginate by request, order by and condition, ignore [JkOrmConfig.selectiveStrategy] value
      *
      * @param request HttpServletRequest
      * @param type Entity
@@ -316,7 +316,7 @@ interface BaseMapper<T> {
     }
 
     /**
-     * Paginate by request, order by and condition, ignore null value
+     * Paginate by request, order by and condition, ignore [JkOrmConfig.selectiveStrategy] value
      *
      * @param request HttpServletRequest
      * @param type Entity

@@ -1,5 +1,6 @@
 package com.tang.jkorm.sql.provider
 
+import com.tang.jkorm.config.JkOrmConfig
 import com.tang.jkorm.constants.SqlString.AND
 import com.tang.jkorm.constants.SqlString.ASC
 import com.tang.jkorm.constants.SqlString.COMMA_SPACE
@@ -36,16 +37,7 @@ abstract class AbstractSqlProvider : SqlProvider {
     abstract override fun providerType(): ProviderType
 
     override fun selectiveStrategy(any: Any?): Boolean {
-        if (any == null) {
-            return false
-        }
-        if (any is String) {
-            return any.isNotEmpty()
-        }
-        if (any is Int) {
-            return any != 0
-        }
-        return true
+        return JkOrmConfig.INSTANCE.selectiveStrategy.apply(any)
     }
 
     override fun appendColumns(sql: StringBuilder, fieldList: List<Field>) {

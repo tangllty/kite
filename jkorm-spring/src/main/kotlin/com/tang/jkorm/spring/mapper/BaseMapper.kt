@@ -1,5 +1,6 @@
 package com.tang.jkorm.spring.mapper
 
+import com.tang.jkorm.config.JkOrmConfig
 import com.tang.jkorm.paginate.OrderItem
 import com.tang.jkorm.paginate.Page
 import jakarta.servlet.http.HttpServletRequest
@@ -23,7 +24,7 @@ interface BaseMapper<T> : com.tang.jkorm.mapper.BaseMapper<T> {
     }
 
     /**
-     * Paginate by condition, ignore null value
+     * Paginate by condition, ignore [JkOrmConfig.selectiveStrategy] value
      *
      * @param type Entity type
      * @return Page
@@ -63,7 +64,7 @@ interface BaseMapper<T> : com.tang.jkorm.mapper.BaseMapper<T> {
     }
 
     /**
-     * Paginate by order by and condition, ignore null value
+     * Paginate by order by and condition, ignore [JkOrmConfig.selectiveStrategy] value
      *
      * @param type Entity type
      * @param orderBy Order by
@@ -74,7 +75,7 @@ interface BaseMapper<T> : com.tang.jkorm.mapper.BaseMapper<T> {
     }
 
     /**
-     * Paginate by order by and condition, ignore null value
+     * Paginate by order by and condition, ignore [JkOrmConfig.selectiveStrategy] value
      *
      * @param type Entity type
      * @param orderBys Order by array
@@ -85,7 +86,7 @@ interface BaseMapper<T> : com.tang.jkorm.mapper.BaseMapper<T> {
     }
 
     /**
-     * Paginate by order by and condition, ignore null value
+     * Paginate by order by and condition, ignore [JkOrmConfig.selectiveStrategy] value
      *
      * @param type Entity type
      * @param orderBys Order by list
