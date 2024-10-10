@@ -4,7 +4,33 @@
 
 ## Project Description
 
-jkorm is a lightweight ORM framework for Java, which is designed to simplify the development of database operations. It supports multiple databases, such as PostgreSQL, MySQL, Oracle, SQL Server, SQLite, etc., and provides a variety of APIs to facilitate the development of database operations.
+JkOrm is a lightweight ORM framework written in Kotlin, which is designed to simplify the development of database operations. It supports multiple databases, such as PostgreSQL, MySQL, Derby, etc., and provides a variety of APIs to facilitate the development of database operations.
+
+## Usage
+
+ > Maven central: [jkorm-spring-boot-starter](https://central.sonatype.com/artifact/io.github.tangllty/jkorm-spring-boot-starter)
+
+ 1. Add the following dependencies to your project:
+
+* Maven
+
+```xml
+<dependency>
+   <groupId>io.github.tangllty</groupId>
+   <artifactId>jkorm-spring-boot-starter</artifactId>
+   <version>1.0.0</version>
+</dependency>
+```
+
+* Gradle
+
+```kts
+implementation("io.github.tangllty:jkorm-spring-boot-starter:1.0.0")
+```
+
+ 2. Configure your database connection information in the `application.properties` file
+
+ 3. Extend the `BaseMapper` interface to create a Mapper interface
 
 ## Contributing
 

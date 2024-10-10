@@ -4,7 +4,33 @@
 
 ## 项目简介
 
-jkorm 是一个轻量级的 Java ORM 框架，旨在简化数据库操作的开发。它支持多种数据库，如 PostgreSQL、MySQL、Oracle、SQL Server、SQLite 等，并提供了多种 API 来方便数据库操作的开发。
+JkOrm 是一个使用 Kotlin 编写的轻量级 ORM 框架，旨在简化数据库操作的开发。它支持多种数据库，如 PostgreSQL、MySQL、Derby 等，并提供了多种 API 来方便数据库操作的开发。
+
+## 使用
+
+> Maven central: [jkorm-spring-boot-starter](https://central.sonatype.com/artifact/io.github.tangllty/jkorm-spring-boot-starter)
+
+1. 将以下依赖添加到您的项目中：
+
+* Maven
+
+```xml
+<dependency>
+   <groupId>io.github.tangllty</groupId>
+   <artifactId>jkorm-spring-boot-starter</artifactId>
+   <version>1.0.0</version>
+</dependency>
+```
+
+* Gradle
+
+```kts
+
+implementation("io.github.tangllty:jkorm-spring-boot-starter:1.0.0")
+```
+
+2. 在 `application.properties` 文件中配置您的数据库连接信息
+3. 集成 `BaseMapper` 接口以创建一个 Mapper 接口
 
 ## 贡献
 
