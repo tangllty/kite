@@ -49,7 +49,7 @@ publishing {
             artifact(tasks["sourcesJar"])
             artifact(tasks["javadocJar"])
             pom {
-                name.set("jkorm")
+                name.set(project.name)
                 description.set("A simple ORM framework written in Kotlin")
                 url.set("https://github.com/tangllty/jkorm")
                 licenses {
