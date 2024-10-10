@@ -1,5 +1,6 @@
 package com.tang.jkorm.config
 
+import com.tang.jkorm.config.defaults.DefaultSelectiveStrategy
 import com.tang.jkorm.sql.provider.derby.DerbySqlProvider
 import com.tang.jkorm.sql.provider.mysql.MysqlSqlProvider
 import com.tang.jkorm.sql.provider.postgresql.PostgresqlSqlProvider
@@ -22,18 +23,7 @@ class JkOrmConfig {
 
     var pageSizeParameter = "pageSize"
 
-    var selectiveStrategy: Function<Any?, Boolean> = Function {
-        if (it == null) {
-            false
-        }
-        if (it is String) {
-            it.isNotEmpty()
-        }
-        if (it is Int) {
-            it != 0
-        }
-        true
-    }
+    var selectiveStrategy = (Function<Any?, Boolean> { DefaultSelectiveStrategy.isSelective(it) })
 
     val urlProviders = mapOf(
         "postgresql" to PostgresqlSqlProvider(),
