@@ -18,14 +18,14 @@ JkOrm is a lightweight ORM framework written in Kotlin, which is designed to sim
 <dependency>
    <groupId>io.github.tangllty</groupId>
    <artifactId>jkorm-spring-boot-starter</artifactId>
-   <version>1.0.0</version>
+   <version>1.0.1</version>
 </dependency>
 ```
 
 * Gradle
 
 ```kts
-implementation("io.github.tangllty:jkorm-spring-boot-starter:1.0.0")
+implementation("io.github.tangllty:jkorm-spring-boot-starter:1.0.1")
 ```
 
  2. Configure your database connection information in the `application.properties` file
