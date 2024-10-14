@@ -252,7 +252,6 @@ class SqlSessionTest : BaseDataTest() {
         val session = sqlSessionFactory.openSession()
         val accountMapper = session.getMapper(AccountMapper::class.java)
         val count = accountMapper.count()
-        accountMapper.selectById(1, "a")
         session.close()
         assertNotEquals(0, count)
     }

@@ -191,7 +191,6 @@ interface BaseMapper<T> {
      */
     fun selectById(id: Long): T?
 
-    fun selectById(id: Long, a: String): T?
     /**
      * Count all
      *
