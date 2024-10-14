@@ -21,6 +21,8 @@ interface SqlProvider {
 
     fun <T> appendWhere(sql: StringBuilder, parameters: MutableList<Any?>, clazz: Class<T>, entity: Any)
 
+    fun <T> appendOrderBy(sql: StringBuilder, orderBys: Array<OrderItem<T>>)
+
     fun appendLimit(sql: StringBuilder, parameters: MutableList<Any?>, pageNumber: Long, pageSize: Long)
 
     fun insert(entity: Any): SqlStatement
@@ -39,7 +41,7 @@ interface SqlProvider {
 
     fun <T> delete(clazz: Class<T>, entity: Any): SqlStatement
 
-    fun <T> select(clazz: Class<T>, entity: Any?): SqlStatement
+    fun <T> select(clazz: Class<T>, entity: Any?, orderBys: Array<OrderItem<T>>): SqlStatement
 
     fun <T> count(clazz: Class<T>, entity: Any?): SqlStatement
 

@@ -201,10 +201,19 @@ class SqlSessionTest : BaseDataTest() {
     }
 
     @Test
-    fun selectAll() {
+    fun select() {
         val session = sqlSessionFactory.openSession()
         val accountMapper = session.getMapper(AccountMapper::class.java)
         val accounts = accountMapper.select()
+        session.close()
+        assertTrue(accounts.isNotEmpty())
+    }
+
+    @Test
+    fun selectOrderBy() {
+        val session = sqlSessionFactory.openSession()
+        val accountMapper = session.getMapper(AccountMapper::class.java)
+        val accounts = accountMapper.select(OrderItem("id", false))
         session.close()
         assertTrue(accounts.isNotEmpty())
     }
@@ -229,10 +238,21 @@ class SqlSessionTest : BaseDataTest() {
     }
 
     @Test
+    fun selectConditionOrderBy() {
+        val session = sqlSessionFactory.openSession()
+        val accountMapper = session.getMapper(AccountMapper::class.java)
+        val account = Account(username = "admin")
+        val accounts = accountMapper.select(account, OrderItem("id", false))
+        session.close()
+        assertTrue(accounts.isNotEmpty())
+    }
+
+    @Test
     fun count () {
         val session = sqlSessionFactory.openSession()
         val accountMapper = session.getMapper(AccountMapper::class.java)
         val count = accountMapper.count()
+        accountMapper.selectById(1, "a")
         session.close()
         assertNotEquals(0, count)
     }

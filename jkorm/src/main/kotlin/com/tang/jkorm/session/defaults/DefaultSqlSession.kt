@@ -49,6 +49,15 @@ class DefaultSqlSession(
         return args?.get(2) ?: throw IllegalArgumentException("Third parameter is null")
     }
 
+    private fun <T> toOrderBys(any: Any?): Array<OrderItem<T>> {
+        if (any == null) {
+            return emptyArray()
+        }
+        val orderByArray = any as Array<*>
+        val orderBys = orderByArray.filterIsInstance<OrderItem<T>>().toTypedArray()
+        return orderBys
+    }
+
     @Deprecated("This function has unchecked cast warning and I don't know how to fix it.")
     private fun <M, T> getGenericType(mapperInterface: Class<M>): Class<T> {
         val baseMapper = mapperInterface.genericInterfaces[0]
@@ -99,12 +108,18 @@ class DefaultSqlSession(
             BaseMethodName.isUpdateSelective(method) -> updateSelective(method, mapperInterface, getFirstArg(args))
             BaseMethodName.isDelete(method) -> delete(method, mapperInterface, type, getFirstArg(args))
             BaseMethodName.isDeleteById(method) -> deleteById(method, mapperInterface, type, getFirstArg(args))
-            BaseMethodName.isSelect(method) -> selectList(method, mapperInterface, type, args?.first())
+            BaseMethodName.isSelect(method) -> processSelect(method, mapperInterface, type, args)
             BaseMethodName.isSelectById(method) -> selectById(method, mapperInterface, type, getFirstArg(args))
             BaseMethodName.isCount(method) -> count(method, mapperInterface, type, args?.first())
             BaseMethodName.isPaginate(method) -> processPaginate(method, mapperInterface, type, args)
-            else -> throw IllegalArgumentException("Unknown method: ${method.name}")
+            else -> throw IllegalArgumentException("Unknown method: ${getMethodSignature(method)}")
         }
+    }
+
+    private fun getMethodSignature(method: Method): String {
+        val methodName = method.name
+        val parameterTypes = method.parameterTypes.joinToString(", ") { it.simpleName }
+        return "$methodName($parameterTypes)"
     }
 
     override fun <T> insert(method: Method, mapperInterface: Class<T>, parameter: Any): Int {
@@ -174,8 +189,24 @@ class DefaultSqlSession(
         return returnRows(method, mapperInterface, delete, rows)
     }
 
-    override fun <T> selectList(method: Method, mapperInterface: Class<T>, type: Class<T>, parameter: Any?): List<T> {
-        val select = sqlProvider.select(type, parameter)
+    private fun <T> processSelect(method: Method, mapperInterface: Class<T>, type: Class<T>, args: Array<out Any>?): List<T> {
+        if (args == null || args.isEmpty()) {
+            return selectList(method, mapperInterface, type, null, emptyArray())
+        }
+        if (args.size == 1) {
+            if (args[0].javaClass.isArray) {
+                return selectList(method, mapperInterface, type, null, toOrderBys(args[0]))
+            }
+            return selectList(method, mapperInterface, type, args[0], emptyArray())
+        }
+        if (args.size == 2) {
+            return selectList(method, mapperInterface, type, args[0], toOrderBys(args[1]))
+        }
+        return selectList(method, mapperInterface, type, null, emptyArray())
+    }
+
+    override fun <T> selectList(method: Method, mapperInterface: Class<T>, type: Class<T>, parameter: Any?, orderBys: Array<OrderItem<T>>): List<T> {
+        val select = sqlProvider.select(type, parameter, orderBys)
         val result = executor.query(select, type)
         log(method, mapperInterface, select, result.size)
         return result
@@ -186,7 +217,7 @@ class DefaultSqlSession(
         val idField = Reflects.getIdField(type)
         Reflects.makeAccessible(idField, entity as Any)
         idField.set(entity, parameter)
-        val list = selectList(method, mapperInterface, type, entity)
+        val list = selectList(method, mapperInterface, type, entity, emptyArray())
         if (list.size > 1) {
             throw IllegalArgumentException("Too many results, expected one, but got ${list.size}")
         }

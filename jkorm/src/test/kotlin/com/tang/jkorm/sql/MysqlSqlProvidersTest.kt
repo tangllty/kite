@@ -99,14 +99,14 @@ class MysqlSqlProvidersTest {
 
     @Test
     fun select() {
-        val statement = sqlProvider.select(Account::class.java, null)
+        val statement = sqlProvider.select(Account::class.java, null, emptyArray())
         assertEquals("select $columns from account", statement.sql)
     }
 
     @Test
     fun selectCondition() {
         val account = Account(username = "tang")
-        val statement = sqlProvider.select(Account::class.java, account)
+        val statement = sqlProvider.select(Account::class.java, account, emptyArray())
         assertEquals("select $columns from account where username = ?", statement.sql)
         assertEquals("select $columns from account where username = 'tang'", statement.getActualSql())
     }

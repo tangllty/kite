@@ -1,3 +1,9 @@
+## 1.0.2
+
+### Features
+
+ * Add order by for select query
+
 ## 1.0.1
 
 ### Bug Fixes

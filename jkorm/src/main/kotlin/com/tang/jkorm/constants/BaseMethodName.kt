@@ -108,7 +108,14 @@ object BaseMethodName {
     private const val SELECT = "select"
 
     fun isSelect(method: Method): Boolean {
-        return method.name == SELECT && (method.countIsZero() || method.countIsOne() && method.firstParameterIsAny())
+        if (method.name != SELECT) return false
+        if (method.countIsZero()) return true
+        if (method.countIsOne()) {
+            if (method.firstParameterIsAny()) return true
+            if (isOrderItem(method.parameterTypes[0].componentType)) return true
+        }
+        if (method.countIsTwo() && method.firstParameterIsAny() && isOrderItem(method.parameterTypes[1].componentType)) return true
+        return false
     }
 
     private const val SELECT_BY_ID = "selectById"
@@ -126,20 +133,15 @@ object BaseMethodName {
     private const val PAGINATE = "paginate"
 
     fun isPaginate(method: Method): Boolean {
-        if (method.name != PAGINATE) {
-            return false
+        if (method.name != PAGINATE) return false
+        if (!method.firstParameterIsLong() || !method.secondParameterIsLong()) return false
+        if (method.countIsTwo()) return true
+        if (method.parameterCount == 3) {
+            if (method.thirdParameterIsAny()) return true
+            if (isOrderItem(method.parameterTypes[2].componentType)) return true
         }
-        if (method.countIsTwo() && method.firstParameterIsLong() && method.secondParameterIsLong()) {
-            return true
-        }
-        if (method.parameterCount == 3 && method.firstParameterIsLong() && method.secondParameterIsLong()
-            && (method.thirdParameterIsAny() || isOrderItem(method.parameterTypes[2].componentType))) {
-            return true
-        }
-        if (method.parameterCount == 4 && method.firstParameterIsLong() && method.secondParameterIsLong()
-            && isAny(method.parameterTypes[2]) && isOrderItem(method.parameterTypes[3].componentType)) {
-            return true
-        }
+        if (method.parameterCount == 4 && isAny(method.parameterTypes[2])
+            && isOrderItem(method.parameterTypes[3].componentType)) return true
         return false
     }
 

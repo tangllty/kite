@@ -55,6 +55,15 @@ abstract class AbstractSqlProvider : SqlProvider {
         }.let { sql.append(it) }
     }
 
+    override fun <T> appendOrderBy(sql: StringBuilder, orderBys: Array<OrderItem<T>>) {
+        if (orderBys.isNotEmpty()) {
+            sql.append(SPACE + ORDER_BY)
+            orderBys.joinToString(COMMA_SPACE) {
+                it.column + if (it.asc) ASC else DESC
+            }.let { sql.append(it) }
+        }
+    }
+
     override fun appendLimit(sql: StringBuilder, parameters: MutableList<Any?>, pageNumber: Long, pageSize: Long) {
         sql.append(LIMIT).append(QUESTION_MARK).append(COMMA_SPACE).append(QUESTION_MARK)
         parameters.add((pageNumber - 1) * pageSize)
@@ -242,7 +251,7 @@ abstract class AbstractSqlProvider : SqlProvider {
         return SqlStatement(getSql(sql), parameters)
     }
 
-    override fun <T> select(clazz: Class<T>, entity: Any?): SqlStatement {
+    override fun <T> select(clazz: Class<T>, entity: Any?, orderBys: Array<OrderItem<T>>): SqlStatement {
         val sql = StringBuilder()
         val parameters = mutableListOf<Any?>()
         sql.append(SELECT)
@@ -251,6 +260,7 @@ abstract class AbstractSqlProvider : SqlProvider {
         entity?.let {
             appendWhere(sql, parameters, clazz, entity)
         }
+        appendOrderBy(sql, orderBys)
         return SqlStatement(getSql(sql), parameters)
     }
 
@@ -273,12 +283,7 @@ abstract class AbstractSqlProvider : SqlProvider {
         if (entity != null) {
             appendWhere(sql, parameters, clazz, entity)
         }
-        if (orderBys.isNotEmpty()) {
-            sql.append(SPACE + ORDER_BY)
-            orderBys.joinToString(COMMA_SPACE) {
-                it.column + if (it.asc) ASC else DESC
-            }.let { sql.append(it) }
-        }
+        appendOrderBy(sql, orderBys)
         appendLimit(sql, parameters, pageNumber, pageSize)
         return SqlStatement(getSql(sql), parameters)
     }

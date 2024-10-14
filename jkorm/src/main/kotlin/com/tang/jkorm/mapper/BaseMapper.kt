@@ -117,12 +117,71 @@ interface BaseMapper<T> {
     fun select(): List<T>
 
     /**
+     * Select all by order by
+     *
+     * @param orderBy Order by
+     * @return Entity list
+     */
+    fun select(orderBy: OrderItem<T>): List<T> {
+        return select(arrayOf(orderBy))
+    }
+
+    /**
+     * Select all by order by
+     *
+     * @param orderBys Order by
+     * @return Entity list
+     */
+    fun select(orderBys: Array<OrderItem<T>>): List<T>
+
+    /**
+     * Select all by order by
+     *
+     * @param orderBys Order by list
+     * @return Entity list
+     */
+    fun select(orderBys: List<OrderItem<T>>): List<T> {
+        return select(orderBys.toTypedArray())
+    }
+
+    /**
      * Select by condition, ignore [JkOrmConfig.selectiveStrategy] value
      *
      * @param type Entity
      * @return Entity list
      */
     fun select(type: T): List<T>
+
+    /**
+     * Select by condition and order by
+     *
+     * @param type Entity
+     * @param orderBy Order by
+     * @return Entity list
+     */
+    fun select(type: T, orderBy: OrderItem<T>): List<T> {
+        return select(type, arrayOf(orderBy))
+    }
+
+    /**
+     * Select by condition and order by
+     *
+     * @param type Entity
+     * @param orderBys Order by array
+     * @return Entity list
+     */
+    fun select(type: T, orderBys: Array<OrderItem<T>>): List<T>
+
+    /**
+     * Select by condition and order by
+     *
+     * @param type Entity
+     * @param orderBys Order by list
+     * @return Entity list
+     */
+    fun select(type: T, orderBys: List<OrderItem<T>>): List<T> {
+        return select(type, orderBys.toTypedArray())
+    }
 
     /**
      * Select by primary key
@@ -132,6 +191,7 @@ interface BaseMapper<T> {
      */
     fun selectById(id: Long): T?
 
+    fun selectById(id: Long, a: String): T?
     /**
      * Count all
      *
