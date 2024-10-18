@@ -23,8 +23,8 @@ class OrderItem<T> {
     }
 
     constructor(property: KMutableProperty1<T, *>, asc: Boolean = true) {
-        var filed = property.javaField
-        this.column = Reflects.getColumnName(filed!!)
+        val filed = property.javaField!!
+        this.column = Reflects.getColumnName(filed)
         this.asc = asc
     }
 
