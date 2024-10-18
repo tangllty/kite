@@ -248,7 +248,7 @@ class SqlSessionTest : BaseDataTest() {
     }
 
     @Test
-    fun count () {
+    fun count() {
         val session = sqlSessionFactory.openSession()
         val accountMapper = session.getMapper(AccountMapper::class.java)
         val count = accountMapper.count()
