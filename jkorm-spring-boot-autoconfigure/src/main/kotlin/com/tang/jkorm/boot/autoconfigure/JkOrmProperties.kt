@@ -2,6 +2,7 @@ package com.tang.jkorm.boot.autoconfigure
 
 import com.tang.jkorm.config.JkOrmConfig
 import org.springframework.boot.context.properties.ConfigurationProperties
+import java.util.function.Function
 import kotlin.reflect.full.memberProperties
 
 /**

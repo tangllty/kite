@@ -3,6 +3,7 @@ package com.tang.jkorm.mapper
 import com.tang.jkorm.config.JkOrmConfig
 import com.tang.jkorm.paginate.OrderItem
 import com.tang.jkorm.paginate.Page
+import com.tang.jkorm.wrapper.update.UpdateWrapper
 import jakarta.servlet.http.HttpServletRequest
 
 /**
@@ -84,6 +85,18 @@ interface BaseMapper<T> {
      * @return Updated count
      */
     fun update(type: T, condition: T): Int
+
+    /**
+     * Update entity by update wrapper
+     */
+    fun update(updateWrapper: UpdateWrapper): Int
+
+    /**
+     * Update entity by update wrapper
+     */
+    fun update(): UpdateWrapper {
+        return UpdateWrapper(this)
+    }
 
     /**
      * Update entity selective by primary key, ignore [JkOrmConfig.selectiveStrategy] value

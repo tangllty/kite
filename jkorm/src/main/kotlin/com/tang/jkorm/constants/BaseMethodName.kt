@@ -1,6 +1,7 @@
 package com.tang.jkorm.constants
 
 import com.tang.jkorm.paginate.OrderItem
+import com.tang.jkorm.wrapper.update.UpdateWrapper
 import java.lang.reflect.Method
 
 /**
@@ -90,6 +91,10 @@ object BaseMethodName {
 
     fun isUpdateSelective(method: Method): Boolean {
         return method.name == UPDATE_SELECTIVE && method.countIsOne() && method.firstParameterIsAny()
+    }
+
+    fun isUpdateWrapper(method: Method): Boolean {
+        return method.name == UPDATE && method.countIsOne() && method.parameterTypes[0].kotlin == UpdateWrapper::class
     }
 
     private const val DELETE = "delete"

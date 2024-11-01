@@ -11,6 +11,7 @@ import com.tang.jkorm.session.SqlSession
 import com.tang.jkorm.sql.SqlStatement
 import com.tang.jkorm.sql.provider.SqlProvider
 import com.tang.jkorm.utils.Reflects
+import com.tang.jkorm.wrapper.update.UpdateWrapper
 import org.slf4j.LoggerFactory
 import java.lang.reflect.Method
 import java.lang.reflect.ParameterizedType
@@ -106,6 +107,7 @@ class DefaultSqlSession(
             BaseMethodName.isUpdate(method) -> update(method, mapperInterface, getFirstArg(args))
             BaseMethodName.isUpdateCondition(method) -> update(method, mapperInterface, getFirstArg(args), getSecondArg(args))
             BaseMethodName.isUpdateSelective(method) -> updateSelective(method, mapperInterface, getFirstArg(args))
+            BaseMethodName.isUpdateWrapper(method) -> updateWrapper(method, mapperInterface, type, getFirstArg(args))
             BaseMethodName.isDelete(method) -> delete(method, mapperInterface, type, getFirstArg(args))
             BaseMethodName.isDeleteById(method) -> deleteById(method, mapperInterface, type, getFirstArg(args))
             BaseMethodName.isSelect(method) -> processSelect(method, mapperInterface, type, args)
@@ -171,6 +173,13 @@ class DefaultSqlSession(
         val update = sqlProvider.updateSelective(parameter)
         val rows = executor.update(update, parameter)
         return returnRows(method, mapperInterface, update, rows)
+    }
+
+    fun <T> updateWrapper(method: Method, mapperInterface: Class<T>, type: Class<T>, parameter: Any): Int {
+        val updateWrapper = parameter as UpdateWrapper
+        val sqlStatement = updateWrapper.getSqlStatement()
+        val rows = executor.update(sqlStatement, parameter)
+        return returnRows(method, mapperInterface, sqlStatement, rows)
     }
 
     override fun <T> delete(method: Method, mapperInterface: Class<T>, type: Class<T>, parameter: Any): Int {

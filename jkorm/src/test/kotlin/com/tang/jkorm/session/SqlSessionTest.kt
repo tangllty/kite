@@ -7,6 +7,7 @@ import com.tang.jkorm.session.entity.Role
 import com.tang.jkorm.session.mapper.AccountJavaMapper
 import com.tang.jkorm.session.mapper.AccountMapper
 import com.tang.jkorm.session.mapper.RoleMapper
+import com.tang.jkorm.wrapper.update.UpdateWrapper
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Test
@@ -174,6 +175,39 @@ class SqlSessionTest : BaseDataTest() {
         val accountMapper = session.getMapper(AccountMapper::class.java)
         val account = Account(id = 1, username = "tang")
         val rows = accountMapper.updateSelective(account)
+        session.rollback()
+        session.close()
+        assertEquals(1, rows)
+    }
+
+    @Test
+    fun updateWrapper() {
+        val session = sqlSessionFactory.openSession()
+        val accountMapper = session.getMapper(AccountMapper::class.java)
+        val updateWrapper = UpdateWrapper.create()
+            .from(Account::class.java)
+            .set(Account::username, "tang")
+            .set("password", "123456", false)
+            .where()
+            .eq(Account::id, 1, true)
+            .build()
+        val rows = accountMapper.update(updateWrapper)
+        session.rollback()
+        session.close()
+        assertEquals(1, rows)
+    }
+
+    @Test
+    fun updateWrapperPost() {
+        val session = sqlSessionFactory.openSession()
+        val accountMapper = session.getMapper(AccountMapper::class.java)
+        val rows = accountMapper.update()
+            .from(Account::class.java)
+            .set(Account::username, "tang")
+            .set("password", "123456", false)
+            .where()
+            .eq(Account::id, 1)
+            .execute()
         session.rollback()
         session.close()
         assertEquals(1, rows)

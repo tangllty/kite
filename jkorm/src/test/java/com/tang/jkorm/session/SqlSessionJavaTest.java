@@ -4,10 +4,12 @@ import com.tang.jkorm.BaseDataTest;
 import com.tang.jkorm.paginate.OrderItem;
 import com.tang.jkorm.session.entity.Account;
 import com.tang.jkorm.session.mapper.AccountMapper;
+import com.tang.jkorm.wrapper.update.UpdateWrapper;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 /**
@@ -40,6 +42,39 @@ public class SqlSessionJavaTest extends BaseDataTest {
         var page = accountMapper.paginate(2, 5, new OrderItem<>(Account::getUpdateTime, false));
         session.close();
         assertNotEquals(0, page.getTotal());
+    }
+
+    @Test
+    public void updateWrapper() {
+        var session = Companion.getSqlSessionFactory().openSession();
+        var accountMapper = session.getMapper(AccountMapper.class);
+        var updateWrapper = UpdateWrapper.create()
+            .from(Account.class)
+            .set(Account::getUsername, "tang")
+            .set("password", "123456", false)
+            .where()
+            .eq(Account::getId, 1, true)
+            .build();
+        var rows = accountMapper.update(updateWrapper);
+        session.rollback();
+        session.close();
+        assertEquals(1, rows);
+    }
+
+    @Test
+    public void updateWrapperPost() {
+        var session = Companion.getSqlSessionFactory().openSession();
+        var accountMapper = session.getMapper(AccountMapper.class);
+        var rows = accountMapper.update()
+            .from(Account.class)
+            .set(Account::getUsername, "tang")
+            .set("password", "123456", false)
+            .where()
+            .eq(Account::getId, 1)
+            .execute();
+        session.rollback();
+        session.close();
+        assertEquals(1, rows);
     }
 
 }
