@@ -22,7 +22,6 @@ object BaseMethodName {
 
     private fun Method.firstParameterIsAny(): Boolean {
         return isAny(parameterTypes[0])
-        return parameterTypes[0] is Any
     }
 
     private fun Method.firstParameterIsIterable(): Boolean {
