@@ -71,7 +71,7 @@ abstract class AbstractSqlProvider : SqlProvider {
     }
 
     override fun getSql(sql: StringBuilder): String {
-        return sql.toString().lowercase()
+        return JkOrmConfig.INSTANCE.getSql(sql)
     }
 
     override fun insert(entity: Any): SqlStatement {

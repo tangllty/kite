@@ -28,6 +28,10 @@ open class JkOrmProperties {
 
     var pageSizeParameter: String = JkOrmConfig.INSTANCE.pageSizeParameter
 
+    var selectiveStrategy: Function<Any?, Boolean> = JkOrmConfig.INSTANCE.selectiveStrategy
+
+    var sqlLowercase: Boolean = JkOrmConfig.INSTANCE.sqlLowercase
+
     fun apply() {
         val fields = this.javaClass.declaredFields
         for (field in fields) {

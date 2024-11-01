@@ -25,11 +25,25 @@ class JkOrmConfig {
 
     var selectiveStrategy = (Function<Any?, Boolean> { DefaultSelectiveStrategy.isSelective(it) })
 
+    var sqlLowercase = true
+
     val urlProviders = mapOf(
         "postgresql" to PostgresqlSqlProvider(),
         "mysql" to MysqlSqlProvider(),
         "derby" to DerbySqlProvider()
     )
+
+    fun getSql(sql: StringBuilder): String {
+        return getSql(sql.toString())
+    }
+
+    fun getSql(sql: String): String {
+        return if (sqlLowercase) {
+            sql.lowercase()
+        } else {
+            sql.uppercase()
+        }
+    }
 
     companion object {
 
