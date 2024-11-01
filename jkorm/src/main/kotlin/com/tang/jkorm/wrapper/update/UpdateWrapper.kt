@@ -43,7 +43,8 @@ class UpdateWrapper {
      */
     fun from(table: String): UpdateSetWrapper {
         this.table = table
-        return updateSetWrapper.apply { updateSetWrapper = UpdateSetWrapper(this@UpdateWrapper) }
+        this.updateSetWrapper = UpdateSetWrapper(this)
+        return updateSetWrapper
     }
 
     /**

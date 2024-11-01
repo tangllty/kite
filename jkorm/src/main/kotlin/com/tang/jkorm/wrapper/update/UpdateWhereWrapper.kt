@@ -82,7 +82,8 @@ class UpdateWhereWrapper(val updateWrapper: UpdateWrapper) {
     }
 
     fun build(): UpdateWrapper {
-        return updateWrapper.apply { updateWhereWrapper = this@UpdateWhereWrapper }
+        this.updateWrapper.updateWhereWrapper = this
+        return updateWrapper
     }
 
     fun execute(): Int {

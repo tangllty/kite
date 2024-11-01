@@ -45,7 +45,8 @@ class UpdateSetWrapper(val updateWrapper: UpdateWrapper) {
     }
 
     fun where(): UpdateWhereWrapper {
-        return updateWrapper.updateWhereWrapper.apply { updateWrapper.updateWhereWrapper = this }
+        this.updateWrapper.updateWhereWrapper = UpdateWhereWrapper(updateWrapper)
+        return updateWrapper.updateWhereWrapper
     }
 
     fun appendSql(sql: StringBuilder, parameters: MutableList<Any?>) {
