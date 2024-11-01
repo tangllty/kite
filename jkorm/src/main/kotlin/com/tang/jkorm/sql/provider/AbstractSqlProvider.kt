@@ -6,7 +6,7 @@ import com.tang.jkorm.constants.SqlString.ASC
 import com.tang.jkorm.constants.SqlString.COMMA_SPACE
 import com.tang.jkorm.constants.SqlString.DELETE_FROM
 import com.tang.jkorm.constants.SqlString.DESC
-import com.tang.jkorm.constants.SqlString.EQUAL_BRACKET
+import com.tang.jkorm.constants.SqlString.EQUAL
 import com.tang.jkorm.constants.SqlString.FROM
 import com.tang.jkorm.constants.SqlString.INSERT_INTO
 import com.tang.jkorm.constants.SqlString.LEFT_BRACKET
@@ -51,7 +51,7 @@ abstract class AbstractSqlProvider : SqlProvider {
             selectiveStrategy(it.get(entity))
         }.joinToString(AND) {
             parameters.add(it.get(entity))
-            getColumnName(it) + EQUAL_BRACKET + QUESTION_MARK
+            getColumnName(it) + EQUAL + QUESTION_MARK
         }.let { sql.append(it) }
     }
 
@@ -197,7 +197,7 @@ abstract class AbstractSqlProvider : SqlProvider {
         whereFieldList.joinToString(AND) {
             Reflects.makeAccessible(it, where)
             parameters.add(it.get(where))
-            getColumnName(it) + EQUAL_BRACKET + QUESTION_MARK
+            getColumnName(it) + EQUAL + QUESTION_MARK
         }.let { sql.append(it) }
         return SqlStatement(getSql(sql), parameters)
     }
@@ -220,7 +220,7 @@ abstract class AbstractSqlProvider : SqlProvider {
         sql.append(UPDATE + Reflects.getTableName(clazz) + SET)
         appendSetValues(sql, parameters, fieldList, entity)
         Reflects.makeAccessible(idField, entity)
-        sql.append(WHERE + getColumnName(idField) + EQUAL_BRACKET).append(QUESTION_MARK)
+        sql.append(WHERE + getColumnName(idField) + EQUAL).append(QUESTION_MARK)
         parameters.add(idField.get(entity))
         return SqlStatement(getSql(sql), parameters)
     }
@@ -229,7 +229,7 @@ abstract class AbstractSqlProvider : SqlProvider {
         fieldList.joinToString(COMMA_SPACE) {
             Reflects.makeAccessible(it, entity)
             parameters.add(it.get(entity))
-            getColumnName(it) + EQUAL_BRACKET + QUESTION_MARK
+            getColumnName(it) + EQUAL + QUESTION_MARK
         }.let { sql.append(it) }
     }
 
@@ -246,7 +246,7 @@ abstract class AbstractSqlProvider : SqlProvider {
         fieldList.joinToString(AND) {
             Reflects.makeAccessible(it, entity)
             parameters.add(it.get(entity))
-            getColumnName(it) + EQUAL_BRACKET + QUESTION_MARK
+            getColumnName(it) + EQUAL + QUESTION_MARK
         }.let { sql.append(it) }
         return SqlStatement(getSql(sql), parameters)
     }

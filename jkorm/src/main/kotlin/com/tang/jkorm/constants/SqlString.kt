@@ -12,8 +12,15 @@ object SqlString {
     const val SPACE = " "
     const val COMMA = ","
     const val COMMA_SPACE = COMMA + SPACE
-    const val EQUAL = "="
-    const val EQUAL_BRACKET = " = "
+    const val EQUAL = " = "
+    const val NOT_EQUAL = "!="
+    const val NOT_EQUAL_ALT = "<>"
+    const val GREATER_THAN = ">"
+    const val GREATER_THAN_OR_EQUAL = ">="
+    const val LESS_THAN = "<"
+    const val LESS_THAN_OR_EQUAL = "<="
+    const val PLUS = "+"
+    const val MINUS = "-"
     const val PERCENT = "%"
     const val ASTERISK = "*"
     const val SEMICOLON = ";"
@@ -24,7 +31,7 @@ object SqlString {
     const val QUESTION_MARK = "?"
 
     // SQL keywords
-    const val OR = "OR"
+    const val OR = " OR "
     const val IN = "IN"
     const val IS = "IS"
     const val NOT = "NOT"
@@ -45,6 +52,10 @@ object SqlString {
     const val OFFSET = " OFFSET "
     const val ORDER_BY = "ORDER BY "
     const val INTO = "INTO "
+    const val NOT_LIKE = NOT + SPACE + LIKE
+    const val NOT_IN = NOT + SPACE + IN
+    const val IS_NULL = IS + SPACE + NULL
+    const val IS_NOT_NULL = IS + SPACE + NOT + SPACE + NULL
     const val INSERT_INTO = INSERT + INTO
     const val DELETE_FROM = DELETE + FROM
     const val ROWS_FETCH_NEXT = " ROWS FETCH NEXT "
