@@ -89,12 +89,12 @@ interface BaseMapper<T> {
     /**
      * Update entity by update wrapper
      */
-    fun update(updateWrapper: UpdateWrapper): Int
+    fun updateWrapper(updateWrapper: UpdateWrapper<T>): Int
 
     /**
      * Update entity by update wrapper
      */
-    fun update(): UpdateWrapper {
+    fun updateWrapper(): UpdateWrapper<T> {
         return UpdateWrapper(this)
     }
 

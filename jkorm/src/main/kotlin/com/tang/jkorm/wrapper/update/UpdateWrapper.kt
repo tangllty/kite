@@ -11,26 +11,26 @@ import com.tang.jkorm.utils.Reflects
  *
  * @author Tang
  */
-class UpdateWrapper {
+class UpdateWrapper<T> {
 
     private lateinit var table: String
 
-    lateinit var baseMapper: BaseMapper<*>
+    lateinit var baseMapper: BaseMapper<T>
 
-    private lateinit var updateSetWrapper: UpdateSetWrapper
+    private lateinit var updateSetWrapper: UpdateSetWrapper<T>
 
-    lateinit var updateWhereWrapper: UpdateWhereWrapper
+    lateinit var updateWhereWrapper: UpdateWhereWrapper<T>
 
     constructor()
 
-    constructor(baseMapper: BaseMapper<*>) {
+    constructor(baseMapper: BaseMapper<T>) {
         this.baseMapper = baseMapper
     }
 
     companion object {
 
         @JvmStatic
-        fun create(): UpdateWrapper {
+        fun <T> create(): UpdateWrapper<T> {
             return UpdateWrapper()
         }
 
@@ -41,7 +41,7 @@ class UpdateWrapper {
      *
      * @param table table name
      */
-    fun from(table: String): UpdateSetWrapper {
+    fun from(table: String): UpdateSetWrapper<T> {
         this.table = table
         this.updateSetWrapper = UpdateSetWrapper(this)
         return updateSetWrapper
@@ -52,7 +52,7 @@ class UpdateWrapper {
      *
      * @param clazz entity class
      */
-    fun <T> from(clazz: Class<T>): UpdateSetWrapper {
+    fun from(clazz: Class<T>): UpdateSetWrapper<T> {
         return from(Reflects.getTableName(clazz))
     }
 

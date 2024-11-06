@@ -175,8 +175,8 @@ class DefaultSqlSession(
         return returnRows(method, mapperInterface, update, rows)
     }
 
-    fun <T> updateWrapper(method: Method, mapperInterface: Class<T>, type: Class<T>, parameter: Any): Int {
-        val updateWrapper = parameter as UpdateWrapper
+    override fun <T> updateWrapper(method: Method, mapperInterface: Class<T>, type: Class<T>, parameter: Any): Int {
+        val updateWrapper = parameter as UpdateWrapper<*>
         val sqlStatement = updateWrapper.getSqlStatement()
         val rows = executor.update(sqlStatement, parameter)
         return returnRows(method, mapperInterface, sqlStatement, rows)
@@ -216,9 +216,9 @@ class DefaultSqlSession(
 
     override fun <T> selectList(method: Method, mapperInterface: Class<T>, type: Class<T>, parameter: Any?, orderBys: Array<OrderItem<T>>): List<T> {
         val select = sqlProvider.select(type, parameter, orderBys)
-        val result = executor.query(select, type)
-        log(method, mapperInterface, select, result.size)
-        return result
+        val list = executor.query(select, type)
+        log(method, mapperInterface, select, list.size)
+        return list
     }
 
     override fun <T> selectById(method: Method, mapperInterface: Class<T>, type: Class<T>, parameter: Any): T? {

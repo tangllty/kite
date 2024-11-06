@@ -48,14 +48,14 @@ public class SqlSessionJavaTest extends BaseDataTest {
     public void updateWrapper() {
         var session = Companion.getSqlSessionFactory().openSession();
         var accountMapper = session.getMapper(AccountMapper.class);
-        var updateWrapper = UpdateWrapper.create()
+        var updateWrapper = UpdateWrapper.<Account>create()
             .from(Account.class)
             .set(Account::getUsername, "tang")
             .set("password", "123456", false)
             .where()
             .eq(Account::getId, 1, true)
             .build();
-        var rows = accountMapper.update(updateWrapper);
+        var rows = accountMapper.updateWrapper(updateWrapper);
         session.rollback();
         session.close();
         assertEquals(1, rows);
@@ -65,7 +65,7 @@ public class SqlSessionJavaTest extends BaseDataTest {
     public void updateWrapperPost() {
         var session = Companion.getSqlSessionFactory().openSession();
         var accountMapper = session.getMapper(AccountMapper.class);
-        var rows = accountMapper.update()
+        var rows = accountMapper.updateWrapper()
             .from(Account.class)
             .set(Account::getUsername, "tang")
             .set("password", "123456", false)

@@ -41,7 +41,7 @@ object SqlString {
     const val DESC = " DESC"
     const val NULL = "NULL"
     const val LIKE = "LIKE"
-    const val FROM = "FROM "
+    const val FROM = " FROM "
     const val WHERE = " WHERE "
     const val LIMIT = " LIMIT "
     const val SELECT = "SELECT "
@@ -57,12 +57,12 @@ object SqlString {
     const val IS_NULL = IS + SPACE + NULL
     const val IS_NOT_NULL = IS + SPACE + NOT + SPACE + NULL
     const val INSERT_INTO = INSERT + INTO
-    const val DELETE_FROM = DELETE + FROM
+    const val DELETE_FROM = "DELETE$FROM"
     const val ROWS_FETCH_NEXT = " ROWS FETCH NEXT "
     const val ROWS_ONLY = " ROWS ONLY"
 
     // SQL statement
-    const val SELECT_ALL_FROM = SELECT + ASTERISK + SPACE + FROM
-    const val SELECT_COUNT_FROM = SELECT + "COUNT(*)" + SPACE + FROM
+    const val SELECT_ALL_FROM = SELECT + ASTERISK + FROM
+    const val SELECT_COUNT_FROM = SELECT + "COUNT(*)" + FROM
 
 }

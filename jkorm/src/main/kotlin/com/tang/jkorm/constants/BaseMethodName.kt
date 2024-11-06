@@ -93,8 +93,10 @@ object BaseMethodName {
         return method.name == UPDATE_SELECTIVE && method.countIsOne() && method.firstParameterIsAny()
     }
 
+    private const val UPDATE_WRAPPER = "updateWrapper"
+
     fun isUpdateWrapper(method: Method): Boolean {
-        return method.name == UPDATE && method.countIsOne() && method.parameterTypes[0].kotlin == UpdateWrapper::class
+        return method.name == UPDATE_WRAPPER && method.countIsOne() && method.parameterTypes[0].kotlin == UpdateWrapper::class
     }
 
     private const val DELETE = "delete"
@@ -152,7 +154,7 @@ object BaseMethodName {
     fun isBaseMethod(methodName: String): Boolean {
         return when (methodName) {
             INSERT, INSERT_SELECTIVE, BATCH_INSERT, BATCH_INSERT_SELECTIVE,
-            UPDATE, UPDATE_SELECTIVE,
+            UPDATE, UPDATE_SELECTIVE, UPDATE_WRAPPER,
             DELETE, DELETE_BY_ID,
             SELECT, SELECT_BY_ID,
             COUNT,

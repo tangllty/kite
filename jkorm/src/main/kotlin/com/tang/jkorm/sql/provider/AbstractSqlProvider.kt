@@ -256,7 +256,7 @@ abstract class AbstractSqlProvider : SqlProvider {
         val parameters = mutableListOf<Any?>()
         sql.append(SELECT)
         appendColumns(sql, listOf(*clazz.declaredFields))
-        sql.append(SPACE + FROM + Reflects.getTableName(clazz))
+        sql.append(FROM + Reflects.getTableName(clazz))
         entity?.let {
             appendWhere(sql, parameters, clazz, entity)
         }
@@ -279,7 +279,7 @@ abstract class AbstractSqlProvider : SqlProvider {
         val parameters = mutableListOf<Any?>()
         sql.append(SELECT)
         appendColumns(sql, listOf(*clazz.declaredFields))
-        sql.append(SPACE + FROM + Reflects.getTableName(clazz))
+        sql.append(FROM + Reflects.getTableName(clazz))
         if (entity != null) {
             appendWhere(sql, parameters, clazz, entity)
         }

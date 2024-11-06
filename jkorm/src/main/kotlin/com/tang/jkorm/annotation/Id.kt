@@ -5,6 +5,8 @@ import com.tang.jkorm.utils.id.defaults.DefaultIdStrategy
 import kotlin.reflect.KClass
 
 /**
+ * ID annotation
+ *
  * @author Tang
  */
 @Retention(AnnotationRetention.RUNTIME)
@@ -15,7 +17,7 @@ annotation class Id(
     val autoIncrement: Boolean = true,
 
     /**
-     * Autofill id field when the [autoIncrement] is false
+     * Autofill id field when the [autoIncrement] is false, default is [DefaultIdStrategy]
      */
     val idStrategy: KClass<out IdStrategy> = DefaultIdStrategy::class
 

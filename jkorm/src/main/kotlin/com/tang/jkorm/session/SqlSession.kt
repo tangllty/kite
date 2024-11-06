@@ -31,6 +31,8 @@ interface SqlSession : AutoCloseable {
 
     fun <T> updateSelective(method: Method, mapperInterface: Class<T>, parameter: Any): Int
 
+    fun <T> updateWrapper(method: Method, mapperInterface: Class<T>, type: Class<T>, parameter: Any): Int
+
     fun <T> delete(method: Method, mapperInterface: Class<T>, type: Class<T>, parameter: Any): Int
 
     fun <T> deleteById(method: Method, mapperInterface: Class<T>, type: Class<T>, parameter: Any): Int
