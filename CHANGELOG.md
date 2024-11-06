@@ -44,3 +44,4 @@
  * Add `OrderItem` for paginate order by with generics
  * Add property reference in `OrderItem`
  * Add `UpdateWrapper` for update statement
+ * Add `QueryWrapper` for a select statement

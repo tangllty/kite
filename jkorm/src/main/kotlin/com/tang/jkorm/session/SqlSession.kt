@@ -41,6 +41,8 @@ interface SqlSession : AutoCloseable {
 
     fun <T> selectById(method: Method, mapperInterface: Class<T>, type: Class<T>, parameter: Any): T?
 
+    fun <T> queryWrapper(method: Method, mapperInterface: Class<T>, type: Class<T>, parameter: Any): List<T>
+
     fun <T> count(method: Method, mapperInterface: Class<T>, type: Class<T>, parameter: Any?): Long
 
     fun <T> paginate(method: Method, mapperInterface: Class<T>, type: Class<T>, pageNumber: Long, pageSize: Long, parameter: Any?, orderBys: Array<OrderItem<T>>): Page<T>

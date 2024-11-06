@@ -4,12 +4,14 @@ import com.tang.jkorm.BaseDataTest;
 import com.tang.jkorm.paginate.OrderItem;
 import com.tang.jkorm.session.entity.Account;
 import com.tang.jkorm.session.mapper.AccountMapper;
+import com.tang.jkorm.wrapper.query.QueryWrapper;
 import com.tang.jkorm.wrapper.update.UpdateWrapper;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 /**
@@ -75,6 +77,33 @@ public class SqlSessionJavaTest extends BaseDataTest {
         session.rollback();
         session.close();
         assertEquals(1, rows);
+    }
+
+    @Test
+    public void queryWrapper() {
+        var session = Companion.getSqlSessionFactory().openSession();
+        var accountMapper = session.getMapper(AccountMapper.class);
+        var queryWrapper = QueryWrapper.<Account>create()
+            .select("id", "username")
+            .column(Account::getPassword)
+            .from(Account.class)
+            .build();
+        var accounts = accountMapper.queryWrapper(queryWrapper);
+        session.close();
+        assertFalse(accounts.isEmpty());
+    }
+
+    @Test
+    public void queryWrapperPost() {
+        var session = Companion.getSqlSessionFactory().openSession();
+        var accountMapper = session.getMapper(AccountMapper.class);
+        var accounts = accountMapper.queryWrapper()
+            .select("id", "username")
+            .column(Account::getPassword)
+            .from(Account.class)
+            .execute();
+        session.close();
+        assertFalse(accounts.isEmpty());
     }
 
 }

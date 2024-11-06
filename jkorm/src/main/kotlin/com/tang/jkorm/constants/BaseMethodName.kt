@@ -1,6 +1,7 @@
 package com.tang.jkorm.constants
 
 import com.tang.jkorm.paginate.OrderItem
+import com.tang.jkorm.wrapper.query.QueryWrapper
 import com.tang.jkorm.wrapper.update.UpdateWrapper
 import java.lang.reflect.Method
 
@@ -130,6 +131,12 @@ object BaseMethodName {
         return method.name == SELECT_BY_ID && method.countIsOne() && method.firstParameterIsLong()
     }
 
+    private const val QUERY_WRAPPER = "queryWrapper"
+
+    fun isQueryWrapper(method: Method): Boolean {
+        return method.name == QUERY_WRAPPER && method.countIsOne() && method.parameterTypes[0].kotlin == QueryWrapper::class
+    }
+
     private const val COUNT = "count"
 
     fun isCount(method: Method): Boolean {
@@ -156,7 +163,7 @@ object BaseMethodName {
             INSERT, INSERT_SELECTIVE, BATCH_INSERT, BATCH_INSERT_SELECTIVE,
             UPDATE, UPDATE_SELECTIVE, UPDATE_WRAPPER,
             DELETE, DELETE_BY_ID,
-            SELECT, SELECT_BY_ID,
+            SELECT, SELECT_BY_ID, QUERY_WRAPPER,
             COUNT,
             PAGINATE -> true
             else -> false

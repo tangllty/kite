@@ -11,6 +11,7 @@ import com.tang.jkorm.session.SqlSession
 import com.tang.jkorm.sql.SqlStatement
 import com.tang.jkorm.sql.provider.SqlProvider
 import com.tang.jkorm.utils.Reflects
+import com.tang.jkorm.wrapper.query.QueryWrapper
 import com.tang.jkorm.wrapper.update.UpdateWrapper
 import org.slf4j.LoggerFactory
 import java.lang.reflect.Method
@@ -112,6 +113,7 @@ class DefaultSqlSession(
             BaseMethodName.isDeleteById(method) -> deleteById(method, mapperInterface, type, getFirstArg(args))
             BaseMethodName.isSelect(method) -> processSelect(method, mapperInterface, type, args)
             BaseMethodName.isSelectById(method) -> selectById(method, mapperInterface, type, getFirstArg(args))
+            BaseMethodName.isQueryWrapper(method) -> queryWrapper(method, mapperInterface, type, getFirstArg(args))
             BaseMethodName.isCount(method) -> count(method, mapperInterface, type, args?.first())
             BaseMethodName.isPaginate(method) -> processPaginate(method, mapperInterface, type, args)
             else -> throw IllegalArgumentException("Unknown method: ${getMethodSignature(method)}")
@@ -234,6 +236,14 @@ class DefaultSqlSession(
             return null
         }
         return list.first()
+    }
+
+    override fun <T> queryWrapper(method: Method, mapperInterface: Class<T>, type: Class<T>, parameter: Any): List<T> {
+        val queryWrapper = parameter as QueryWrapper<*>
+        val sqlStatement = queryWrapper.getSqlStatement()
+        val list = executor.query(sqlStatement, type)
+        log(method, mapperInterface, sqlStatement, list.size)
+        return list
     }
 
     override fun <T> count(method: Method, mapperInterface: Class<T>, type: Class<T>, parameter: Any?): Long {

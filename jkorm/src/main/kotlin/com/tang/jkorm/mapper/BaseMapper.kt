@@ -3,6 +3,7 @@ package com.tang.jkorm.mapper
 import com.tang.jkorm.config.JkOrmConfig
 import com.tang.jkorm.paginate.OrderItem
 import com.tang.jkorm.paginate.Page
+import com.tang.jkorm.wrapper.query.QueryWrapper
 import com.tang.jkorm.wrapper.update.UpdateWrapper
 import jakarta.servlet.http.HttpServletRequest
 
@@ -203,6 +204,12 @@ interface BaseMapper<T> {
      * @return Entity
      */
     fun selectById(id: Long): T?
+
+    fun queryWrapper(queryWrapper: QueryWrapper<T>): List<T>
+
+    fun queryWrapper(): QueryWrapper<T> {
+        return QueryWrapper(this)
+    }
 
     /**
      * Count all

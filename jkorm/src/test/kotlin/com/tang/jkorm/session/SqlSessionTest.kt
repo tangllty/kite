@@ -7,6 +7,7 @@ import com.tang.jkorm.session.entity.Role
 import com.tang.jkorm.session.mapper.AccountJavaMapper
 import com.tang.jkorm.session.mapper.AccountMapper
 import com.tang.jkorm.session.mapper.RoleMapper
+import com.tang.jkorm.wrapper.query.QueryWrapper
 import com.tang.jkorm.wrapper.update.UpdateWrapper
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
@@ -277,6 +278,33 @@ class SqlSessionTest : BaseDataTest() {
         val accountMapper = session.getMapper(AccountMapper::class.java)
         val account = Account(username = "admin")
         val accounts = accountMapper.select(account, OrderItem("id", false))
+        session.close()
+        assertTrue(accounts.isNotEmpty())
+    }
+
+    @Test
+    fun queryWrapper() {
+        val session = sqlSessionFactory.openSession()
+        val accountMapper = session.getMapper(AccountMapper::class.java)
+        val queryWrapper = QueryWrapper.create<Account>()
+            .select("id", "username")
+            .column(Account::password)
+            .from(Account::class.java)
+            .build()
+        val accounts = accountMapper.queryWrapper(queryWrapper)
+        session.close()
+        assertTrue(accounts.isNotEmpty())
+    }
+
+    @Test
+    fun queryWrapperPost() {
+        val session = sqlSessionFactory.openSession()
+        val accountMapper = session.getMapper(AccountMapper::class.java)
+        val accounts = accountMapper.queryWrapper()
+            .select("id", "username")
+            .column(Account::password)
+            .from(Account::class.java)
+            .execute()
         session.close()
         assertTrue(accounts.isNotEmpty())
     }
