@@ -1,5 +1,9 @@
 ## 1.0.2
 
+### Bug Fixes
+
+ * Fix lateinit property updateSetWrapper and updateWhereWrapper has not been initialized error
+
 ### Features
 
  * Add order by for select query
@@ -21,7 +25,6 @@
  * Fix paginate class cast exception error
  * Fix delete method only delete by primary key
  * Fix `getBean` hash code mismatch error
- * Fix lateinit property updateSetWrapper and updateWhereWrapper has not been initialized error
 
 ### Features
 
