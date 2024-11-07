@@ -3,6 +3,9 @@
 ### Features
 
  * Add order by for select query
+ * Add `UpdateWrapper` for update statement
+ * Add `QueryWrapper` for a select statement
+ * When the `QueryWrapper`'s column is empty, it will select all columns
 
 ## 1.0.1
 
@@ -43,5 +46,3 @@
  * Add `OrderItem` for paginate order by
  * Add `OrderItem` for paginate order by with generics
  * Add property reference in `OrderItem`
- * Add `UpdateWrapper` for update statement
- * Add `QueryWrapper` for a select statement

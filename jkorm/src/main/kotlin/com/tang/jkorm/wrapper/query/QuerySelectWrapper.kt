@@ -18,6 +18,8 @@ class QuerySelectWrapper<T>(
 
 ) {
 
+    private lateinit var tableClass: Class<*>
+
     private lateinit var table: String
 
     fun columns(vararg columns: String): QuerySelectWrapper<T> {
@@ -65,11 +67,17 @@ class QuerySelectWrapper<T>(
      * @param clazz entity class
      */
     fun <E> from(clazz: Class<E>): QueryWhereWrapper<T> {
+        this.tableClass = clazz
         return from(Reflects.getTableName(clazz))
     }
 
     fun appendSql(sql: StringBuilder) {
         checkValues()
+        if (columns.isEmpty()) {
+            tableClass.declaredFields.forEach {
+                columns.add(Reflects.getColumnName(it))
+            }
+        }
         sql.append(columns.joinToString(", "))
         sql.append(FROM)
         sql.append(table)
