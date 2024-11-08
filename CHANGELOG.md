@@ -4,6 +4,15 @@
 
  * Fix lateinit property updateSetWrapper and updateWhereWrapper has not been initialized error
 
+### Dependencies
+
+* Bump snakeyaml from 2.2 to 2.3
+* Bump slf4j from 2.0.13 to 2.0.16
+* Bump logback from 1.5.6 to 1.5.12
+* Bump guava from 33.3.0-jre to 33.3.1-jre
+* Bump spring from 6.1.11 to 6.1.14
+* Bump springBoot from 3.3.2 to 3.3.5
+
 ### Features
 
  * Add order by for select query
