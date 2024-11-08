@@ -12,6 +12,8 @@ import kotlin.reflect.KMutableProperty1
 import kotlin.reflect.jvm.javaField
 
 /**
+ * Build a select query
+ *
  * @author Tang
  */
 class QueryWrapper<T> {
@@ -32,6 +34,9 @@ class QueryWrapper<T> {
 
     companion object {
 
+        /**
+         * Create a new QueryWrapper instance
+         */
         @JvmStatic
         fun <T> create(): QueryWrapper<T> {
             return QueryWrapper()
@@ -39,25 +44,53 @@ class QueryWrapper<T> {
 
     }
 
+    /**
+     * Set the select columns
+     *
+     * @param columns columns
+     * @return QuerySelectWrapper
+     */
     fun select(vararg columns: String): QuerySelectWrapper<T> {
         this.querySelectWrapper = QuerySelectWrapper(this, columns.toMutableList())
         return querySelectWrapper
     }
 
+    /**
+     * Select without columns
+     *
+     * @return QuerySelectWrapper
+     */
     fun select(): QuerySelectWrapper<T> {
         return select(*mutableListOf<String>().toTypedArray())
     }
 
+    /**
+     * Set the select columns
+     *
+     * @param columns columns
+     * @return QuerySelectWrapper
+     */
     fun select(vararg columns: SFunction<T, *>): QuerySelectWrapper<T> {
         val columnNames = columns.map { Reflects.getColumnName(Fields.getField(it)) }
         return select(*columnNames.toTypedArray())
     }
 
+    /**
+     * Set the select columns
+     *
+     * @param columns columns
+     * @return QuerySelectWrapper
+     */
     fun select(vararg columns: KMutableProperty1<T, *>): QuerySelectWrapper<T> {
         val columnNames = columns.map { Reflects.getColumnName(it.javaField!!) }
         return select(*columnNames.toTypedArray())
     }
 
+    /**
+     * Make the select columns distinct
+     *
+     * @return QueryWrapper
+     */
     fun distinct(): QueryWrapper<T> {
         this.distinct = true
         return this

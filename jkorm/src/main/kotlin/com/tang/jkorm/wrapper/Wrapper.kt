@@ -5,5 +5,4 @@ package com.tang.jkorm.wrapper
  *
  * @author Tang
  */
-interface Wrapper {
-}
+interface Wrapper

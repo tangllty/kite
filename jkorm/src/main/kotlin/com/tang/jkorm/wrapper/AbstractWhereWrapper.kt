@@ -22,6 +22,15 @@ abstract class AbstractWhereWrapper<out Wrapper, R> {
 
     private val conditions = mutableListOf<LogicalStatement>()
 
+    /**
+     * Equal operation
+     *
+     * @param column column name
+     * @param value value
+     * @param logicalOperator logical operator
+     * @param effective whether effective
+     * @return AbstractWhereWrapper
+     */
     fun eq(column: String, value: Any, logicalOperator: LogicalOperator, effective: Boolean): AbstractWhereWrapper<Wrapper, R> {
         if (effective) {
             val condition = ComparisonStatement(column, value, ComparisonOperator.EQUAL)
@@ -30,18 +39,50 @@ abstract class AbstractWhereWrapper<out Wrapper, R> {
         return this
     }
 
+    /**
+     * Equal operation
+     *
+     * @param column column name
+     * @param value value
+     * @param logicalOperator logical operator
+     * @return AbstractWhereWrapper
+     */
     fun eq(column: String, value: Any, logicalOperator: LogicalOperator): AbstractWhereWrapper<Wrapper, R> {
         return eq(column, value, logicalOperator, true)
     }
 
+    /**
+     * Equal operation
+     *
+     * @param column column name
+     * @param value value
+     * @param effective whether effective
+     * @return AbstractWhereWrapper
+     */
     fun eq(column: String, value: Any, effective: Boolean): AbstractWhereWrapper<Wrapper, R> {
         return eq(column, value, LogicalOperator.AND, effective)
     }
 
+    /**
+     * Equal operation
+     *
+     * @param column column name
+     * @param value value
+     * @return AbstractWhereWrapper
+     */
     fun eq(column: String, value: Any): AbstractWhereWrapper<Wrapper, R> {
         return eq(column, value, LogicalOperator.AND)
     }
 
+    /**
+     * Equal operation
+     *
+     * @param column column property
+     * @param value value
+     * @param logicalOperator logical operator
+     * @param effective whether effective
+     * @return AbstractWhereWrapper
+     */
     fun <T> eq(column: KMutableProperty1<T, *>, value: Any, logicalOperator: LogicalOperator, effective: Boolean): AbstractWhereWrapper<Wrapper, R> {
         if (effective) {
             var filed = column.javaField!!
@@ -50,18 +91,50 @@ abstract class AbstractWhereWrapper<out Wrapper, R> {
         return this
     }
 
+    /**
+     * Equal operation
+     *
+     * @param column column property
+     * @param value value
+     * @param logicalOperator logical operator
+     * @return AbstractWhereWrapper
+     */
     fun <T> eq(column: KMutableProperty1<T, *>, value: Any, logicalOperator: LogicalOperator): AbstractWhereWrapper<Wrapper, R> {
         return eq(column, value, logicalOperator, true)
     }
 
+    /**
+     * Equal operation
+     *
+     * @param column column property
+     * @param value value
+     * @param effective whether effective
+     * @return AbstractWhereWrapper
+     */
     fun <T> eq(column: KMutableProperty1<T, *>, value: Any, effective: Boolean): AbstractWhereWrapper<Wrapper, R> {
         return eq(column, value, LogicalOperator.AND, effective)
     }
 
+    /**
+     * Equal operation
+     *
+     * @param column column property
+     * @param value value
+     * @return AbstractWhereWrapper
+     */
     fun <T> eq(column: KMutableProperty1<T, *>, value: Any): AbstractWhereWrapper<Wrapper, R> {
         return eq(column, value, LogicalOperator.AND)
     }
 
+    /**
+     * Equal operation
+     *
+     * @param column column property
+     * @param value value
+     * @param logicalOperator logical operator
+     * @param effective whether effective
+     * @return AbstractWhereWrapper
+     */
     fun <T> eq(column: SFunction<T, *>, value: Any, logicalOperator: LogicalOperator, effective: Boolean): AbstractWhereWrapper<Wrapper, R> {
         if (effective) {
             val filed = Fields.getField(column)
@@ -70,22 +143,61 @@ abstract class AbstractWhereWrapper<out Wrapper, R> {
         return this
     }
 
+    /**
+     * Equal operation
+     *
+     * @param column column property
+     * @param value value
+     * @param logicalOperator logical operator
+     * @return AbstractWhereWrapper
+     */
     fun <T> eq(column: SFunction<T, *>, value: Any, logicalOperator: LogicalOperator): AbstractWhereWrapper<Wrapper, R> {
         return eq(column, value, logicalOperator, true)
     }
 
+    /**
+     * Equal operation
+     *
+     * @param column column property
+     * @param value value
+     * @param effective whether effective
+     * @return AbstractWhereWrapper
+     */
     fun <T> eq(column: SFunction<T, *>, value: Any, effective: Boolean): AbstractWhereWrapper<Wrapper, R> {
         return eq(column, value, LogicalOperator.AND, effective)
     }
 
+    /**
+     * Equal operation
+     *
+     * @param column column property
+     * @param value value
+     * @return AbstractWhereWrapper
+     */
     fun <T> eq(column: SFunction<T, *>, value: Any): AbstractWhereWrapper<Wrapper, R> {
         return eq(column, value, LogicalOperator.AND)
     }
 
+    /**
+     * Build the wrapper
+     *
+     * @return Wrapper
+     */
     abstract fun build(): Wrapper
 
+    /**
+     * Execute the wrapper
+     *
+     * @return R
+     */
     abstract fun execute(): R
 
+    /**
+     * Append the SQL
+     *
+     * @param sql sql
+     * @param parameters parameters
+     */
     fun appendSql(sql: StringBuilder, parameters: MutableList<Any?>) {
         if (conditions.isEmpty()) {
             return
@@ -95,6 +207,11 @@ abstract class AbstractWhereWrapper<out Wrapper, R> {
         conditions.forEach { it.appendSql(sql, parameters) }
     }
 
+    /**
+     * Get the SQL statement
+     *
+     * @return SqlStatement
+     */
     fun getSqlStatement(): SqlStatement {
         val sql: StringBuilder = StringBuilder()
         val parameters: MutableList<Any?> = mutableListOf()

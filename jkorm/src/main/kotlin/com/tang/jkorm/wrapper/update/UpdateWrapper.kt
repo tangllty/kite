@@ -29,6 +29,11 @@ class UpdateWrapper<T> {
 
     companion object {
 
+        /**
+         * Create a new UpdateWrapper instance
+         *
+         * @return UpdateWrapper
+         */
         @JvmStatic
         fun <T> create(): UpdateWrapper<T> {
             return UpdateWrapper()
@@ -56,6 +61,11 @@ class UpdateWrapper<T> {
         return from(Reflects.getTableName(clazz))
     }
 
+    /**
+     * Get the SQL statement
+     *
+     * @return SqlStatement
+     */
     fun getSqlStatement(): SqlStatement {
         checkValues()
         val sql: StringBuilder = StringBuilder()
@@ -66,6 +76,9 @@ class UpdateWrapper<T> {
         return SqlStatement(JkOrmConfig.INSTANCE.getSql(sql), parameters)
     }
 
+    /**
+     * Check the values
+     */
     fun checkValues() {
         if (!this::table.isInitialized) {
             throw IllegalArgumentException("Table name is not set")
