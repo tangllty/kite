@@ -36,7 +36,7 @@ class DefaultSqlSession(
     }
 
     override fun isBaseMethod(method: Method): Boolean {
-        return BaseMethodName.isBaseMethod(method.name)
+        return BaseMethodName.isBaseMethod(method)
     }
 
     private fun getFirstArg(args: Array<out Any>?): Any {

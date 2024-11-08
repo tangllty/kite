@@ -205,8 +205,19 @@ interface BaseMapper<T> {
      */
     fun selectById(id: Long): T?
 
+    /**
+     * Select by query wrapper
+     *
+     * @param queryWrapper QueryWrapper
+     * @return Entity list
+     */
     fun queryWrapper(queryWrapper: QueryWrapper<T>): List<T>
 
+    /**
+     * Select by query wrapper
+     *
+     * @return QueryWrapper
+     */
     fun queryWrapper(): QueryWrapper<T> {
         return QueryWrapper(this)
     }

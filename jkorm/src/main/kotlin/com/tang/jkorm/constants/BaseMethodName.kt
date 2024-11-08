@@ -158,8 +158,9 @@ object BaseMethodName {
         return false
     }
 
-    fun isBaseMethod(methodName: String): Boolean {
-        return when (methodName) {
+    fun isBaseMethod(method: Method): Boolean {
+        val methodName = method.name
+        val isBaseMethodName = when (methodName) {
             INSERT, INSERT_SELECTIVE, BATCH_INSERT, BATCH_INSERT_SELECTIVE,
             UPDATE, UPDATE_SELECTIVE, UPDATE_WRAPPER,
             DELETE, DELETE_BY_ID,
@@ -168,6 +169,25 @@ object BaseMethodName {
             PAGINATE -> true
             else -> false
         }
+        if (!isBaseMethodName) return false
+        return when (methodName) {
+            INSERT -> isInsert(method)
+            INSERT_SELECTIVE -> isInsertSelective(method)
+            BATCH_INSERT -> isBatchInsert(method)
+            BATCH_INSERT_SELECTIVE -> isBatchInsertSelective(method)
+            UPDATE -> isUpdate(method) || isUpdateCondition(method)
+            UPDATE_SELECTIVE -> isUpdateSelective(method)
+            UPDATE_WRAPPER -> isUpdateWrapper(method)
+            DELETE -> isDelete(method)
+            DELETE_BY_ID -> isDeleteById(method)
+            SELECT -> isSelect(method)
+            SELECT_BY_ID -> isSelectById(method)
+            QUERY_WRAPPER -> isQueryWrapper(method)
+            COUNT -> isCount(method)
+            PAGINATE -> isPaginate(method)
+            else -> false
+        }
+
     }
 
 }
