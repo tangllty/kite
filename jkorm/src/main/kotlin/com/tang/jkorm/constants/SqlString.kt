@@ -52,6 +52,8 @@ object SqlString {
     const val OFFSET = " OFFSET "
     const val ORDER_BY = "ORDER BY "
     const val INTO = "INTO "
+    const val DISTINCT = "DISTINCT "
+    const val SELECT_DISTINCT = SELECT + DISTINCT
     const val NOT_LIKE = NOT + SPACE + LIKE
     const val NOT_IN = NOT + SPACE + IN
     const val IS_NULL = IS + SPACE + NULL

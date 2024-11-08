@@ -2,6 +2,7 @@ package com.tang.jkorm.wrapper.query
 
 import com.tang.jkorm.config.JkOrmConfig
 import com.tang.jkorm.constants.SqlString.SELECT
+import com.tang.jkorm.constants.SqlString.SELECT_DISTINCT
 import com.tang.jkorm.function.SFunction
 import com.tang.jkorm.mapper.BaseMapper
 import com.tang.jkorm.sql.SqlStatement
@@ -14,6 +15,8 @@ import kotlin.reflect.jvm.javaField
  * @author Tang
  */
 class QueryWrapper<T> {
+
+    private var distinct: Boolean = false
 
     lateinit var baseMapper: BaseMapper<T>
 
@@ -55,11 +58,16 @@ class QueryWrapper<T> {
         return select(*columnNames.toTypedArray())
     }
 
+    fun distinct(): QueryWrapper<T> {
+        this.distinct = true
+        return this
+    }
+
     fun getSqlStatement(): SqlStatement {
         checkValues()
         val sql: StringBuilder = StringBuilder()
         val parameters: MutableList<Any?> = mutableListOf()
-        sql.append(SELECT)
+        sql.append(if (distinct) SELECT_DISTINCT else SELECT)
         querySelectWrapper.appendSql(sql)
         queryWhereWrapper.appendSql(sql, parameters)
         return SqlStatement(JkOrmConfig.INSTANCE.getSql(sql), parameters)

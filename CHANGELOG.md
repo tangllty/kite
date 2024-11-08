@@ -10,6 +10,7 @@
  * Add `UpdateWrapper` for update statement
  * Add `QueryWrapper` for a select statement
  * When the `QueryWrapper`'s column is empty, it will select all columns
+ * Support for `select distinct`
 
 ## 1.0.1
 

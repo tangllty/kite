@@ -310,6 +310,20 @@ class SqlSessionTest : BaseDataTest() {
     }
 
     @Test
+    fun selectDistinct() {
+        val session = sqlSessionFactory.openSession()
+        val accountMapper = session.getMapper(AccountMapper::class.java)
+        val accounts = accountMapper.queryWrapper()
+            .distinct()
+            .select("id", "username")
+            .column(Account::password)
+            .from(Account::class.java)
+            .execute()
+        session.close()
+        assertTrue(accounts.isNotEmpty())
+    }
+
+    @Test
     fun count() {
         val session = sqlSessionFactory.openSession()
         val accountMapper = session.getMapper(AccountMapper::class.java)
@@ -410,6 +424,28 @@ class SqlSessionTest : BaseDataTest() {
         val page = accountMapper.paginate(request)
         session.close()
         assertNotEquals(0, page.total)
+    }
+
+    @Test
+    fun test() {
+        val session = sqlSessionFactory.openSession()
+        val accountMapper = session.getMapper(AccountMapper::class.java)
+        val queryWrapper = QueryWrapper.create<Account>()
+            .select("id", "username")
+            .column(Account::password)
+            .from(Account::class.java)
+            .build()
+
+//        val sqlStatement = queryWrapper.getSqlStatement()
+//        println(sqlStatement.sql)
+//        println(sqlStatement.parameters)
+//
+        val list2 = accountMapper.queryWrapper().select().from(Account::class.java).execute()
+        list2.forEach({
+        })
+
+
+        session.close()
     }
 
 }
