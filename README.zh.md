@@ -8,29 +8,29 @@ JkOrm 是一个使用 Kotlin 编写的轻量级 ORM 框架，旨在简化数据�
 
 ## 使用
 
-> Maven central: [jkorm-spring-boot-starter](https://central.sonatype.com/artifact/io.github.tangllty/jkorm-spring-boot-starter)
+ > Maven central: [jkorm-spring-boot-starter](https://central.sonatype.com/artifact/io.github.tangllty/jkorm-spring-boot-starter)
 
-1. 将以下依赖添加到您的项目中：
+ 1. 将以下依赖添加到您的项目中：
 
-* Maven
+ * Maven
 
 ```xml
 <dependency>
    <groupId>io.github.tangllty</groupId>
    <artifactId>jkorm-spring-boot-starter</artifactId>
-   <version>1.0.1</version>
+   <version>1.0.2</version>
 </dependency>
 ```
 
-* Gradle
+ * Gradle
 
 ```kts
 
-implementation("io.github.tangllty:jkorm-spring-boot-starter:1.0.1")
+implementation("io.github.tangllty:jkorm-spring-boot-starter:1.0.2")
 ```
 
-2. 在 `application.properties` 文件中配置您的数据库连接信息
-3. 集成 `BaseMapper` 接口以创建一个 Mapper 接口
+ 2. 在 `application.properties` 文件中配置您的数据库连接信息
+ 3. 集成 `BaseMapper` 接口以创建一个 Mapper 接口
 
 ## 贡献
 
