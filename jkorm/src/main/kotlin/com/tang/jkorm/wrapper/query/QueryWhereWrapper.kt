@@ -1,13 +1,13 @@
 package com.tang.jkorm.wrapper.query
 
-import com.tang.jkorm.wrapper.AbstractWhereWrapper
+import com.tang.jkorm.wrapper.where.AbstractWhereWrapper
 
 /**
  * Query where wrapper for [QueryWrapper]
  *
  * @author Tang
  */
-class QueryWhereWrapper<T>(private val queryWrapper: QueryWrapper<T>) : AbstractWhereWrapper<QueryWrapper<T>, List<T>>() {
+class QueryWhereWrapper<T>(private val queryWrapper: QueryWrapper<T>) : AbstractWhereWrapper<T, List<T>, QueryWrapper<T>>(mutableListOf()) {
 
     /**
      * Build the query

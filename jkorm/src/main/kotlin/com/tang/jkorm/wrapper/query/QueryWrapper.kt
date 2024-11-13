@@ -8,6 +8,7 @@ import com.tang.jkorm.mapper.BaseMapper
 import com.tang.jkorm.sql.SqlStatement
 import com.tang.jkorm.utils.Fields
 import com.tang.jkorm.utils.Reflects
+import com.tang.jkorm.wrapper.Wrapper
 import kotlin.reflect.KMutableProperty1
 import kotlin.reflect.jvm.javaField
 
@@ -16,7 +17,7 @@ import kotlin.reflect.jvm.javaField
  *
  * @author Tang
  */
-class QueryWrapper<T> {
+class QueryWrapper<T> : Wrapper<T> {
 
     private var distinct: Boolean = false
 
@@ -70,6 +71,7 @@ class QueryWrapper<T> {
      * @param columns columns
      * @return QuerySelectWrapper
      */
+    @SafeVarargs
     fun select(vararg columns: SFunction<T, *>): QuerySelectWrapper<T> {
         val columnNames = columns.map { Reflects.getColumnName(Fields.getField(it)) }
         return select(*columnNames.toTypedArray())
@@ -81,6 +83,7 @@ class QueryWrapper<T> {
      * @param columns columns
      * @return QuerySelectWrapper
      */
+    @SafeVarargs
     fun select(vararg columns: KMutableProperty1<T, *>): QuerySelectWrapper<T> {
         val columnNames = columns.map { Reflects.getColumnName(it.javaField!!) }
         return select(*columnNames.toTypedArray())
@@ -96,7 +99,7 @@ class QueryWrapper<T> {
         return this
     }
 
-    fun getSqlStatement(): SqlStatement {
+    override fun getSqlStatement(): SqlStatement {
         checkValues()
         val sql: StringBuilder = StringBuilder()
         val parameters: MutableList<Any?> = mutableListOf()

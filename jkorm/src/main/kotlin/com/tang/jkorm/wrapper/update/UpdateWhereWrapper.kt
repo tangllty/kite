@@ -1,13 +1,13 @@
 package com.tang.jkorm.wrapper.update
 
-import com.tang.jkorm.wrapper.AbstractWhereWrapper
+import com.tang.jkorm.wrapper.where.AbstractWhereWrapper
 
 /**
  * Update where wrapper for update operation
  *
  * @author Tang
  */
-class UpdateWhereWrapper<T>(private val updateWrapper: UpdateWrapper<T>) : AbstractWhereWrapper<UpdateWrapper<T>, Int>() {
+class UpdateWhereWrapper<T>(private val updateWrapper: UpdateWrapper<T>) : AbstractWhereWrapper<T, Int, UpdateWrapper<T>>(mutableListOf()) {
 
     /**
      * Build the update

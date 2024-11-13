@@ -52,6 +52,7 @@ class QuerySelectWrapper<T>(
      * @param columns columns properties
      * @return QuerySelectWrapper
      */
+    @SafeVarargs
     fun columns(vararg columns: SFunction<T, *>): QuerySelectWrapper<T> {
         val columnNames = columns.map { Reflects.getColumnName(Fields.getField(it)) }
         return columns(*columnNames.toTypedArray())
@@ -73,6 +74,7 @@ class QuerySelectWrapper<T>(
      * @param columns columns properties
      * @return QuerySelectWrapper
      */
+    @SafeVarargs
     fun columns(vararg columns: KMutableProperty1<T, *>): QuerySelectWrapper<T> {
         val columnNames = columns.map { Reflects.getColumnName(it.javaField!!) }
         return columns(*columnNames.toTypedArray())

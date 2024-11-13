@@ -310,6 +310,31 @@ class SqlSessionTest : BaseDataTest() {
     }
 
     @Test
+    fun queryWrapperNestedCondition() {
+        val session = sqlSessionFactory.openSession()
+        val accountMapper = session.getMapper(AccountMapper::class.java)
+        val accounts = accountMapper.queryWrapper()
+            .select(Account::id, Account::username, Account::balance)
+            .from(Account::class.java)
+            .eq(Account::id, 1)
+            .or()
+            .eq(Account::id, 2)
+            .and {
+                eq(Account::username, "tang")
+                or {
+                    eq(Account::username, "admin")
+                    or()
+                    eq(Account::balance, BigDecimal(1000.00))
+                }
+            }
+            .or()
+            .eq(Account::id, 3)
+            .execute()
+        session.close()
+        assertTrue(accounts.isNotEmpty())
+    }
+
+    @Test
     fun selectDistinct() {
         val session = sqlSessionFactory.openSession()
         val accountMapper = session.getMapper(AccountMapper::class.java)

@@ -5,13 +5,14 @@ import com.tang.jkorm.constants.SqlString.UPDATE
 import com.tang.jkorm.mapper.BaseMapper
 import com.tang.jkorm.sql.SqlStatement
 import com.tang.jkorm.utils.Reflects
+import com.tang.jkorm.wrapper.Wrapper
 
 /**
  * Update wrapper for update operation
  *
  * @author Tang
  */
-class UpdateWrapper<T> {
+class UpdateWrapper<T> : Wrapper<T> {
 
     private lateinit var table: String
 
@@ -66,7 +67,7 @@ class UpdateWrapper<T> {
      *
      * @return SqlStatement
      */
-    fun getSqlStatement(): SqlStatement {
+    override fun getSqlStatement(): SqlStatement {
         checkValues()
         val sql: StringBuilder = StringBuilder()
         val parameters: MutableList<Any?> = mutableListOf()

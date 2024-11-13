@@ -8,6 +8,7 @@ import com.tang.jkorm.wrapper.query.QueryWrapper;
 import com.tang.jkorm.wrapper.update.UpdateWrapper;
 import org.junit.jupiter.api.Test;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -101,6 +102,31 @@ public class SqlSessionJavaTest extends BaseDataTest {
             .select("id", "username")
             .column(Account::getPassword)
             .from(Account.class)
+            .execute();
+        session.close();
+        assertFalse(accounts.isEmpty());
+    }
+
+    @Test
+    public void queryWrapperNestedCondition() {
+        var session = Companion.getSqlSessionFactory().openSession();
+        var accountMapper = session.getMapper(AccountMapper.class);
+        var accounts = accountMapper.queryWrapper()
+            .select(Account::getId, Account::getUsername, Account::getBalance)
+            .from(Account.class)
+            .eq(Account::getId, 1)
+            .or()
+            .eq(Account::getId, 2)
+            .and(it -> {
+                it.eq(Account::getUsername, "tang")
+                .or(or -> {
+                    or.eq(Account::getUsername, "admin")
+                    .or()
+                    .eq(Account::getBalance, new BigDecimal("1000.00"));
+                });
+            })
+            .or()
+            .eq(Account::getUsername, "admin")
             .execute();
         session.close();
         assertFalse(accounts.isEmpty());
