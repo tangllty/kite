@@ -451,26 +451,4 @@ class SqlSessionTest : BaseDataTest() {
         assertNotEquals(0, page.total)
     }
 
-    @Test
-    fun test() {
-        val session = sqlSessionFactory.openSession()
-        val accountMapper = session.getMapper(AccountMapper::class.java)
-        val queryWrapper = QueryWrapper.create<Account>()
-            .select("id", "username")
-            .column(Account::password)
-            .from(Account::class.java)
-            .build()
-
-//        val sqlStatement = queryWrapper.getSqlStatement()
-//        println(sqlStatement.sql)
-//        println(sqlStatement.parameters)
-//
-        val list2 = accountMapper.queryWrapper().select().from(Account::class.java).execute()
-        list2.forEach({
-        })
-
-
-        session.close()
-    }
-
 }

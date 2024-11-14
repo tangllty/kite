@@ -11,6 +11,10 @@ enum class LogicalOperator(val value: String) {
 
     AND(SqlString.AND),
 
-    OR(SqlString.OR)
+    OR(SqlString.OR),
+
+    AND_NOT(SqlString.AND_NOT),
+
+    OR_NOT(SqlString.OR_NOT)
 
 }

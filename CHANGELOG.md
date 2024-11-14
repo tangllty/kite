@@ -3,6 +3,7 @@
 ### Features
 
  * Support nested where condition
+ * Support more comparison operators
 
 ## 1.0.2
 

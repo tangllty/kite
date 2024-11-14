@@ -25,9 +25,13 @@ enum class ComparisonOperator(val value: String) {
 
     LIKE(SqlString.LIKE),
 
-    NOT_LIKE(SqlString.NOT_LIKE),
+    BETWEEN(SqlString.BETWEEN),
 
     IN(SqlString.IN),
+
+    NOT_LIKE(SqlString.NOT_LIKE),
+
+    NOT_BETWEEN(SqlString.NOT_BETWEEN),
 
     NOT_IN(SqlString.NOT_IN),
 
