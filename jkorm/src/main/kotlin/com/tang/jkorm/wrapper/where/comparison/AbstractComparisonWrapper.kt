@@ -1,23 +1,35 @@
 package com.tang.jkorm.wrapper.where.comparison
 
 import com.tang.jkorm.function.SFunction
-import com.tang.jkorm.utils.Fields
-import com.tang.jkorm.utils.Reflects
+import com.tang.jkorm.utils.Reflects.getColumnName
+import com.tang.jkorm.wrapper.Wrapper
 import com.tang.jkorm.wrapper.enumeration.ComparisonOperator
 import com.tang.jkorm.wrapper.enumeration.LogicalOperator
 import com.tang.jkorm.wrapper.statement.ComparisonStatement
 import com.tang.jkorm.wrapper.statement.LogicalStatement
 import com.tang.jkorm.wrapper.where.WhereBuilder
+import com.tang.jkorm.wrapper.where.WhereGroupByWrapper
 import java.util.function.Consumer
 import kotlin.reflect.KMutableProperty1
-import kotlin.reflect.jvm.javaField
 
 /**
  * Base class for comparison wrapper
  *
  * @author Tang
  */
-abstract class AbstractComparisonWrapper<T, R, W>(private val conditions: MutableList<LogicalStatement>) : WhereBuilder<T, R, W> {
+abstract class AbstractComparisonWrapper<T, R, W>(
+
+    private val wrapper: Wrapper<T>,
+
+    private val conditions: MutableList<LogicalStatement>
+
+) : WhereBuilder<T, R, W> {
+
+    protected lateinit var whereGroupByWrapper: WhereGroupByWrapper<T, R, W>
+
+    fun isGroupByInitialized(): Boolean {
+        return this::whereGroupByWrapper.isInitialized
+    }
 
     private fun setLastLogicalOperator(logicalOperator: LogicalOperator) {
         if (conditions.isEmpty()) {
@@ -173,16 +185,6 @@ abstract class AbstractComparisonWrapper<T, R, W>(private val conditions: Mutabl
         val wrapper = WhereBuilder::class.java.getMethod("build").invoke(this)
         val firstConstructor = this.javaClass.constructors.first()
         return firstConstructor.newInstance(wrapper) as AbstractComparisonWrapper<T, R, W>
-    }
-
-    private fun getColumnName(column: KMutableProperty1<T, *>): String {
-        var filed = column.javaField!!
-        return Reflects.getColumnName(filed)
-    }
-
-    private fun getColumnName(column: SFunction<T, *>): String {
-        val filed = Fields.getField(column)
-        return Reflects.getColumnName(filed)
     }
 
     private fun compare(column: String, value: Any, comparisonOperator: ComparisonOperator, effective: Boolean): AbstractComparisonWrapper<T, R, W> {
@@ -1587,6 +1589,37 @@ abstract class AbstractComparisonWrapper<T, R, W>(private val conditions: Mutabl
      */
     fun isNotNull(column: SFunction<T, *>): AbstractComparisonWrapper<T, R, W> {
         return isNotNull(column, true)
+    }
+
+    /**
+     * Group by operation
+     *
+     * @param columns columns
+     * @return WhereGroupByWrapper<T, R, W>
+     */
+    fun groupBy(vararg columns: String): WhereGroupByWrapper<T, R, W> {
+        whereGroupByWrapper = WhereGroupByWrapper(wrapper, columns.toMutableList())
+        return whereGroupByWrapper
+    }
+
+    /**
+     * Group by operation
+     *
+     * @param columns columns
+     * @return WhereGroupByWrapper<T, R, W>
+     */
+    fun groupBy(vararg columns: KMutableProperty1<T, *>): WhereGroupByWrapper<T, R, W> {
+        return groupBy(*columns.map { getColumnName(it) }.toTypedArray())
+    }
+
+    /**
+     * Group by operation
+     *
+     * @param columns columns
+     * @return WhereGroupByWrapper<T, R, W>
+     */
+    fun groupBy(vararg columns: SFunction<T, *>): WhereGroupByWrapper<T, R, W> {
+        return groupBy(*columns.map { getColumnName(it) }.toTypedArray())
     }
 
 }

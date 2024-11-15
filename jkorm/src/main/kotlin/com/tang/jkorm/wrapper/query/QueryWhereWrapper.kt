@@ -7,7 +7,7 @@ import com.tang.jkorm.wrapper.where.AbstractWhereWrapper
  *
  * @author Tang
  */
-class QueryWhereWrapper<T>(private val queryWrapper: QueryWrapper<T>) : AbstractWhereWrapper<T, List<T>, QueryWrapper<T>>(mutableListOf()) {
+class QueryWhereWrapper<T>(private val queryWrapper: QueryWrapper<T>) : AbstractWhereWrapper<T, List<T>, QueryWrapper<T>>(queryWrapper, mutableListOf()) {
 
     /**
      * Build the query

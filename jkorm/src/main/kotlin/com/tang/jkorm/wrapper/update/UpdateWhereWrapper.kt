@@ -7,7 +7,7 @@ import com.tang.jkorm.wrapper.where.AbstractWhereWrapper
  *
  * @author Tang
  */
-class UpdateWhereWrapper<T>(private val updateWrapper: UpdateWrapper<T>) : AbstractWhereWrapper<T, Int, UpdateWrapper<T>>(mutableListOf()) {
+class UpdateWhereWrapper<T>(private val updateWrapper: UpdateWrapper<T>) : AbstractWhereWrapper<T, Int, UpdateWrapper<T>>(updateWrapper, mutableListOf()) {
 
     /**
      * Build the update

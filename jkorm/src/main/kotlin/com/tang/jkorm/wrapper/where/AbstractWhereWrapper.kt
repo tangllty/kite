@@ -3,6 +3,7 @@ package com.tang.jkorm.wrapper.where
 import com.tang.jkorm.config.JkOrmConfig
 import com.tang.jkorm.constants.SqlString.WHERE
 import com.tang.jkorm.sql.SqlStatement
+import com.tang.jkorm.wrapper.Wrapper
 import com.tang.jkorm.wrapper.statement.LogicalStatement
 import com.tang.jkorm.wrapper.where.comparison.AbstractComparisonWrapper
 
@@ -11,7 +12,13 @@ import com.tang.jkorm.wrapper.where.comparison.AbstractComparisonWrapper
  *
  * @author Tang
  */
-abstract class AbstractWhereWrapper<T, R, W>(private val conditions: MutableList<LogicalStatement>) : AbstractComparisonWrapper<T, R, W>(conditions) {
+abstract class AbstractWhereWrapper<T, R, W>(
+
+    wrapper: Wrapper<T>,
+
+    private val conditions: MutableList<LogicalStatement>
+
+) : AbstractComparisonWrapper<T, R, W>(wrapper, conditions) {
 
     /**
      * Get the SQL statement
@@ -26,15 +33,17 @@ abstract class AbstractWhereWrapper<T, R, W>(private val conditions: MutableList
     }
 
     open fun appendSql(sql: StringBuilder, parameters: MutableList<Any?>) {
-        if (conditions.isEmpty()) {
-            return
+        if (conditions.isNotEmpty()) {
+            sql.append(WHERE)
+            if (conditions.last().nestedConditions.isEmpty()) {
+                conditions.last().logicalOperator = null
+            }
+            conditions.forEach {
+                it.appendSql(sql, parameters)
+            }
         }
-        sql.append(WHERE)
-        if (conditions.last().nestedConditions.isEmpty()) {
-            conditions.last().logicalOperator = null
-        }
-        conditions.forEach {
-            it.appendSql(sql, parameters)
+        if (isGroupByInitialized()) {
+            whereGroupByWrapper.appendSql(sql)
         }
     }
 

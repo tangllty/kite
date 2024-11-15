@@ -4,10 +4,13 @@ import com.google.common.base.CaseFormat
 import com.tang.jkorm.annotation.Column
 import com.tang.jkorm.annotation.Id
 import com.tang.jkorm.annotation.Table
+import com.tang.jkorm.function.SFunction
 import java.lang.reflect.AccessibleObject
 import java.lang.reflect.Field
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.ConcurrentMap
+import kotlin.reflect.KMutableProperty1
+import kotlin.reflect.jvm.javaField
 
 /**
  * @author Tang
@@ -84,6 +87,16 @@ object Reflects {
                 CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, field.name)
             }
         }
+    }
+
+    fun <T> getColumnName(column: KMutableProperty1<T, *>): String {
+        var filed = column.javaField!!
+        return getColumnName(filed)
+    }
+
+    fun <T> getColumnName(column: SFunction<T, *>): String {
+        val filed = Fields.getField(column)
+        return getColumnName(filed)
     }
 
     fun getGeneratedId(clazz: Class<*>): Any {

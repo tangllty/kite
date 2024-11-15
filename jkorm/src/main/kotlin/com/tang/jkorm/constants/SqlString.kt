@@ -55,8 +55,8 @@ object SqlString {
     const val UNION = " UNION "
     const val JOIN = " JOIN "
     const val HAVING = " HAVING "
-    const val GROUP_BY = "GROUP BY "
-    const val ORDER_BY = "ORDER BY "
+    const val GROUP_BY = " GROUP BY "
+    const val ORDER_BY = " ORDER BY "
     const val INTO = "INTO "
     const val DISTINCT = "DISTINCT "
     const val SELECT_DISTINCT = SELECT + DISTINCT
