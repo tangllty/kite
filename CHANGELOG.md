@@ -4,6 +4,7 @@
 
  * Support nested where condition
  * Support more comparison operators
+ * Support return generated key for insert statement
 
 ## 1.0.2
 

@@ -1,5 +1,9 @@
 package com.tang.jkorm.utils
 
+import com.tang.jkorm.constants.SqlString.INSERT
+import com.tang.jkorm.sql.SqlStatement
+import com.tang.jkorm.wrapper.update.UpdateWrapper
+import java.sql.PreparedStatement
 import java.sql.ResultSet
 
 /**
@@ -33,6 +37,48 @@ object ResultSetHandlers {
     fun getCount(resultSet: ResultSet): Long {
         resultSet.next()
         return resultSet.getLong(1)
+    }
+
+    fun setGeneratedKey(statement: SqlStatement, preparedStatement: PreparedStatement, parameter: Any) {
+        if (hasGeneratedKey(statement, parameter).not()) {
+            return
+        }
+        val resultSet = preparedStatement.generatedKeys
+        if (parameter.javaClass.name == ArrayList::class.java.name) {
+            val list = parameter as List<*>
+            list.forEach {
+                setIdValue(resultSet, it!!)
+            }
+            return
+        }
+        setIdValue(resultSet, parameter)
+    }
+
+    fun hasGeneratedKey(statement: SqlStatement, parameter: Any): Boolean {
+        if (parameter.javaClass.name in listOf(UpdateWrapper::class.java.name, Long::class.javaObjectType.name)) {
+            return false
+        }
+        var param = parameter
+        if (parameter.javaClass.name == ArrayList::class.java.name) {
+            val list = parameter as List<*>
+            if (list.isNotEmpty()) {
+                param = list.first()!!
+            }
+        }
+        val idField = Reflects.getIdField(param.javaClass)
+        val autoIncrementId = Reflects.isAutoIncrementId(idField)
+        return statement.sql.startsWith(INSERT, true) && autoIncrementId
+    }
+
+    private fun setIdValue(resultSet: ResultSet, it: Any) {
+        val next = resultSet.next()
+        if (next.not()) {
+            return
+        }
+        val generatedKey = resultSet.getLong(1)
+        val idField = Reflects.getIdField(it.javaClass)
+        Reflects.makeAccessible(idField, it)
+        idField.set(it, generatedKey)
     }
 
 }
