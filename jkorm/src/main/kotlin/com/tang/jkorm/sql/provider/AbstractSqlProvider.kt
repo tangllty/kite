@@ -57,7 +57,7 @@ abstract class AbstractSqlProvider : SqlProvider {
 
     override fun <T> appendOrderBy(sql: StringBuilder, orderBys: Array<OrderItem<T>>) {
         if (orderBys.isNotEmpty()) {
-            sql.append(SPACE + ORDER_BY)
+            sql.append(ORDER_BY)
             orderBys.joinToString(COMMA_SPACE) {
                 it.column + if (it.asc) ASC else DESC
             }.let { sql.append(it) }
