@@ -3,8 +3,10 @@ package com.tang.jkorm.wrapper.where
 import com.tang.jkorm.constants.SqlString.COMMA_SPACE
 import com.tang.jkorm.constants.SqlString.GROUP_BY
 import com.tang.jkorm.function.SFunction
+import com.tang.jkorm.paginate.OrderItem
 import com.tang.jkorm.utils.Reflects.getColumnName
 import com.tang.jkorm.wrapper.Wrapper
+import com.tang.jkorm.wrapper.where.comparison.AbstractComparisonWrapper
 import kotlin.reflect.KMutableProperty1
 
 /**
@@ -15,6 +17,8 @@ import kotlin.reflect.KMutableProperty1
 class WhereGroupByWrapper<T, R, W>(
 
     private val wrapper: Wrapper<T>,
+
+    private val comparisonWrapper: AbstractComparisonWrapper<T, R, W>,
 
     private val columns: MutableList<String> = mutableListOf()
 
@@ -54,6 +58,50 @@ class WhereGroupByWrapper<T, R, W>(
     }
 
     /**
+     * Order by operation
+     *
+     * @param orderBys order by items
+     * @return WhereOrderByWrapper<T, R, W>
+     */
+    @SafeVarargs
+    fun orderBy(vararg orderBys: OrderItem<T>): WhereOrderByWrapper<T, R, W> {
+        return comparisonWrapper.orderBy(*orderBys)
+    }
+
+    /**
+     * Order by operation
+     *
+     * @param column column name
+     * @param asc asc or desc
+     * @return WhereOrderByWrapper<T, R, W>
+     */
+    fun orderBy(column: String, asc: Boolean = true): WhereOrderByWrapper<T, R, W> {
+        return orderBy(OrderItem<T>(column, asc))
+    }
+
+    /**
+     * Order by operation
+     *
+     * @param column column property
+     * @param asc asc or desc
+     * @return WhereOrderByWrapper<T, R, W>
+     */
+    fun orderBy(column: KMutableProperty1<T, *>, asc: Boolean = true): WhereOrderByWrapper<T, R, W> {
+        return orderBy(OrderItem<T>(column, asc))
+    }
+
+    /**
+     * Order by operation
+     *
+     * @param column column function
+     * @param asc asc or desc
+     * @return WhereOrderByWrapper<T, R, W>
+     */
+    fun orderBy(column: SFunction<T, *>, asc: Boolean = true): WhereOrderByWrapper<T, R, W> {
+        return orderBy(OrderItem<T>(column, asc))
+    }
+
+    /**
      * Build the wrapper
      *
      * @return W
@@ -70,7 +118,7 @@ class WhereGroupByWrapper<T, R, W>(
      */
     @Suppress("UNCHECKED_CAST")
     override fun execute(): R {
-        return (wrapper as AbstractWhereWrapper<T, R, W>).execute()
+        return comparisonWrapper.execute()
     }
 
     fun appendSql(sql: StringBuilder) {

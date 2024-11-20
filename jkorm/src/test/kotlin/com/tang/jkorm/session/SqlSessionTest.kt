@@ -349,6 +349,51 @@ class SqlSessionTest : BaseDataTest() {
     }
 
     @Test
+    fun selectWrapperGroupBy() {
+        val session = sqlSessionFactory.openSession()
+        val accountMapper = session.getMapper(AccountMapper::class.java)
+        val accounts = accountMapper.queryWrapper()
+            .select()
+            .columns(Account::username, Account::password)
+            .from(Account::class.java)
+            .groupBy(Account::username)
+            .groupBy(Account::password)
+            .execute()
+        session.close()
+        assertTrue(accounts.isNotEmpty())
+    }
+
+    @Test
+    fun selectWrapperOrderBy() {
+        val session = sqlSessionFactory.openSession()
+        val accountMapper = session.getMapper(AccountMapper::class.java)
+        val accounts = accountMapper.queryWrapper()
+            .select()
+            .columns(Account::username, Account::password)
+            .from(Account::class.java)
+            .orderBy(Account::username)
+            .orderBy(Account::balance, false)
+            .execute()
+        session.close()
+        assertTrue(accounts.isNotEmpty())
+    }
+
+    @Test
+    fun selectWrapperGroupByOrderBy() {
+        val session = sqlSessionFactory.openSession()
+        val accountMapper = session.getMapper(AccountMapper::class.java)
+        val accounts = accountMapper.queryWrapper()
+            .select()
+            .columns(Account::username, Account::password)
+            .from(Account::class.java)
+            .groupBy(Account::username, Account::password)
+            .orderBy(Account::username)
+            .execute()
+        session.close()
+        assertTrue(accounts.isNotEmpty())
+    }
+
+    @Test
     fun count() {
         val session = sqlSessionFactory.openSession()
         val accountMapper = session.getMapper(AccountMapper::class.java)

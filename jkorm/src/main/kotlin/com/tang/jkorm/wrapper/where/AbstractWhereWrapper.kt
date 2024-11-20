@@ -45,6 +45,9 @@ abstract class AbstractWhereWrapper<T, R, W>(
         if (isGroupByInitialized()) {
             whereGroupByWrapper.appendSql(sql)
         }
+        if (isOrderByInitialized()) {
+            whereOrderByWrapper.appendSql(sql)
+        }
     }
 
 }
