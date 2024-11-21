@@ -394,6 +394,23 @@ class SqlSessionTest : BaseDataTest() {
     }
 
     @Test
+    fun selectWrapperHaving() {
+        val session = sqlSessionFactory.openSession()
+        val accountMapper = session.getMapper(AccountMapper::class.java)
+        val accounts = accountMapper.queryWrapper()
+            .select()
+            .columns(Account::username, Account::password)
+            .from(Account::class.java)
+            .groupBy(Account::username, Account::password)
+            .having {
+                isNotNull(Account::password)
+            }
+            .execute()
+        session.close()
+        assertTrue(accounts.isNotEmpty())
+    }
+
+    @Test
     fun count() {
         val session = sqlSessionFactory.openSession()
         val accountMapper = session.getMapper(AccountMapper::class.java)

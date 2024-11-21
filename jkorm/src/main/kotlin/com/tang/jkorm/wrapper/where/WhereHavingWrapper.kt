@@ -1,5 +1,6 @@
-package com.tang.jkorm.wrapper.where.comparison
+package com.tang.jkorm.wrapper.where
 
+import com.tang.jkorm.constants.SqlString.HAVING
 import com.tang.jkorm.function.SFunction
 import com.tang.jkorm.paginate.OrderItem
 import com.tang.jkorm.utils.Reflects.getColumnName
@@ -8,36 +9,21 @@ import com.tang.jkorm.wrapper.enumeration.ComparisonOperator
 import com.tang.jkorm.wrapper.enumeration.LogicalOperator
 import com.tang.jkorm.wrapper.statement.ComparisonStatement
 import com.tang.jkorm.wrapper.statement.LogicalStatement
-import com.tang.jkorm.wrapper.where.WhereBuilder
-import com.tang.jkorm.wrapper.where.WhereGroupByWrapper
-import com.tang.jkorm.wrapper.where.WhereOrderByWrapper
 import java.util.function.Consumer
 import kotlin.reflect.KMutableProperty1
 
 /**
- * Base class for comparison wrapper
- *
  * @author Tang
  */
-abstract class AbstractComparisonWrapper<T, R, W>(
+class WhereHavingWrapper<T, R, W>(
 
     private val wrapper: Wrapper<T>,
 
-    private val conditions: MutableList<LogicalStatement>
+    private val whereWrapper: AbstractWhereWrapper<T, R, W>,
 
-) : WhereBuilder<T, R, W> {
+    private val conditions: MutableList<LogicalStatement> = mutableListOf()
 
-    protected lateinit var whereGroupByWrapper: WhereGroupByWrapper<T, R, W>
-
-    protected lateinit var whereOrderByWrapper: WhereOrderByWrapper<T, R, W>
-
-    protected fun isGroupByInitialized(): Boolean {
-        return this::whereGroupByWrapper.isInitialized
-    }
-
-    protected fun isOrderByInitialized(): Boolean {
-        return this::whereOrderByWrapper.isInitialized
-    }
+): WhereBuilder<T, R, W> {
 
     private fun setLastLogicalOperator(logicalOperator: LogicalOperator) {
         if (conditions.isEmpty()) {
@@ -53,9 +39,9 @@ abstract class AbstractComparisonWrapper<T, R, W>(
     /**
      * And operation
      *
-     * @return AbstractComparisonWrapper<T, R, W>
+     * @return WhereHavingWrapper<T, R, W>
      */
-    fun and(): AbstractComparisonWrapper<T, R, W> {
+    fun and(): WhereHavingWrapper<T, R, W> {
         setLastLogicalOperator(LogicalOperator.AND)
         return this
     }
@@ -64,9 +50,9 @@ abstract class AbstractComparisonWrapper<T, R, W>(
      * And nested operation
      *
      * @param nested nested operation
-     * @return AbstractComparisonWrapper<T, R, W>
+     * @return WhereHavingWrapper<T, R, W>
      */
-    fun and(nested: AbstractComparisonWrapper<T, R, W>.() -> Unit): AbstractComparisonWrapper<T, R, W> {
+    fun and(nested: WhereHavingWrapper<T, R, W>.() -> Unit): WhereHavingWrapper<T, R, W> {
         val nestedWrapper = createNestedWrapper()
         nestedWrapper.nested()
         if (nestedWrapper.conditions.isEmpty()) {
@@ -81,18 +67,18 @@ abstract class AbstractComparisonWrapper<T, R, W>(
      * And nested operation
      *
      * @param nested nested operation
-     * @return AbstractComparisonWrapper<T, R, W>
+     * @return WhereHavingWrapper<T, R, W>
      */
-    fun and(nested: Consumer<AbstractComparisonWrapper<T, R, W>>): AbstractComparisonWrapper<T, R, W> {
+    fun and(nested: Consumer<WhereHavingWrapper<T, R, W>>): WhereHavingWrapper<T, R, W> {
         return and { nested.accept(this) }
     }
 
     /**
      * Or operation
      *
-     * @return AbstractComparisonWrapper<T, R, W>
+     * @return WhereHavingWrapper<T, R, W>
      */
-    fun or(): AbstractComparisonWrapper<T, R, W> {
+    fun or(): WhereHavingWrapper<T, R, W> {
         setLastLogicalOperator(LogicalOperator.OR)
         return this
     }
@@ -101,9 +87,9 @@ abstract class AbstractComparisonWrapper<T, R, W>(
      * Or nested operation
      *
      * @param nested nested operation
-     * @return AbstractComparisonWrapper<T, R, W>
+     * @return WhereHavingWrapper<T, R, W>
      */
-    fun or(nested: AbstractComparisonWrapper<T, R, W>.() -> Unit): AbstractComparisonWrapper<T, R, W> {
+    fun or(nested: WhereHavingWrapper<T, R, W>.() -> Unit): WhereHavingWrapper<T, R, W> {
         val nestedWrapper = createNestedWrapper()
         nestedWrapper.nested()
         conditions.last().logicalOperator = LogicalOperator.OR
@@ -115,18 +101,18 @@ abstract class AbstractComparisonWrapper<T, R, W>(
      * Or nested operation
      *
      * @param nested nested operation
-     * @return AbstractComparisonWrapper<T, R, W>
+     * @return WhereHavingWrapper<T, R, W>
      */
-    fun or(nested: Consumer<AbstractComparisonWrapper<T, R, W>>): AbstractComparisonWrapper<T, R, W> {
+    fun or(nested: Consumer<WhereHavingWrapper<T, R, W>>): WhereHavingWrapper<T, R, W> {
         return or { nested.accept(this) }
     }
 
     /**
      * And not operation
      *
-     * @return AbstractComparisonWrapper<T, R, W>
+     * @return WhereHavingWrapper<T, R, W>
      */
-    fun andNot(): AbstractComparisonWrapper<T, R, W> {
+    fun andNot(): WhereHavingWrapper<T, R, W> {
         setLastLogicalOperator(LogicalOperator.AND_NOT)
         return this
     }
@@ -135,9 +121,9 @@ abstract class AbstractComparisonWrapper<T, R, W>(
      * And not nested operation
      *
      * @param nested nested operation
-     * @return AbstractComparisonWrapper<T, R, W>
+     * @return WhereHavingWrapper<T, R, W>
      */
-    fun andNot(nested: AbstractComparisonWrapper<T, R, W>.() -> Unit): AbstractComparisonWrapper<T, R, W> {
+    fun andNot(nested: WhereHavingWrapper<T, R, W>.() -> Unit): WhereHavingWrapper<T, R, W> {
         val nestedWrapper = createNestedWrapper()
         nestedWrapper.nested()
         conditions.last().logicalOperator = LogicalOperator.AND_NOT
@@ -149,18 +135,18 @@ abstract class AbstractComparisonWrapper<T, R, W>(
      * And not nested operation
      *
      * @param nested nested operation
-     * @return AbstractComparisonWrapper<T, R, W>
+     * @return WhereHavingWrapper<T, R, W>
      */
-    fun andNot(nested: Consumer<AbstractComparisonWrapper<T, R, W>>): AbstractComparisonWrapper<T, R, W> {
+    fun andNot(nested: Consumer<WhereHavingWrapper<T, R, W>>): WhereHavingWrapper<T, R, W> {
         return andNot { nested.accept(this) }
     }
 
     /**
      * Or not operation
      *
-     * @return AbstractComparisonWrapper<T, R, W>
+     * @return WhereHavingWrapper<T, R, W>
      */
-    fun orNot(): AbstractComparisonWrapper<T, R, W> {
+    fun orNot(): WhereHavingWrapper<T, R, W> {
         setLastLogicalOperator(LogicalOperator.OR_NOT)
         return this
     }
@@ -169,9 +155,9 @@ abstract class AbstractComparisonWrapper<T, R, W>(
      * Or not nested operation
      *
      * @param nested nested operation
-     * @return AbstractComparisonWrapper<T, R, W>
+     * @return WhereHavingWrapper<T, R, W>
      */
-    fun orNot(nested: AbstractComparisonWrapper<T, R, W>.() -> Unit): AbstractComparisonWrapper<T, R, W> {
+    fun orNot(nested: WhereHavingWrapper<T, R, W>.() -> Unit): WhereHavingWrapper<T, R, W> {
         val nestedWrapper = createNestedWrapper()
         nestedWrapper.nested()
         conditions.last().logicalOperator = LogicalOperator.OR_NOT
@@ -183,19 +169,20 @@ abstract class AbstractComparisonWrapper<T, R, W>(
      * Or not nested operation
      *
      * @param nested nested operation
-     * @return AbstractComparisonWrapper<T, R, W>
+     * @return WhereHavingWrapper<T, R, W>
      */
-    fun orNot(nested: Consumer<AbstractComparisonWrapper<T, R, W>>): AbstractComparisonWrapper<T, R, W> {
+    fun orNot(nested: Consumer<WhereHavingWrapper<T, R, W>>): WhereHavingWrapper<T, R, W> {
         return orNot { nested.accept(this) }
     }
 
-    private fun createNestedWrapper(): AbstractComparisonWrapper<T, R, W> {
+    @Suppress("UNCHECKED_CAST")
+    private fun createNestedWrapper(): WhereHavingWrapper<T, R, W> {
         val wrapper = WhereBuilder::class.java.getMethod("build").invoke(this)
         val firstConstructor = this.javaClass.constructors.first()
-        return firstConstructor.newInstance(wrapper) as AbstractComparisonWrapper<T, R, W>
+        return firstConstructor.newInstance(wrapper) as WhereHavingWrapper<T, R, W>
     }
 
-    private fun compare(column: String, value: Any, comparisonOperator: ComparisonOperator, effective: Boolean): AbstractComparisonWrapper<T, R, W> {
+    private fun compare(column: String, value: Any, comparisonOperator: ComparisonOperator, effective: Boolean): WhereHavingWrapper<T, R, W> {
         if (effective) {
             val condition = ComparisonStatement(column, value, comparisonOperator)
             conditions.add(LogicalStatement(condition, LogicalOperator.AND))
@@ -209,9 +196,9 @@ abstract class AbstractComparisonWrapper<T, R, W>(
      * @param column column name
      * @param value value
      * @param effective whether effective
-     * @return AbstractComparisonWrapper<T, R, W>
+     * @return WhereHavingWrapper<T, R, W>
      */
-    fun eq(column: String, value: Any, effective: Boolean): AbstractComparisonWrapper<T, R, W> {
+    fun eq(column: String, value: Any, effective: Boolean): WhereHavingWrapper<T, R, W> {
         return compare(column, value, ComparisonOperator.EQUAL, effective)
     }
 
@@ -220,9 +207,9 @@ abstract class AbstractComparisonWrapper<T, R, W>(
      *
      * @param column column name
      * @param value value
-     * @return AbstractComparisonWrapper<T, R, W>
+     * @return WhereHavingWrapper<T, R, W>
      */
-    fun eq(column: String, value: Any): AbstractComparisonWrapper<T, R, W> {
+    fun eq(column: String, value: Any): WhereHavingWrapper<T, R, W> {
         return eq(column, value, true)
     }
 
@@ -232,9 +219,9 @@ abstract class AbstractComparisonWrapper<T, R, W>(
      * @param column column property
      * @param value value
      * @param effective whether effective
-     * @return AbstractComparisonWrapper<T, R, W>
+     * @return WhereHavingWrapper<T, R, W>
      */
-    fun eq(column: KMutableProperty1<T, *>, value: Any, effective: Boolean): AbstractComparisonWrapper<T, R, W> {
+    fun eq(column: KMutableProperty1<T, *>, value: Any, effective: Boolean): WhereHavingWrapper<T, R, W> {
         return eq(getColumnName(column), value, effective)
     }
 
@@ -243,9 +230,9 @@ abstract class AbstractComparisonWrapper<T, R, W>(
      *
      * @param column column property
      * @param value value
-     * @return AbstractComparisonWrapper<T, R, W>
+     * @return WhereHavingWrapper<T, R, W>
      */
-    fun eq(column: KMutableProperty1<T, *>, value: Any): AbstractComparisonWrapper<T, R, W> {
+    fun eq(column: KMutableProperty1<T, *>, value: Any): WhereHavingWrapper<T, R, W> {
         return eq(column, value, true)
     }
 
@@ -255,9 +242,9 @@ abstract class AbstractComparisonWrapper<T, R, W>(
      * @param column column property
      * @param value value
      * @param effective whether effective
-     * @return AbstractComparisonWrapper<T, R, W>
+     * @return WhereHavingWrapper<T, R, W>
      */
-    fun eq(column: SFunction<T, *>, value: Any, effective: Boolean): AbstractComparisonWrapper<T, R, W> {
+    fun eq(column: SFunction<T, *>, value: Any, effective: Boolean): WhereHavingWrapper<T, R, W> {
         return eq(getColumnName(column), value, effective)
     }
 
@@ -266,9 +253,9 @@ abstract class AbstractComparisonWrapper<T, R, W>(
      *
      * @param column column property
      * @param value value
-     * @return AbstractComparisonWrapper<T, R, W>
+     * @return WhereHavingWrapper<T, R, W>
      */
-    fun eq(column: SFunction<T, *>, value: Any): AbstractComparisonWrapper<T, R, W> {
+    fun eq(column: SFunction<T, *>, value: Any): WhereHavingWrapper<T, R, W> {
         return eq(column, value, true)
     }
 
@@ -278,9 +265,9 @@ abstract class AbstractComparisonWrapper<T, R, W>(
      * @param column column name
      * @param value value
      * @param effective whether effective
-     * @return AbstractComparisonWrapper<T, R, W>
+     * @return WhereHavingWrapper<T, R, W>
      */
-    fun ne(column: String, value: Any, effective: Boolean): AbstractComparisonWrapper<T, R, W> {
+    fun ne(column: String, value: Any, effective: Boolean): WhereHavingWrapper<T, R, W> {
         return compare(column, value, ComparisonOperator.NOT_EQUAL, effective)
     }
 
@@ -289,9 +276,9 @@ abstract class AbstractComparisonWrapper<T, R, W>(
      *
      * @param column column name
      * @param value value
-     * @return AbstractComparisonWrapper<T, R, W>
+     * @return WhereHavingWrapper<T, R, W>
      */
-    fun ne(column: String, value: Any): AbstractComparisonWrapper<T, R, W> {
+    fun ne(column: String, value: Any): WhereHavingWrapper<T, R, W> {
         return ne(column, value, true)
     }
 
@@ -301,9 +288,9 @@ abstract class AbstractComparisonWrapper<T, R, W>(
      * @param column column property
      * @param value value
      * @param effective whether effective
-     * @return AbstractComparisonWrapper<T, R, W>
+     * @return WhereHavingWrapper<T, R, W>
      */
-    fun ne(column: KMutableProperty1<T, *>, value: Any, effective: Boolean): AbstractComparisonWrapper<T, R, W> {
+    fun ne(column: KMutableProperty1<T, *>, value: Any, effective: Boolean): WhereHavingWrapper<T, R, W> {
         return ne(getColumnName(column), value, effective)
     }
 
@@ -312,9 +299,9 @@ abstract class AbstractComparisonWrapper<T, R, W>(
      *
      * @param column column property
      * @param value value
-     * @return AbstractComparisonWrapper<T, R, W>
+     * @return WhereHavingWrapper<T, R, W>
      */
-    fun ne(column: KMutableProperty1<T, *>, value: Any): AbstractComparisonWrapper<T, R, W> {
+    fun ne(column: KMutableProperty1<T, *>, value: Any): WhereHavingWrapper<T, R, W> {
         return ne(column, value, true)
     }
 
@@ -324,9 +311,9 @@ abstract class AbstractComparisonWrapper<T, R, W>(
      * @param column column property
      * @param value value
      * @param effective whether effective
-     * @return AbstractComparisonWrapper<T, R, W>
+     * @return WhereHavingWrapper<T, R, W>
      */
-    fun ne(column: SFunction<T, *>, value: Any, effective: Boolean): AbstractComparisonWrapper<T, R, W> {
+    fun ne(column: SFunction<T, *>, value: Any, effective: Boolean): WhereHavingWrapper<T, R, W> {
         return ne(getColumnName(column), value, effective)
     }
 
@@ -335,9 +322,9 @@ abstract class AbstractComparisonWrapper<T, R, W>(
      *
      * @param column column property
      * @param value value
-     * @return AbstractComparisonWrapper<T, R, W>
+     * @return WhereHavingWrapper<T, R, W>
      */
-    fun ne(column: SFunction<T, *>, value: Any): AbstractComparisonWrapper<T, R, W> {
+    fun ne(column: SFunction<T, *>, value: Any): WhereHavingWrapper<T, R, W> {
         return ne(column, value, true)
     }
 
@@ -347,9 +334,9 @@ abstract class AbstractComparisonWrapper<T, R, W>(
      * @param column column name
      * @param value value
      * @param effective whether effective
-     * @return AbstractComparisonWrapper<T, R, W>
+     * @return WhereHavingWrapper<T, R, W>
      */
-    fun gt(column: String, value: Any, effective: Boolean): AbstractComparisonWrapper<T, R, W> {
+    fun gt(column: String, value: Any, effective: Boolean): WhereHavingWrapper<T, R, W> {
         return compare(column, value, ComparisonOperator.GT, effective)
     }
 
@@ -358,9 +345,9 @@ abstract class AbstractComparisonWrapper<T, R, W>(
      *
      * @param column column name
      * @param value value
-     * @return AbstractComparisonWrapper<T, R, W>
+     * @return WhereHavingWrapper<T, R, W>
      */
-    fun gt(column: String, value: Any): AbstractComparisonWrapper<T, R, W> {
+    fun gt(column: String, value: Any): WhereHavingWrapper<T, R, W> {
         return gt(column, value, true)
     }
 
@@ -370,9 +357,9 @@ abstract class AbstractComparisonWrapper<T, R, W>(
      * @param column column property
      * @param value value
      * @param effective whether effective
-     * @return AbstractComparisonWrapper<T, R, W>
+     * @return WhereHavingWrapper<T, R, W>
      */
-    fun gt(column: KMutableProperty1<T, *>, value: Any, effective: Boolean): AbstractComparisonWrapper<T, R, W> {
+    fun gt(column: KMutableProperty1<T, *>, value: Any, effective: Boolean): WhereHavingWrapper<T, R, W> {
         return gt(getColumnName(column), value, effective)
     }
 
@@ -381,9 +368,9 @@ abstract class AbstractComparisonWrapper<T, R, W>(
      *
      * @param column column property
      * @param value value
-     * @return AbstractComparisonWrapper<T, R, W>
+     * @return WhereHavingWrapper<T, R, W>
      */
-    fun gt(column: KMutableProperty1<T, *>, value: Any): AbstractComparisonWrapper<T, R, W> {
+    fun gt(column: KMutableProperty1<T, *>, value: Any): WhereHavingWrapper<T, R, W> {
         return gt(column, value, true)
     }
 
@@ -393,9 +380,9 @@ abstract class AbstractComparisonWrapper<T, R, W>(
      * @param column column function
      * @param value value
      * @param effective whether effective
-     * @return AbstractComparisonWrapper<T, R, W>
+     * @return WhereHavingWrapper<T, R, W>
      */
-    fun gt(column: SFunction<T, *>, value: Any, effective: Boolean): AbstractComparisonWrapper<T, R, W> {
+    fun gt(column: SFunction<T, *>, value: Any, effective: Boolean): WhereHavingWrapper<T, R, W> {
         return gt(getColumnName(column), value, effective)
     }
 
@@ -404,9 +391,9 @@ abstract class AbstractComparisonWrapper<T, R, W>(
      *
      * @param column column function
      * @param value value
-     * @return AbstractComparisonWrapper<T, R, W>
+     * @return WhereHavingWrapper<T, R, W>
      */
-    fun gt(column: SFunction<T, *>, value: Any): AbstractComparisonWrapper<T, R, W> {
+    fun gt(column: SFunction<T, *>, value: Any): WhereHavingWrapper<T, R, W> {
         return gt(column, value, true)
     }
 
@@ -416,9 +403,9 @@ abstract class AbstractComparisonWrapper<T, R, W>(
      * @param column column name
      * @param value value
      * @param effective whether effective
-     * @return AbstractComparisonWrapper<T, R, W>
+     * @return WhereHavingWrapper<T, R, W>
      */
-    fun lt(column: String, value: Any, effective: Boolean): AbstractComparisonWrapper<T, R, W> {
+    fun lt(column: String, value: Any, effective: Boolean): WhereHavingWrapper<T, R, W> {
         return compare(column, value, ComparisonOperator.LT, effective)
     }
 
@@ -427,9 +414,9 @@ abstract class AbstractComparisonWrapper<T, R, W>(
      *
      * @param column column name
      * @param value value
-     * @return AbstractComparisonWrapper<T, R, W>
+     * @return WhereHavingWrapper<T, R, W>
      */
-    fun lt(column: String, value: Any): AbstractComparisonWrapper<T, R, W> {
+    fun lt(column: String, value: Any): WhereHavingWrapper<T, R, W> {
         return lt(column, value, true)
     }
 
@@ -439,9 +426,9 @@ abstract class AbstractComparisonWrapper<T, R, W>(
      * @param column column property
      * @param value value
      * @param effective whether effective
-     * @return AbstractComparisonWrapper<T, R, W>
+     * @return WhereHavingWrapper<T, R, W>
      */
-    fun lt(column: KMutableProperty1<T, *>, value: Any, effective: Boolean): AbstractComparisonWrapper<T, R, W> {
+    fun lt(column: KMutableProperty1<T, *>, value: Any, effective: Boolean): WhereHavingWrapper<T, R, W> {
         return lt(getColumnName(column), value, effective)
     }
 
@@ -450,9 +437,9 @@ abstract class AbstractComparisonWrapper<T, R, W>(
      *
      * @param column column property
      * @param value value
-     * @return AbstractComparisonWrapper<T, R, W>
+     * @return WhereHavingWrapper<T, R, W>
      */
-    fun lt(column: KMutableProperty1<T, *>, value: Any): AbstractComparisonWrapper<T, R, W> {
+    fun lt(column: KMutableProperty1<T, *>, value: Any): WhereHavingWrapper<T, R, W> {
         return lt(column, value, true)
     }
 
@@ -462,9 +449,9 @@ abstract class AbstractComparisonWrapper<T, R, W>(
      * @param column column function
      * @param value value
      * @param effective whether effective
-     * @return AbstractComparisonWrapper<T, R, W>
+     * @return WhereHavingWrapper<T, R, W>
      */
-    fun lt(column: SFunction<T, *>, value: Any, effective: Boolean): AbstractComparisonWrapper<T, R, W> {
+    fun lt(column: SFunction<T, *>, value: Any, effective: Boolean): WhereHavingWrapper<T, R, W> {
         return lt(getColumnName(column), value, effective)
     }
 
@@ -473,9 +460,9 @@ abstract class AbstractComparisonWrapper<T, R, W>(
      *
      * @param column column function
      * @param value value
-     * @return AbstractComparisonWrapper<T, R, W>
+     * @return WhereHavingWrapper<T, R, W>
      */
-    fun lt(column: SFunction<T, *>, value: Any): AbstractComparisonWrapper<T, R, W> {
+    fun lt(column: SFunction<T, *>, value: Any): WhereHavingWrapper<T, R, W> {
         return lt(column, value, true)
     }
 
@@ -485,9 +472,9 @@ abstract class AbstractComparisonWrapper<T, R, W>(
      * @param column column name
      * @param value value
      * @param effective whether effective
-     * @return AbstractComparisonWrapper<T, R, W>
+     * @return WhereHavingWrapper<T, R, W>
      */
-    fun ge(column: String, value: Any, effective: Boolean): AbstractComparisonWrapper<T, R, W> {
+    fun ge(column: String, value: Any, effective: Boolean): WhereHavingWrapper<T, R, W> {
         return compare(column, value, ComparisonOperator.GE, effective)
     }
 
@@ -496,9 +483,9 @@ abstract class AbstractComparisonWrapper<T, R, W>(
      *
      * @param column column name
      * @param value value
-     * @return AbstractComparisonWrapper<T, R, W>
+     * @return WhereHavingWrapper<T, R, W>
      */
-    fun ge(column: String, value: Any): AbstractComparisonWrapper<T, R, W> {
+    fun ge(column: String, value: Any): WhereHavingWrapper<T, R, W> {
         return ge(column, value, true)
     }
 
@@ -508,9 +495,9 @@ abstract class AbstractComparisonWrapper<T, R, W>(
      * @param column column property
      * @param value value
      * @param effective whether effective
-     * @return AbstractComparisonWrapper<T, R, W>
+     * @return WhereHavingWrapper<T, R, W>
      */
-    fun ge(column: KMutableProperty1<T, *>, value: Any, effective: Boolean): AbstractComparisonWrapper<T, R, W> {
+    fun ge(column: KMutableProperty1<T, *>, value: Any, effective: Boolean): WhereHavingWrapper<T, R, W> {
         return ge(getColumnName(column), value, effective)
     }
 
@@ -519,9 +506,9 @@ abstract class AbstractComparisonWrapper<T, R, W>(
      *
      * @param column column property
      * @param value value
-     * @return AbstractComparisonWrapper<T, R, W>
+     * @return WhereHavingWrapper<T, R, W>
      */
-    fun ge(column: KMutableProperty1<T, *>, value: Any): AbstractComparisonWrapper<T, R, W> {
+    fun ge(column: KMutableProperty1<T, *>, value: Any): WhereHavingWrapper<T, R, W> {
         return ge(column, value, true)
     }
 
@@ -531,9 +518,9 @@ abstract class AbstractComparisonWrapper<T, R, W>(
      * @param column column function
      * @param value value
      * @param effective whether effective
-     * @return AbstractComparisonWrapper<T, R, W>
+     * @return WhereHavingWrapper<T, R, W>
      */
-    fun ge(column: SFunction<T, *>, value: Any, effective: Boolean): AbstractComparisonWrapper<T, R, W> {
+    fun ge(column: SFunction<T, *>, value: Any, effective: Boolean): WhereHavingWrapper<T, R, W> {
         return ge(getColumnName(column), value, effective)
     }
 
@@ -542,9 +529,9 @@ abstract class AbstractComparisonWrapper<T, R, W>(
      *
      * @param column column function
      * @param value value
-     * @return AbstractComparisonWrapper<T, R, W>
+     * @return WhereHavingWrapper<T, R, W>
      */
-    fun ge(column: SFunction<T, *>, value: Any): AbstractComparisonWrapper<T, R, W> {
+    fun ge(column: SFunction<T, *>, value: Any): WhereHavingWrapper<T, R, W> {
         return ge(column, value, true)
     }
 
@@ -554,9 +541,9 @@ abstract class AbstractComparisonWrapper<T, R, W>(
      * @param column column name
      * @param value value
      * @param effective whether effective
-     * @return AbstractComparisonWrapper<T, R, W>
+     * @return WhereHavingWrapper<T, R, W>
      */
-    fun le(column: String, value: Any, effective: Boolean): AbstractComparisonWrapper<T, R, W> {
+    fun le(column: String, value: Any, effective: Boolean): WhereHavingWrapper<T, R, W> {
         return compare(column, value, ComparisonOperator.LE, effective)
     }
 
@@ -565,9 +552,9 @@ abstract class AbstractComparisonWrapper<T, R, W>(
      *
      * @param column column name
      * @param value value
-     * @return AbstractComparisonWrapper<T, R, W>
+     * @return WhereHavingWrapper<T, R, W>
      */
-    fun le(column: String, value: Any): AbstractComparisonWrapper<T, R, W> {
+    fun le(column: String, value: Any): WhereHavingWrapper<T, R, W> {
         return le(column, value, true)
     }
 
@@ -577,9 +564,9 @@ abstract class AbstractComparisonWrapper<T, R, W>(
      * @param column column property
      * @param value value
      * @param effective whether effective
-     * @return AbstractComparisonWrapper<T, R, W>
+     * @return WhereHavingWrapper<T, R, W>
      */
-    fun le(column: KMutableProperty1<T, *>, value: Any, effective: Boolean): AbstractComparisonWrapper<T, R, W> {
+    fun le(column: KMutableProperty1<T, *>, value: Any, effective: Boolean): WhereHavingWrapper<T, R, W> {
         return le(getColumnName(column), value, effective)
     }
 
@@ -588,9 +575,9 @@ abstract class AbstractComparisonWrapper<T, R, W>(
      *
      * @param column column property
      * @param value value
-     * @return AbstractComparisonWrapper<T, R, W>
+     * @return WhereHavingWrapper<T, R, W>
      */
-    fun le(column: KMutableProperty1<T, *>, value: Any): AbstractComparisonWrapper<T, R, W> {
+    fun le(column: KMutableProperty1<T, *>, value: Any): WhereHavingWrapper<T, R, W> {
         return le(column, value, true)
     }
 
@@ -600,9 +587,9 @@ abstract class AbstractComparisonWrapper<T, R, W>(
      * @param column column function
      * @param value value
      * @param effective whether effective
-     * @return AbstractComparisonWrapper<T, R, W>
+     * @return WhereHavingWrapper<T, R, W>
      */
-    fun le(column: SFunction<T, *>, value: Any, effective: Boolean): AbstractComparisonWrapper<T, R, W> {
+    fun le(column: SFunction<T, *>, value: Any, effective: Boolean): WhereHavingWrapper<T, R, W> {
         return le(getColumnName(column), value, effective)
     }
 
@@ -611,9 +598,9 @@ abstract class AbstractComparisonWrapper<T, R, W>(
      *
      * @param column column function
      * @param value value
-     * @return AbstractComparisonWrapper<T, R, W>
+     * @return WhereHavingWrapper<T, R, W>
      */
-    fun le(column: SFunction<T, *>, value: Any): AbstractComparisonWrapper<T, R, W> {
+    fun le(column: SFunction<T, *>, value: Any): WhereHavingWrapper<T, R, W> {
         return le(column, value, true)
     }
 
@@ -623,9 +610,9 @@ abstract class AbstractComparisonWrapper<T, R, W>(
      * @param column column name
      * @param value value
      * @param effective whether effective
-     * @return AbstractComparisonWrapper<T, R, W>
+     * @return WhereHavingWrapper<T, R, W>
      */
-    fun like(column: String, value: Any, effective: Boolean): AbstractComparisonWrapper<T, R, W> {
+    fun like(column: String, value: Any, effective: Boolean): WhereHavingWrapper<T, R, W> {
         return compare(column, "%$value%", ComparisonOperator.LIKE, effective)
     }
 
@@ -634,9 +621,9 @@ abstract class AbstractComparisonWrapper<T, R, W>(
      *
      * @param column column name
      * @param value value
-     * @return AbstractComparisonWrapper<T, R, W>
+     * @return WhereHavingWrapper<T, R, W>
      */
-    fun like(column: String, value: Any): AbstractComparisonWrapper<T, R, W> {
+    fun like(column: String, value: Any): WhereHavingWrapper<T, R, W> {
         return like(column, value, true)
     }
 
@@ -646,9 +633,9 @@ abstract class AbstractComparisonWrapper<T, R, W>(
      * @param column column property
      * @param value value
      * @param effective whether effective
-     * @return AbstractComparisonWrapper<T, R, W>
+     * @return WhereHavingWrapper<T, R, W>
      */
-    fun like(column: KMutableProperty1<T, *>, value: Any, effective: Boolean): AbstractComparisonWrapper<T, R, W> {
+    fun like(column: KMutableProperty1<T, *>, value: Any, effective: Boolean): WhereHavingWrapper<T, R, W> {
         return like(getColumnName(column), value, effective)
     }
 
@@ -657,9 +644,9 @@ abstract class AbstractComparisonWrapper<T, R, W>(
      *
      * @param column column property
      * @param value value
-     * @return AbstractComparisonWrapper<T, R, W>
+     * @return WhereHavingWrapper<T, R, W>
      */
-    fun like(column: KMutableProperty1<T, *>, value: Any): AbstractComparisonWrapper<T, R, W> {
+    fun like(column: KMutableProperty1<T, *>, value: Any): WhereHavingWrapper<T, R, W> {
         return like(column, value, true)
     }
 
@@ -669,9 +656,9 @@ abstract class AbstractComparisonWrapper<T, R, W>(
      * @param column column function
      * @param value value
      * @param effective whether effective
-     * @return AbstractComparisonWrapper<T, R, W>
+     * @return WhereHavingWrapper<T, R, W>
      */
-    fun like(column: SFunction<T, *>, value: Any, effective: Boolean): AbstractComparisonWrapper<T, R, W> {
+    fun like(column: SFunction<T, *>, value: Any, effective: Boolean): WhereHavingWrapper<T, R, W> {
         return like(getColumnName(column), value, effective)
     }
 
@@ -680,9 +667,9 @@ abstract class AbstractComparisonWrapper<T, R, W>(
      *
      * @param column column function
      * @param value value
-     * @return AbstractComparisonWrapper<T, R, W>
+     * @return WhereHavingWrapper<T, R, W>
      */
-    fun like(column: SFunction<T, *>, value: Any): AbstractComparisonWrapper<T, R, W> {
+    fun like(column: SFunction<T, *>, value: Any): WhereHavingWrapper<T, R, W> {
         return like(column, value, true)
     }
 
@@ -692,9 +679,9 @@ abstract class AbstractComparisonWrapper<T, R, W>(
      * @param column column name
      * @param value value
      * @param effective whether effective
-     * @return AbstractComparisonWrapper<T, R, W>
+     * @return WhereHavingWrapper<T, R, W>
      */
-    fun leftLike(column: String, value: Any, effective: Boolean): AbstractComparisonWrapper<T, R, W> {
+    fun leftLike(column: String, value: Any, effective: Boolean): WhereHavingWrapper<T, R, W> {
         return like(column, "%$value", effective)
     }
 
@@ -703,9 +690,9 @@ abstract class AbstractComparisonWrapper<T, R, W>(
      *
      * @param column column name
      * @param value value
-     * @return AbstractComparisonWrapper<T, R, W>
+     * @return WhereHavingWrapper<T, R, W>
      */
-    fun leftLike(column: String, value: Any): AbstractComparisonWrapper<T, R, W> {
+    fun leftLike(column: String, value: Any): WhereHavingWrapper<T, R, W> {
         return leftLike(column, value, true)
     }
 
@@ -715,9 +702,9 @@ abstract class AbstractComparisonWrapper<T, R, W>(
      * @param column column property
      * @param value value
      * @param effective whether effective
-     * @return AbstractComparisonWrapper<T, R, W>
+     * @return WhereHavingWrapper<T, R, W>
      */
-    fun leftLike(column: KMutableProperty1<T, *>, value: Any, effective: Boolean): AbstractComparisonWrapper<T, R, W> {
+    fun leftLike(column: KMutableProperty1<T, *>, value: Any, effective: Boolean): WhereHavingWrapper<T, R, W> {
         return leftLike(getColumnName(column), value, effective)
     }
 
@@ -726,9 +713,9 @@ abstract class AbstractComparisonWrapper<T, R, W>(
      *
      * @param column column property
      * @param value value
-     * @return AbstractComparisonWrapper<T, R, W>
+     * @return WhereHavingWrapper<T, R, W>
      */
-    fun leftLike(column: KMutableProperty1<T, *>, value: Any): AbstractComparisonWrapper<T, R, W> {
+    fun leftLike(column: KMutableProperty1<T, *>, value: Any): WhereHavingWrapper<T, R, W> {
         return leftLike(column, value, true)
     }
 
@@ -738,9 +725,9 @@ abstract class AbstractComparisonWrapper<T, R, W>(
      * @param column column function
      * @param value value
      * @param effective whether effective
-     * @return AbstractComparisonWrapper<T, R, W>
+     * @return WhereHavingWrapper<T, R, W>
      */
-    fun leftLike(column: SFunction<T, *>, value: Any, effective: Boolean): AbstractComparisonWrapper<T, R, W> {
+    fun leftLike(column: SFunction<T, *>, value: Any, effective: Boolean): WhereHavingWrapper<T, R, W> {
         return leftLike(getColumnName(column), value, effective)
     }
 
@@ -749,9 +736,9 @@ abstract class AbstractComparisonWrapper<T, R, W>(
      *
      * @param column column function
      * @param value value
-     * @return AbstractComparisonWrapper<T, R, W>
+     * @return WhereHavingWrapper<T, R, W>
      */
-    fun leftLike(column: SFunction<T, *>, value: Any): AbstractComparisonWrapper<T, R, W> {
+    fun leftLike(column: SFunction<T, *>, value: Any): WhereHavingWrapper<T, R, W> {
         return leftLike(column, value, true)
     }
 
@@ -761,9 +748,9 @@ abstract class AbstractComparisonWrapper<T, R, W>(
      * @param column column name
      * @param value value
      * @param effective whether effective
-     * @return AbstractComparisonWrapper<T, R, W>
+     * @return WhereHavingWrapper<T, R, W>
      */
-    fun rightLike(column: String, value: Any, effective: Boolean): AbstractComparisonWrapper<T, R, W> {
+    fun rightLike(column: String, value: Any, effective: Boolean): WhereHavingWrapper<T, R, W> {
         return like(column, "$value%", effective)
     }
 
@@ -772,9 +759,9 @@ abstract class AbstractComparisonWrapper<T, R, W>(
      *
      * @param column column name
      * @param value value
-     * @return AbstractComparisonWrapper<T, R, W>
+     * @return WhereHavingWrapper<T, R, W>
      */
-    fun rightLike(column: String, value: Any): AbstractComparisonWrapper<T, R, W> {
+    fun rightLike(column: String, value: Any): WhereHavingWrapper<T, R, W> {
         return rightLike(column, value, true)
     }
 
@@ -784,9 +771,9 @@ abstract class AbstractComparisonWrapper<T, R, W>(
      * @param column column property
      * @param value value
      * @param effective whether effective
-     * @return AbstractComparisonWrapper<T, R, W>
+     * @return WhereHavingWrapper<T, R, W>
      */
-    fun rightLike(column: KMutableProperty1<T, *>, value: Any, effective: Boolean): AbstractComparisonWrapper<T, R, W> {
+    fun rightLike(column: KMutableProperty1<T, *>, value: Any, effective: Boolean): WhereHavingWrapper<T, R, W> {
         return rightLike(getColumnName(column), value, effective)
     }
 
@@ -795,9 +782,9 @@ abstract class AbstractComparisonWrapper<T, R, W>(
      *
      * @param column column property
      * @param value value
-     * @return AbstractComparisonWrapper<T, R, W>
+     * @return WhereHavingWrapper<T, R, W>
      */
-    fun rightLike(column: KMutableProperty1<T, *>, value: Any): AbstractComparisonWrapper<T, R, W> {
+    fun rightLike(column: KMutableProperty1<T, *>, value: Any): WhereHavingWrapper<T, R, W> {
         return rightLike(column, value, true)
     }
 
@@ -807,9 +794,9 @@ abstract class AbstractComparisonWrapper<T, R, W>(
      * @param column column function
      * @param value value
      * @param effective whether effective
-     * @return AbstractComparisonWrapper<T, R, W>
+     * @return WhereHavingWrapper<T, R, W>
      */
-    fun rightLike(column: SFunction<T, *>, value: Any, effective: Boolean): AbstractComparisonWrapper<T, R, W> {
+    fun rightLike(column: SFunction<T, *>, value: Any, effective: Boolean): WhereHavingWrapper<T, R, W> {
         return rightLike(getColumnName(column), value, effective)
     }
 
@@ -818,9 +805,9 @@ abstract class AbstractComparisonWrapper<T, R, W>(
      *
      * @param column column function
      * @param value value
-     * @return AbstractComparisonWrapper<T, R, W>
+     * @return WhereHavingWrapper<T, R, W>
      */
-    fun rightLike(column: SFunction<T, *>, value: Any): AbstractComparisonWrapper<T, R, W> {
+    fun rightLike(column: SFunction<T, *>, value: Any): WhereHavingWrapper<T, R, W> {
         return rightLike(column, value, true)
     }
 
@@ -831,9 +818,9 @@ abstract class AbstractComparisonWrapper<T, R, W>(
      * @param start start value
      * @param end end value
      * @param effective whether effective
-     * @return AbstractComparisonWrapper<T, R, W>
+     * @return WhereHavingWrapper<T, R, W>
      */
-    fun between(column: String, start: Any, end: Any, effective: Boolean): AbstractComparisonWrapper<T, R, W> {
+    fun between(column: String, start: Any, end: Any, effective: Boolean): WhereHavingWrapper<T, R, W> {
         if (effective) {
             val condition = ComparisonStatement(column, Pair(start, end), ComparisonOperator.BETWEEN)
             conditions.add(LogicalStatement(condition, LogicalOperator.AND))
@@ -847,9 +834,9 @@ abstract class AbstractComparisonWrapper<T, R, W>(
      * @param column column name
      * @param start start value
      * @param end end value
-     * @return AbstractComparisonWrapper<T, R, W>
+     * @return WhereHavingWrapper<T, R, W>
      */
-    fun between(column: String, start: Any, end: Any): AbstractComparisonWrapper<T, R, W> {
+    fun between(column: String, start: Any, end: Any): WhereHavingWrapper<T, R, W> {
         return between(column, start, end, true)
     }
 
@@ -860,9 +847,9 @@ abstract class AbstractComparisonWrapper<T, R, W>(
      * @param start start value
      * @param end end value
      * @param effective whether effective
-     * @return AbstractComparisonWrapper<T, R, W>
+     * @return WhereHavingWrapper<T, R, W>
      */
-    fun between(column: KMutableProperty1<T, *>, start: Any, end: Any, effective: Boolean): AbstractComparisonWrapper<T, R, W> {
+    fun between(column: KMutableProperty1<T, *>, start: Any, end: Any, effective: Boolean): WhereHavingWrapper<T, R, W> {
         return between(getColumnName(column), start, end, effective)
     }
 
@@ -872,9 +859,9 @@ abstract class AbstractComparisonWrapper<T, R, W>(
      * @param column column property
      * @param start start value
      * @param end end value
-     * @return AbstractComparisonWrapper<T, R, W>
+     * @return WhereHavingWrapper<T, R, W>
      */
-    fun between(column: KMutableProperty1<T, *>, start: Any, end: Any): AbstractComparisonWrapper<T, R, W> {
+    fun between(column: KMutableProperty1<T, *>, start: Any, end: Any): WhereHavingWrapper<T, R, W> {
         return between(column, start, end, true)
     }
 
@@ -885,9 +872,9 @@ abstract class AbstractComparisonWrapper<T, R, W>(
      * @param start start value
      * @param end end value
      * @param effective whether effective
-     * @return AbstractComparisonWrapper<T, R, W>
+     * @return WhereHavingWrapper<T, R, W>
      */
-    fun between(column: SFunction<T, *>, start: Any, end: Any, effective: Boolean): AbstractComparisonWrapper<T, R, W> {
+    fun between(column: SFunction<T, *>, start: Any, end: Any, effective: Boolean): WhereHavingWrapper<T, R, W> {
         return between(getColumnName(column), start, end, effective)
     }
 
@@ -897,9 +884,9 @@ abstract class AbstractComparisonWrapper<T, R, W>(
      * @param column column function
      * @param start start value
      * @param end end value
-     * @return AbstractComparisonWrapper<T, R, W>
+     * @return WhereHavingWrapper<T, R, W>
      */
-    fun between(column: SFunction<T, *>, start: Any, end: Any): AbstractComparisonWrapper<T, R, W> {
+    fun between(column: SFunction<T, *>, start: Any, end: Any): WhereHavingWrapper<T, R, W> {
         return between(column, start, end, true)
     }
 
@@ -909,9 +896,9 @@ abstract class AbstractComparisonWrapper<T, R, W>(
      * @param column column name
      * @param values values
      * @param effective whether effective
-     * @return AbstractComparisonWrapper<T, R, W>
+     * @return WhereHavingWrapper<T, R, W>
      */
-    fun `in`(column: String, values: Iterable<Any>, effective: Boolean): AbstractComparisonWrapper<T, R, W> {
+    fun `in`(column: String, values: Iterable<Any>, effective: Boolean): WhereHavingWrapper<T, R, W> {
         if (effective) {
             val condition = ComparisonStatement(column, values, ComparisonOperator.IN)
             conditions.add(LogicalStatement(condition, LogicalOperator.AND))
@@ -924,9 +911,9 @@ abstract class AbstractComparisonWrapper<T, R, W>(
      *
      * @param column column name
      * @param values values
-     * @return AbstractComparisonWrapper<T, R, W>
+     * @return WhereHavingWrapper<T, R, W>
      */
-    fun `in`(column: String, values: Iterable<Any>): AbstractComparisonWrapper<T, R, W> {
+    fun `in`(column: String, values: Iterable<Any>): WhereHavingWrapper<T, R, W> {
         return `in`(column, values, true)
     }
 
@@ -936,9 +923,9 @@ abstract class AbstractComparisonWrapper<T, R, W>(
      * @param column column property
      * @param values values
      * @param effective whether effective
-     * @return AbstractComparisonWrapper<T, R, W>
+     * @return WhereHavingWrapper<T, R, W>
      */
-    fun `in`(column: KMutableProperty1<T, *>, values: Iterable<Any>, effective: Boolean): AbstractComparisonWrapper<T, R, W> {
+    fun `in`(column: KMutableProperty1<T, *>, values: Iterable<Any>, effective: Boolean): WhereHavingWrapper<T, R, W> {
         return `in`(getColumnName(column), values, effective)
     }
 
@@ -947,9 +934,9 @@ abstract class AbstractComparisonWrapper<T, R, W>(
      *
      * @param column column property
      * @param values values
-     * @return AbstractComparisonWrapper<T, R, W>
+     * @return WhereHavingWrapper<T, R, W>
      */
-    fun `in`(column: KMutableProperty1<T, *>, values: Iterable<Any>): AbstractComparisonWrapper<T, R, W> {
+    fun `in`(column: KMutableProperty1<T, *>, values: Iterable<Any>): WhereHavingWrapper<T, R, W> {
         return `in`(column, values, true)
     }
 
@@ -959,9 +946,9 @@ abstract class AbstractComparisonWrapper<T, R, W>(
      * @param column column function
      * @param values values
      * @param effective whether effective
-     * @return AbstractComparisonWrapper<T, R, W>
+     * @return WhereHavingWrapper<T, R, W>
      */
-    fun `in`(column: SFunction<T, *>, values: Iterable<Any>, effective: Boolean): AbstractComparisonWrapper<T, R, W> {
+    fun `in`(column: SFunction<T, *>, values: Iterable<Any>, effective: Boolean): WhereHavingWrapper<T, R, W> {
         return `in`(getColumnName(column), values, effective)
     }
 
@@ -970,9 +957,9 @@ abstract class AbstractComparisonWrapper<T, R, W>(
      *
      * @param column column function
      * @param values values
-     * @return AbstractComparisonWrapper<T, R, W>
+     * @return WhereHavingWrapper<T, R, W>
      */
-    fun `in`(column: SFunction<T, *>, values: Iterable<Any>): AbstractComparisonWrapper<T, R, W> {
+    fun `in`(column: SFunction<T, *>, values: Iterable<Any>): WhereHavingWrapper<T, R, W> {
         return `in`(column, values, true)
     }
 
@@ -982,9 +969,9 @@ abstract class AbstractComparisonWrapper<T, R, W>(
      * @param column column name
      * @param values values
      * @param effective whether effective
-     * @return AbstractComparisonWrapper<T, R, W>
+     * @return WhereHavingWrapper<T, R, W>
      */
-    fun `in`(column: String, values: Array<Any>, effective: Boolean): AbstractComparisonWrapper<T, R, W> {
+    fun `in`(column: String, values: Array<Any>, effective: Boolean): WhereHavingWrapper<T, R, W> {
         return `in`(column, values.toList(), effective)
     }
 
@@ -993,9 +980,9 @@ abstract class AbstractComparisonWrapper<T, R, W>(
      *
      * @param column column name
      * @param values values
-     * @return AbstractComparisonWrapper<T, R, W>
+     * @return WhereHavingWrapper<T, R, W>
      */
-    fun `in`(column: String, values: Array<Any>): AbstractComparisonWrapper<T, R, W> {
+    fun `in`(column: String, values: Array<Any>): WhereHavingWrapper<T, R, W> {
         return `in`(column, values, true)
     }
 
@@ -1005,9 +992,9 @@ abstract class AbstractComparisonWrapper<T, R, W>(
      * @param column column property
      * @param values values
      * @param effective whether effective
-     * @return AbstractComparisonWrapper<T, R, W>
+     * @return WhereHavingWrapper<T, R, W>
      */
-    fun `in`(column: KMutableProperty1<T, *>, values: Array<Any>, effective: Boolean): AbstractComparisonWrapper<T, R, W> {
+    fun `in`(column: KMutableProperty1<T, *>, values: Array<Any>, effective: Boolean): WhereHavingWrapper<T, R, W> {
         return `in`(getColumnName(column), values, effective)
     }
 
@@ -1016,9 +1003,9 @@ abstract class AbstractComparisonWrapper<T, R, W>(
      *
      * @param column column property
      * @param values values
-     * @return AbstractComparisonWrapper<T, R, W>
+     * @return WhereHavingWrapper<T, R, W>
      */
-    fun `in`(column: KMutableProperty1<T, *>, values: Array<Any>): AbstractComparisonWrapper<T, R, W> {
+    fun `in`(column: KMutableProperty1<T, *>, values: Array<Any>): WhereHavingWrapper<T, R, W> {
         return `in`(column, values, true)
     }
 
@@ -1028,9 +1015,9 @@ abstract class AbstractComparisonWrapper<T, R, W>(
      * @param column column function
      * @param values values
      * @param effective whether effective
-     * @return AbstractComparisonWrapper<T, R, W>
+     * @return WhereHavingWrapper<T, R, W>
      */
-    fun `in`(column: SFunction<T, *>, values: Array<Any>, effective: Boolean): AbstractComparisonWrapper<T, R, W> {
+    fun `in`(column: SFunction<T, *>, values: Array<Any>, effective: Boolean): WhereHavingWrapper<T, R, W> {
         return `in`(getColumnName(column), values, effective)
     }
 
@@ -1039,9 +1026,9 @@ abstract class AbstractComparisonWrapper<T, R, W>(
      *
      * @param column column function
      * @param values values
-     * @return AbstractComparisonWrapper<T, R, W>
+     * @return WhereHavingWrapper<T, R, W>
      */
-    fun `in`(column: SFunction<T, *>, values: Array<Any>): AbstractComparisonWrapper<T, R, W> {
+    fun `in`(column: SFunction<T, *>, values: Array<Any>): WhereHavingWrapper<T, R, W> {
         return `in`(column, values, true)
     }
 
@@ -1051,9 +1038,9 @@ abstract class AbstractComparisonWrapper<T, R, W>(
      * @param column column name
      * @param value value
      * @param effective whether effective
-     * @return AbstractComparisonWrapper<T, R, W>
+     * @return WhereHavingWrapper<T, R, W>
      */
-    fun notLike(column: String, value: Any, effective: Boolean): AbstractComparisonWrapper<T, R, W> {
+    fun notLike(column: String, value: Any, effective: Boolean): WhereHavingWrapper<T, R, W> {
         return compare(column, "%$value%", ComparisonOperator.NOT_LIKE, effective)
     }
 
@@ -1062,9 +1049,9 @@ abstract class AbstractComparisonWrapper<T, R, W>(
      *
      * @param column column name
      * @param value value
-     * @return AbstractComparisonWrapper<T, R, W>
+     * @return WhereHavingWrapper<T, R, W>
      */
-    fun notLike(column: String, value: Any): AbstractComparisonWrapper<T, R, W> {
+    fun notLike(column: String, value: Any): WhereHavingWrapper<T, R, W> {
         return notLike(column, value, true)
     }
 
@@ -1074,9 +1061,9 @@ abstract class AbstractComparisonWrapper<T, R, W>(
      * @param column column property
      * @param value value
      * @param effective whether effective
-     * @return AbstractComparisonWrapper<T, R, W>
+     * @return WhereHavingWrapper<T, R, W>
      */
-    fun notLike(column: KMutableProperty1<T, *>, value: Any, effective: Boolean): AbstractComparisonWrapper<T, R, W> {
+    fun notLike(column: KMutableProperty1<T, *>, value: Any, effective: Boolean): WhereHavingWrapper<T, R, W> {
         return notLike(getColumnName(column), value, effective)
     }
 
@@ -1085,9 +1072,9 @@ abstract class AbstractComparisonWrapper<T, R, W>(
      *
      * @param column column property
      * @param value value
-     * @return AbstractComparisonWrapper<T, R, W>
+     * @return WhereHavingWrapper<T, R, W>
      */
-    fun notLike(column: KMutableProperty1<T, *>, value: Any): AbstractComparisonWrapper<T, R, W> {
+    fun notLike(column: KMutableProperty1<T, *>, value: Any): WhereHavingWrapper<T, R, W> {
         return notLike(column, value, true)
     }
 
@@ -1097,9 +1084,9 @@ abstract class AbstractComparisonWrapper<T, R, W>(
      * @param column column function
      * @param value value
      * @param effective whether effective
-     * @return AbstractComparisonWrapper<T, R, W>
+     * @return WhereHavingWrapper<T, R, W>
      */
-    fun notLike(column: SFunction<T, *>, value: Any, effective: Boolean): AbstractComparisonWrapper<T, R, W> {
+    fun notLike(column: SFunction<T, *>, value: Any, effective: Boolean): WhereHavingWrapper<T, R, W> {
         return notLike(getColumnName(column), value, effective)
     }
 
@@ -1108,9 +1095,9 @@ abstract class AbstractComparisonWrapper<T, R, W>(
      *
      * @param column column function
      * @param value value
-     * @return AbstractComparisonWrapper<T, R, W>
+     * @return WhereHavingWrapper<T, R, W>
      */
-    fun notLike(column: SFunction<T, *>, value: Any): AbstractComparisonWrapper<T, R, W> {
+    fun notLike(column: SFunction<T, *>, value: Any): WhereHavingWrapper<T, R, W> {
         return notLike(column, value, true)
     }
 
@@ -1120,9 +1107,9 @@ abstract class AbstractComparisonWrapper<T, R, W>(
      * @param column column name
      * @param value value
      * @param effective whether effective
-     * @return AbstractComparisonWrapper<T, R, W>
+     * @return WhereHavingWrapper<T, R, W>
      */
-    fun notLeftLike(column: String, value: Any, effective: Boolean): AbstractComparisonWrapper<T, R, W> {
+    fun notLeftLike(column: String, value: Any, effective: Boolean): WhereHavingWrapper<T, R, W> {
         return compare(column, "%$value", ComparisonOperator.NOT_LIKE, effective)
     }
 
@@ -1131,9 +1118,9 @@ abstract class AbstractComparisonWrapper<T, R, W>(
      *
      * @param column column name
      * @param value value
-     * @return AbstractComparisonWrapper<T, R, W>
+     * @return WhereHavingWrapper<T, R, W>
      */
-    fun notLeftLike(column: String, value: Any): AbstractComparisonWrapper<T, R, W> {
+    fun notLeftLike(column: String, value: Any): WhereHavingWrapper<T, R, W> {
         return notLeftLike(column, value, true)
     }
 
@@ -1143,9 +1130,9 @@ abstract class AbstractComparisonWrapper<T, R, W>(
      * @param column column property
      * @param value value
      * @param effective whether effective
-     * @return AbstractComparisonWrapper<T, R, W>
+     * @return WhereHavingWrapper<T, R, W>
      */
-    fun notLeftLike(column: KMutableProperty1<T, *>, value: Any, effective: Boolean): AbstractComparisonWrapper<T, R, W> {
+    fun notLeftLike(column: KMutableProperty1<T, *>, value: Any, effective: Boolean): WhereHavingWrapper<T, R, W> {
         return notLeftLike(getColumnName(column), value, effective)
     }
 
@@ -1154,9 +1141,9 @@ abstract class AbstractComparisonWrapper<T, R, W>(
      *
      * @param column column property
      * @param value value
-     * @return AbstractComparisonWrapper<T, R, W>
+     * @return WhereHavingWrapper<T, R, W>
      */
-    fun notLeftLike(column: KMutableProperty1<T, *>, value: Any): AbstractComparisonWrapper<T, R, W> {
+    fun notLeftLike(column: KMutableProperty1<T, *>, value: Any): WhereHavingWrapper<T, R, W> {
         return notLeftLike(column, value, true)
     }
 
@@ -1166,9 +1153,9 @@ abstract class AbstractComparisonWrapper<T, R, W>(
      * @param column column function
      * @param value value
      * @param effective whether effective
-     * @return AbstractComparisonWrapper<T, R, W>
+     * @return WhereHavingWrapper<T, R, W>
      */
-    fun notLeftLike(column: SFunction<T, *>, value: Any, effective: Boolean): AbstractComparisonWrapper<T, R, W> {
+    fun notLeftLike(column: SFunction<T, *>, value: Any, effective: Boolean): WhereHavingWrapper<T, R, W> {
         return notLeftLike(getColumnName(column), value, effective)
     }
 
@@ -1177,9 +1164,9 @@ abstract class AbstractComparisonWrapper<T, R, W>(
      *
      * @param column column function
      * @param value value
-     * @return AbstractComparisonWrapper<T, R, W>
+     * @return WhereHavingWrapper<T, R, W>
      */
-    fun notLeftLike(column: SFunction<T, *>, value: Any): AbstractComparisonWrapper<T, R, W> {
+    fun notLeftLike(column: SFunction<T, *>, value: Any): WhereHavingWrapper<T, R, W> {
         return notLeftLike(column, value, true)
     }
 
@@ -1189,9 +1176,9 @@ abstract class AbstractComparisonWrapper<T, R, W>(
      * @param column column name
      * @param value value
      * @param effective whether effective
-     * @return AbstractComparisonWrapper<T, R, W>
+     * @return WhereHavingWrapper<T, R, W>
      */
-    fun notRightLike(column: String, value: Any, effective: Boolean): AbstractComparisonWrapper<T, R, W> {
+    fun notRightLike(column: String, value: Any, effective: Boolean): WhereHavingWrapper<T, R, W> {
         return compare(column, "$value%", ComparisonOperator.NOT_LIKE, effective)
     }
 
@@ -1200,9 +1187,9 @@ abstract class AbstractComparisonWrapper<T, R, W>(
      *
      * @param column column name
      * @param value value
-     * @return AbstractComparisonWrapper<T, R, W>
+     * @return WhereHavingWrapper<T, R, W>
      */
-    fun notRightLike(column: String, value: Any): AbstractComparisonWrapper<T, R, W> {
+    fun notRightLike(column: String, value: Any): WhereHavingWrapper<T, R, W> {
         return notRightLike(column, value, true)
     }
 
@@ -1212,9 +1199,9 @@ abstract class AbstractComparisonWrapper<T, R, W>(
      * @param column column property
      * @param value value
      * @param effective whether effective
-     * @return AbstractComparisonWrapper<T, R, W>
+     * @return WhereHavingWrapper<T, R, W>
      */
-    fun notRightLike(column: KMutableProperty1<T, *>, value: Any, effective: Boolean): AbstractComparisonWrapper<T, R, W> {
+    fun notRightLike(column: KMutableProperty1<T, *>, value: Any, effective: Boolean): WhereHavingWrapper<T, R, W> {
         return notRightLike(getColumnName(column), value, effective)
     }
 
@@ -1223,9 +1210,9 @@ abstract class AbstractComparisonWrapper<T, R, W>(
      *
      * @param column column property
      * @param value value
-     * @return AbstractComparisonWrapper<T, R, W>
+     * @return WhereHavingWrapper<T, R, W>
      */
-    fun notRightLike(column: KMutableProperty1<T, *>, value: Any): AbstractComparisonWrapper<T, R, W> {
+    fun notRightLike(column: KMutableProperty1<T, *>, value: Any): WhereHavingWrapper<T, R, W> {
         return notRightLike(column, value, true)
     }
 
@@ -1235,9 +1222,9 @@ abstract class AbstractComparisonWrapper<T, R, W>(
      * @param column column function
      * @param value value
      * @param effective whether effective
-     * @return AbstractComparisonWrapper<T, R, W>
+     * @return WhereHavingWrapper<T, R, W>
      */
-    fun notRightLike(column: SFunction<T, *>, value: Any, effective: Boolean): AbstractComparisonWrapper<T, R, W> {
+    fun notRightLike(column: SFunction<T, *>, value: Any, effective: Boolean): WhereHavingWrapper<T, R, W> {
         return notRightLike(getColumnName(column), value, effective)
     }
 
@@ -1246,9 +1233,9 @@ abstract class AbstractComparisonWrapper<T, R, W>(
      *
      * @param column column function
      * @param value value
-     * @return AbstractComparisonWrapper<T, R, W>
+     * @return WhereHavingWrapper<T, R, W>
      */
-    fun notRightLike(column: SFunction<T, *>, value: Any): AbstractComparisonWrapper<T, R, W> {
+    fun notRightLike(column: SFunction<T, *>, value: Any): WhereHavingWrapper<T, R, W> {
         return notRightLike(column, value, true)
     }
 
@@ -1259,9 +1246,9 @@ abstract class AbstractComparisonWrapper<T, R, W>(
      * @param start start value
      * @param end end value
      * @param effective whether effective
-     * @return AbstractComparisonWrapper<T, R, W>
+     * @return WhereHavingWrapper<T, R, W>
      */
-    fun notBetween(column: String, start: Any, end: Any, effective: Boolean): AbstractComparisonWrapper<T, R, W> {
+    fun notBetween(column: String, start: Any, end: Any, effective: Boolean): WhereHavingWrapper<T, R, W> {
         if (effective) {
             val condition = ComparisonStatement(column, Pair(start, end), ComparisonOperator.NOT_BETWEEN)
             conditions.add(LogicalStatement(condition, LogicalOperator.AND))
@@ -1275,9 +1262,9 @@ abstract class AbstractComparisonWrapper<T, R, W>(
      * @param column column name
      * @param start start value
      * @param end end value
-     * @return AbstractComparisonWrapper<T, R, W>
+     * @return WhereHavingWrapper<T, R, W>
      */
-    fun notBetween(column: String, start: Any, end: Any): AbstractComparisonWrapper<T, R, W> {
+    fun notBetween(column: String, start: Any, end: Any): WhereHavingWrapper<T, R, W> {
         return notBetween(column, start, end, true)
     }
 
@@ -1288,9 +1275,9 @@ abstract class AbstractComparisonWrapper<T, R, W>(
      * @param start start value
      * @param end end value
      * @param effective whether effective
-     * @return AbstractComparisonWrapper<T, R, W>
+     * @return WhereHavingWrapper<T, R, W>
      */
-    fun notBetween(column: KMutableProperty1<T, *>, start: Any, end: Any, effective: Boolean): AbstractComparisonWrapper<T, R, W> {
+    fun notBetween(column: KMutableProperty1<T, *>, start: Any, end: Any, effective: Boolean): WhereHavingWrapper<T, R, W> {
         return notBetween(getColumnName(column), start, end, effective)
     }
 
@@ -1300,9 +1287,9 @@ abstract class AbstractComparisonWrapper<T, R, W>(
      * @param column column property
      * @param start start value
      * @param end end value
-     * @return AbstractComparisonWrapper<T, R, W>
+     * @return WhereHavingWrapper<T, R, W>
      */
-    fun notBetween(column: KMutableProperty1<T, *>, start: Any, end: Any): AbstractComparisonWrapper<T, R, W> {
+    fun notBetween(column: KMutableProperty1<T, *>, start: Any, end: Any): WhereHavingWrapper<T, R, W> {
         return notBetween(column, start, end, true)
     }
 
@@ -1313,9 +1300,9 @@ abstract class AbstractComparisonWrapper<T, R, W>(
      * @param start start value
      * @param end end value
      * @param effective whether effective
-     * @return AbstractComparisonWrapper<T, R, W>
+     * @return WhereHavingWrapper<T, R, W>
      */
-    fun notBetween(column: SFunction<T, *>, start: Any, end: Any, effective: Boolean): AbstractComparisonWrapper<T, R, W> {
+    fun notBetween(column: SFunction<T, *>, start: Any, end: Any, effective: Boolean): WhereHavingWrapper<T, R, W> {
         return notBetween(getColumnName(column), start, end, effective)
     }
 
@@ -1325,9 +1312,9 @@ abstract class AbstractComparisonWrapper<T, R, W>(
      * @param column column function
      * @param start start value
      * @param end end value
-     * @return AbstractComparisonWrapper<T, R, W>
+     * @return WhereHavingWrapper<T, R, W>
      */
-    fun notBetween(column: SFunction<T, *>, start: Any, end: Any): AbstractComparisonWrapper<T, R, W> {
+    fun notBetween(column: SFunction<T, *>, start: Any, end: Any): WhereHavingWrapper<T, R, W> {
         return notBetween(column, start, end, true)
     }
 
@@ -1337,9 +1324,9 @@ abstract class AbstractComparisonWrapper<T, R, W>(
      * @param column column name
      * @param values values
      * @param effective whether effective
-     * @return AbstractComparisonWrapper<T, R, W>
+     * @return WhereHavingWrapper<T, R, W>
      */
-    fun notIn(column: String, values: Iterable<Any>, effective: Boolean): AbstractComparisonWrapper<T, R, W> {
+    fun notIn(column: String, values: Iterable<Any>, effective: Boolean): WhereHavingWrapper<T, R, W> {
         if (effective) {
             val condition = ComparisonStatement(column, values, ComparisonOperator.NOT_IN)
             conditions.add(LogicalStatement(condition, LogicalOperator.AND))
@@ -1352,9 +1339,9 @@ abstract class AbstractComparisonWrapper<T, R, W>(
      *
      * @param column column name
      * @param values values
-     * @return AbstractComparisonWrapper<T, R, W>
+     * @return WhereHavingWrapper<T, R, W>
      */
-    fun notIn(column: String, values: Iterable<Any>): AbstractComparisonWrapper<T, R, W> {
+    fun notIn(column: String, values: Iterable<Any>): WhereHavingWrapper<T, R, W> {
         return notIn(column, values, true)
     }
 
@@ -1364,9 +1351,9 @@ abstract class AbstractComparisonWrapper<T, R, W>(
      * @param column column property
      * @param values values
      * @param effective whether effective
-     * @return AbstractComparisonWrapper<T, R, W>
+     * @return WhereHavingWrapper<T, R, W>
      */
-    fun notIn(column: KMutableProperty1<T, *>, values: Iterable<Any>, effective: Boolean): AbstractComparisonWrapper<T, R, W> {
+    fun notIn(column: KMutableProperty1<T, *>, values: Iterable<Any>, effective: Boolean): WhereHavingWrapper<T, R, W> {
         return notIn(getColumnName(column), values, effective)
     }
 
@@ -1375,9 +1362,9 @@ abstract class AbstractComparisonWrapper<T, R, W>(
      *
      * @param column column property
      * @param values values
-     * @return AbstractComparisonWrapper<T, R, W>
+     * @return WhereHavingWrapper<T, R, W>
      */
-    fun notIn(column: KMutableProperty1<T, *>, values: Iterable<Any>): AbstractComparisonWrapper<T, R, W> {
+    fun notIn(column: KMutableProperty1<T, *>, values: Iterable<Any>): WhereHavingWrapper<T, R, W> {
         return notIn(column, values, true)
     }
 
@@ -1387,9 +1374,9 @@ abstract class AbstractComparisonWrapper<T, R, W>(
      * @param column column function
      * @param values values
      * @param effective whether effective
-     * @return AbstractComparisonWrapper<T, R, W>
+     * @return WhereHavingWrapper<T, R, W>
      */
-    fun notIn(column: SFunction<T, *>, values: Iterable<Any>, effective: Boolean): AbstractComparisonWrapper<T, R, W> {
+    fun notIn(column: SFunction<T, *>, values: Iterable<Any>, effective: Boolean): WhereHavingWrapper<T, R, W> {
         return notIn(getColumnName(column), values, effective)
     }
 
@@ -1398,9 +1385,9 @@ abstract class AbstractComparisonWrapper<T, R, W>(
      *
      * @param column column function
      * @param values values
-     * @return AbstractComparisonWrapper<T, R, W>
+     * @return WhereHavingWrapper<T, R, W>
      */
-    fun notIn(column: SFunction<T, *>, values: Iterable<Any>): AbstractComparisonWrapper<T, R, W> {
+    fun notIn(column: SFunction<T, *>, values: Iterable<Any>): WhereHavingWrapper<T, R, W> {
         return notIn(column, values, true)
     }
 
@@ -1410,9 +1397,9 @@ abstract class AbstractComparisonWrapper<T, R, W>(
      * @param column column name
      * @param values values
      * @param effective whether effective
-     * @return AbstractComparisonWrapper<T, R, W>
+     * @return WhereHavingWrapper<T, R, W>
      */
-    fun notIn(column: String, values: Array<Any>, effective: Boolean): AbstractComparisonWrapper<T, R, W> {
+    fun notIn(column: String, values: Array<Any>, effective: Boolean): WhereHavingWrapper<T, R, W> {
         return notIn(column, values.toList(), effective)
     }
 
@@ -1421,9 +1408,9 @@ abstract class AbstractComparisonWrapper<T, R, W>(
      *
      * @param column column name
      * @param values values
-     * @return AbstractComparisonWrapper<T, R, W>
+     * @return WhereHavingWrapper<T, R, W>
      */
-    fun notIn(column: String, values: Array<Any>): AbstractComparisonWrapper<T, R, W> {
+    fun notIn(column: String, values: Array<Any>): WhereHavingWrapper<T, R, W> {
         return notIn(column, values, true)
     }
 
@@ -1433,9 +1420,9 @@ abstract class AbstractComparisonWrapper<T, R, W>(
      * @param column column property
      * @param values values
      * @param effective whether effective
-     * @return AbstractComparisonWrapper<T, R, W>
+     * @return WhereHavingWrapper<T, R, W>
      */
-    fun notIn(column: KMutableProperty1<T, *>, values: Array<Any>, effective: Boolean): AbstractComparisonWrapper<T, R, W> {
+    fun notIn(column: KMutableProperty1<T, *>, values: Array<Any>, effective: Boolean): WhereHavingWrapper<T, R, W> {
         return notIn(getColumnName(column), values, effective)
     }
 
@@ -1444,9 +1431,9 @@ abstract class AbstractComparisonWrapper<T, R, W>(
      *
      * @param column column property
      * @param values values
-     * @return AbstractComparisonWrapper<T, R, W>
+     * @return WhereHavingWrapper<T, R, W>
      */
-    fun notIn(column: KMutableProperty1<T, *>, values: Array<Any>): AbstractComparisonWrapper<T, R, W> {
+    fun notIn(column: KMutableProperty1<T, *>, values: Array<Any>): WhereHavingWrapper<T, R, W> {
         return notIn(column, values, true)
     }
 
@@ -1456,9 +1443,9 @@ abstract class AbstractComparisonWrapper<T, R, W>(
      * @param column column function
      * @param values values
      * @param effective whether effective
-     * @return AbstractComparisonWrapper<T, R, W>
+     * @return WhereHavingWrapper<T, R, W>
      */
-    fun notIn(column: SFunction<T, *>, values: Array<Any>, effective: Boolean): AbstractComparisonWrapper<T, R, W> {
+    fun notIn(column: SFunction<T, *>, values: Array<Any>, effective: Boolean): WhereHavingWrapper<T, R, W> {
         return notIn(getColumnName(column), values, effective)
     }
 
@@ -1467,9 +1454,9 @@ abstract class AbstractComparisonWrapper<T, R, W>(
      *
      * @param column column function
      * @param values values
-     * @return AbstractComparisonWrapper<T, R, W>
+     * @return WhereHavingWrapper<T, R, W>
      */
-    fun notIn(column: SFunction<T, *>, values: Array<Any>): AbstractComparisonWrapper<T, R, W> {
+    fun notIn(column: SFunction<T, *>, values: Array<Any>): WhereHavingWrapper<T, R, W> {
         return notIn(column, values, true)
     }
 
@@ -1478,9 +1465,9 @@ abstract class AbstractComparisonWrapper<T, R, W>(
      *
      * @param column column name
      * @param effective whether effective
-     * @return AbstractComparisonWrapper<T, R, W>
+     * @return WhereHavingWrapper<T, R, W>
      */
-    fun isNull(column: String, effective: Boolean): AbstractComparisonWrapper<T, R, W> {
+    fun isNull(column: String, effective: Boolean): WhereHavingWrapper<T, R, W> {
         return compare(column, "", ComparisonOperator.IS_NULL, effective)
     }
 
@@ -1488,9 +1475,9 @@ abstract class AbstractComparisonWrapper<T, R, W>(
      * Is null operation
      *
      * @param column column name
-     * @return AbstractComparisonWrapper<T, R, W>
+     * @return WhereHavingWrapper<T, R, W>
      */
-    fun isNull(column: String): AbstractComparisonWrapper<T, R, W> {
+    fun isNull(column: String): WhereHavingWrapper<T, R, W> {
         return isNull(column, true)
     }
 
@@ -1499,9 +1486,9 @@ abstract class AbstractComparisonWrapper<T, R, W>(
      *
      * @param column column property
      * @param effective whether effective
-     * @return AbstractComparisonWrapper<T, R, W>
+     * @return WhereHavingWrapper<T, R, W>
      */
-    fun isNull(column: KMutableProperty1<T, *>, effective: Boolean): AbstractComparisonWrapper<T, R, W> {
+    fun isNull(column: KMutableProperty1<T, *>, effective: Boolean): WhereHavingWrapper<T, R, W> {
         return isNull(getColumnName(column), effective)
     }
 
@@ -1509,9 +1496,9 @@ abstract class AbstractComparisonWrapper<T, R, W>(
      * Is null operation
      *
      * @param column column property
-     * @return AbstractComparisonWrapper<T, R, W>
+     * @return WhereHavingWrapper<T, R, W>
      */
-    fun isNull(column: KMutableProperty1<T, *>): AbstractComparisonWrapper<T, R, W> {
+    fun isNull(column: KMutableProperty1<T, *>): WhereHavingWrapper<T, R, W> {
         return isNull(column, true)
     }
 
@@ -1520,9 +1507,9 @@ abstract class AbstractComparisonWrapper<T, R, W>(
      *
      * @param column column function
      * @param effective whether effective
-     * @return AbstractComparisonWrapper<T, R, W>
+     * @return WhereHavingWrapper<T, R, W>
      */
-    fun isNull(column: SFunction<T, *>, effective: Boolean): AbstractComparisonWrapper<T, R, W> {
+    fun isNull(column: SFunction<T, *>, effective: Boolean): WhereHavingWrapper<T, R, W> {
         return isNull(getColumnName(column), effective)
     }
 
@@ -1530,9 +1517,9 @@ abstract class AbstractComparisonWrapper<T, R, W>(
      * Is null operation
      *
      * @param column column function
-     * @return AbstractComparisonWrapper<T, R, W>
+     * @return WhereHavingWrapper<T, R, W>
      */
-    fun isNull(column: SFunction<T, *>): AbstractComparisonWrapper<T, R, W> {
+    fun isNull(column: SFunction<T, *>): WhereHavingWrapper<T, R, W> {
         return isNull(column, true)
     }
 
@@ -1541,9 +1528,9 @@ abstract class AbstractComparisonWrapper<T, R, W>(
      *
      * @param column column name
      * @param effective whether effective
-     * @return AbstractComparisonWrapper<T, R, W>
+     * @return WhereHavingWrapper<T, R, W>
      */
-    fun isNotNull(column: String, effective: Boolean): AbstractComparisonWrapper<T, R, W> {
+    fun isNotNull(column: String, effective: Boolean): WhereHavingWrapper<T, R, W> {
         return compare(column, "", ComparisonOperator.IS_NOT_NULL, effective)
     }
 
@@ -1551,9 +1538,9 @@ abstract class AbstractComparisonWrapper<T, R, W>(
      * Is not null operation
      *
      * @param column column name
-     * @return AbstractComparisonWrapper<T, R, W>
+     * @return WhereHavingWrapper<T, R, W>
      */
-    fun isNotNull(column: String): AbstractComparisonWrapper<T, R, W> {
+    fun isNotNull(column: String): WhereHavingWrapper<T, R, W> {
         return isNotNull(column, true)
     }
 
@@ -1562,9 +1549,9 @@ abstract class AbstractComparisonWrapper<T, R, W>(
      *
      * @param column column property
      * @param effective whether effective
-     * @return AbstractComparisonWrapper<T, R, W>
+     * @return WhereHavingWrapper<T, R, W>
      */
-    fun isNotNull(column: KMutableProperty1<T, *>, effective: Boolean): AbstractComparisonWrapper<T, R, W> {
+    fun isNotNull(column: KMutableProperty1<T, *>, effective: Boolean): WhereHavingWrapper<T, R, W> {
         return isNotNull(getColumnName(column), effective)
     }
 
@@ -1572,9 +1559,9 @@ abstract class AbstractComparisonWrapper<T, R, W>(
      * Is not null operation
      *
      * @param column column property
-     * @return AbstractComparisonWrapper<T, R, W>
+     * @return WhereHavingWrapper<T, R, W>
      */
-    fun isNotNull(column: KMutableProperty1<T, *>): AbstractComparisonWrapper<T, R, W> {
+    fun isNotNull(column: KMutableProperty1<T, *>): WhereHavingWrapper<T, R, W> {
         return isNotNull(column, true)
     }
 
@@ -1583,9 +1570,9 @@ abstract class AbstractComparisonWrapper<T, R, W>(
      *
      * @param column column function
      * @param effective whether effective
-     * @return AbstractComparisonWrapper<T, R, W>
+     * @return WhereHavingWrapper<T, R, W>
      */
-    fun isNotNull(column: SFunction<T, *>, effective: Boolean): AbstractComparisonWrapper<T, R, W> {
+    fun isNotNull(column: SFunction<T, *>, effective: Boolean): WhereHavingWrapper<T, R, W> {
         return isNotNull(getColumnName(column), effective)
     }
 
@@ -1593,43 +1580,20 @@ abstract class AbstractComparisonWrapper<T, R, W>(
      * Is not null operation
      *
      * @param column column function
-     * @return AbstractComparisonWrapper<T, R, W>
+     * @return WhereHavingWrapper<T, R, W>
      */
-    fun isNotNull(column: SFunction<T, *>): AbstractComparisonWrapper<T, R, W> {
+    fun isNotNull(column: SFunction<T, *>): WhereHavingWrapper<T, R, W> {
         return isNotNull(column, true)
     }
 
     /**
-     * Group by operation
+     * Build the wrapper
      *
-     * @param columns columns
-     * @return WhereGroupByWrapper<T, R, W>
+     * @return W
      */
-    fun groupBy(vararg columns: String): WhereGroupByWrapper<T, R, W> {
-        whereGroupByWrapper = WhereGroupByWrapper(wrapper, this, columns.toMutableList())
-        return whereGroupByWrapper
-    }
-
-    /**
-     * Group by operation
-     *
-     * @param columns columns
-     * @return WhereGroupByWrapper<T, R, W>
-     */
-    @SafeVarargs
-    fun groupBy(vararg columns: KMutableProperty1<T, *>): WhereGroupByWrapper<T, R, W> {
-        return groupBy(*columns.map { getColumnName(it) }.toTypedArray())
-    }
-
-    /**
-     * Group by operation
-     *
-     * @param columns columns
-     * @return WhereGroupByWrapper<T, R, W>
-     */
-    @SafeVarargs
-    fun groupBy(vararg columns: SFunction<T, *>): WhereGroupByWrapper<T, R, W> {
-        return groupBy(*columns.map { getColumnName(it) }.toTypedArray())
+    @Suppress("UNCHECKED_CAST")
+    override fun build(): W {
+        return wrapper as W
     }
 
     /**
@@ -1640,8 +1604,8 @@ abstract class AbstractComparisonWrapper<T, R, W>(
      */
     @SafeVarargs
     fun orderBy(vararg orderBys: OrderItem<T>): WhereOrderByWrapper<T, R, W> {
-        whereOrderByWrapper = WhereOrderByWrapper(wrapper, this, orderBys.toMutableList())
-        return whereOrderByWrapper
+        whereWrapper.whereOrderByWrapper = WhereOrderByWrapper(wrapper, whereWrapper, orderBys.toMutableList())
+        return whereWrapper.whereOrderByWrapper
     }
 
     /**
@@ -1675,6 +1639,29 @@ abstract class AbstractComparisonWrapper<T, R, W>(
      */
     fun orderBy(column: SFunction<T, *>, asc: Boolean = true): WhereOrderByWrapper<T, R, W> {
         return orderBy(OrderItem<T>(column, asc))
+    }
+
+    /**
+     * Execute the wrapper
+     *
+     * @return R
+     */
+    @Suppress("UNCHECKED_CAST")
+    override fun execute(): R {
+        return whereWrapper.execute()
+    }
+
+    fun appendSql(sql: StringBuilder, parameters: MutableList<Any?>) {
+        if (conditions.isEmpty()) {
+            return
+        }
+        sql.append(HAVING)
+        if (conditions.last().nestedConditions.isEmpty()) {
+            conditions.last().logicalOperator = null
+        }
+        conditions.forEach {
+            it.appendSql(sql, parameters)
+        }
     }
 
 }

@@ -6,7 +6,7 @@ import com.tang.jkorm.function.SFunction
 import com.tang.jkorm.paginate.OrderItem
 import com.tang.jkorm.utils.Reflects.getColumnName
 import com.tang.jkorm.wrapper.Wrapper
-import com.tang.jkorm.wrapper.where.comparison.AbstractComparisonWrapper
+import java.util.function.Consumer
 import kotlin.reflect.KMutableProperty1
 
 /**
@@ -18,7 +18,7 @@ class WhereGroupByWrapper<T, R, W>(
 
     private val wrapper: Wrapper<T>,
 
-    private val comparisonWrapper: AbstractComparisonWrapper<T, R, W>,
+    private val whereWrapper: AbstractWhereWrapper<T, R, W>,
 
     private val columns: MutableList<String> = mutableListOf()
 
@@ -58,6 +58,38 @@ class WhereGroupByWrapper<T, R, W>(
     }
 
     /**
+     * Having operation
+     *
+     * @return WhereHavingWrapper<T, R, W>
+     */
+    fun having(): WhereHavingWrapper<T, R, W> {
+        whereWrapper.whereHavingWrapper = WhereHavingWrapper(wrapper, whereWrapper)
+        return whereWrapper.whereHavingWrapper
+    }
+
+    /**
+     * Having operation
+     *
+     * @param nested nested operation
+     * @return WhereHavingWrapper<T, R, W>
+     */
+    fun having(nested: WhereHavingWrapper<T, R, W>.() -> Unit): WhereHavingWrapper<T, R, W> {
+        whereWrapper.whereHavingWrapper = WhereHavingWrapper(wrapper, whereWrapper)
+        whereWrapper.whereHavingWrapper.nested()
+        return whereWrapper.whereHavingWrapper
+    }
+
+    /**
+     * Having operation
+     *
+     * @param nested nested operation
+     * @return WhereHavingWrapper<T, R, W>
+     */
+    fun having(nested: Consumer<WhereHavingWrapper<T, R, W>>): WhereHavingWrapper<T, R, W> {
+        return having { nested.accept(this) }
+    }
+
+    /**
      * Order by operation
      *
      * @param orderBys order by items
@@ -65,7 +97,7 @@ class WhereGroupByWrapper<T, R, W>(
      */
     @SafeVarargs
     fun orderBy(vararg orderBys: OrderItem<T>): WhereOrderByWrapper<T, R, W> {
-        return comparisonWrapper.orderBy(*orderBys)
+        return whereWrapper.orderBy(*orderBys)
     }
 
     /**
@@ -118,7 +150,7 @@ class WhereGroupByWrapper<T, R, W>(
      */
     @Suppress("UNCHECKED_CAST")
     override fun execute(): R {
-        return comparisonWrapper.execute()
+        return whereWrapper.execute()
     }
 
     fun appendSql(sql: StringBuilder) {

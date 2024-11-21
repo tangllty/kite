@@ -7,6 +7,7 @@
  * Support return generated key for insert statement
  * Support group by for where condition
  * Support order by for where condition
+ * Support having for where condition
 
 ## 1.0.2
 

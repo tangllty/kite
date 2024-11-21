@@ -7,7 +7,6 @@ import com.tang.jkorm.constants.SqlString.ORDER_BY
 import com.tang.jkorm.function.SFunction
 import com.tang.jkorm.paginate.OrderItem
 import com.tang.jkorm.wrapper.Wrapper
-import com.tang.jkorm.wrapper.where.comparison.AbstractComparisonWrapper
 import kotlin.reflect.KMutableProperty1
 
 /**
@@ -19,7 +18,7 @@ class WhereOrderByWrapper<T, R, W>(
 
     private val wrapper: Wrapper<T>,
 
-    private val comparisonWrapper: AbstractComparisonWrapper<T, R, W>,
+    private val whereWrapper: AbstractWhereWrapper<T, R, W>,
 
     private val columns: MutableList<OrderItem<T>> = mutableListOf()
 
@@ -87,7 +86,7 @@ class WhereOrderByWrapper<T, R, W>(
      */
     @Suppress("UNCHECKED_CAST")
     override fun execute(): R {
-        return comparisonWrapper.execute()
+        return whereWrapper.execute()
     }
 
     fun appendSql(sql: StringBuilder) {
