@@ -25,7 +25,6 @@ JkOrm 是一个使用 Kotlin 编写的轻量级 ORM 框架，旨在简化数据�
  * Gradle
 
 ```kts
-
 implementation("io.github.tangllty:jkorm-spring-boot-starter:1.0.2")
 ```
 
