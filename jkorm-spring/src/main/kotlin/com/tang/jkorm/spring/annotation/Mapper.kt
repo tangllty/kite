@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component
  *
  * @author Tang
  */
-@Target(AnnotationTarget.TYPE)
+@Target(AnnotationTarget.CLASS)
 @Retention(AnnotationRetention.RUNTIME)
 @MustBeDocumented
 @Component

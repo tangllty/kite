@@ -9,8 +9,8 @@ import org.springframework.core.annotation.AliasFor
  *
  * @author Tang
  */
-@Retention(AnnotationRetention.RUNTIME)
 @Target(AnnotationTarget.CLASS)
+@Retention(AnnotationRetention.RUNTIME)
 @MustBeDocumented
 @Import(MapperScannerRegistrar::class)
 annotation class MapperScan(
