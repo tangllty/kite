@@ -1,5 +1,6 @@
 package com.tang.jkorm.spring.beans.session
 
+import com.tang.jkorm.proxy.MapperProxyFactory
 import com.tang.jkorm.session.SqlSession
 import com.tang.jkorm.session.factory.SqlSessionFactory
 import com.tang.jkorm.spring.proxy.SqlSessionProxy
@@ -18,6 +19,11 @@ class SqlSessionBean(sqlSessionFactory: SqlSessionFactory) {
         val classLoader = SqlSessionFactory::class.java.classLoader
         val classes = arrayOf(SqlSession::class.java)
         sqlSession = Proxy.newProxyInstance(classLoader, classes, SqlSessionProxy(sqlSessionFactory)) as SqlSession
+    }
+
+    fun <T> getMapper(clazz: Class<T>): T {
+        val mapperProxyFactory = MapperProxyFactory(clazz)
+        return mapperProxyFactory.newInstance(sqlSession)
     }
 
 }

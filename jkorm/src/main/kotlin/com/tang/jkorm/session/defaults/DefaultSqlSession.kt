@@ -35,10 +35,6 @@ class DefaultSqlSession(
         return mapperProxyFactory.newInstance(this)
     }
 
-    override fun isBaseMethod(method: Method): Boolean {
-        return BaseMethodName.isBaseMethod(method)
-    }
-
     private fun getFirstArg(args: Array<out Any>?): Any {
         return args?.first() ?: throw IllegalArgumentException("Fist parameter is null")
     }

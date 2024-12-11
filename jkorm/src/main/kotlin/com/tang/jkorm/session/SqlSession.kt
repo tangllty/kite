@@ -13,8 +13,6 @@ interface SqlSession : AutoCloseable {
 
     fun <T> getMapper(clazz: Class<T>): T
 
-    fun isBaseMethod(method: Method): Boolean
-
     fun <T> execute(method: Method, args: Array<out Any>?, mapperInterface: Class<T>): Any?
 
     fun <T> insert(method: Method, mapperInterface: Class<T>, parameter: Any): Int

@@ -1,5 +1,6 @@
 package com.tang.jkorm.proxy
 
+import com.tang.jkorm.constants.BaseMethodName
 import com.tang.jkorm.session.SqlSession
 import com.tang.jkorm.utils.Reflects
 import java.lang.invoke.MethodHandle
@@ -56,7 +57,7 @@ class MapperProxy<T>(
         if (isKotlinDefaultMethod(method)) {
             return kotlinInvoker(proxy, method, args)
         }
-        if (sqlSession.isBaseMethod(method)) {
+        if (BaseMethodName.isBaseMethod(method)) {
             return baseMethodInvoker(method, args)
         }
         return method.invoke(this, *(args ?: arrayOf()))

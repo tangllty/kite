@@ -16,7 +16,7 @@ class MapperFactoryBean<T>(
 ) : FactoryBean<T> {
 
     override fun getObject(): T {
-        return SqlSessionBean(sqlSessionFactory).sqlSession.getMapper(mapperInterface)
+        return SqlSessionBean(sqlSessionFactory).getMapper(mapperInterface)
     }
 
     override fun getObjectType(): Class<*> {
