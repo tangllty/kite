@@ -1,3 +1,9 @@
+## 1.0.4
+
+### Bug Fixes
+
+ * Fix This annotation is not applicable to target 'interface'. Applicable targets: type usage error
+
 ## 1.0.3
 
 ### Features
