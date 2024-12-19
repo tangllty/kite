@@ -1,7 +1,5 @@
 package com.tang.jkorm.spring.beans.session.factory
 
-import com.tang.jkorm.datasource.defaults.DefaultDataSourceFactory
-import com.tang.jkorm.io.Resources
 import com.tang.jkorm.session.factory.SqlSessionFactory
 import com.tang.jkorm.session.factory.SqlSessionFactoryBuilder
 import org.springframework.beans.factory.FactoryBean
@@ -13,10 +11,8 @@ import javax.sql.DataSource
  *
  * @author Tang
  */
-class SqlSessionFactoryBean : FactoryBean<SqlSessionFactory>, InitializingBean {
+class SqlSessionFactoryBean(private var dataSource: DataSource) : FactoryBean<SqlSessionFactory>, InitializingBean {
 
-    lateinit var resource: String
-    lateinit var dataSource: DataSource
     private lateinit var sqlSessionFactory: SqlSessionFactory
 
     override fun getObject(): SqlSessionFactory {
@@ -29,13 +25,6 @@ class SqlSessionFactoryBean : FactoryBean<SqlSessionFactory>, InitializingBean {
 
     override fun afterPropertiesSet() {
         sqlSessionFactory = SqlSessionFactoryBuilder().build(dataSource)
-    }
-
-    fun afterResourcesSet() {
-        val resource = Resources.getResourceAsStream(resource)
-        val datasource = Resources.getDataSourceProperties(resource)
-        val dataSourceFactory = DefaultDataSourceFactory(datasource)
-        dataSource = dataSourceFactory.getDataSource()
     }
 
 }

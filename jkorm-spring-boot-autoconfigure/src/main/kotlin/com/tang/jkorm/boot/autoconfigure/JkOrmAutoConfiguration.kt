@@ -36,8 +36,7 @@ open class JkOrmAutoConfiguration {
     @Bean(BeanNames.SQL_SESSION_FACTORY)
     @ConditionalOnMissingBean
     open fun sqlSessionFactory(dataSource: DataSource): SqlSessionFactory {
-        val sqlSessionFactoryBean = SqlSessionFactoryBean()
-        sqlSessionFactoryBean.dataSource = dataSource
+        val sqlSessionFactoryBean = SqlSessionFactoryBean(dataSource)
         sqlSessionFactoryBean.afterPropertiesSet()
         return sqlSessionFactoryBean.getObject()
     }

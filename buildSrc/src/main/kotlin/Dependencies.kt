@@ -31,7 +31,7 @@ class Libraries {
     val guava = "com.google.guava:guava:${versions.guava}"
     val servlet = "jakarta.servlet:jakarta.servlet-api:${versions.servlet}"
     val springContext = "org.springframework:spring-context:${versions.spring}"
-    val springWeb = "org.springframework:spring-web:${versions.spring}"
+    val springJdbc = "org.springframework:spring-jdbc:${versions.spring}"
     val springBootStarter = "org.springframework.boot:spring-boot-starter:${versions.springBoot}"
     val springBootStarterJdbc = "org.springframework.boot:spring-boot-starter-jdbc:${versions.springBoot}"
     val springBootAutoconfigure = "org.springframework.boot:spring-boot-autoconfigure:${versions.springBoot}"
