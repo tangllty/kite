@@ -15,7 +15,8 @@ class SqlSessionProxy(private val sqlSessionFactory: SqlSessionFactory) : Invoca
     override fun invoke(proxy: Any, method: Method, args: Array<out Any>?): Any {
         val sqlSession = SqlSessions.openSession(sqlSessionFactory)
         val result = method.invoke(sqlSession, *(args ?: emptyArray()))
-        SqlSessions.closeSession(sqlSession)
+        sqlSession.commit()
+        SqlSessions.closeSession(sqlSessionFactory, sqlSession)
         return result
     }
 

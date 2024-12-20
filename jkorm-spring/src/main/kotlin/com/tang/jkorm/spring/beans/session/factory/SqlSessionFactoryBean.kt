@@ -2,6 +2,7 @@ package com.tang.jkorm.spring.beans.session.factory
 
 import com.tang.jkorm.session.factory.SqlSessionFactory
 import com.tang.jkorm.session.factory.SqlSessionFactoryBuilder
+import com.tang.jkorm.spring.transaction.SpringTransactionFactory
 import org.springframework.beans.factory.FactoryBean
 import org.springframework.beans.factory.InitializingBean
 import javax.sql.DataSource
@@ -24,7 +25,9 @@ class SqlSessionFactoryBean(private var dataSource: DataSource) : FactoryBean<Sq
     }
 
     override fun afterPropertiesSet() {
-        sqlSessionFactory = SqlSessionFactoryBuilder().build(dataSource)
+        val builder = SqlSessionFactoryBuilder()
+        builder.transactionFactory = SpringTransactionFactory()
+        sqlSessionFactory = builder.build(dataSource)
     }
 
 }

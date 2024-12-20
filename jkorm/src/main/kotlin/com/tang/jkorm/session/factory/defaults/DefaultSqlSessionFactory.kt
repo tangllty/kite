@@ -52,7 +52,8 @@ class DefaultSqlSessionFactory(private val configuration: Configuration) : SqlSe
      * @return [SqlSession]
      */
     private fun openSession(isolationLevel: TransactionIsolationLevel?, autoCommit: Boolean): SqlSession {
-        val transaction = JdbcTransactionFactory().newTransaction(configuration.dataSource, isolationLevel, autoCommit)
+        val transactionFactory = configuration.transactionFactory
+        val transaction = transactionFactory.newTransaction(configuration.dataSource, isolationLevel, autoCommit)
         val executor = DefaultExecutorFactory().newExecutor(configuration, transaction)
         return DefaultSqlSession(configuration, executor, configuration.sqlProvider)
     }

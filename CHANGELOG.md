@@ -4,6 +4,10 @@
 
  * Fix This annotation is not applicable to target 'interface'. Applicable targets: type usage error
 
+### Features
+
+ * Support spring managed transaction
+
 ## 1.0.3
 
 ### Features
