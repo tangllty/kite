@@ -133,18 +133,17 @@ abstract class AbstractSqlProvider : SqlProvider {
             val fieldList = clazz.declaredFields.filter { getColumnName(it) != getColumnName(idField) || !autoIncrementId }
             sql.append(INSERT_INTO + Reflects.getTableName(clazz) + SPACE + LEFT_BRACKET)
             appendColumns(sql, fieldList)
-            fieldNameList.addAll(fieldList.map { getColumnName(it) })
             sql.append(RIGHT_BRACKET + VALUES)
+            fieldNameList.addAll(fieldList.map { getColumnName(it) })
         }
-        entities.map { entity ->
+        entities.joinToString("$RIGHT_BRACKET$COMMA_SPACE$LEFT_BRACKET", LEFT_BRACKET, RIGHT_BRACKET) { entity ->
             val fieldList = entity::class.java.declaredFields.filter { getColumnName(it) in fieldNameList }
             fieldList.joinToString { field ->
                 Reflects.makeAccessible(field, entity)
                 parameters.add(field.get(entity))
                 QUESTION_MARK
             }
-        }.joinToString("$RIGHT_BRACKET$COMMA_SPACE$LEFT_BRACKET", LEFT_BRACKET, RIGHT_BRACKET)
-            .let { sql.append(it) }
+        }.let { sql.append(it) }
         return SqlStatement(getSql(sql), parameters)
     }
 
@@ -163,15 +162,14 @@ abstract class AbstractSqlProvider : SqlProvider {
             fieldNameList.addAll(fieldMap.filter { selectiveStrategy(it.value) }.map { getColumnName(it.key) })
             sql.append(RIGHT_BRACKET + VALUES)
         }
-        entities.map { entity ->
+        entities.joinToString("$RIGHT_BRACKET$COMMA_SPACE$LEFT_BRACKET", LEFT_BRACKET, RIGHT_BRACKET) { entity ->
             val fieldMap: Map<Field, Any?> = entity::class.java.declaredFields.associateWith { Reflects.makeAccessible(it, entity); it.get(entity) }
             fieldMap.filter { selectiveStrategy(it.value) }
                 .map {
                     parameters.add(it.value)
                     QUESTION_MARK
                 }.joinToString(COMMA_SPACE)
-        }.joinToString("$RIGHT_BRACKET$COMMA_SPACE$LEFT_BRACKET", LEFT_BRACKET, RIGHT_BRACKET)
-            .let { sql.append(it) }
+        }.let { sql.append(it) }
         return SqlStatement(getSql(sql), parameters)
     }
 
