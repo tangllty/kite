@@ -2,8 +2,9 @@ package com.tang.jkorm.utils
 
 import com.google.common.base.CaseFormat
 import com.tang.jkorm.annotation.Column
-import com.tang.jkorm.annotation.Id
+import com.tang.jkorm.annotation.id.Id
 import com.tang.jkorm.annotation.Table
+import com.tang.jkorm.annotation.id.IdType
 import com.tang.jkorm.function.SFunction
 import java.lang.reflect.AccessibleObject
 import java.lang.reflect.Field
@@ -49,7 +50,7 @@ object Reflects {
     }
 
     fun isAutoIncrementId(idField: Field): Boolean {
-        return idField.getAnnotation(Id::class.java).autoIncrement
+        return idField.getAnnotation(Id::class.java).type == IdType.AUTO
     }
 
     fun getTableName(clazz: Class<*>): String {

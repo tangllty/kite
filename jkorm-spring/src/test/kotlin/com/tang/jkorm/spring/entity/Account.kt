@@ -1,6 +1,6 @@
 package com.tang.jkorm.spring.entity
 
-import com.tang.jkorm.annotation.Id
+import com.tang.jkorm.annotation.id.Id
 
 /**
  * @author Tang

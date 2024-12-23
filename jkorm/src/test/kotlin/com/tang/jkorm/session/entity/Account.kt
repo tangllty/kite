@@ -1,7 +1,8 @@
 package com.tang.jkorm.session.entity
 
 import com.tang.jkorm.annotation.Column
-import com.tang.jkorm.annotation.Id
+import com.tang.jkorm.annotation.id.Id
+import com.tang.jkorm.annotation.id.IdType
 import java.math.BigDecimal
 import java.sql.Date
 
@@ -10,7 +11,7 @@ import java.sql.Date
  */
 class Account (
 
-    @Id
+    @Id(type = IdType.AUTO)
     var id: Long? = null,
     var username: String = "",
     var password: String = "",

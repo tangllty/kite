@@ -1,4 +1,4 @@
-package com.tang.jkorm.utils.id
+package com.tang.jkorm.annotation.id.strategy
 
 import java.lang.reflect.Field
 

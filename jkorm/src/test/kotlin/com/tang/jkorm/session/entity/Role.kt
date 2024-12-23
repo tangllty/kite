@@ -1,13 +1,14 @@
 package com.tang.jkorm.session.entity
 
-import com.tang.jkorm.annotation.Id
+import com.tang.jkorm.annotation.id.Id
+import com.tang.jkorm.annotation.id.IdType
 
 /**
  * @author Tang
  */
 class Role(
 
-    @Id(autoIncrement = false)
+    @Id(type = IdType.GENERATOR)
     var id: Long? = null,
     var name: String = ""
 
