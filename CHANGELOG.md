@@ -7,7 +7,8 @@
 ### Features
 
  * Support spring managed transaction
- * Refactor `Id` annotation `autoIncrement` to `type`
+ * Refactor `Id` annotation `autoIncrement` to `type`'
+ * Support `ignore` property in `Column` annotation
 
 ## 1.0.3
 

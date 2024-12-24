@@ -2,8 +2,8 @@ package com.tang.jkorm.utils
 
 import com.google.common.base.CaseFormat
 import com.tang.jkorm.annotation.Column
-import com.tang.jkorm.annotation.id.Id
 import com.tang.jkorm.annotation.Table
+import com.tang.jkorm.annotation.id.Id
 import com.tang.jkorm.annotation.id.IdType
 import com.tang.jkorm.function.SFunction
 import java.lang.reflect.AccessibleObject
@@ -82,7 +82,7 @@ object Reflects {
 
     fun getColumnName(field: Field): String {
         return columnNameCache.computeIfAbsent(field) {
-            if (field.isAnnotationPresent(Column::class.java)) {
+            if (field.isAnnotationPresent(Column::class.java) && field.getAnnotation(Column::class.java).value.isNotBlank()) {
                 field.getAnnotation(Column::class.java).value
             } else {
                 CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, field.name)
@@ -108,6 +108,10 @@ object Reflects {
     fun getGeneratedId(idField: Field): Any {
         val idStrategy = idField.getAnnotation(Id::class.java).idStrategy
         return idStrategy.java.getDeclaredConstructor().newInstance().getId(idField)
+    }
+
+    fun getSqlFields(clazz: Class<*>): List<Field> {
+        return clazz.declaredFields.filter { it.isAnnotationPresent(Column::class.java).not() || it.getAnnotation(Column::class.java).ignore.not() }
     }
 
 }

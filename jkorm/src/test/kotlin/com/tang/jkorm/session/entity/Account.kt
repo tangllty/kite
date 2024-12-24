@@ -18,7 +18,9 @@ class Account (
     var createTime: Date? = null,
     @Column("update_time")
     var updateTime: Date? = null,
-    var balance: BigDecimal? = null
+    var balance: BigDecimal? = null,
+    @Column(ignore = true)
+    var beIgnore: String = ""
 
 ) {
     override fun toString(): String {

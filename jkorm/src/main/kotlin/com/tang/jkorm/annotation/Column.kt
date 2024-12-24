@@ -8,4 +8,16 @@ package com.tang.jkorm.annotation
 @Retention(AnnotationRetention.RUNTIME)
 @Target(AnnotationTarget.FIELD)
 @MustBeDocumented
-annotation class Column(val value: String)
+annotation class Column(
+
+    /**
+     * Column name
+     */
+    val value: String = "",
+
+    /**
+     * Ignore this column when generate SQL
+     */
+    val ignore: Boolean = false
+
+)
