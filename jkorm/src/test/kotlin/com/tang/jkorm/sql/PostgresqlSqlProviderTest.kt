@@ -140,7 +140,7 @@ class PostgresqlSqlProviderTest : SqlProviderTest {
     override fun paginate() {
         val statement = sqlProvider.paginate(Account::class.java, null, emptyArray(), 1, 5)
         equals("select $columns from account limit ? offset ?", statement.sql)
-        equals("select $columns from account limit 0 offset 5", statement.getActualSql())
+        equals("select $columns from account limit 5 offset 0", statement.getActualSql())
     }
 
     @Test
@@ -148,14 +148,14 @@ class PostgresqlSqlProviderTest : SqlProviderTest {
         val account = Account(username = "tang")
         val statement = sqlProvider.paginate(Account::class.java, account, emptyArray(), 1, 5)
         equals("select $columns from account where username = ? limit ? offset ?", statement.sql)
-        equals("select $columns from account where username = 'tang' limit 0 offset 5", statement.getActualSql())
+        equals("select $columns from account where username = 'tang' limit 5 offset 0", statement.getActualSql())
     }
 
     @Test
     override fun paginateOrderBy() {
         val statement = sqlProvider.paginate(Account::class.java, null, arrayOf(OrderItem("id", false)), 1, 5)
         equals("select $columns from account order by id desc limit ? offset ?", statement.sql)
-        equals("select $columns from account order by id desc limit 0 offset 5", statement.getActualSql())
+        equals("select $columns from account order by id desc limit 5 offset 0", statement.getActualSql())
     }
 
 }
