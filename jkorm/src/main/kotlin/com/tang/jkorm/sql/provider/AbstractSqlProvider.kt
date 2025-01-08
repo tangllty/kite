@@ -11,6 +11,7 @@ import com.tang.jkorm.constants.SqlString.FROM
 import com.tang.jkorm.constants.SqlString.INSERT_INTO
 import com.tang.jkorm.constants.SqlString.LEFT_BRACKET
 import com.tang.jkorm.constants.SqlString.LIMIT
+import com.tang.jkorm.constants.SqlString.OFFSET
 import com.tang.jkorm.constants.SqlString.ORDER_BY
 import com.tang.jkorm.constants.SqlString.QUESTION_MARK
 import com.tang.jkorm.constants.SqlString.RIGHT_BRACKET
@@ -70,9 +71,9 @@ abstract class AbstractSqlProvider : SqlProvider {
     }
 
     override fun appendLimit(sql: StringBuilder, parameters: MutableList<Any?>, pageNumber: Long, pageSize: Long) {
-        sql.append(LIMIT).append(QUESTION_MARK).append(COMMA_SPACE).append(QUESTION_MARK)
-        parameters.add((pageNumber - 1) * pageSize)
+        sql.append(LIMIT).append(QUESTION_MARK).append(OFFSET).append(QUESTION_MARK)
         parameters.add(pageSize)
+        parameters.add((pageNumber - 1) * pageSize)
     }
 
     override fun getSql(sql: StringBuilder): String {

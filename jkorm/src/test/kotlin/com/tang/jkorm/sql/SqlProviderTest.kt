@@ -47,6 +47,4 @@ interface SqlProviderTest {
 
     fun paginateOrderBy()
 
-    fun paginateLimit()
-
 }

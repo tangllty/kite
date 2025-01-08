@@ -9,6 +9,7 @@
  * Support spring managed transaction
  * Refactor `Id` annotation `autoIncrement` to `type`'
  * Support `ignore` property in `Column` annotation
+ * Refactor `SqlProvider.paginate` method
 
 ## 1.0.3
 

@@ -3,23 +3,23 @@ package com.tang.jkorm.sql
 import com.tang.jkorm.paginate.OrderItem
 import com.tang.jkorm.session.entity.Account
 import com.tang.jkorm.sql.provider.ProviderType
-import com.tang.jkorm.sql.provider.mysql.MysqlSqlProvider
+import com.tang.jkorm.sql.provider.postgresql.PostgresqlSqlProvider
 import org.junit.jupiter.api.Test
 
 /**
  * @author Tang
  */
-class MysqlSqlProvidersTest : SqlProviderTest {
+class PostgresqlSqlProviderTest : SqlProviderTest {
+
+    private val sqlProvider = PostgresqlSqlProvider()
 
     private val columnsWithoutId = "username, password, create_time, update_time, balance"
 
     private val columns = "id, $columnsWithoutId"
 
-    private val sqlProvider = MysqlSqlProvider()
-
     @Test
     override fun providerType() {
-        equals(ProviderType.MYSQL, sqlProvider.providerType())
+        equals(ProviderType.POSTGRESQL, sqlProvider.providerType())
     }
 
     @Test
@@ -139,23 +139,23 @@ class MysqlSqlProvidersTest : SqlProviderTest {
     @Test
     override fun paginate() {
         val statement = sqlProvider.paginate(Account::class.java, null, emptyArray(), 1, 5)
-        equals("select $columns from account limit ?, ?", statement.sql)
-        equals("select $columns from account limit 0, 5", statement.getActualSql())
+        equals("select $columns from account limit ? offset ?", statement.sql)
+        equals("select $columns from account limit 0 offset 5", statement.getActualSql())
     }
 
     @Test
     override fun paginateCondition() {
         val account = Account(username = "tang")
         val statement = sqlProvider.paginate(Account::class.java, account, emptyArray(), 1, 5)
-        equals("select $columns from account where username = ? limit ?, ?", statement.sql)
-        equals("select $columns from account where username = 'tang' limit 0, 5", statement.getActualSql())
+        equals("select $columns from account where username = ? limit ? offset ?", statement.sql)
+        equals("select $columns from account where username = 'tang' limit 0 offset 5", statement.getActualSql())
     }
 
     @Test
     override fun paginateOrderBy() {
         val statement = sqlProvider.paginate(Account::class.java, null, arrayOf(OrderItem("id", false)), 1, 5)
-        equals("select $columns from account order by id desc limit ?, ?", statement.sql)
-        equals("select $columns from account order by id desc limit 0, 5", statement.getActualSql())
+        equals("select $columns from account order by id desc limit ? offset ?", statement.sql)
+        equals("select $columns from account order by id desc limit 0 offset 5", statement.getActualSql())
     }
 
 }
