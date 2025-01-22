@@ -12,11 +12,18 @@ import java.io.InputStream
 import javax.sql.DataSource
 
 /**
+ * To build a SqlSessionFactory instance.
+ *
  * @author Tang
  */
 class SqlSessionFactoryBuilder {
 
     lateinit var transactionFactory: TransactionFactory
+
+    fun build(resource: String): SqlSessionFactory {
+        val inputStream = Resources.getResourceAsStream(resource)
+        return build(inputStream)
+    }
 
     fun build(inputStream: InputStream): SqlSessionFactory {
         val datasource = Resources.getDataSourceProperties(inputStream)
