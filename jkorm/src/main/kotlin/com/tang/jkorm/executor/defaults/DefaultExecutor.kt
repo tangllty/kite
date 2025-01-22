@@ -40,7 +40,7 @@ class DefaultExecutor(
             connection.rollback()
         }.also {
             preparedStatement.close()
-            LOGGER.info("count prepared statement closed")
+            LOGGER.debug("count prepared statement closed")
         }.getOrDefault(0)
     }
 
@@ -56,7 +56,7 @@ class DefaultExecutor(
             connection.rollback()
         }.also {
             preparedStatement.close()
-            LOGGER.info("insert prepared statement closed")
+            LOGGER.debug("insert prepared statement closed")
         }.getOrDefault(emptyList())
     }
 
@@ -77,7 +77,7 @@ class DefaultExecutor(
         }.also {
             ResultSetHandlers.setGeneratedKey(statement, preparedStatement, parameter)
             preparedStatement.close()
-            LOGGER.info("update prepared statement closed")
+            LOGGER.debug("update prepared statement closed")
         }.getOrDefault(0)
     }
 
