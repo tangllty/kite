@@ -5,6 +5,13 @@
  * Fix This annotation is not applicable to target 'interface'. Applicable targets: type usage error
  * Fix expected value not correct error
 
+### Dependencies
+
+ * Bump logback from 1.5.12 to 1.5.16
+ * Bump guava from 33.3.1-jre to 33.4.0-jre
+ * Bump spring from 6.1.14 to 6.2.2
+ * Bump springBoot from 3.3.5 to 3.4.1
+
 ### Features
 
  * Support spring managed transaction
