@@ -1,5 +1,6 @@
 package com.tang.jkorm.wrapper.query
 
+import com.tang.jkorm.constants.SqlString.COMMA_SPACE
 import com.tang.jkorm.constants.SqlString.FROM
 import com.tang.jkorm.function.SFunction
 import com.tang.jkorm.utils.Fields
@@ -119,11 +120,12 @@ class QuerySelectWrapper<T>(
     fun appendSql(sql: StringBuilder) {
         checkValues()
         if (columns.isEmpty()) {
-            tableClass.declaredFields.forEach {
+            val fields = Reflects.getSqlFields(tableClass)
+            fields.forEach {
                 columns.add(Reflects.getColumnName(it))
             }
         }
-        sql.append(columns.joinToString(", "))
+        sql.append(columns.joinToString(COMMA_SPACE))
         sql.append(FROM)
         sql.append(table)
     }

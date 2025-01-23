@@ -6,6 +6,9 @@ import com.tang.jkorm.transaction.TransactionFactory
 import java.sql.Connection
 import javax.sql.DataSource
 
+/**
+ * @author Tang
+ */
 class JdbcTransactionFactory : TransactionFactory {
 
     override fun newTransaction(connection: Connection): Transaction {

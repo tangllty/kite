@@ -702,7 +702,7 @@ abstract class AbstractWhereWrapper<T, R, W>(
      * @return AbstractWhereWrapper<T, R, W>
      */
     fun leftLike(column: String, value: Any, effective: Boolean): AbstractWhereWrapper<T, R, W> {
-        return like(column, "%$value", effective)
+        return compare(column, "%$value", ComparisonOperator.LIKE, effective)
     }
 
     /**
@@ -771,7 +771,7 @@ abstract class AbstractWhereWrapper<T, R, W>(
      * @return AbstractWhereWrapper<T, R, W>
      */
     fun rightLike(column: String, value: Any, effective: Boolean): AbstractWhereWrapper<T, R, W> {
-        return like(column, "$value%", effective)
+        return compare(column, "$value%", ComparisonOperator.LIKE, effective)
     }
 
     /**

@@ -12,6 +12,8 @@ import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.ConcurrentMap
 
 /**
+ * Mapper proxy for mapper interface
+ *
  * @author Tang
  */
 class MapperProxy<T>(
