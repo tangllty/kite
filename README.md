@@ -1,14 +1,14 @@
-# jkorm
+# Kite
 
 **English** | [**简体中文**](./README.zh.md)
 
 ## Project Description
 
-JkOrm is a lightweight ORM framework written in Kotlin, which is designed to simplify the development of database operations. It supports multiple databases, such as PostgreSQL, MySQL, Derby, etc., and provides a variety of APIs to facilitate the development of database operations.
+Kite is a lightweight ORM framework written in Kotlin, which is designed to simplify the development of database operations. It supports multiple databases, such as PostgreSQL, MySQL, Derby, etc., and provides a variety of APIs to facilitate the development of database operations.
 
 ## Usage
 
- > Maven central: [jkorm-spring-boot-starter](https://central.sonatype.com/artifact/io.github.tangllty/jkorm-spring-boot-starter)
+ > Maven central: [kite-spring-boot-starter](https://central.sonatype.com/artifact/io.github.tangllty/kite-spring-boot-starter)
 
  1. Add the following dependencies to your project:
 
@@ -17,7 +17,7 @@ JkOrm is a lightweight ORM framework written in Kotlin, which is designed to sim
 ```xml
 <dependency>
    <groupId>io.github.tangllty</groupId>
-   <artifactId>jkorm-spring-boot-starter</artifactId>
+   <artifactId>kite-spring-boot-starter</artifactId>
    <version>1.0.4</version>
 </dependency>
 ```
@@ -25,7 +25,7 @@ JkOrm is a lightweight ORM framework written in Kotlin, which is designed to sim
  * Gradle
 
 ```kts
-implementation("io.github.tangllty:jkorm-spring-boot-starter:1.0.4")
+implementation("io.github.tangllty:kite-spring-boot-starter:1.0.4")
 ```
 
  2. Configure your database connection information in the `application.properties` file
@@ -34,11 +34,11 @@ implementation("io.github.tangllty:jkorm-spring-boot-starter:1.0.4")
 
 ## Contributing
 
-If you have any questions, suggestions, or find bugs, please submit an [Issues](https://github.com/tangllty/jkorm/issues/new) or provide a [Pull Request](https://github.com/tangllty/jkorm/pull/new) to help improve the project.
+If you have any questions, suggestions, or find bugs, please submit an [Issues](https://github.com/tangllty/kite/issues/new) or provide a [Pull Request](https://github.com/tangllty/kite/pull/new) to help improve the project.
 
 ## License
 
-jkorm uses the MIT license. For more details, please refer to [LICENSE](https://github.com/tangllty/jkorm/blob/master/LICENSE) files.
+Kite uses the MIT license. For more details, please refer to [LICENSE](https://github.com/tangllty/kite/blob/master/LICENSE) files.
 
 ## Discussion Group
 

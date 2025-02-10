@@ -1,6 +1,0 @@
-jkorm:
-  datasource:
-    driver: org.apache.derby.jdbc.EmbeddedDriver
-    url: jdbc:derby:jkorm;create=true
-    username:
-    password:

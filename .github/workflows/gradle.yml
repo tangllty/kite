@@ -45,7 +45,7 @@ jobs:
       with:
         name: Gradle Test Results
         path: |
-          jkorm/build/reports/tests/test/
+          kite/build/reports/tests/test/
 
   dependency-submission:
 

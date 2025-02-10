@@ -1,6 +1,0 @@
-spring:
-  datasource:
-    driver-class-name: org.apache.derby.jdbc.EmbeddedDriver
-    url: jdbc:derby:jkorm;create=true
-    username:
-    password:

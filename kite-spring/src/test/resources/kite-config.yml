@@ -1,0 +1,6 @@
+kite:
+  datasource:
+    driver: org.apache.derby.jdbc.EmbeddedDriver
+    url: jdbc:derby:kite-spring-derby;create=true
+    username:
+    password:

@@ -51,7 +51,7 @@ publishing {
             pom {
                 name.set(project.name)
                 description.set("A simple ORM framework written in Kotlin")
-                url.set("https://github.com/tangllty/jkorm")
+                url.set("https://github.com/tangllty/kite")
                 licenses {
                     license {
                         name.set("MIT License")
@@ -66,9 +66,9 @@ publishing {
                     }
                 }
                 scm {
-                    connection.set("scm:git:git://github.com/tangllty/jkorm.git")
-                    developerConnection.set("scm:git:ssh://github.com/tangllty/jkorm.git")
-                    url.set("http://github.com/tangllty/jkorm")
+                    connection.set("scm:git:git://github.com/tangllty/kite.git")
+                    developerConnection.set("scm:git:ssh://github.com/tangllty/kite.git")
+                    url.set("http://github.com/tangllty/kite")
                 }
             }
         }
@@ -80,7 +80,7 @@ publishing {
         }
         maven {
             name = "GitHubPackages"
-            url = uri("https://maven.pkg.github.com/tangllty/jkorm")
+            url = uri("https://maven.pkg.github.com/tangllty/kite")
             credentials {
                 username = System.getenv("PACKAGES_ACTOR")
                 password = System.getenv("PACKAGES_PASSWORD")
