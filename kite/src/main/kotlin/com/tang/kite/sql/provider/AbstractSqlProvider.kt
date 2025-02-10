@@ -65,8 +65,7 @@ abstract class AbstractSqlProvider : SqlProvider {
         if (orderBys.isNotEmpty()) {
             sql.append(ORDER_BY)
             orderBys.joinToString(COMMA_SPACE) {
-                // TODO check column name is correct
-                it.column.toString() + if (it.asc) ASC else DESC
+                it.column.name + if (it.asc) ASC else DESC
             }.let { sql.append(it) }
         }
     }

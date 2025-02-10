@@ -4,6 +4,7 @@
 
  * Fix This annotation is not applicable to target 'interface'. Applicable targets: type usage error
  * Fix expected value not correct error
+ * Fix syntax error caused by `order by` having aliases
 
 ### Dependencies
 
