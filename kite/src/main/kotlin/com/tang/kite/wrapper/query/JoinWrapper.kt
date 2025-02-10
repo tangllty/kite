@@ -30,6 +30,18 @@ class JoinWrapper<T>(
         return this
     }
 
+    fun rightJoin(clazz: Class<*>) : JoinWrapper<T> {
+        joinedClass.add(clazz)
+        joinTables.add(JoinTable(clazz, JoinType.RIGHT))
+        return this
+    }
+
+    fun innerJoin(clazz: Class<*>) : JoinWrapper<T> {
+        joinedClass.add(clazz)
+        joinTables.add(JoinTable(clazz, JoinType.INNER))
+        return this
+    }
+
     fun eq(left: String, right: String): JoinWrapper<T> {
         val condition = ComparisonStatement(Column(left), right, ComparisonOperator.EQUAL)
         joinTables.last().condition.add(LogicalStatement(condition, LogicalOperator.AND))

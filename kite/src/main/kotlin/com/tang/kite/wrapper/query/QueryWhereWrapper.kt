@@ -48,6 +48,20 @@ class QueryWhereWrapper<T>(private val queryWrapper: QueryWrapper<T>) : Abstract
         return joinWrapper
     }
 
+    fun rightJoin(clazz: Class<*>) : JoinWrapper<T> {
+        multiTableQuery = true
+        joinedClass.add(clazz)
+        joinWrapper.joinTables.add(JoinTable(clazz, JoinType.RIGHT))
+        return joinWrapper
+    }
+
+    fun innerJoin(clazz: Class<*>) : JoinWrapper<T> {
+        multiTableQuery = true
+        joinedClass.add(clazz)
+        joinWrapper.joinTables.add(JoinTable(clazz, JoinType.INNER))
+        return joinWrapper
+    }
+
     override fun appendSql(sql: StringBuilder, parameters: MutableList<Any?>, multiTableQuery: Boolean) {
         joinWrapper.appendSql(sql, parameters)
         super.appendSql(sql, parameters, multiTableQuery)
