@@ -52,6 +52,7 @@ object SqlString {
     const val OFFSET = " OFFSET "
     const val BETWEEN = " BETWEEN "
     const val AS = " AS "
+    const val ON = " ON "
     const val UNION = " UNION "
     const val JOIN = " JOIN "
     const val HAVING = " HAVING "

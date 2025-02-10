@@ -27,6 +27,9 @@ object ResultSetHandlers {
         for (i in 1..columnCount) {
             val columnName = metaData.getColumnName(i)
             val field = Reflects.getField(type, columnName)
+            if (field == null) {
+                continue
+            }
             Reflects.makeAccessible(field, entity as Any)
             val columnValue = resultSet.getObject(columnName)
             field.set(entity, columnValue)

@@ -20,7 +20,7 @@ class WhereOrderByWrapper<T, R, W>(
 
     private val whereWrapper: AbstractWhereWrapper<T, R, W>,
 
-    private val columns: MutableList<OrderItem<T>> = mutableListOf()
+    private val columns: MutableList<OrderItem<*>> = mutableListOf()
 
 ): WhereBuilder<T, R, W> {
 
@@ -31,7 +31,7 @@ class WhereOrderByWrapper<T, R, W>(
      * @return WhereOrderByWrapper<T, R, W>
      */
     @SafeVarargs
-    fun orderBy(vararg orderBys: OrderItem<T>): WhereOrderByWrapper<T, R, W> {
+    fun orderBy(vararg orderBys: OrderItem<*>): WhereOrderByWrapper<T, R, W> {
         columns.addAll(orderBys)
         return this
     }
@@ -50,12 +50,22 @@ class WhereOrderByWrapper<T, R, W>(
     /**
      * Order by operation
      *
+     * @param column column name
+     * @return WhereOrderByWrapper<T, R, W>
+     */
+    fun orderBy(column: String): WhereOrderByWrapper<T, R, W> {
+        return orderBy(column, true)
+    }
+
+    /**
+     * Order by operation
+     *
      * @param column column property
      * @param asc asc or desc
      * @return WhereOrderByWrapper<T, R, W>
      */
-    fun orderBy(column: KMutableProperty1<T, *>, asc: Boolean = true): WhereOrderByWrapper<T, R, W> {
-        return orderBy(OrderItem<T>(column, asc))
+    fun orderBy(column: KMutableProperty1<*, *>, asc: Boolean = true): WhereOrderByWrapper<T, R, W> {
+        return orderBy(OrderItem(column, asc))
     }
 
     /**
@@ -65,8 +75,8 @@ class WhereOrderByWrapper<T, R, W>(
      * @param asc asc or desc
      * @return WhereOrderByWrapper<T, R, W>
      */
-    fun orderBy(column: SFunction<T, *>, asc: Boolean = true): WhereOrderByWrapper<T, R, W> {
-        return orderBy(OrderItem<T>(column, asc))
+    fun orderBy(column: SFunction<*, *>, asc: Boolean = true): WhereOrderByWrapper<T, R, W> {
+        return orderBy(OrderItem(column, asc))
     }
 
     /**
@@ -89,13 +99,13 @@ class WhereOrderByWrapper<T, R, W>(
         return whereWrapper.execute()
     }
 
-    fun appendSql(sql: StringBuilder) {
+    fun appendSql(sql: StringBuilder, multiTableQuery: Boolean) {
         if (columns.isEmpty()) {
             return
         }
         sql.append(ORDER_BY)
         columns.joinToString(COMMA_SPACE) {
-            it.column + if (it.asc) ASC else DESC
+            it.column.toString(multiTableQuery) + if (it.asc) ASC else DESC
         }.let {
             sql.append(it)
         }

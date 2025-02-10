@@ -3,10 +3,9 @@ package com.tang.jkorm.wrapper.query
 import com.tang.jkorm.constants.SqlString.COMMA_SPACE
 import com.tang.jkorm.constants.SqlString.FROM
 import com.tang.jkorm.function.SFunction
-import com.tang.jkorm.utils.Fields
 import com.tang.jkorm.utils.Reflects
+import com.tang.jkorm.wrapper.Column
 import kotlin.reflect.KMutableProperty1
-import kotlin.reflect.jvm.javaField
 
 /**
  * Select statement wrapper for [QueryWrapper]
@@ -17,7 +16,7 @@ class QuerySelectWrapper<T>(
 
     private val queryWrapper: QueryWrapper<T>,
 
-    private val columns: MutableList<String>
+    private val columns: MutableList<Column>
 
 ) {
 
@@ -31,9 +30,30 @@ class QuerySelectWrapper<T>(
      * @param columns columns
      * @return QuerySelectWrapper
      */
-    fun columns(vararg columns: String): QuerySelectWrapper<T> {
-        this.columns.addAll(columns.toList())
+    fun columns(vararg columns: Column): QuerySelectWrapper<T> {
+        this.columns.addAll(columns)
         return this
+    }
+
+    /**
+     * Set the column
+     *
+     * @param column column
+     * @return QuerySelectWrapper
+     */
+    fun column(column: Column): QuerySelectWrapper<T> {
+        this.columns.add(column)
+        return this
+    }
+
+    /**
+     * Set the columns
+     *
+     * @param columns columns
+     * @return QuerySelectWrapper
+     */
+    fun columns(vararg columns: String): QuerySelectWrapper<T> {
+        return columns(*columns.map { Column(it) }.toTypedArray())
     }
 
     /**
@@ -43,8 +63,7 @@ class QuerySelectWrapper<T>(
      * @return QuerySelectWrapper
      */
     fun column(column: String): QuerySelectWrapper<T> {
-        this.columns.add(column)
-        return this
+        return column(Column(column))
     }
 
     /**
@@ -54,9 +73,8 @@ class QuerySelectWrapper<T>(
      * @return QuerySelectWrapper
      */
     @SafeVarargs
-    fun columns(vararg columns: SFunction<T, *>): QuerySelectWrapper<T> {
-        val columnNames = columns.map { Reflects.getColumnName(Fields.getField(it)) }
-        return columns(*columnNames.toTypedArray())
+    fun <E> columns(vararg columns: KMutableProperty1<E, *>): QuerySelectWrapper<T> {
+        return columns(*columns.map { Column(it) }.toTypedArray())
     }
 
     /**
@@ -65,8 +83,8 @@ class QuerySelectWrapper<T>(
      * @param column column property
      * @return QuerySelectWrapper
      */
-    fun column(column: SFunction<T, *>): QuerySelectWrapper<T> {
-        return column(Reflects.getColumnName(Fields.getField(column)))
+    fun <E> column(column: KMutableProperty1<E, *>): QuerySelectWrapper<T> {
+        return column(Column(column))
     }
 
     /**
@@ -76,9 +94,8 @@ class QuerySelectWrapper<T>(
      * @return QuerySelectWrapper
      */
     @SafeVarargs
-    fun columns(vararg columns: KMutableProperty1<T, *>): QuerySelectWrapper<T> {
-        val columnNames = columns.map { Reflects.getColumnName(it.javaField!!) }
-        return columns(*columnNames.toTypedArray())
+    fun <E> columns(vararg columns: SFunction<E, *>): QuerySelectWrapper<T> {
+        return columns(*columns.map { Column(it) }.toTypedArray())
     }
 
     /**
@@ -87,8 +104,8 @@ class QuerySelectWrapper<T>(
      * @param column column property
      * @return QuerySelectWrapper
      */
-    fun column(column: KMutableProperty1<T, *>): QuerySelectWrapper<T> {
-        return column(Reflects.getColumnName(column.javaField!!))
+    fun <E> column(column: SFunction<E, *>): QuerySelectWrapper<T> {
+        return column(Column(column))
     }
 
     /**
@@ -117,17 +134,22 @@ class QuerySelectWrapper<T>(
      *
      * @param sql SQL
      */
-    fun appendSql(sql: StringBuilder) {
+    fun appendSql(sql: StringBuilder, joinedClass: List<Class<*>>, isMultiTableQuery: Boolean) {
         checkValues()
         if (columns.isEmpty()) {
-            val fields = Reflects.getSqlFields(tableClass)
-            fields.forEach {
-                columns.add(Reflects.getColumnName(it))
+            listOf<Class<*>>(tableClass).plus(joinedClass).forEach {
+                val fields = Reflects.getSqlFields(it)
+                fields.forEach {
+                    columns.add(Column(it))
+                }
             }
         }
-        sql.append(columns.joinToString(COMMA_SPACE))
-        sql.append(FROM)
-        sql.append(table)
+        sql.append(columns.joinToString(COMMA_SPACE) { it.toString(isMultiTableQuery) })
+        sql.append(FROM + table)
+        if (isMultiTableQuery) {
+            val tableAlias = Reflects.getTableAlias(tableClass)
+            sql.append(" $tableAlias")
+        }
     }
 
     /**

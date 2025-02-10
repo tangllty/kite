@@ -6,6 +6,7 @@ import com.tang.jkorm.annotation.Table
 import com.tang.jkorm.annotation.id.Id
 import com.tang.jkorm.annotation.id.IdType
 import com.tang.jkorm.function.SFunction
+import com.tang.jkorm.logging.LOGGER
 import java.lang.reflect.AccessibleObject
 import java.lang.reflect.Field
 import java.util.concurrent.ConcurrentHashMap
@@ -14,6 +15,8 @@ import kotlin.reflect.KMutableProperty1
 import kotlin.reflect.jvm.javaField
 
 /**
+ * Reflection utility class
+ *
  * @author Tang
  */
 object Reflects {
@@ -23,6 +26,10 @@ object Reflects {
     private val fieldCache: ConcurrentMap<Pair<Class<*>, String>, Field> = ConcurrentHashMap()
 
     private val columnNameCache: ConcurrentMap<Field, String> = ConcurrentHashMap()
+
+    private val tableNameCache: ConcurrentMap<Class<*>, String> = ConcurrentHashMap()
+
+    private val tableAliasCache: ConcurrentMap<Class<*>, String> = ConcurrentHashMap()
 
     fun makeAccessible(accessibleObject: AccessibleObject, any: Any) {
         if (accessibleObject.canAccess(any)) {
@@ -54,11 +61,16 @@ object Reflects {
     }
 
     fun getTableName(clazz: Class<*>): String {
-        val table = clazz.getAnnotation(Table::class.java)
-        return table?.value ?: clazz.simpleName.lowercase()
+        return tableNameCache.computeIfAbsent(clazz) {
+            if (clazz.isAnnotationPresent(Table::class.java) && clazz.getAnnotation(Table::class.java).value.isNotBlank()) {
+                clazz.getAnnotation(Table::class.java).value
+            } else {
+                CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, clazz.simpleName)
+            }
+        }
     }
 
-    fun getField(clazz: Class<*>, columnName: String): Field {
+    fun getField(clazz: Class<*>, columnName: String): Field? {
         val cacheKey = Pair(clazz, columnName)
         return fieldCache.computeIfAbsent(cacheKey) {
             val lowerColumnName = columnName.lowercase()
@@ -74,30 +86,44 @@ object Reflects {
                 val field = clazz.declaredFields.firstOrNull {
                     it.name == lowerCamelColumnName
                 }?.let { return@computeIfAbsent it }
-                return@computeIfAbsent field ?: throw IllegalArgumentException("No field found for column $columnName in ${clazz.simpleName}")
+                LOGGER.warn("No field found for column $columnName in ${clazz.simpleName}")
+                return@computeIfAbsent field
             }
             fields.first()
         }
     }
 
-    fun getColumnName(field: Field): String {
-        return columnNameCache.computeIfAbsent(field) {
+    /**
+     * Get the column name, if [Column.value] not set, convert the field name to lower underscore
+     *
+     * @param field field
+     * @param withAlias with table alias
+     * @return column name
+     */
+    fun getColumnName(field: Field, withAlias: Boolean = false): String {
+        val columnName = columnNameCache.computeIfAbsent(field) {
             if (field.isAnnotationPresent(Column::class.java) && field.getAnnotation(Column::class.java).value.isNotBlank()) {
                 field.getAnnotation(Column::class.java).value
             } else {
                 CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, field.name)
             }
         }
+        if (withAlias) {
+            val alias = getTableAlias(field.declaringClass)
+            return "${alias}.${columnName}"
+        } else {
+            return columnName
+        }
     }
 
-    fun <T> getColumnName(column: KMutableProperty1<T, *>): String {
-        var filed = column.javaField!!
-        return getColumnName(filed)
+    fun <T> getColumnName(column: KMutableProperty1<T, *>, withAlias: Boolean = false): String {
+        var field = column.javaField!!
+        return getColumnName(field, withAlias)
     }
 
-    fun <T> getColumnName(column: SFunction<T, *>): String {
-        val filed = Fields.getField(column)
-        return getColumnName(filed)
+    fun <T> getColumnName(column: SFunction<T, *>, withAlias: Boolean = false): String {
+        val field = Fields.getField(column)
+        return getColumnName(field, withAlias)
     }
 
     fun getGeneratedId(clazz: Class<*>): Any {
@@ -110,8 +136,31 @@ object Reflects {
         return idStrategy.java.getDeclaredConstructor().newInstance().getId(idField)
     }
 
+    /**
+     * Get all fields with [Column.ignore] set to false
+     *
+     * @param clazz entity class
+     * @return fields
+     */
     fun getSqlFields(clazz: Class<*>): List<Field> {
         return clazz.declaredFields.filter { it.isAnnotationPresent(Column::class.java).not() || it.getAnnotation(Column::class.java).ignore.not() }
+    }
+
+    /**
+     * Get the table alias, if [Table.alias] not set, use the first letter of each word in the table name
+     *
+     * @param clazz entity class
+     * @return table alias
+     */
+    fun getTableAlias(clazz: Class<*>): String {
+        return tableAliasCache.computeIfAbsent(clazz) {
+            if (clazz.isAnnotationPresent(Table::class.java) && clazz.getAnnotation(Table::class.java).alias.isNotBlank()) {
+                clazz.getAnnotation(Table::class.java).alias
+            } else {
+                val tableName = getTableName(clazz)
+                tableName.split("_").joinToString("") { it.first().toString() }
+            }
+        }
     }
 
 }

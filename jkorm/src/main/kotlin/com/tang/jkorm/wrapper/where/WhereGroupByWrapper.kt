@@ -4,7 +4,7 @@ import com.tang.jkorm.constants.SqlString.COMMA_SPACE
 import com.tang.jkorm.constants.SqlString.GROUP_BY
 import com.tang.jkorm.function.SFunction
 import com.tang.jkorm.paginate.OrderItem
-import com.tang.jkorm.utils.Reflects.getColumnName
+import com.tang.jkorm.wrapper.Column
 import com.tang.jkorm.wrapper.Wrapper
 import java.util.function.Consumer
 import kotlin.reflect.KMutableProperty1
@@ -20,7 +20,7 @@ class WhereGroupByWrapper<T, R, W>(
 
     private val whereWrapper: AbstractWhereWrapper<T, R, W>,
 
-    private val columns: MutableList<String> = mutableListOf()
+    private val columns: MutableList<Column> = mutableListOf()
 
 ): WhereBuilder<T, R, W> {
 
@@ -30,7 +30,7 @@ class WhereGroupByWrapper<T, R, W>(
      * @param columns columns
      * @return WhereGroupByWrapper<T, R, W>
      */
-    fun groupBy(vararg columns: String): WhereGroupByWrapper<T, R, W> {
+    fun groupBy(vararg columns: Column): WhereGroupByWrapper<T, R, W> {
         this.columns.addAll(columns)
         return this
     }
@@ -41,9 +41,19 @@ class WhereGroupByWrapper<T, R, W>(
      * @param columns columns
      * @return WhereGroupByWrapper<T, R, W>
      */
+    fun groupBy(vararg columns: String): WhereGroupByWrapper<T, R, W> {
+        return groupBy(*columns.map { Column(it) }.toTypedArray())
+    }
+
+    /**
+     * Group by operation
+     *
+     * @param columns columns
+     * @return WhereGroupByWrapper<T, R, W>
+     */
     @SafeVarargs
     fun groupBy(vararg columns: KMutableProperty1<T, *>): WhereGroupByWrapper<T, R, W> {
-        return groupBy(*columns.map { getColumnName(it) }.toTypedArray())
+        return groupBy(*columns.map { Column(it) }.toTypedArray())
     }
 
     /**
@@ -54,7 +64,7 @@ class WhereGroupByWrapper<T, R, W>(
      */
     @SafeVarargs
     fun groupBy(vararg columns: SFunction<T, *>): WhereGroupByWrapper<T, R, W> {
-        return groupBy(*columns.map { getColumnName(it) }.toTypedArray())
+        return groupBy(*columns.map { Column(it) }.toTypedArray())
     }
 
     /**
@@ -153,14 +163,13 @@ class WhereGroupByWrapper<T, R, W>(
         return whereWrapper.execute()
     }
 
-    fun appendSql(sql: StringBuilder) {
+    fun appendSql(sql: StringBuilder, multiTableQuery: Boolean) {
         if (columns.isEmpty()) {
             return
         }
         sql.append(GROUP_BY)
-        columns.joinToString(COMMA_SPACE).let {
-            sql.append(it)
-        }
+        val orderBys = columns.joinToString(COMMA_SPACE) { it.toString(multiTableQuery) }
+        sql.append(orderBys)
     }
 
 }

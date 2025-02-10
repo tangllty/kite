@@ -18,6 +18,7 @@
  * Refactor `Id` annotation `autoIncrement` to `type`'
  * Support `ignore` property in `Column` annotation
  * Refactor `SqlProvider.paginate` method
+ * Support left join for select query
 
 ## 1.0.3
 

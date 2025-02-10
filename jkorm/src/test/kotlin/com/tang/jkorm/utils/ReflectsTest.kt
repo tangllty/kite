@@ -33,7 +33,7 @@ class ReflectsTest {
     @Test
     fun getField() {
         val field = Reflects.getField(Account::class.java, "id")
-        assertEquals("id", field.name)
+        assertEquals("id", field?.name)
     }
 
     @Test
@@ -54,6 +54,12 @@ class ReflectsTest {
     fun getSqlFields() {
         val sqlFields = Reflects.getSqlFields(Account::class.java)
         assertTrue(sqlFields.none { it.name == "be_ignore" })
+    }
+
+    @Test
+    fun getTableAlias() {
+        val tableAlias = Reflects.getTableAlias(Account::class.java)
+        assertEquals("a", tableAlias)
     }
 
 }

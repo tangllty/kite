@@ -6,11 +6,9 @@ import com.tang.jkorm.constants.SqlString.SELECT_DISTINCT
 import com.tang.jkorm.function.SFunction
 import com.tang.jkorm.mapper.BaseMapper
 import com.tang.jkorm.sql.SqlStatement
-import com.tang.jkorm.utils.Fields
-import com.tang.jkorm.utils.Reflects
+import com.tang.jkorm.wrapper.Column
 import com.tang.jkorm.wrapper.Wrapper
 import kotlin.reflect.KMutableProperty1
-import kotlin.reflect.jvm.javaField
 
 /**
  * Build a select query
@@ -51,9 +49,19 @@ class QueryWrapper<T> : Wrapper<T> {
      * @param columns columns
      * @return QuerySelectWrapper
      */
-    fun select(vararg columns: String): QuerySelectWrapper<T> {
+    fun select(vararg columns: Column): QuerySelectWrapper<T> {
         this.querySelectWrapper = QuerySelectWrapper(this, columns.toMutableList())
         return querySelectWrapper
+    }
+
+    /**
+     * Set the select columns
+     *
+     * @param columns columns
+     * @return QuerySelectWrapper
+     */
+    fun select(vararg columns: String): QuerySelectWrapper<T> {
+        return select(*columns.map { Column(it) }.toTypedArray())
     }
 
     /**
@@ -62,7 +70,7 @@ class QueryWrapper<T> : Wrapper<T> {
      * @return QuerySelectWrapper
      */
     fun select(): QuerySelectWrapper<T> {
-        return select(*mutableListOf<String>().toTypedArray())
+        return select(*mutableListOf<Column>().toTypedArray())
     }
 
     /**
@@ -73,8 +81,7 @@ class QueryWrapper<T> : Wrapper<T> {
      */
     @SafeVarargs
     fun select(vararg columns: SFunction<T, *>): QuerySelectWrapper<T> {
-        val columnNames = columns.map { Reflects.getColumnName(Fields.getField(it)) }
-        return select(*columnNames.toTypedArray())
+        return select(*columns.map { Column(it) }.toTypedArray())
     }
 
     /**
@@ -85,8 +92,7 @@ class QueryWrapper<T> : Wrapper<T> {
      */
     @SafeVarargs
     fun select(vararg columns: KMutableProperty1<T, *>): QuerySelectWrapper<T> {
-        val columnNames = columns.map { Reflects.getColumnName(it.javaField!!) }
-        return select(*columnNames.toTypedArray())
+        return select(*columns.map { Column(it) }.toTypedArray())
     }
 
     /**
@@ -104,8 +110,10 @@ class QueryWrapper<T> : Wrapper<T> {
         val sql: StringBuilder = StringBuilder()
         val parameters: MutableList<Any?> = mutableListOf()
         sql.append(if (distinct) SELECT_DISTINCT else SELECT)
-        querySelectWrapper.appendSql(sql)
-        queryWhereWrapper.appendSql(sql, parameters)
+        val isMultiTableQuery = queryWhereWrapper.isMultiTableQuery()
+        val joinedClass = queryWhereWrapper.getJoinedClass()
+        querySelectWrapper.appendSql(sql, joinedClass, isMultiTableQuery)
+        queryWhereWrapper.appendSql(sql, parameters, isMultiTableQuery)
         return SqlStatement(JkOrmConfig.INSTANCE.getSql(sql), parameters)
     }
 
