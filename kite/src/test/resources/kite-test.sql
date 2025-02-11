@@ -17,6 +17,19 @@ insert into account (username, password, create_time, balance) values
 ('tang', 'tang', '2019-06-01 00:00:00', 1.00),
 ('jeo', 'jeo', '2024-07-01 00:00:00', 0.10);
 
+create table account_role (
+    account_id bigint,
+    role_id bigint,
+    primary key (account_id, role_id)
+);
+
+insert into account_role (account_id, role_id) values
+(1, 1),
+(2, 2),
+(3, 3),
+(4, 2),
+(5, 3);
+
 create table role (
     id bigint primary key,
     name varchar(32) default ''

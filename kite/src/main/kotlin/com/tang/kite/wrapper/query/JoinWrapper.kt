@@ -52,12 +52,16 @@ class JoinWrapper<T>(
         return eq(getColumnName(left, true), getColumnName(right, true))
     }
 
-    fun eq(left: SFunction<*, *>, right: SFunction<*, *>): JoinWrapper<T> {
+    fun <E1, E2> eq(left: SFunction<E1, *>, right: SFunction<E2, *>): JoinWrapper<T> {
         return eq(getColumnName(left, true), getColumnName(right, true))
     }
 
     fun where() : QueryWhereWrapper<T> {
         return queryWhereWrapper
+    }
+
+    fun build() : QueryWrapper<T> {
+        return queryWhereWrapper.build()
     }
 
     fun appendSql(sql: StringBuilder, parameters: MutableList<Any?>) {
