@@ -1,11 +1,14 @@
 package com.tang.kite.sql.provider
 
+import com.tang.kite.annotation.Join
 import com.tang.kite.config.KiteConfig
+import com.tang.kite.constants.SqlString
 import com.tang.kite.constants.SqlString.AND
 import com.tang.kite.constants.SqlString.ASC
 import com.tang.kite.constants.SqlString.COMMA_SPACE
 import com.tang.kite.constants.SqlString.DELETE_FROM
 import com.tang.kite.constants.SqlString.DESC
+import com.tang.kite.constants.SqlString.DOT
 import com.tang.kite.constants.SqlString.EQUAL
 import com.tang.kite.constants.SqlString.FROM
 import com.tang.kite.constants.SqlString.INSERT_INTO
@@ -28,6 +31,7 @@ import com.tang.kite.utils.Reflects
 import com.tang.kite.utils.Reflects.getColumnName
 import com.tang.kite.utils.Reflects.getIdField
 import com.tang.kite.utils.Reflects.getSqlFields
+import com.tang.kite.utils.Reflects.getTableAlias
 import com.tang.kite.utils.Reflects.getTableName
 import com.tang.kite.utils.Reflects.isAutoIncrementId
 import com.tang.kite.utils.Reflects.makeAccessible
@@ -46,26 +50,26 @@ abstract class AbstractSqlProvider : SqlProvider {
         return KiteConfig.INSTANCE.selectiveStrategy.apply(any)
     }
 
-    override fun appendColumns(sql: StringBuilder, fieldList: List<Field>) {
-        fieldList.joinToString(COMMA_SPACE) { getColumnName(it) }.let { sql.append(it) }
+    override fun appendColumns(sql: StringBuilder, fieldList: List<Field>, withAlias: Boolean) {
+        fieldList.joinToString(COMMA_SPACE) { getColumnName(it, withAlias) }.let { sql.append(it) }
     }
 
-    override fun <T> appendWhere(sql: StringBuilder, parameters: MutableList<Any?>, clazz: Class<T>, entity: Any) {
+    override fun <T> appendWhere(sql: StringBuilder, parameters: MutableList<Any?>, clazz: Class<T>, entity: Any, withAlias: Boolean) {
         sql.append(WHERE)
         getSqlFields(clazz).filter {
             makeAccessible(it, entity)
             selectiveStrategy(it.get(entity))
         }.joinToString(AND) {
             parameters.add(it.get(entity))
-            getColumnName(it) + EQUAL + QUESTION_MARK
+            getColumnName(it, withAlias) + EQUAL + QUESTION_MARK
         }.let { sql.append(it) }
     }
 
-    override fun <T> appendOrderBy(sql: StringBuilder, orderBys: Array<OrderItem<T>>) {
+    override fun <T> appendOrderBy(sql: StringBuilder, orderBys: Array<OrderItem<T>>, withAlias: Boolean) {
         if (orderBys.isNotEmpty()) {
             sql.append(ORDER_BY)
             orderBys.joinToString(COMMA_SPACE) {
-                it.column.name + if (it.asc) ASC else DESC
+                it.column.toString(withAlias) + if (it.asc) ASC else DESC
             }.let { sql.append(it) }
         }
     }
@@ -265,6 +269,43 @@ abstract class AbstractSqlProvider : SqlProvider {
             appendWhere(sql, parameters, clazz, entity)
         }
         appendOrderBy(sql, orderBys)
+        return SqlStatement(getSql(sql), parameters)
+    }
+
+    override fun <T> selectWithJoins(clazz: Class<T>, entity: Any?, orderBys: Array<OrderItem<T>>): SqlStatement {
+        val sql = StringBuilder()
+        val parameters = mutableListOf<Any?>()
+        val tableName = getTableName(clazz)
+        val tableAlias = getTableAlias(clazz)
+        val joins = Reflects.getJoins(clazz)
+        sql.append(SELECT)
+        val sqlFields = getSqlFields(clazz).toMutableList()
+        joins.forEach { sqlFields.addAll(getSqlFields(it.type)) }
+        appendColumns(sql, sqlFields, true)
+        sql.append(FROM, tableName, SPACE, tableAlias)
+        joins.forEach {
+            val joinTableAlias = getTableAlias(it.type)
+            val join = it.getAnnotation(Join::class.java)
+            val selfField = join.selfField
+            val targetField = join.targetField
+            val joinTable = join.joinTable
+            val joinSelfField = join.joinSelfColumn
+            val joinTargetField = join.joinTargetColumn
+            if (joinTable.isNotEmpty() && joinSelfField.isNotEmpty() && joinTargetField.isNotEmpty()) {
+                val innerJoinTableAlias = joinTable.split("_").joinToString("") { it.first().toString() }
+                sql.append(SqlString.LEFT_JOIN, joinTable, SPACE, innerJoinTableAlias, SqlString.ON)
+                sql.append(innerJoinTableAlias, DOT, joinSelfField, EQUAL, tableAlias, DOT, selfField)
+                sql.append(SqlString.LEFT_JOIN, getTableName(it.type), SPACE, joinTableAlias, SqlString.ON)
+                sql.append(joinTableAlias, DOT, targetField, EQUAL, innerJoinTableAlias, DOT, joinTargetField)
+            } else {
+                sql.append(SqlString.LEFT_JOIN, getTableName(it.type), SPACE, joinTableAlias, SqlString.ON)
+                sql.append(tableAlias, DOT, selfField, EQUAL, joinTableAlias, DOT, targetField)
+            }
+        }
+        entity?.let {
+            appendWhere(sql, parameters, clazz, entity, true)
+        }
+        appendOrderBy(sql, orderBys, true)
         return SqlStatement(getSql(sql), parameters)
     }
 

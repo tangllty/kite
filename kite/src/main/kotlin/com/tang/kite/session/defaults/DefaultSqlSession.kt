@@ -109,6 +109,8 @@ class DefaultSqlSession(
             BaseMethodName.isDeleteById(method) -> deleteById(method, mapperInterface, type, getFirstArg(args))
             BaseMethodName.isSelect(method) -> processSelect(method, mapperInterface, type, args)
             BaseMethodName.isSelectById(method) -> selectById(method, mapperInterface, type, getFirstArg(args))
+            BaseMethodName.isSelectWithJoins(method) -> processSelectWithJoins(method, mapperInterface, type, args)
+            BaseMethodName.isSelectByIdWithJoins(method) -> selectByIdWithJoins(method, mapperInterface, type, getFirstArg(args))
             BaseMethodName.isQueryWrapper(method) -> queryWrapper(method, mapperInterface, type, getFirstArg(args))
             BaseMethodName.isCount(method) -> count(method, mapperInterface, type, args?.first())
             BaseMethodName.isPaginate(method) -> processPaginate(method, mapperInterface, type, args)
@@ -225,6 +227,44 @@ class DefaultSqlSession(
         Reflects.makeAccessible(idField, entity as Any)
         idField.set(entity, parameter)
         val list = selectList(method, mapperInterface, type, entity, emptyArray())
+        if (list.size > 1) {
+            throw IllegalArgumentException("Too many results, expected one, but got ${list.size}")
+        }
+        if (list.isEmpty()) {
+            return null
+        }
+        return list.first()
+    }
+
+    private fun <T> processSelectWithJoins(method: Method, mapperInterface: Class<T>, type: Class<T>, args: Array<out Any>?): List<T> {
+        if (args == null || args.isEmpty()) {
+            return selectListWithJoins(method, mapperInterface, type, null, emptyArray())
+        }
+        if (args.size == 1) {
+            if (args[0].javaClass.isArray) {
+                return selectListWithJoins(method, mapperInterface, type, null, toOrderBys(args[0]))
+            }
+            return selectListWithJoins(method, mapperInterface, type, args[0], emptyArray())
+        }
+        if (args.size == 2) {
+            return selectListWithJoins(method, mapperInterface, type, args[0], toOrderBys(args[1]))
+        }
+        return selectListWithJoins(method, mapperInterface, type, null, emptyArray())
+    }
+
+    override fun <T> selectListWithJoins(method: Method, mapperInterface: Class<T>, type: Class<T>, parameter: Any?, orderBys: Array<OrderItem<T>>): List<T> {
+        val select = sqlProvider.selectWithJoins(type, parameter, orderBys)
+        val list = executor.query(select, type)
+        log(method, mapperInterface, select, list.size)
+        return list
+    }
+
+    override fun <T> selectByIdWithJoins(method: Method, mapperInterface: Class<T>, type: Class<T>, parameter: Any): T? {
+        val entity = type.getDeclaredConstructor().newInstance()
+        val idField = Reflects.getIdField(type)
+        Reflects.makeAccessible(idField, entity as Any)
+        idField.set(entity, parameter)
+        val list = selectListWithJoins(method, mapperInterface, type, entity, emptyArray())
         if (list.size > 1) {
             throw IllegalArgumentException("Too many results, expected one, but got ${list.size}")
         }

@@ -206,6 +206,88 @@ interface BaseMapper<T> {
     fun selectById(id: Long): T?
 
     /**
+     * Select all with joins
+     *
+     * @return Entity list
+     */
+    fun selectWithJoins(): List<T>
+
+    /**
+     * Select all by order by with joins
+     *
+     * @param orderBy Order by
+     * @return Entity list
+     */
+    fun selectWithJoins(orderBy: OrderItem<T>): List<T> {
+        return select(arrayOf(orderBy))
+    }
+
+    /**
+     * Select all by order by with joins
+     *
+     * @param orderBys Order by
+     * @return Entity list
+     */
+    fun selectWithJoins(orderBys: Array<OrderItem<T>>): List<T>
+
+    /**
+     * Select all by order by with joins
+     *
+     * @param orderBys Order by list
+     * @return Entity list
+     */
+    fun selectWithJoins(orderBys: List<OrderItem<T>>): List<T> {
+        return select(orderBys.toTypedArray())
+    }
+
+    /**
+     * Select by condition with joins, ignore [KiteConfig.selectiveStrategy] value
+     *
+     * @param type Entity
+     * @return Entity list
+     */
+    fun selectWithJoins(type: T): List<T>
+
+    /**
+     * Select by condition and order by with joins
+     *
+     * @param type Entity
+     * @param orderBy Order by
+     * @return Entity list
+     */
+    fun selectWithJoins(type: T, orderBy: OrderItem<T>): List<T> {
+        return select(type, arrayOf(orderBy))
+    }
+
+    /**
+     * Select by condition and order by with joins
+     *
+     * @param type Entity
+     * @param orderBys Order by array
+     * @return Entity list
+     */
+    fun selectWithJoins(type: T, orderBys: Array<OrderItem<T>>): List<T>
+
+    /**
+     * Select by condition and order by with joins
+     *
+     * @param type Entity
+     * @param orderBys Order by list
+     * @return Entity list
+     */
+    fun selectWithJoins(type: T, orderBys: List<OrderItem<T>>): List<T> {
+        return select(type, orderBys.toTypedArray())
+    }
+
+    /**
+     * Select by primary key with joins
+     *
+     * @param id Entity id
+     * @return Entity
+     */
+    fun selectByIdWithJoins(id: Long): T?
+
+    /**
      * Select by query wrapper
      *
      * @param queryWrapper QueryWrapper

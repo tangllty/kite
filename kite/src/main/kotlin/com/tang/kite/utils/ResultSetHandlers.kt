@@ -22,17 +22,45 @@ object ResultSetHandlers {
 
     private fun <T> getEntity(resultSet: ResultSet, type: Class<T>): T {
         val metaData = resultSet.metaData
-        val columnCount = metaData.columnCount
+        val metaDataMap = mutableMapOf<String, MutableList<Pair<String, Any>>>()
         val entity = type.getDeclaredConstructor().newInstance()
-        for (i in 1..columnCount) {
+        val tableName = Reflects.getTableName(type)
+        for (i in 1..metaData.columnCount) {
+            val tableName = metaData.getTableName(i).lowercase()
             val columnName = metaData.getColumnName(i)
+            val columnValue = resultSet.getObject(i)
+            if (metaDataMap.containsKey(tableName).not()) {
+                metaDataMap[tableName] = mutableListOf()
+            }
+            metaDataMap[tableName]!!.add(Pair(columnName, columnValue))
+        }
+        val metaDataList = metaDataMap[tableName] ?: return entity
+        metaDataList.forEach { (columnName, columnValue) ->
             val field = Reflects.getField(type, columnName)
             if (field == null) {
-                continue
+                return@forEach
             }
             Reflects.makeAccessible(field, entity as Any)
-            val columnValue = resultSet.getObject(columnName)
             field.set(entity, columnValue)
+        }
+        val joins = Reflects.getJoins(type)
+        if (joins.isEmpty()) {
+            return entity
+        }
+        joins.forEach {
+            val joinTableName = Reflects.getTableName(it.type)
+            val joinEntity = it.type.getDeclaredConstructor().newInstance()
+            val joinMetaData = metaDataMap[joinTableName] ?: return@forEach
+            joinMetaData.forEach { (columnName, columnValue) ->
+                val field = Reflects.getField(it.type, columnName)
+                if (field == null) {
+                    return@forEach
+                }
+                Reflects.makeAccessible(field, joinEntity as Any)
+                field.set(joinEntity, columnValue)
+            }
+            Reflects.makeAccessible(it, entity as Any)
+            it.set(entity, joinEntity)
         }
         return entity
     }

@@ -6,6 +6,8 @@ import com.tang.kite.session.entity.Account
 import com.tang.kite.session.entity.Role
 import com.tang.kite.session.mapper.AccountJavaMapper
 import com.tang.kite.session.mapper.AccountMapper
+import com.tang.kite.session.mapper.AccountOneToOneMapper
+import com.tang.kite.session.mapper.AccountOneToOneWIthJoinTableMapper
 import com.tang.kite.session.mapper.RoleMapper
 import com.tang.kite.wrapper.query.QueryWrapper
 import com.tang.kite.wrapper.update.UpdateWrapper
@@ -71,7 +73,7 @@ class SqlSessionTest : BaseDataTest() {
             updateTime = null,
             balance = BigDecimal(100.00)
         )
-        val rows = accountMapper.insertAccount(account)
+        val rows = accountMapper.insert(account)
         session.close()
         assertEquals(1, rows)
     }
@@ -511,6 +513,34 @@ class SqlSessionTest : BaseDataTest() {
         val page = accountMapper.paginate(request)
         session.close()
         assertNotEquals(0, page.total)
+    }
+
+    @Test
+    fun selectOneToOne() {
+        val session = sqlSessionFactory.openSession()
+        val accountMapper = session.getMapper(AccountOneToOneMapper::class.java)
+        val account = accountMapper.selectByIdWithJoins(1)
+        session.close()
+        assertNotNull(account)
+        assertNotNull(account!!.id)
+        assertNotNull(account.username)
+        assertNotNull(account.role)
+        assertNotNull(account.role!!.id)
+        assertNotNull(account.role!!.name)
+    }
+
+    @Test
+    fun selectOneToOneWithJoinTable() {
+        val session = sqlSessionFactory.openSession()
+        val accountMapper = session.getMapper(AccountOneToOneWIthJoinTableMapper::class.java)
+        val account = accountMapper.selectByIdWithJoins(1)
+        session.close()
+        assertNotNull(account)
+        assertNotNull(account!!.id)
+        assertNotNull(account.username)
+        assertNotNull(account.role)
+        assertNotNull(account.role!!.id)
+        assertNotNull(account.role!!.name)
     }
 
 }

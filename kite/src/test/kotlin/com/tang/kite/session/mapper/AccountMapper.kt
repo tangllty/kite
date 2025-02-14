@@ -7,9 +7,4 @@ import com.tang.kite.session.entity.Account
  * @author Tang
  */
 interface AccountMapper : BaseMapper<Account> {
-
-    fun insertAccount(account: Account): Int {
-        return insert(account)
-    }
-
 }

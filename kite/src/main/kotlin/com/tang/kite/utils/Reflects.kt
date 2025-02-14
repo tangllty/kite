@@ -2,6 +2,7 @@ package com.tang.kite.utils
 
 import com.google.common.base.CaseFormat
 import com.tang.kite.annotation.Column
+import com.tang.kite.annotation.Join
 import com.tang.kite.annotation.Table
 import com.tang.kite.annotation.id.Id
 import com.tang.kite.annotation.id.IdType
@@ -137,13 +138,27 @@ object Reflects {
     }
 
     /**
-     * Get all fields with [Column.ignore] set to false
+     * Get all fields without `Join` annotation and [Column.ignore] set to false
      *
      * @param clazz entity class
      * @return fields
      */
     fun getSqlFields(clazz: Class<*>): List<Field> {
-        return clazz.declaredFields.filter { it.isAnnotationPresent(Column::class.java).not() || it.getAnnotation(Column::class.java).ignore.not() }
+        return clazz.declaredFields
+            .filter { it.isAnnotationPresent(Join::class.java).not() }
+            .filter { it.isAnnotationPresent(Column::class.java).not() || it.getAnnotation(Column::class.java).ignore.not() }
+    }
+
+    /**
+     * Get all fields with `Join` annotation and [Column.ignore] set to false
+     *
+     * @param clazz entity class
+     * @return fields
+     */
+    fun getJoins(clazz: Class<*>): List<Field> {
+        return clazz.declaredFields
+            .filter { it.isAnnotationPresent(Join::class.java) }
+            .filter { it.isAnnotationPresent(Column::class.java).not() || it.getAnnotation(Column::class.java).ignore.not() }
     }
 
     /**

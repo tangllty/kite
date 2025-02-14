@@ -114,8 +114,7 @@ object BaseMethodName {
 
     private const val SELECT = "select"
 
-    fun isSelect(method: Method): Boolean {
-        if (method.name != SELECT) return false
+    private fun isSelectParameter(method: Method): Boolean {
         if (method.countIsZero()) return true
         if (method.countIsOne()) {
             if (method.firstParameterIsAny()) return true
@@ -125,10 +124,28 @@ object BaseMethodName {
         return false
     }
 
+    fun isSelect(method: Method): Boolean {
+        if (method.name != SELECT) return false
+        return isSelectParameter(method)
+    }
+
     private const val SELECT_BY_ID = "selectById"
 
     fun isSelectById(method: Method): Boolean {
         return method.name == SELECT_BY_ID && method.countIsOne() && method.firstParameterIsLong()
+    }
+
+    private const val SELECT_WITH_JOINS = "selectWithJoins"
+
+    fun isSelectWithJoins(method: Method): Boolean {
+        if (method.name != SELECT_WITH_JOINS) return false
+        return isSelectParameter(method)
+    }
+
+    private  const val SELECT_BY_ID_WITH_JOINS = "selectByIdWithJoins"
+
+    fun isSelectByIdWithJoins(method: Method): Boolean {
+        return method.name == SELECT_BY_ID_WITH_JOINS && method.countIsOne() && method.firstParameterIsLong()
     }
 
     private const val QUERY_WRAPPER = "queryWrapper"
@@ -165,6 +182,7 @@ object BaseMethodName {
             UPDATE, UPDATE_SELECTIVE, UPDATE_WRAPPER,
             DELETE, DELETE_BY_ID,
             SELECT, SELECT_BY_ID, QUERY_WRAPPER,
+            SELECT_WITH_JOINS, SELECT_BY_ID_WITH_JOINS,
             COUNT,
             PAGINATE -> true
             else -> false
@@ -182,6 +200,8 @@ object BaseMethodName {
             DELETE_BY_ID -> isDeleteById(method)
             SELECT -> isSelect(method)
             SELECT_BY_ID -> isSelectById(method)
+            SELECT_WITH_JOINS -> isSelectWithJoins(method)
+            SELECT_BY_ID_WITH_JOINS -> isSelectByIdWithJoins(method)
             QUERY_WRAPPER -> isQueryWrapper(method)
             COUNT -> isCount(method)
             PAGINATE -> isPaginate(method)

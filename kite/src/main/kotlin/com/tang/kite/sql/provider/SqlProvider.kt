@@ -17,11 +17,11 @@ interface SqlProvider {
 
     fun getSql(sql: StringBuilder): String
 
-    fun appendColumns(sql: StringBuilder, fieldList: List<Field>)
+    fun appendColumns(sql: StringBuilder, fieldList: List<Field>, withAlias: Boolean = false)
 
-    fun <T> appendWhere(sql: StringBuilder, parameters: MutableList<Any?>, clazz: Class<T>, entity: Any)
+    fun <T> appendWhere(sql: StringBuilder, parameters: MutableList<Any?>, clazz: Class<T>, entity: Any, withAlias: Boolean = false)
 
-    fun <T> appendOrderBy(sql: StringBuilder, orderBys: Array<OrderItem<T>>)
+    fun <T> appendOrderBy(sql: StringBuilder, orderBys: Array<OrderItem<T>>, withAlias: Boolean = false)
 
     fun appendLimit(sql: StringBuilder, parameters: MutableList<Any?>, pageNumber: Long, pageSize: Long)
 
@@ -42,6 +42,8 @@ interface SqlProvider {
     fun <T> delete(clazz: Class<T>, entity: Any): SqlStatement
 
     fun <T> select(clazz: Class<T>, entity: Any?, orderBys: Array<OrderItem<T>>): SqlStatement
+
+    fun <T> selectWithJoins(clazz: Class<T>, entity: Any?, orderBys: Array<OrderItem<T>>): SqlStatement
 
     fun <T> count(clazz: Class<T>, entity: Any?): SqlStatement
 

@@ -1,3 +1,9 @@
+## 1.0.5
+
+### Features
+
+ * Support one-to-one association query
+
 ## 1.0.4
 
 ### Bug Fixes
