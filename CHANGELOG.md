@@ -2,6 +2,8 @@
 
 ### Bug Fixes
 
+ * Fix `class com.tang.kite.session.defaults.DefaultSqlSession cannot access a member of class com.tang.kite.session.entity.AccountOneToMany with modifiers "private"`
+
 ### Dependencies
 
 ### Features
