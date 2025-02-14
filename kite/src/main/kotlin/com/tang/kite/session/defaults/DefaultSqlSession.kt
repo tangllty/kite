@@ -268,7 +268,8 @@ class DefaultSqlSession(
                 val joinTable = joinAnnotation.joinTable
                 val joinSelfField = joinAnnotation.joinSelfColumn
                 val joinTargetField = joinAnnotation.joinTargetColumn
-                val selfFieldValue = Reflects.getField(type, joinAnnotation.selfField)?.get(it)
+                val selfField = Reflects.getField(type, joinAnnotation.selfField)
+                val selfFieldValue = selfField!!.get(it)
                 // TODO The parameter null could probably be replaced with a conditional parameter
                 var joinSelect = sqlProvider.selectWithJoins(joinType, null, emptyArray())
                 val joinSqlStatement = if (joinTable.isNotEmpty() && joinSelfField.isNotEmpty() && joinTargetField.isNotEmpty()) {
