@@ -6,6 +6,8 @@ import com.tang.kite.session.entity.Account
 import com.tang.kite.session.entity.Role
 import com.tang.kite.session.mapper.AccountJavaMapper
 import com.tang.kite.session.mapper.AccountMapper
+import com.tang.kite.session.mapper.AccountOneToManyMapper
+import com.tang.kite.session.mapper.AccountOneToManyWithJoinTableMapper
 import com.tang.kite.session.mapper.AccountOneToOneMapper
 import com.tang.kite.session.mapper.AccountOneToOneWIthJoinTableMapper
 import com.tang.kite.session.mapper.RoleMapper
@@ -541,6 +543,38 @@ class SqlSessionTest : BaseDataTest() {
         assertNotNull(account.role)
         assertNotNull(account.role!!.id)
         assertNotNull(account.role!!.name)
+    }
+
+    @Test
+    fun selectOneToMany() {
+        val session = sqlSessionFactory.openSession()
+        val accountMapper = session.getMapper(AccountOneToManyMapper::class.java)
+        val account = accountMapper.selectByIdWithJoins(2)
+        session.close()
+        assertNotNull(account)
+        assertNotNull(account!!.id)
+        assertNotNull(account.username)
+        assertNotNull(account.roles)
+        account.roles!!.forEach {
+            assertNotNull(it.id)
+            assertNotNull(it.name)
+        }
+    }
+
+    @Test
+    fun selectOneToManyWithJoinTable() {
+        val session = sqlSessionFactory.openSession()
+        val accountMapper = session.getMapper(AccountOneToManyWithJoinTableMapper::class.java)
+        val account = accountMapper.selectByIdWithJoins(2)
+        session.close()
+        assertNotNull(account)
+        assertNotNull(account!!.id)
+        assertNotNull(account.username)
+        assertNotNull(account.roles)
+        account.roles!!.forEach {
+            assertNotNull(it.id)
+            assertNotNull(it.name)
+        }
     }
 
 }

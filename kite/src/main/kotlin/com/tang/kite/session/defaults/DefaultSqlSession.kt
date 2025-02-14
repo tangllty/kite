@@ -1,5 +1,6 @@
 package com.tang.kite.session.defaults
 
+import com.tang.kite.annotation.Join
 import com.tang.kite.config.KiteConfig
 import com.tang.kite.constants.BaseMethodName
 import com.tang.kite.executor.Executor
@@ -256,6 +257,33 @@ class DefaultSqlSession(
         val select = sqlProvider.selectWithJoins(type, parameter, orderBys)
         val list = executor.query(select, type)
         log(method, mapperInterface, select, list.size)
+        val joins = Reflects.getIterableJoins(type)
+        if (joins.isEmpty()) {
+            return list
+        }
+        list.forEach {
+            joins.forEach { join ->
+                val joinType = (join.genericType as ParameterizedType).actualTypeArguments[0] as Class<*>
+                val joinAnnotation = join.getAnnotation(Join::class.java)
+                val joinTable = joinAnnotation.joinTable
+                val joinSelfField = joinAnnotation.joinSelfColumn
+                val joinTargetField = joinAnnotation.joinTargetColumn
+                val selfFieldValue = Reflects.getField(type, joinAnnotation.selfField)?.get(it)
+                // TODO The parameter null could probably be replaced with a conditional parameter
+                var joinSelect = sqlProvider.selectWithJoins(joinType, null, emptyArray())
+                val joinSqlStatement = if (joinTable.isNotEmpty() && joinSelfField.isNotEmpty() && joinTargetField.isNotEmpty()) {
+                    sqlProvider.getNestedSelect(joinSelect.sql, joinAnnotation.targetField, listOf(selfFieldValue), joinAnnotation)
+                } else {
+                    sqlProvider.getInCondition(joinSelect.sql, joinAnnotation.targetField, listOf(selfFieldValue))
+                }
+                val parameters = joinSelect.parameters.plus(joinSqlStatement.parameters).toMutableList()
+                joinSelect = SqlStatement(joinSqlStatement.sql, parameters)
+                val joinList = executor.query(joinSelect, joinType)
+                log(method, mapperInterface, joinSelect, joinList.size)
+                Reflects.makeAccessible(join, it as Any)
+                join.set(it, joinList)
+            }
+        }
         return list
     }
 

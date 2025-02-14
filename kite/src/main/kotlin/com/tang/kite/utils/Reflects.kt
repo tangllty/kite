@@ -151,6 +151,7 @@ object Reflects {
 
     /**
      * Get all fields with `Join` annotation and [Column.ignore] set to false
+     * If the field type is [Iterable], it will be ignored
      *
      * @param clazz entity class
      * @return fields
@@ -158,6 +159,14 @@ object Reflects {
     fun getJoins(clazz: Class<*>): List<Field> {
         return clazz.declaredFields
             .filter { it.isAnnotationPresent(Join::class.java) }
+            .filter { Iterable::class.java.isAssignableFrom(it.type).not() }
+            .filter { it.isAnnotationPresent(Column::class.java).not() || it.getAnnotation(Column::class.java).ignore.not() }
+    }
+
+    fun getIterableJoins(clazz: Class<*>): List<Field> {
+        return clazz.declaredFields
+            .filter { it.isAnnotationPresent(Join::class.java) }
+            .filter { Iterable::class.java.isAssignableFrom(it.type) }
             .filter { it.isAnnotationPresent(Column::class.java).not() || it.getAnnotation(Column::class.java).ignore.not() }
     }
 

@@ -1,5 +1,6 @@
 package com.tang.kite.sql.provider
 
+import com.tang.kite.annotation.Join
 import com.tang.kite.paginate.OrderItem
 import com.tang.kite.sql.SqlStatement
 import java.lang.reflect.Field
@@ -16,6 +17,10 @@ interface SqlProvider {
     fun selectiveStrategy(any: Any?): Boolean
 
     fun getSql(sql: StringBuilder): String
+
+    fun getInCondition(sql: String, field: String, values: Iterable<Any?>, withAlias: Boolean = false): SqlStatement
+
+    fun getNestedSelect(sql: String, field: String, value: Iterable<Any?>, join: Join): SqlStatement
 
     fun appendColumns(sql: StringBuilder, fieldList: List<Field>, withAlias: Boolean = false)
 
@@ -43,7 +48,7 @@ interface SqlProvider {
 
     fun <T> select(clazz: Class<T>, entity: Any?, orderBys: Array<OrderItem<T>>): SqlStatement
 
-    fun <T> selectWithJoins(clazz: Class<T>, entity: Any?, orderBys: Array<OrderItem<T>>): SqlStatement
+    fun <T> selectWithJoins(clazz: Class<T>, entity: Any?, orderBys: Array<OrderItem<T>>, withAlias: Boolean = true): SqlStatement
 
     fun <T> count(clazz: Class<T>, entity: Any?): SqlStatement
 

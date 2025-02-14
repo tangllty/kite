@@ -50,6 +50,39 @@ abstract class AbstractSqlProvider : SqlProvider {
         return KiteConfig.INSTANCE.selectiveStrategy.apply(any)
     }
 
+    override fun getSql(sql: StringBuilder): String {
+        return KiteConfig.INSTANCE.getSql(sql)
+    }
+
+    override fun getInCondition(sql: String, field: String, values: Iterable<Any?>, withAlias: Boolean): SqlStatement {
+        val sqlBuilder = StringBuilder(sql)
+        if (sqlBuilder.contentEquals(WHERE)) {
+            sqlBuilder.append(AND)
+        } else {
+            sqlBuilder.append(WHERE)
+        }
+        sqlBuilder.append(field, SqlString.IN, LEFT_BRACKET)
+        values.joinToString(COMMA_SPACE) {
+            QUESTION_MARK
+        }.let { sqlBuilder.append(it) }
+        sqlBuilder.append(RIGHT_BRACKET)
+        return SqlStatement(getSql(sqlBuilder), values.toMutableList())
+    }
+
+    override fun getNestedSelect(sql: String, field: String, value: Iterable<Any?>, join: Join): SqlStatement {
+        val sqlBuilder = StringBuilder(sql)
+        if (sqlBuilder.contentEquals(WHERE)) {
+            sqlBuilder.append(AND)
+        } else {
+            sqlBuilder.append(WHERE)
+        }
+        sqlBuilder.append(field, SqlString.IN, LEFT_BRACKET, SPACE)
+        sqlBuilder.append(SELECT, join.joinTargetColumn, FROM, join.joinTable)
+        sqlBuilder.append(WHERE, join.joinSelfColumn, EQUAL, QUESTION_MARK)
+        sqlBuilder.append(SPACE, RIGHT_BRACKET)
+        return SqlStatement(getSql(sqlBuilder), value.toMutableList())
+    }
+
     override fun appendColumns(sql: StringBuilder, fieldList: List<Field>, withAlias: Boolean) {
         fieldList.joinToString(COMMA_SPACE) { getColumnName(it, withAlias) }.let { sql.append(it) }
     }
@@ -78,10 +111,6 @@ abstract class AbstractSqlProvider : SqlProvider {
         sql.append(LIMIT).append(QUESTION_MARK).append(OFFSET).append(QUESTION_MARK)
         parameters.add(pageSize)
         parameters.add((pageNumber - 1) * pageSize)
-    }
-
-    override fun getSql(sql: StringBuilder): String {
-        return KiteConfig.INSTANCE.getSql(sql)
     }
 
     override fun insert(entity: Any): SqlStatement {
@@ -272,17 +301,21 @@ abstract class AbstractSqlProvider : SqlProvider {
         return SqlStatement(getSql(sql), parameters)
     }
 
-    override fun <T> selectWithJoins(clazz: Class<T>, entity: Any?, orderBys: Array<OrderItem<T>>): SqlStatement {
+    override fun <T> selectWithJoins(clazz: Class<T>, entity: Any?, orderBys: Array<OrderItem<T>>, withAlias: Boolean): SqlStatement {
         val sql = StringBuilder()
         val parameters = mutableListOf<Any?>()
         val tableName = getTableName(clazz)
         val tableAlias = getTableAlias(clazz)
         val joins = Reflects.getJoins(clazz)
+        val addAlias = withAlias && joins.isNotEmpty()
         sql.append(SELECT)
         val sqlFields = getSqlFields(clazz).toMutableList()
         joins.forEach { sqlFields.addAll(getSqlFields(it.type)) }
-        appendColumns(sql, sqlFields, true)
-        sql.append(FROM, tableName, SPACE, tableAlias)
+        appendColumns(sql, sqlFields, addAlias)
+        sql.append(FROM, tableName)
+        if (addAlias) {
+            sql.append(SPACE, tableAlias)
+        }
         joins.forEach {
             val joinTableAlias = getTableAlias(it.type)
             val join = it.getAnnotation(Join::class.java)
@@ -303,9 +336,9 @@ abstract class AbstractSqlProvider : SqlProvider {
             }
         }
         entity?.let {
-            appendWhere(sql, parameters, clazz, entity, true)
+            appendWhere(sql, parameters, clazz, entity, addAlias)
         }
-        appendOrderBy(sql, orderBys, true)
+        appendOrderBy(sql, orderBys, addAlias)
         return SqlStatement(getSql(sql), parameters)
     }
 
