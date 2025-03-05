@@ -10,6 +10,7 @@
 
  * Support one-to-one association query
  * Support one-to-many association query
+ * Support h2 database
 
 ## 1.0.4
 

@@ -2,6 +2,7 @@ package com.tang.kite.config
 
 import com.tang.kite.config.defaults.DefaultSelectiveStrategy
 import com.tang.kite.sql.provider.derby.DerbySqlProvider
+import com.tang.kite.sql.provider.h2.H2SqlProvider
 import com.tang.kite.sql.provider.mysql.MysqlSqlProvider
 import com.tang.kite.sql.provider.postgresql.PostgresqlSqlProvider
 import java.util.function.Function
@@ -30,7 +31,8 @@ class KiteConfig {
     val urlProviders = mapOf(
         "postgresql" to PostgresqlSqlProvider(),
         "mysql" to MysqlSqlProvider(),
-        "derby" to DerbySqlProvider()
+        "derby" to DerbySqlProvider(),
+        "h2" to H2SqlProvider()
     )
 
     fun getSql(sql: StringBuilder): String {
