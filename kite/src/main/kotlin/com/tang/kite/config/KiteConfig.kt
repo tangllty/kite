@@ -35,6 +35,8 @@ class KiteConfig {
         "h2" to H2SqlProvider()
     )
 
+    var enableSqlLogging = false
+
     fun getSql(sql: StringBuilder): String {
         return getSql(sql.toString())
     }

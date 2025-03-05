@@ -70,6 +70,9 @@ class DefaultSqlSession(
     }
 
     private fun log(method: Method, mapperInterface: Class<*>, sqlStatement: SqlStatement, rows: Long) {
+        if (KiteConfig.INSTANCE.enableSqlLogging.not()) {
+            return
+        }
         val logger = LoggerFactory.getLogger(mapperInterface.canonicalName + "." + method.name)
         val preparing = "==>  Preparing: ${sqlStatement.sql}"
         val parameters = "==> Parameters: ${sqlStatement.parameters.joinToString { parameterToString(it) }}"

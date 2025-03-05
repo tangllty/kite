@@ -11,6 +11,7 @@
  * Support one-to-one association query
  * Support one-to-many association query
  * Support h2 database
+ * Add SQL log enabled property
 
 ## 1.0.4
 

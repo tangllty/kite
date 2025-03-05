@@ -34,6 +34,10 @@ open class KiteProperties {
 
     var sqlLowercase: Boolean = KiteConfig.INSTANCE.sqlLowercase
 
+    var urlProviders: Map<String, Any> = KiteConfig.INSTANCE.urlProviders
+
+    var enableSqlLogging: Boolean = KiteConfig.INSTANCE.enableSqlLogging
+
     fun apply() {
         val fields = this.javaClass.declaredFields
         for (field in fields) {
