@@ -22,6 +22,8 @@ import kotlin.reflect.jvm.javaField
  */
 object Reflects {
 
+    private val fieldsCache: ConcurrentMap<Class<*>, List<Field>> = ConcurrentHashMap()
+
     private val idFieldCache: ConcurrentMap<Class<*>, Field> = ConcurrentHashMap()
 
     private val fieldCache: ConcurrentMap<Pair<Class<*>, String>, Field> = ConcurrentHashMap()
@@ -32,6 +34,8 @@ object Reflects {
 
     private val tableAliasCache: ConcurrentMap<Class<*>, String> = ConcurrentHashMap()
 
+    private val joinFieldsCache: ConcurrentMap<Class<*>, List<Field>> = ConcurrentHashMap()
+
     fun makeAccessible(accessibleObject: AccessibleObject, any: Any) {
         if (accessibleObject.canAccess(any)) {
             return
@@ -39,9 +43,15 @@ object Reflects {
         accessibleObject.trySetAccessible()
     }
 
+    fun getFields(clazz: Class<*>): List<Field> {
+        return fieldsCache.computeIfAbsent(clazz) {
+            clazz.declaredFields.toList()
+        }
+    }
+
     fun getIdField(clazz: Class<*>): Field {
         return idFieldCache.computeIfAbsent(clazz) {
-            val fields = clazz.declaredFields.filter { it.isAnnotationPresent(Id::class.java) }
+            val fields = getFields(clazz).filter { it.isAnnotationPresent(Id::class.java) }
             if (fields.size > 1) {
                 throw IllegalArgumentException("More than one @Id field found in ${clazz.simpleName}, found: ${fields.joinToString { it.name }}")
             }
@@ -76,7 +86,8 @@ object Reflects {
         return fieldCache.computeIfAbsent(cacheKey) {
             val lowerColumnName = columnName.lowercase()
             val lowerCamelColumnName = CaseFormat.LOWER_UNDERSCORE.to(CaseFormat.LOWER_CAMEL, lowerColumnName)
-            val fields = clazz.declaredFields.filter {
+            val fieldList = getFields(clazz)
+            val fields = fieldList.filter {
                 it.isAnnotationPresent(Column::class.java) && it.getAnnotation(Column::class.java).value.lowercase() == lowerColumnName
             }
             if (fields.size > 1) {
@@ -84,7 +95,7 @@ object Reflects {
                     ", found: ${fields.joinToString { it.name }}")
             }
             if (fields.isEmpty()) {
-                val field = clazz.declaredFields.firstOrNull {
+                val field = fieldList.firstOrNull {
                     it.name == lowerCamelColumnName
                 }?.let { return@computeIfAbsent it }
                 LOGGER.warn("No field found for column $columnName in ${clazz.simpleName}")
@@ -144,7 +155,7 @@ object Reflects {
      * @return fields
      */
     fun getSqlFields(clazz: Class<*>): List<Field> {
-        return clazz.declaredFields
+        return getFields(clazz)
             .filter { it.isAnnotationPresent(Join::class.java).not() }
             .filter { it.isAnnotationPresent(Column::class.java).not() || it.getAnnotation(Column::class.java).ignore.not() }
     }
@@ -157,17 +168,34 @@ object Reflects {
      * @return fields
      */
     fun getJoins(clazz: Class<*>): List<Field> {
-        return clazz.declaredFields
-            .filter { it.isAnnotationPresent(Join::class.java) }
+        return getJoinFields(clazz)
             .filter { Iterable::class.java.isAssignableFrom(it.type).not() }
             .filter { it.isAnnotationPresent(Column::class.java).not() || it.getAnnotation(Column::class.java).ignore.not() }
     }
 
+    /**
+     * Get all fields with `Join` annotation and [Column.ignore] set to false
+     * If the field type is [Iterable], it will be included
+     *
+     * @param clazz entity class
+     * @return fields
+     */
     fun getIterableJoins(clazz: Class<*>): List<Field> {
-        return clazz.declaredFields
-            .filter { it.isAnnotationPresent(Join::class.java) }
+        return getJoinFields(clazz)
             .filter { Iterable::class.java.isAssignableFrom(it.type) }
             .filter { it.isAnnotationPresent(Column::class.java).not() || it.getAnnotation(Column::class.java).ignore.not() }
+    }
+
+    /**
+     * Get all fields with `Join` annotation
+     *
+     * @param clazz entity class
+     * @return fields
+     */
+    private fun getJoinFields(clazz: Class<*>): List<Field> {
+        return joinFieldsCache.computeIfAbsent(clazz) {
+            getFields(clazz).filter { it.isAnnotationPresent(Join::class.java) }
+        }
     }
 
     /**
