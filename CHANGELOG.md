@@ -1,3 +1,11 @@
+## 1.0.6
+
+### Bug Fixes
+
+### Dependencies
+
+### Features
+
 ## 1.0.5
 
 ### Bug Fixes
