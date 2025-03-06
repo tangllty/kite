@@ -5,21 +5,21 @@
  */
 class Versions {
     // https://mvnrepository.com/artifact/org.yaml/snakeyaml
-    val snakeyaml = "2.3"
+    val snakeyaml = "2.4"
     // https://mvnrepository.com/artifact/org.apache.derby/derby
     val derby = "10.16.1.1"
     // https://mvnrepository.com/artifact/org.slf4j/slf4j-api
-    val slf4j = "2.0.16"
+    val slf4j = "2.0.17"
     // https://mvnrepository.com/artifact/ch.qos.logback/logback-classic
-    val logback = "1.5.16"
+    val logback = "1.5.17"
     // https://mvnrepository.com/artifact/com.google.guava/guava
     val guava = "33.4.0-jre"
     // https://mvnrepository.com/artifact/jakarta.servlet/jakarta.servlet-api
     val servlet = "6.1.0"
     // https://mvnrepository.com/artifact/org.springframework/spring-core
-    val spring = "6.2.2"
+    val spring = "6.2.3"
     // https://mvnrepository.com/artifact/org.springframework.boot/spring-boot
-    val springBoot = "3.4.1"
+    val springBoot = "3.4.3"
 }
 
 class Libraries {

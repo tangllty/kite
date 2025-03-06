@@ -6,6 +6,12 @@
 
 ### Dependencies
 
+ * Bump snakeyaml from 2.3 to 2.4
+ * Bump slf4j from 2.0.16 to 2.0.17
+ * Bump logback from 1.5.16 to 1.5.17
+ * Bump spring from 6.2.2 to 6.2.3
+ * Bump springBoot from 3.4.1 to 3.4.3
+
 ### Features
 
  * Support one-to-one association query
