@@ -5,6 +5,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties
 import java.util.function.Function
 import kotlin.reflect.KMutableProperty1
 import kotlin.reflect.full.memberProperties
+import kotlin.time.DurationUnit
 
 /**
  * Kite properties
@@ -37,6 +38,12 @@ open class KiteProperties {
     var urlProviders: Map<String, Any> = KiteConfig.INSTANCE.urlProviders
 
     var enableSqlLogging: Boolean = KiteConfig.INSTANCE.enableSqlLogging
+
+    var enableSqlDurationLogging = true
+
+    var durationUnit = DurationUnit.MILLISECONDS
+
+    var durationDecimals = 0
 
     fun apply() {
         val fields = this.javaClass.declaredFields

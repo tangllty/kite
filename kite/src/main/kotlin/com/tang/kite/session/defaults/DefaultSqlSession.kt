@@ -17,6 +17,7 @@ import com.tang.kite.wrapper.update.UpdateWrapper
 import org.slf4j.LoggerFactory
 import java.lang.reflect.Method
 import java.lang.reflect.ParameterizedType
+import kotlin.time.Duration.Companion.nanoseconds
 
 /**
  * @author Tang
@@ -69,7 +70,7 @@ class DefaultSqlSession(
         return parameter?.let { "$it(${it.javaClass.simpleName})" } ?: null.toString()
     }
 
-    private fun log(method: Method, mapperInterface: Class<*>, sqlStatement: SqlStatement, rows: Long) {
+    private fun log(method: Method, mapperInterface: Class<*>, sqlStatement: SqlStatement, rows: Long, duration: Long) {
         if (KiteConfig.INSTANCE.enableSqlLogging.not()) {
             return
         }
@@ -82,19 +83,25 @@ class DefaultSqlSession(
         logger.debug(preparing)
         logger.debug(parameters)
         logger.debug(result)
+        if (KiteConfig.INSTANCE.enableSqlDurationLogging.not()) {
+            val unit = KiteConfig.INSTANCE.durationUnit
+            val decimals = KiteConfig.INSTANCE.durationDecimals
+            val execution = "<==  Execution: ${duration.nanoseconds.toString(unit, decimals)}"
+            logger.debug(execution)
+        }
     }
 
-    private fun log(method: Method, mapperInterface: Class<*>, sqlStatement: SqlStatement, rows: Int) {
-        log(method, mapperInterface, sqlStatement, rows.toLong())
+    private fun log(method: Method, mapperInterface: Class<*>, sqlStatement: SqlStatement, rows: Int, execution: Long) {
+        log(method, mapperInterface, sqlStatement, rows.toLong(), execution)
     }
 
-    private fun returnRows(method: Method, mapperInterface: Class<*>, sqlStatement: SqlStatement, rows: Long): Long {
-        log(method, mapperInterface, sqlStatement, rows)
+    private fun returnRows(method: Method, mapperInterface: Class<*>, sqlStatement: SqlStatement, rows: Long, execution: Long): Long {
+        log(method, mapperInterface, sqlStatement, rows, execution)
         return rows
     }
 
-    private fun returnRows(method: Method, mapperInterface: Class<*>, sqlStatement: SqlStatement, rows: Int): Int {
-        log(method, mapperInterface, sqlStatement, rows)
+    private fun returnRows(method: Method, mapperInterface: Class<*>, sqlStatement: SqlStatement, rows: Int, execution: Long): Int {
+        log(method, mapperInterface, sqlStatement, rows, execution)
         return rows
     }
 
@@ -129,15 +136,17 @@ class DefaultSqlSession(
     }
 
     override fun <T> insert(method: Method, mapperInterface: Class<T>, parameter: Any): Int {
+        val start = System.nanoTime()
         val insert = sqlProvider.insert(parameter)
         val rows = executor.update(insert, parameter)
-        return returnRows(method, mapperInterface, insert, rows)
+        return returnRows(method, mapperInterface, insert, rows, System.nanoTime() - start)
     }
 
     override fun <T> insertSelective(method: Method, mapperInterface: Class<T>, parameter: Any): Int {
+        val start = System.nanoTime()
         val insert = sqlProvider.insertSelective(parameter)
         val rows = executor.update(insert, parameter)
-        return returnRows(method, mapperInterface, insert, rows)
+        return returnRows(method, mapperInterface, insert, rows, System.nanoTime() - start)
     }
 
     private fun asIterable(arg: Any): Iterable<Any> {
@@ -150,56 +159,64 @@ class DefaultSqlSession(
     }
 
     override fun <T> batchInsert(method: Method, mapperInterface: Class<T>, parameter: Any): Int {
+        val start = System.nanoTime()
         val insert = sqlProvider.batchInsert(asIterable(parameter))
         val rows = executor.update(insert, parameter)
-        return returnRows(method, mapperInterface, insert, rows)
+        return returnRows(method, mapperInterface, insert, rows, System.nanoTime() - start)
     }
 
     override fun <T> batchInsertSelective(method: Method, mapperInterface: Class<T>, parameter: Any): Int {
+        val start = System.nanoTime()
         val insert = sqlProvider.batchInsertSelective(asIterable(parameter))
         val rows = executor.update(insert, parameter)
-        return returnRows(method, mapperInterface, insert, rows)
+        return returnRows(method, mapperInterface, insert, rows, System.nanoTime() - start)
     }
 
     override fun <T> update(method: Method, mapperInterface: Class<T>, parameter: Any): Int {
+        val start = System.nanoTime()
         val update = sqlProvider.update(parameter)
         val rows = executor.update(update, parameter)
-        return returnRows(method, mapperInterface, update, rows)
+        return returnRows(method, mapperInterface, update, rows, System.nanoTime() - start)
     }
 
     override fun <T> update(method: Method, mapperInterface: Class<T>, parameter: Any, condition: Any): Int {
+        val start = System.nanoTime()
         val update = sqlProvider.update(parameter, condition)
         val rows = executor.update(update, parameter)
-        return returnRows(method, mapperInterface, update, rows)
+        return returnRows(method, mapperInterface, update, rows, System.nanoTime() - start)
     }
 
     override fun <T> updateSelective(method: Method, mapperInterface: Class<T>, parameter: Any): Int {
+        val start = System.nanoTime()
         val update = sqlProvider.updateSelective(parameter)
         val rows = executor.update(update, parameter)
-        return returnRows(method, mapperInterface, update, rows)
+        return returnRows(method, mapperInterface, update, rows, System.nanoTime() - start)
     }
 
     override fun <T> updateWrapper(method: Method, mapperInterface: Class<T>, type: Class<T>, parameter: Any): Int {
+        val start = System.nanoTime()
         val updateWrapper = parameter as UpdateWrapper<*>
         val sqlStatement = updateWrapper.getSqlStatement()
         val rows = executor.update(sqlStatement, parameter)
-        return returnRows(method, mapperInterface, sqlStatement, rows)
+        return returnRows(method, mapperInterface, sqlStatement, rows, System.nanoTime() - start)
     }
 
     override fun <T> delete(method: Method, mapperInterface: Class<T>, type: Class<T>, parameter: Any): Int {
+        val start = System.nanoTime()
         val delete = sqlProvider.delete(type, parameter)
         val rows = executor.update(delete, parameter)
-        return returnRows(method, mapperInterface, delete, rows)
+        return returnRows(method, mapperInterface, delete, rows, System.nanoTime() - start)
     }
 
     override fun <T> deleteById(method: Method, mapperInterface: Class<T>, type: Class<T>, parameter: Any): Int {
+        val start = System.nanoTime()
         val entity = type.getDeclaredConstructor().newInstance()
         val idField = Reflects.getIdField(type)
         Reflects.makeAccessible(idField, entity as Any)
         idField.set(entity, parameter)
         val delete = sqlProvider.delete(type, entity as Any)
         val rows = executor.update(delete, parameter)
-        return returnRows(method, mapperInterface, delete, rows)
+        return returnRows(method, mapperInterface, delete, rows, System.nanoTime() - start)
     }
 
     private fun <T> processSelect(method: Method, mapperInterface: Class<T>, type: Class<T>, args: Array<out Any>?): List<T> {
@@ -219,9 +236,10 @@ class DefaultSqlSession(
     }
 
     override fun <T> selectList(method: Method, mapperInterface: Class<T>, type: Class<T>, parameter: Any?, orderBys: Array<OrderItem<T>>): List<T> {
+        val start = System.nanoTime()
         val select = sqlProvider.select(type, parameter, orderBys)
         val list = executor.query(select, type)
-        log(method, mapperInterface, select, list.size)
+        log(method, mapperInterface, select, list.size, System.nanoTime() - start)
         return list
     }
 
@@ -257,15 +275,17 @@ class DefaultSqlSession(
     }
 
     override fun <T> selectListWithJoins(method: Method, mapperInterface: Class<T>, type: Class<T>, parameter: Any?, orderBys: Array<OrderItem<T>>): List<T> {
+        val start = System.nanoTime()
         val select = sqlProvider.selectWithJoins(type, parameter, orderBys)
         val list = executor.query(select, type)
-        log(method, mapperInterface, select, list.size)
+        log(method, mapperInterface, select, list.size, System.nanoTime() - start)
         val joins = Reflects.getIterableJoins(type)
         if (joins.isEmpty()) {
             return list
         }
         list.forEach {
             joins.forEach { join ->
+                val joinStart = System.nanoTime()
                 val joinType = (join.genericType as ParameterizedType).actualTypeArguments[0] as Class<*>
                 val joinAnnotation = join.getAnnotation(Join::class.java)
                 val joinTable = joinAnnotation.joinTable
@@ -284,7 +304,7 @@ class DefaultSqlSession(
                 val parameters = joinSelect.parameters.plus(joinSqlStatement.parameters).toMutableList()
                 joinSelect = SqlStatement(joinSqlStatement.sql, parameters)
                 val joinList = executor.query(joinSelect, joinType)
-                log(method, mapperInterface, joinSelect, joinList.size)
+                log(method, mapperInterface, joinSelect, joinList.size, System.nanoTime() - joinStart)
                 Reflects.makeAccessible(join, it as Any)
                 join.set(it, joinList)
             }
@@ -308,17 +328,19 @@ class DefaultSqlSession(
     }
 
     override fun <T> queryWrapper(method: Method, mapperInterface: Class<T>, type: Class<T>, parameter: Any): List<T> {
+        val start = System.nanoTime()
         val queryWrapper = parameter as QueryWrapper<*>
         val sqlStatement = queryWrapper.getSqlStatement()
         val list = executor.query(sqlStatement, type)
-        log(method, mapperInterface, sqlStatement, list.size)
+        log(method, mapperInterface, sqlStatement, list.size, System.nanoTime() - start)
         return list
     }
 
     override fun <T> count(method: Method, mapperInterface: Class<T>, type: Class<T>, parameter: Any?): Long {
+        val start = System.nanoTime()
         val count = sqlProvider.count(type, parameter)
         val total = executor.count(count, Long::class.java)
-        return returnRows(method, mapperInterface, count, total)
+        return returnRows(method, mapperInterface, count, total, System.nanoTime() - start)
     }
 
     private fun <T> processPaginate(method: Method, mapperInterface: Class<T>, type: Class<T>, args: Array<out Any>?): Page<T> {
@@ -347,12 +369,13 @@ class DefaultSqlSession(
     }
 
     override fun <T> paginate(method: Method, mapperInterface: Class<T>, type: Class<T>, pageNumber: Long, pageSize: Long, parameter: Any?, orderBys: Array<OrderItem<T>>): Page<T> {
+        val start = System.nanoTime()
         val reasonable = reasonable(method, mapperInterface, type, pageNumber, pageSize)
         val reasonablePageNumber = reasonable.first
         val total = reasonable.second
         val paginate = sqlProvider.paginate(type, parameter, orderBys, reasonablePageNumber, pageSize)
         val list = executor.query(paginate, type)
-        log(method, mapperInterface, paginate, list.size)
+        log(method, mapperInterface, paginate, list.size, System.nanoTime() - start)
         val page = Page<T>()
         page.rows = list
         page.total = total

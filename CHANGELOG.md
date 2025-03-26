@@ -1,31 +1,48 @@
-## 1.0.6
+## 1.0.7
 
 ### Bug Fixes
 
 ### Dependencies
 
 ### Features
+
+ * Support SQL duration logging
+
+## 1.0.6
+
+### Bug Fixes
+
+* Fix `class com.tang.kite.session.defaults.DefaultSqlSession cannot access a member of class com.tang.kite.session.entity.AccountOneToMany with modifiers "private"`
+
+### Dependencies
+
+* Bump snakeyaml from 2.3 to 2.4
+* Bump slf4j from 2.0.16 to 2.0.17
+* Bump logback from 1.5.16 to 1.5.17
+* Bump spring from 6.2.2 to 6.2.3
+* Bump springBoot from 3.4.1 to 3.4.3
+
+### Features
+
+* Support one-to-one association query
+* Support one-to-many association query
+* Support h2 database
+* Add SQL log enabled property
 
 ## 1.0.5
 
 ### Bug Fixes
 
- * Fix `class com.tang.kite.session.defaults.DefaultSqlSession cannot access a member of class com.tang.kite.session.entity.AccountOneToMany with modifiers "private"`
+ * Fix syntax error caused by `order by` having aliases
 
 ### Dependencies
 
- * Bump snakeyaml from 2.3 to 2.4
- * Bump slf4j from 2.0.16 to 2.0.17
- * Bump logback from 1.5.16 to 1.5.17
- * Bump spring from 6.2.2 to 6.2.3
- * Bump springBoot from 3.4.1 to 3.4.3
+ * Bump gradle/actions from 4.2.2 to 4.3.0
 
 ### Features
 
- * Support one-to-one association query
- * Support one-to-many association query
- * Support h2 database
- * Add SQL log enabled property
+ * Support left join for select query
+ * Support right join and inner join for select query
 
 ## 1.0.4
 

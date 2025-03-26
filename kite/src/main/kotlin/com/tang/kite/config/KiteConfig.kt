@@ -6,6 +6,7 @@ import com.tang.kite.sql.provider.h2.H2SqlProvider
 import com.tang.kite.sql.provider.mysql.MysqlSqlProvider
 import com.tang.kite.sql.provider.postgresql.PostgresqlSqlProvider
 import java.util.function.Function
+import kotlin.time.DurationUnit
 
 /**
  * Kite configuration
@@ -35,7 +36,13 @@ class KiteConfig {
         "h2" to H2SqlProvider()
     )
 
-    var enableSqlLogging = false
+    var enableSqlLogging = true
+
+    var enableSqlDurationLogging = true
+
+    var durationUnit = DurationUnit.MILLISECONDS
+
+    var durationDecimals = 0
 
     fun getSql(sql: StringBuilder): String {
         return getSql(sql.toString())
