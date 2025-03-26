@@ -2,6 +2,8 @@
 
 ### Bug Fixes
 
+ * Fix SQL duration logging to ensure execution time is logged when enabled
+
 ### Dependencies
 
 ### Features

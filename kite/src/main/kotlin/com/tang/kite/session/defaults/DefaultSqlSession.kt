@@ -84,11 +84,12 @@ class DefaultSqlSession(
         logger.debug(parameters)
         logger.debug(result)
         if (KiteConfig.INSTANCE.enableSqlDurationLogging.not()) {
-            val unit = KiteConfig.INSTANCE.durationUnit
-            val decimals = KiteConfig.INSTANCE.durationDecimals
-            val execution = "<==  Execution: ${duration.nanoseconds.toString(unit, decimals)}"
-            logger.debug(execution)
+            return
         }
+        val unit = KiteConfig.INSTANCE.durationUnit
+        val decimals = KiteConfig.INSTANCE.durationDecimals
+        val execution = "<==  Execution: ${duration.nanoseconds.toString(unit, decimals)}"
+        logger.debug(execution)
     }
 
     private fun log(method: Method, mapperInterface: Class<*>, sqlStatement: SqlStatement, rows: Int, execution: Long) {
