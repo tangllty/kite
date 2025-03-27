@@ -10,6 +10,7 @@
 
  * Support SQL duration logging
  * Refactor KiteConfig usage to eliminate INSTANCE references
+ * Enhance logging in transaction management and SQL execution
 
 ## 1.0.6
 

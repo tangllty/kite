@@ -32,6 +32,8 @@ class DefaultSqlSession(
 
 ) : SqlSession {
 
+    private var isDirty = false
+
     override fun <T> getMapper(clazz: Class<T>): T {
         val mapperProxyFactory = MapperProxyFactory(clazz)
         return mapperProxyFactory.newInstance(this)
@@ -79,7 +81,11 @@ class DefaultSqlSession(
         val parameters = "==> Parameters: ${sqlStatement.parameters.joinToString { parameterToString(it) }}"
         val total = "<==      Total: $rows"
         val updates = "<==    Updates: $rows"
-        val result = if (sqlStatement.sql.lowercase().startsWith("update")) updates else total
+        val isSelect = sqlStatement.sql.trim().startsWith("SELECT", ignoreCase = true)
+        val result = if (isSelect) total else updates
+        if (isSelect.not()) {
+            isDirty = true
+        }
         logger.debug(preparing)
         logger.debug(parameters)
         logger.debug(result)
@@ -387,17 +393,20 @@ class DefaultSqlSession(
 
     override fun commit() {
         executor.commit()
+        isDirty = false
     }
 
     override fun rollback() {
         executor.rollback()
+        isDirty = false
     }
 
     override fun close() {
-        if (!executor.getConnection().autoCommit) {
+        if (!executor.getConnection().autoCommit && isDirty) {
             rollback()
         }
         executor.close()
+        isDirty = false
     }
 
 }

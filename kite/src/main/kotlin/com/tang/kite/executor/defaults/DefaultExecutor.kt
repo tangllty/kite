@@ -1,11 +1,11 @@
 package com.tang.kite.executor.defaults
 
 import com.tang.kite.executor.Executor
-import com.tang.kite.logging.getLogger
 import com.tang.kite.session.Configuration
 import com.tang.kite.sql.SqlStatement
 import com.tang.kite.transaction.Transaction
 import com.tang.kite.utils.ResultSetHandlers
+import org.slf4j.LoggerFactory
 import java.sql.Connection
 import java.sql.Statement
 
@@ -20,9 +20,7 @@ class DefaultExecutor(
 
 ) : Executor {
 
-    companion object {
-        private val LOGGER = getLogger
-    }
+    private val logger = LoggerFactory.getLogger(DefaultExecutor::class.java)
 
     override fun getConnection(): Connection {
         return transaction.getConnection()
@@ -34,13 +32,13 @@ class DefaultExecutor(
         statement.setValues(preparedStatement)
         return runCatching {
             val resultSet = preparedStatement.executeQuery()
-            return ResultSetHandlers.getCount(resultSet)
+            ResultSetHandlers.getCount(resultSet)
         }.onFailure {
             it.printStackTrace()
             connection.rollback()
         }.also {
+            logger.debug("Closing count prepared statement [{}]", preparedStatement)
             preparedStatement.close()
-            LOGGER.debug("count prepared statement closed")
         }.getOrDefault(0)
     }
 
@@ -50,13 +48,13 @@ class DefaultExecutor(
         statement.setValues(preparedStatement)
         return runCatching {
             val resultSet = preparedStatement.executeQuery()
-            return ResultSetHandlers.getList(resultSet, type)
+            ResultSetHandlers.getList(resultSet, type)
         }.onFailure {
             it.printStackTrace()
             connection.rollback()
         }.also {
+            logger.debug("Closing query prepared statement [{}]", preparedStatement)
             preparedStatement.close()
-            LOGGER.debug("insert prepared statement closed")
         }.getOrDefault(emptyList())
     }
 
@@ -76,8 +74,8 @@ class DefaultExecutor(
             connection.rollback()
         }.also {
             ResultSetHandlers.setGeneratedKey(statement, preparedStatement, parameter)
+            logger.debug("Closing update prepared statement [{}]", preparedStatement)
             preparedStatement.close()
-            LOGGER.debug("update prepared statement closed")
         }.getOrDefault(0)
     }
 
