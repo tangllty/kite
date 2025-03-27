@@ -42,7 +42,7 @@ class SqlSessionFactoryBuilder {
     }
 
     fun printBanner() {
-        if (!KiteConfig.INSTANCE.banner) {
+        if (!KiteConfig.banner) {
             return
         }
 

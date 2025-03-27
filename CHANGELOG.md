@@ -9,6 +9,7 @@
 ### Features
 
  * Support SQL duration logging
+ * Refactor KiteConfig usage to eliminate INSTANCE references
 
 ## 1.0.6
 

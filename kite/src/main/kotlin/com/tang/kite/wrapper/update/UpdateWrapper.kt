@@ -74,7 +74,7 @@ class UpdateWrapper<T> : Wrapper<T> {
         sql.append("$UPDATE$table")
         updateSetWrapper.appendSql(sql, parameters)
         updateWhereWrapper.appendSql(sql, parameters)
-        return SqlStatement(KiteConfig.INSTANCE.getSql(sql), parameters)
+        return SqlStatement(KiteConfig.getSql(sql), parameters)
     }
 
     /**

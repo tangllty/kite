@@ -71,7 +71,7 @@ class DefaultSqlSession(
     }
 
     private fun log(method: Method, mapperInterface: Class<*>, sqlStatement: SqlStatement, rows: Long, duration: Long) {
-        if (KiteConfig.INSTANCE.enableSqlLogging.not()) {
+        if (KiteConfig.enableSqlLogging.not()) {
             return
         }
         val logger = LoggerFactory.getLogger(mapperInterface.canonicalName + "." + method.name)
@@ -83,11 +83,11 @@ class DefaultSqlSession(
         logger.debug(preparing)
         logger.debug(parameters)
         logger.debug(result)
-        if (KiteConfig.INSTANCE.enableSqlDurationLogging.not()) {
+        if (KiteConfig.enableSqlDurationLogging.not()) {
             return
         }
-        val unit = KiteConfig.INSTANCE.durationUnit
-        val decimals = KiteConfig.INSTANCE.durationDecimals
+        val unit = KiteConfig.durationUnit
+        val decimals = KiteConfig.durationDecimals
         val execution = "<==  Execution: ${duration.nanoseconds.toString(unit, decimals)}"
         logger.debug(execution)
     }
@@ -346,7 +346,7 @@ class DefaultSqlSession(
 
     private fun <T> processPaginate(method: Method, mapperInterface: Class<T>, type: Class<T>, args: Array<out Any>?): Page<T> {
         if (args == null || args.isEmpty()) {
-            return paginate(method, mapperInterface, type, KiteConfig.INSTANCE.pageNumber, KiteConfig.INSTANCE.pageSize, null, emptyArray())
+            return paginate(method, mapperInterface, type, KiteConfig.pageNumber, KiteConfig.pageSize, null, emptyArray())
         }
         val pageNumber = args[0] as Long
         val pageSize = args[1] as Long
@@ -365,7 +365,7 @@ class DefaultSqlSession(
     private fun <T> reasonable(method: Method, mapperInterface: Class<T>, type: Class<T>, pageNumber: Long, pageSize: Long): Pair<Long, Long> {
         val count = count(method, mapperInterface, type, null)
         val totalPage = (count / pageSize).toInt() + if (count % pageSize == 0L) 0 else 1
-        val reasonablePageNumber = if (pageNumber > totalPage) totalPage else if (pageNumber < 1) KiteConfig.INSTANCE.pageNumber else pageNumber
+        val reasonablePageNumber = if (pageNumber > totalPage) totalPage else if (pageNumber < 1) KiteConfig.pageNumber else pageNumber
         return Pair(reasonablePageNumber.toLong(), count)
     }
 

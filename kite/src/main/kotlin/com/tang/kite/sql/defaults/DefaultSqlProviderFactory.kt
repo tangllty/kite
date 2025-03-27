@@ -12,7 +12,7 @@ import com.tang.kite.sql.provider.SqlProvider
 class DefaultSqlProviderFactory : SqlProviderFactory {
 
     override fun newSqlProvider(url: String): SqlProvider {
-        val urlProviderMap = KiteConfig.INSTANCE.urlProviders
+        val urlProviderMap = KiteConfig.urlProviders
         val provider = urlProviderMap.entries.find { url.contains(":${it.key}:") }?.value
         return provider ?: throw IllegalArgumentException("Unsupported database url: $url")
     }

@@ -21,23 +21,23 @@ open class KiteProperties {
 
     }
 
-    var banner: Boolean = KiteConfig.INSTANCE.banner
+    var banner: Boolean = KiteConfig.banner
 
-    var pageNumber: Long = KiteConfig.INSTANCE.pageNumber
+    var pageNumber: Long = KiteConfig.pageNumber
 
-    var pageSize: Long = KiteConfig.INSTANCE.pageSize
+    var pageSize: Long = KiteConfig.pageSize
 
-    var pageNumberParameter: String = KiteConfig.INSTANCE.pageNumberParameter
+    var pageNumberParameter: String = KiteConfig.pageNumberParameter
 
-    var pageSizeParameter: String = KiteConfig.INSTANCE.pageSizeParameter
+    var pageSizeParameter: String = KiteConfig.pageSizeParameter
 
-    var selectiveStrategy: Function<Any?, Boolean> = KiteConfig.INSTANCE.selectiveStrategy
+    var selectiveStrategy: Function<Any?, Boolean> = KiteConfig.selectiveStrategy
 
-    var sqlLowercase: Boolean = KiteConfig.INSTANCE.sqlLowercase
+    var sqlLowercase: Boolean = KiteConfig.sqlLowercase
 
-    var urlProviders: Map<String, Any> = KiteConfig.INSTANCE.urlProviders
+    var urlProviders: Map<String, Any> = KiteConfig.urlProviders
 
-    var enableSqlLogging: Boolean = KiteConfig.INSTANCE.enableSqlLogging
+    var enableSqlLogging: Boolean = KiteConfig.enableSqlLogging
 
     var enableSqlDurationLogging = true
 
@@ -50,7 +50,7 @@ open class KiteProperties {
         for (field in fields) {
             field.isAccessible = true
             val value = field.get(this)
-            val instance = KiteConfig.INSTANCE
+            val instance = KiteConfig
             val properties = KiteConfig::class.memberProperties
             properties.filter {
                 it.name == field.name

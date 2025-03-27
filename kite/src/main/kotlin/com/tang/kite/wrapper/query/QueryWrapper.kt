@@ -114,7 +114,7 @@ class QueryWrapper<T> : Wrapper<T> {
         val joinedClass = queryWhereWrapper.getJoinedClass()
         querySelectWrapper.appendSql(sql, joinedClass, isMultiTableQuery)
         queryWhereWrapper.appendSql(sql, parameters, isMultiTableQuery)
-        return SqlStatement(KiteConfig.INSTANCE.getSql(sql), parameters)
+        return SqlStatement(KiteConfig.getSql(sql), parameters)
     }
 
     private fun checkValues() {

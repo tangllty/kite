@@ -13,22 +13,30 @@ import kotlin.time.DurationUnit
  *
  * @author Tang
  */
-class KiteConfig {
+object KiteConfig {
 
+    @JvmStatic
     var banner = true
 
+    @JvmStatic
     var pageNumber = 1L
 
+    @JvmStatic
     var pageSize = 10L
 
+    @JvmStatic
     var pageNumberParameter = "pageNumber"
 
+    @JvmStatic
     var pageSizeParameter = "pageSize"
 
+    @JvmStatic
     var selectiveStrategy = (Function<Any?, Boolean> { DefaultSelectiveStrategy.isSelective(it) })
 
+    @JvmStatic
     var sqlLowercase = true
 
+    @JvmStatic
     val urlProviders = mapOf(
         "postgresql" to PostgresqlSqlProvider(),
         "mysql" to MysqlSqlProvider(),
@@ -36,30 +44,30 @@ class KiteConfig {
         "h2" to H2SqlProvider()
     )
 
+    @JvmStatic
     var enableSqlLogging = true
 
+    @JvmStatic
     var enableSqlDurationLogging = true
 
+    @JvmStatic
     var durationUnit = DurationUnit.MILLISECONDS
 
+    @JvmStatic
     var durationDecimals = 0
 
+    @JvmStatic
     fun getSql(sql: StringBuilder): String {
         return getSql(sql.toString())
     }
 
+    @JvmStatic
     fun getSql(sql: String): String {
         return if (sqlLowercase) {
             sql.lowercase()
         } else {
             sql.uppercase()
         }
-    }
-
-    companion object {
-
-        val INSTANCE = KiteConfig()
-
     }
 
 }

@@ -506,7 +506,7 @@ interface BaseMapper<T> {
      * @return Page number
      */
     fun getPageNumber(request: HttpServletRequest): Long {
-        return request.getParameter(KiteConfig.INSTANCE.pageNumberParameter)?.toLong() ?: KiteConfig.INSTANCE.pageNumber
+        return request.getParameter(KiteConfig.pageNumberParameter)?.toLong() ?: KiteConfig.pageNumber
     }
 
     /**
@@ -516,7 +516,7 @@ interface BaseMapper<T> {
      * @return Page size
      */
     fun getPageSize(request: HttpServletRequest): Long {
-        return request.getParameter(KiteConfig.INSTANCE.pageSizeParameter)?.toLong() ?: KiteConfig.INSTANCE.pageSize
+        return request.getParameter(KiteConfig.pageSizeParameter)?.toLong() ?: KiteConfig.pageSize
     }
 
 }

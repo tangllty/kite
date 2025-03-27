@@ -47,11 +47,11 @@ abstract class AbstractSqlProvider : SqlProvider {
     abstract override fun providerType(): ProviderType
 
     override fun selectiveStrategy(any: Any?): Boolean {
-        return KiteConfig.INSTANCE.selectiveStrategy.apply(any)
+        return KiteConfig.selectiveStrategy.apply(any)
     }
 
     override fun getSql(sql: StringBuilder): String {
-        return KiteConfig.INSTANCE.getSql(sql)
+        return KiteConfig.getSql(sql)
     }
 
     override fun getInCondition(sql: String, field: String, values: Iterable<Any?>, withAlias: Boolean): SqlStatement {

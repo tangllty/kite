@@ -300,7 +300,7 @@ abstract class AbstractWhereWrapper<T, R, W>(
         val sql: StringBuilder = StringBuilder()
         val parameters: MutableList<Any?> = mutableListOf()
         appendSql(sql, parameters)
-        return SqlStatement(KiteConfig.INSTANCE.getSql(sql), parameters)
+        return SqlStatement(KiteConfig.getSql(sql), parameters)
     }
 
     open fun appendSql(sql: StringBuilder, parameters: MutableList<Any?>, multiTableQuery: Boolean = false) {
