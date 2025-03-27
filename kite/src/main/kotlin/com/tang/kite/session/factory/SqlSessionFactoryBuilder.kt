@@ -41,19 +41,18 @@ class SqlSessionFactoryBuilder {
         return DefaultSqlSessionFactory(Configuration(dataSource, sqlProvider, transactionFactory))
     }
 
-    fun printBanner() {
-        if (!KiteConfig.banner) {
+    private fun printBanner() {
+        if (KiteConfig.banner.not()) {
             return
         }
 
         println("""
-                ___  ___  __    ________  ________  _____ ______
-               |\  \|\  \|\  \ |\   __  \|\   __  \|\   _ \  _   \
-               \ \  \ \  \/  /|\ \  \|\  \ \  \|\  \ \  \\\__\ \  \
-             __ \ \  \ \   ___  \ \  \\\  \ \   _  _\ \  \\|__| \  \
-            |\  \\_\  \ \  \\ \  \ \  \\\  \ \  \\  \\ \  \    \ \  \
-            \ \________\ \__\\ \__\ \_______\ \__\\ _\\ \__\    \ \__\
-             \|________|\|__| \|__|\|_______|\|__|\|__|\|__|     \|__|      Documentation: https://tangllty.eu.org/
+              _  __  _____   _______   ______
+             | |/ / |_   _| |__   __| |  ____|
+             | ' /    | |      | |    | |__
+             |  <     | |      | |    |  __|
+             | . \   _| |_     | |    | |____
+             |_|\_\ |_____|    |_|    |______|    Documentation: https://tangllty.eu.org/
 
         """.trimIndent())
     }
