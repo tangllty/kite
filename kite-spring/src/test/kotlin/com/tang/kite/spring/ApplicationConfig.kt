@@ -26,7 +26,7 @@ open class ApplicationConfig {
 
     @Bean(BeanNames.DATA_SOURCE)
     open fun dataSource(): DataSource {
-        var dataSource = DataSourceBean("kite-config.yml")
+        val dataSource = DataSourceBean("kite-config.yml")
         dataSource.afterPropertiesSet()
         return dataSource.getObject()
     }
