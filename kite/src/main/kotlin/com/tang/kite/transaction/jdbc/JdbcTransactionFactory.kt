@@ -1,6 +1,6 @@
 package com.tang.kite.transaction.jdbc
 
-import com.tang.kite.session.TransactionIsolationLevel
+import com.tang.kite.enumeration.transaction.TransactionIsolationLevel
 import com.tang.kite.transaction.Transaction
 import com.tang.kite.transaction.TransactionFactory
 import java.sql.Connection

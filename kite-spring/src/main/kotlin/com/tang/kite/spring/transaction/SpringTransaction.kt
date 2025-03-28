@@ -1,6 +1,6 @@
 package com.tang.kite.spring.transaction
 
-import com.tang.kite.session.TransactionIsolationLevel
+import com.tang.kite.enumeration.transaction.TransactionIsolationLevel
 import com.tang.kite.transaction.Transaction
 import org.springframework.jdbc.datasource.DataSourceUtils
 import java.sql.Connection

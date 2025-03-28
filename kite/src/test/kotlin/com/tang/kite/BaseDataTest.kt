@@ -1,6 +1,6 @@
 package com.tang.kite
 
-import com.tang.kite.datasource.defaults.DefaultDataSourceFactory
+import com.tang.kite.datasource.unpooled.UnpooledDataSourceFactory
 import com.tang.kite.io.Resources
 import com.tang.kite.session.factory.SqlSessionFactoryBuilder
 import jakarta.servlet.http.HttpServletRequestWrapper
@@ -18,7 +18,7 @@ open class BaseDataTest {
         val yaml = Yaml().load<Map<String, Map<String, Map<String, String>>>>(inputStream)
         val kite = yaml["kite"]
         val datasource = kite!!["datasource"] as Map<String, String>
-        return DefaultDataSourceFactory(datasource).getDataSource()
+        return UnpooledDataSourceFactory(datasource).getDataSource()
     }
 
     fun createDatabase() {

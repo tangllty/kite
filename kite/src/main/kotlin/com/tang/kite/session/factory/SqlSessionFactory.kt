@@ -1,7 +1,7 @@
 package com.tang.kite.session.factory
 
 import com.tang.kite.session.SqlSession
-import com.tang.kite.session.TransactionIsolationLevel
+import com.tang.kite.enumeration.transaction.TransactionIsolationLevel
 
 /**
  * SQL session factory

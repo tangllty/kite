@@ -1,4 +1,4 @@
-package com.tang.kite.datasource.defaults
+package com.tang.kite.datasource.pooled
 
 import com.tang.kite.datasource.DataSourceFactory
 import javax.sql.DataSource
@@ -6,7 +6,7 @@ import javax.sql.DataSource
 /**
  * @author Tang
  */
-class DefaultDataSourceFactory(private val properties: Map<String, String>) : DataSourceFactory {
+class PooledDataSourceFactory(private val properties: Map<String, String>) : DataSourceFactory {
 
     override fun getProperties(): Map<String, String> {
         return properties
@@ -17,7 +17,8 @@ class DefaultDataSourceFactory(private val properties: Map<String, String>) : Da
         val url = properties["url"] ?: throw IllegalArgumentException("url is required")
         val username = properties["username"]
         val password = properties["password"]
-        return DefaultDataSource(driver, url, username, password)
+        val pooledProperties = PooledProperties(driver, url, username, password)
+        return PooledDataSource(pooledProperties)
     }
 
 }

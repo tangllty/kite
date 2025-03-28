@@ -3,7 +3,7 @@ package com.tang.kite.session.factory.defaults
 import com.tang.kite.executor.defaults.DefaultExecutorFactory
 import com.tang.kite.session.Configuration
 import com.tang.kite.session.SqlSession
-import com.tang.kite.session.TransactionIsolationLevel
+import com.tang.kite.enumeration.transaction.TransactionIsolationLevel
 import com.tang.kite.session.defaults.DefaultSqlSession
 import com.tang.kite.session.factory.SqlSessionFactory
 

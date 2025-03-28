@@ -1,6 +1,6 @@
 package com.tang.kite.spring.beans
 
-import com.tang.kite.datasource.defaults.DefaultDataSourceFactory
+import com.tang.kite.datasource.unpooled.UnpooledDataSourceFactory
 import com.tang.kite.io.Resources
 import org.springframework.beans.factory.FactoryBean
 import org.springframework.beans.factory.InitializingBean
@@ -26,7 +26,7 @@ class DataSourceBean(private var resource: String) : FactoryBean<DataSource>, In
     override fun afterPropertiesSet() {
         val resource = Resources.getResourceAsStream(resource)
         val datasource = Resources.getDataSourceProperties(resource)
-        val dataSourceFactory = DefaultDataSourceFactory(datasource)
+        val dataSourceFactory = UnpooledDataSourceFactory(datasource)
         dataSource = dataSourceFactory.getDataSource()
     }
 

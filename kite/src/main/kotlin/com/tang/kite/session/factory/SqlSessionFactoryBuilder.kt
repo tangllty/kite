@@ -1,7 +1,8 @@
 package com.tang.kite.session.factory
 
 import com.tang.kite.config.KiteConfig
-import com.tang.kite.datasource.defaults.DefaultDataSourceFactory
+import com.tang.kite.datasource.DataSourceFactory
+import com.tang.kite.datasource.pooled.PooledDataSourceFactory
 import com.tang.kite.io.Resources
 import com.tang.kite.session.Configuration
 import com.tang.kite.session.factory.defaults.DefaultSqlSessionFactory
@@ -18,7 +19,13 @@ import javax.sql.DataSource
  */
 class SqlSessionFactoryBuilder {
 
+    init {
+        printBanner()
+    }
+
     lateinit var transactionFactory: TransactionFactory
+
+    lateinit var dataSourceFactory: DataSourceFactory
 
     fun build(resource: String): SqlSessionFactory {
         val inputStream = Resources.getResourceAsStream(resource)
@@ -27,17 +34,20 @@ class SqlSessionFactoryBuilder {
 
     fun build(inputStream: InputStream): SqlSessionFactory {
         val datasource = Resources.getDataSourceProperties(inputStream)
-        val dataSourceFactory = DefaultDataSourceFactory(datasource)
+        if (::dataSourceFactory.isInitialized.not()) {
+            dataSourceFactory = PooledDataSourceFactory(datasource)
+        }
         return build(dataSourceFactory.getDataSource())
     }
 
     fun build(dataSource: DataSource): SqlSessionFactory {
-        val url = dataSource.connection.use { it.metaData.url }
+        val connection = dataSource.connection
+        val url = connection.metaData.url
+        connection.close()
         val sqlProvider = DefaultSqlProviderFactory().newSqlProvider(url)
-        if (!::transactionFactory.isInitialized) {
+        if (::transactionFactory.isInitialized.not()) {
             transactionFactory = JdbcTransactionFactory()
         }
-        printBanner()
         return DefaultSqlSessionFactory(Configuration(dataSource, sqlProvider, transactionFactory))
     }
 
