@@ -26,20 +26,17 @@ object ResultSetHandlers {
         val entity = type.getDeclaredConstructor().newInstance()
         val tableName = Reflects.getTableName(type)
         for (i in 1..metaData.columnCount) {
-            val tableName = metaData.getTableName(i).lowercase()
+            val columnTableName = metaData.getTableName(i).lowercase()
             val columnName = metaData.getColumnName(i)
             val columnValue = resultSet.getObject(i)
-            if (metaDataMap.containsKey(tableName).not()) {
-                metaDataMap[tableName] = mutableListOf()
+            if (metaDataMap.containsKey(columnTableName).not()) {
+                metaDataMap[columnTableName] = mutableListOf()
             }
-            metaDataMap[tableName]!!.add(Pair(columnName, columnValue))
+            metaDataMap[columnTableName]!!.add(Pair(columnName, columnValue))
         }
         val metaDataList = metaDataMap[tableName] ?: return entity
         metaDataList.forEach { (columnName, columnValue) ->
-            val field = Reflects.getField(type, columnName)
-            if (field == null) {
-                return@forEach
-            }
+            val field = Reflects.getField(type, columnName) ?: return@forEach
             Reflects.makeAccessible(field, entity as Any)
             field.set(entity, columnValue)
         }
@@ -51,11 +48,8 @@ object ResultSetHandlers {
             val joinTableName = Reflects.getTableName(it.type)
             val joinEntity = it.type.getDeclaredConstructor().newInstance()
             val joinMetaData = metaDataMap[joinTableName] ?: return@forEach
-            joinMetaData.forEach { (columnName, columnValue) ->
-                val field = Reflects.getField(it.type, columnName)
-                if (field == null) {
-                    return@forEach
-                }
+            joinMetaData.forEach metaData@ { (columnName, columnValue) ->
+                val field = Reflects.getField(it.type, columnName) ?: return@metaData
                 Reflects.makeAccessible(field, joinEntity as Any)
                 field.set(joinEntity, columnValue)
             }
