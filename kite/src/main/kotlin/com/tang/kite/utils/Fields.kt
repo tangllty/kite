@@ -43,4 +43,33 @@ object Fields {
         return property.javaField ?: throw NoSuchFieldException("Field not found: $fieldName")
     }
 
+    fun setValue(field: Field, instance: Any, value: Any?) {
+        field.isAccessible = true
+        if (value == null) {
+            field.set(instance, null)
+            return
+        }
+        when (field.type) {
+            Char::class.java -> field.set(instance, (value as String).first())
+            Short::class.java -> field.set(instance, (value as Number).toShort())
+            Byte::class.java -> field.set(instance, (value as Number).toByte())
+            Int::class.java, Integer::class.java -> field.set(instance, (value as Number).toInt())
+            Long::class.java -> field.set(instance, (value as Number).toLong())
+            Double::class.java -> field.set(instance, (value as Number).toDouble())
+            Float::class.java -> field.set(instance, (value as Number).toFloat())
+            Boolean::class.java -> field.set(instance, value.toString().toBoolean())
+            String::class.java -> field.set(instance, value.toString())
+            else -> if (field.type.isEnum) {
+                val enumValue = value.toString()
+                @Suppress("UNCHECKED_CAST")
+                val enumClass = field.type as Class<Enum<*>>
+                val enumConstant = enumClass.enumConstants.firstOrNull { it.name == enumValue }
+                if (enumConstant == null) {
+                    throw IllegalArgumentException("Invalid enum value: $enumValue for field: $field.name")
+                }
+                field.set(instance, enumConstant)
+            }
+        }
+    }
+
 }

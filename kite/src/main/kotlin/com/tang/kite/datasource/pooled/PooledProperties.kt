@@ -1,27 +1,18 @@
 package com.tang.kite.datasource.pooled
 
-import com.tang.kite.enumeration.transaction.TransactionIsolationLevel
+import com.tang.kite.datasource.unpooled.UnpooledProperties
 
-data class PooledProperties(
+/**
+ * @author Tang
+ */
+class PooledProperties : UnpooledProperties() {
 
-    val driver: String,
+    var initialConnections: Int = 5
 
-    val url: String,
+    var maximumActiveConnections: Int = 10
 
-    val username: String? = null,
-
-    val password: String? = null,
-
-    var transactionIsolation: TransactionIsolationLevel? = null,
-
-    var networkTimeout: Int? = null,
-
-    var initialConnections: Int = 5,
-
-    var maximumActiveConnections: Int = 10,
-
-    var minimumFreeConnections: Int = 2,
+    var minimumFreeConnections: Int = 2
 
     var maximumFreeConnections: Int = 5
 
-)
+}

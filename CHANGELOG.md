@@ -12,6 +12,7 @@
  * Refactor KiteConfig usage to eliminate INSTANCE references
  * Enhance logging in transaction management and SQL execution
  * Refactor data source implementation to use unpooled connections and introduce pooled data source classes
+ * Refactor data source properties handling and enhance field value setting logic
 
 ## 1.0.6
 

@@ -129,7 +129,7 @@ object Reflects {
     }
 
     fun <T> getColumnName(column: KMutableProperty1<T, *>, withAlias: Boolean = false): String {
-        var field = column.javaField!!
+        val field = column.javaField!!
         return getColumnName(field, withAlias)
     }
 

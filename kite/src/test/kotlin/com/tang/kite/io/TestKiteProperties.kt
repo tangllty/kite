@@ -1,11 +1,17 @@
-package com.tang.kite.datasource.unpooled
+package com.tang.kite.io
 
 import com.tang.kite.enumeration.transaction.TransactionIsolationLevel
 
 /**
  * @author Tang
  */
-open class UnpooledProperties {
+class TestKiteProperties {
+
+    var datasource = TestDataSourceProperties()
+
+}
+
+class TestDataSourceProperties {
 
     var driver: String? = null
 

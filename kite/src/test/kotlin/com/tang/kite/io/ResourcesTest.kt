@@ -9,10 +9,33 @@ import org.junit.jupiter.api.Assertions.*
  */
 class ResourcesTest {
 
+    private val resource = "kite-config.yml"
+
     @Test
     fun getResourceAsStream() {
-        val resourceAsStream = Resources.getResourceAsStream("kite-config.yml")
-        assertNotNull(resourceAsStream)
+        val inputStream = Resources.getResourceAsStream(resource)
+        assertNotNull(inputStream)
+    }
+
+    @Test
+    fun getKiteProperties() {
+        val inputStream = Resources.getResourceAsStream(resource)
+        val kiteProperties = Resources.getKiteProperties(inputStream)
+        assertNotNull(kiteProperties)
+    }
+
+    @Test
+    fun getKiteAsObject() {
+        val inputStream = Resources.getResourceAsStream(resource)
+        val kiteProperties = Resources.getKiteAsObject(inputStream, TestKiteProperties::class.java)
+        assertNotNull(kiteProperties)
+    }
+
+    @Test
+    fun getDataSourceProperties() {
+        val inputStream = Resources.getResourceAsStream(resource)
+        val dataSourceProperties = Resources.getDataSourceProperties(inputStream)
+        assertNotNull(dataSourceProperties)
     }
 
 }

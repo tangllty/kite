@@ -1,6 +1,7 @@
 package com.tang.kite.datasource.unpooled
 
 import com.tang.kite.datasource.DataSourceFactory
+import com.tang.kite.io.Resources
 import javax.sql.DataSource
 
 /**
@@ -13,11 +14,13 @@ class UnpooledDataSourceFactory(private val properties: Map<String, String>) : D
     }
 
     override fun getDataSource(): DataSource {
-        val driver = properties["driver"] ?: throw IllegalArgumentException("driver is required")
-        val url = properties["url"] ?: throw IllegalArgumentException("url is required")
-        val username = properties["username"]
-        val password = properties["password"]
-        val unpooledProperties = UnpooledProperties(driver, url, username, password)
+        val unpooledProperties = Resources.propertyToObject(properties, UnpooledProperties::class.java)
+        if (unpooledProperties.driver == null) {
+            throw IllegalArgumentException("driver is required")
+        }
+        if (unpooledProperties.url == null) {
+            throw IllegalArgumentException("url is required")
+        }
         return UnpooledDataSource(unpooledProperties)
     }
 
