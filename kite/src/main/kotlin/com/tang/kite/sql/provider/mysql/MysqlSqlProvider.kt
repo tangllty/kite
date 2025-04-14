@@ -17,10 +17,10 @@ class MysqlSqlProvider : AbstractSqlProvider() {
         return ProviderType.MYSQL
     }
 
-    override fun appendLimit(sql: StringBuilder, parameters: MutableList<Any?>, pageNumber: Long, pageSize: Long) {
-        sql.append(LIMIT).append(QUESTION_MARK).append(COMMA_SPACE).append(QUESTION_MARK)
+    override fun getLimit(parameters: MutableList<Any?>, pageNumber: Long, pageSize: Long): String {
         parameters.add((pageNumber - 1) * pageSize)
         parameters.add(pageSize)
+        return "$LIMIT$QUESTION_MARK$COMMA_SPACE$QUESTION_MARK"
     }
 
 }

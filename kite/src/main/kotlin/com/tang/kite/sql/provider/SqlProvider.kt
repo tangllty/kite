@@ -22,13 +22,13 @@ interface SqlProvider {
 
     fun getNestedSelect(sql: String, field: String, value: Iterable<Any?>, join: Join): SqlStatement
 
-    fun appendColumns(sql: StringBuilder, fieldList: List<Field>, withAlias: Boolean = false)
+    fun getColumns(fieldList: List<Field>, withAlias: Boolean = false): String
 
-    fun <T> appendWhere(sql: StringBuilder, parameters: MutableList<Any?>, clazz: Class<T>, entity: Any, withAlias: Boolean = false)
+    fun <T> getWhere(parameters: MutableList<Any?>, clazz: Class<T>, entity: Any?, withAlias: Boolean = false): String
 
-    fun <T> appendOrderBy(sql: StringBuilder, orderBys: Array<OrderItem<T>>, withAlias: Boolean = false)
+    fun <T> getOrderBy(orderBys: Array<OrderItem<T>>, withAlias: Boolean = false): String
 
-    fun appendLimit(sql: StringBuilder, parameters: MutableList<Any?>, pageNumber: Long, pageSize: Long)
+    fun getLimit(parameters: MutableList<Any?>, pageNumber: Long, pageSize: Long): String
 
     fun insert(entity: Any): SqlStatement
 

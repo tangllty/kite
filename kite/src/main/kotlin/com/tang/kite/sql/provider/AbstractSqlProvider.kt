@@ -83,34 +83,38 @@ abstract class AbstractSqlProvider : SqlProvider {
         return SqlStatement(getSql(sqlBuilder), value.toMutableList())
     }
 
-    override fun appendColumns(sql: StringBuilder, fieldList: List<Field>, withAlias: Boolean) {
-        fieldList.joinToString(COMMA_SPACE) { getColumnName(it, withAlias) }.let { sql.append(it) }
+    override fun getColumns(fieldList: List<Field>, withAlias: Boolean): String {
+        return fieldList.joinToString(COMMA_SPACE) { getColumnName(it, withAlias) }
     }
 
-    override fun <T> appendWhere(sql: StringBuilder, parameters: MutableList<Any?>, clazz: Class<T>, entity: Any, withAlias: Boolean) {
-        sql.append(WHERE)
-        getSqlFields(clazz).filter {
+    override fun <T> getWhere(parameters: MutableList<Any?>, clazz: Class<T>, entity: Any?, withAlias: Boolean): String {
+        if (entity == null) {
+            return ""
+        }
+        val whereSql = getSqlFields(clazz).filter {
             makeAccessible(it, entity)
             selectiveStrategy(it.get(entity))
         }.joinToString(AND) {
             parameters.add(it.get(entity))
             getColumnName(it, withAlias) + EQUAL + QUESTION_MARK
-        }.let { sql.append(it) }
-    }
-
-    override fun <T> appendOrderBy(sql: StringBuilder, orderBys: Array<OrderItem<T>>, withAlias: Boolean) {
-        if (orderBys.isNotEmpty()) {
-            sql.append(ORDER_BY)
-            orderBys.joinToString(COMMA_SPACE) {
-                it.column.toString(withAlias) + if (it.asc) ASC else DESC
-            }.let { sql.append(it) }
         }
+        return "$WHERE$whereSql"
     }
 
-    override fun appendLimit(sql: StringBuilder, parameters: MutableList<Any?>, pageNumber: Long, pageSize: Long) {
-        sql.append(LIMIT).append(QUESTION_MARK).append(OFFSET).append(QUESTION_MARK)
+    override fun <T> getOrderBy(orderBys: Array<OrderItem<T>>, withAlias: Boolean): String {
+        if (orderBys.isEmpty()) {
+            return ""
+        }
+        val orderBysSql = orderBys.joinToString(COMMA_SPACE) {
+            it.column.toString(withAlias) + if (it.asc) ASC else DESC
+        }
+        return "$ORDER_BY$orderBysSql"
+    }
+
+    override fun getLimit(parameters: MutableList<Any?>, pageNumber: Long, pageSize: Long): String {
         parameters.add(pageSize)
         parameters.add((pageNumber - 1) * pageSize)
+        return "$LIMIT$QUESTION_MARK$OFFSET$QUESTION_MARK"
     }
 
     override fun insert(entity: Any): SqlStatement {
@@ -121,7 +125,7 @@ abstract class AbstractSqlProvider : SqlProvider {
         val autoIncrementId = isAutoIncrementId(idField)
         val fieldList = getSqlFields(clazz).filter { getColumnName(it) != getColumnName(idField) || !autoIncrementId }
         sql.append(INSERT_INTO + getTableName(clazz) + SPACE + LEFT_BRACKET)
-        appendColumns(sql, fieldList)
+        sql.append(getColumns(fieldList))
         sql.append(RIGHT_BRACKET + VALUES + LEFT_BRACKET)
         fieldList.joinToString {
             makeAccessible(it, entity)
@@ -171,7 +175,7 @@ abstract class AbstractSqlProvider : SqlProvider {
             val autoIncrementId = isAutoIncrementId(idField)
             val fieldList = getSqlFields(clazz).filter { getColumnName(it) != getColumnName(idField) || !autoIncrementId }
             sql.append(INSERT_INTO + getTableName(clazz) + SPACE + LEFT_BRACKET)
-            appendColumns(sql, fieldList)
+            sql.append(getColumns(fieldList))
             sql.append(RIGHT_BRACKET + VALUES)
             fieldNameList.addAll(fieldList.map { getColumnName(it) })
         }
@@ -292,12 +296,10 @@ abstract class AbstractSqlProvider : SqlProvider {
         val sql = StringBuilder()
         val parameters = mutableListOf<Any?>()
         sql.append(SELECT)
-        appendColumns(sql, getSqlFields(clazz))
+        sql.append(getColumns(getSqlFields(clazz)))
         sql.append(FROM + getTableName(clazz))
-        entity?.let {
-            appendWhere(sql, parameters, clazz, entity)
-        }
-        appendOrderBy(sql, orderBys)
+        sql.append(getWhere(parameters, clazz, entity))
+        sql.append(getOrderBy(orderBys))
         return SqlStatement(getSql(sql), parameters)
     }
 
@@ -311,7 +313,7 @@ abstract class AbstractSqlProvider : SqlProvider {
         sql.append(SELECT)
         val sqlFields = getSqlFields(clazz).toMutableList()
         joins.forEach { sqlFields.addAll(getSqlFields(it.type)) }
-        appendColumns(sql, sqlFields, addAlias)
+        sql.append(getColumns(sqlFields, addAlias))
         sql.append(FROM, tableName)
         if (addAlias) {
             sql.append(SPACE, tableAlias)
@@ -335,10 +337,8 @@ abstract class AbstractSqlProvider : SqlProvider {
                 sql.append(tableAlias, DOT, selfField, EQUAL, joinTableAlias, DOT, targetField)
             }
         }
-        entity?.let {
-            appendWhere(sql, parameters, clazz, entity, addAlias)
-        }
-        appendOrderBy(sql, orderBys, addAlias)
+        sql.append(getWhere(parameters, clazz, entity, addAlias))
+        sql.append(getOrderBy(orderBys, addAlias))
         return SqlStatement(getSql(sql), parameters)
     }
 
@@ -346,9 +346,7 @@ abstract class AbstractSqlProvider : SqlProvider {
         val sql = StringBuilder()
         val parameters = mutableListOf<Any?>()
         sql.append(SELECT_COUNT_FROM + getTableName(clazz))
-        entity?.let {
-            appendWhere(sql, parameters, clazz, entity)
-        }
+        sql.append(getWhere(parameters, clazz, entity))
         return SqlStatement(getSql(sql), parameters)
     }
 
@@ -356,13 +354,11 @@ abstract class AbstractSqlProvider : SqlProvider {
         val sql = StringBuilder()
         val parameters = mutableListOf<Any?>()
         sql.append(SELECT)
-        appendColumns(sql, getSqlFields(clazz))
+        sql.append(getColumns(getSqlFields(clazz)))
         sql.append(FROM + getTableName(clazz))
-        if (entity != null) {
-            appendWhere(sql, parameters, clazz, entity)
-        }
-        appendOrderBy(sql, orderBys)
-        appendLimit(sql, parameters, pageNumber, pageSize)
+        sql.append(getWhere(parameters, clazz, entity))
+        sql.append(getOrderBy(orderBys))
+        sql.append(getLimit(parameters, pageNumber, pageSize))
         return SqlStatement(getSql(sql), parameters)
     }
 

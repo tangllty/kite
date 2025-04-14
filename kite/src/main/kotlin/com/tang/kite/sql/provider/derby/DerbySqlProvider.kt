@@ -18,10 +18,10 @@ class DerbySqlProvider : AbstractSqlProvider() {
         return ProviderType.DERBY
     }
 
-    override fun appendLimit(sql: StringBuilder, parameters: MutableList<Any?>, pageNumber: Long, pageSize: Long) {
-        sql.append(OFFSET).append(QUESTION_MARK).append(ROWS_FETCH_NEXT).append(QUESTION_MARK).append(ROWS_ONLY)
+    override fun getLimit(parameters: MutableList<Any?>, pageNumber: Long, pageSize: Long): String {
         parameters.add((pageNumber - 1) * pageSize)
         parameters.add(pageSize)
+        return "$OFFSET$QUESTION_MARK$ROWS_FETCH_NEXT$QUESTION_MARK$ROWS_ONLY"
     }
 
 }
