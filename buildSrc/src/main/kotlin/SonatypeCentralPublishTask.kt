@@ -12,7 +12,6 @@ import java.util.zip.ZipEntry
 import java.util.zip.ZipOutputStream
 import kotlin.io.encoding.Base64
 import kotlin.io.encoding.ExperimentalEncodingApi
-import kotlin.toString
 
 /**
  * @author Tang
@@ -58,17 +57,38 @@ abstract class SonatypeCentralPublishTask : DefaultTask() {
             }
         }
 
-//        val token = Base64.Default.encode("$username:$password".toByteArray())
-//        val name = "${project.group}:${project.name}:${project.version}"
-//        val request = HttpRequest.newBuilder()
-//            .uri(URI.create("https://central.sonatype.com/api/v1/publisher/upload/?publishingType=AUTOMATIC&?name=$name"))
-//            .header("accept", "multipart/form-data")
-//            .header("Authorization", "Bearer $token")
-//            .POST(HttpRequest.BodyPublishers.ofByteArray(rootPath.resolve(fileName).readBytes()))
-//            .build()
-//        val response = client.send(request, BodyHandlers.ofString())
-//        var body = response.body()
-//        println("response: $body")
+        val token = Base64.Default.encode("$username:$password".toByteArray())
+        val boundary = "----WebKitFormBoundary" + System.currentTimeMillis()
+        val fileBytes = rootPath.resolve(fileName).readBytes()
+        val newLine = "\r\n"
+        val formData = buildString {
+            append("--$boundary$newLine")
+            append("Content-Disposition: form-data; name=\"bundle\"; filename=\"$fileName\"\r\n")
+            append("Content-Type: application/zip\r\n\r\n")
+        }.toByteArray() + fileBytes + "\r\n--$boundary--\r\n".toByteArray()
+
+        val request = HttpRequest.newBuilder()
+            .uri(URI.create(UPLOAD))
+            .header("Authorization", "Bearer $token")
+            .header("Content-Type", "multipart/form-data; boundary=$boundary")
+            .POST(HttpRequest.BodyPublishers.ofByteArray(formData))
+            .build()
+        val response = client.send(request, BodyHandlers.ofString())
+        val body = response.body()
+        println("response: $response")
+        println("body: $body")
+    }
+
+    companion object {
+
+        private const val PUBLISHER_BASEURL = "https://central.sonatype.com/api/v1/publisher"
+
+        const val UPLOAD = "$PUBLISHER_BASEURL/upload"
+
+        const val STATUS = "$PUBLISHER_BASEURL/status"
+
+        const val DEPLOYMENT = "$PUBLISHER_BASEURL/deployment"
+
     }
 
 }

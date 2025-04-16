@@ -14,6 +14,7 @@
  * Refactor data source implementation to use unpooled connections and introduce pooled data source classes
  * Refactor data source properties handling and enhance field value setting logic
  * Refactor SQL provider methods to improve readability and consistency
+ * Add upload artifact to Sonatype Central task
 
 ## 1.0.6
 

@@ -50,7 +50,7 @@ publishing {
             artifact(tasks["javadocJar"])
             pom {
                 name.set(project.name)
-                description.set("A simple ORM framework written in Kotlin")
+                description.set("Kite is a lightweight ORM framework for Kotlin and Java. ")
                 url.set("https://github.com/tangllty/kite")
                 licenses {
                     license {
@@ -60,8 +60,8 @@ publishing {
                 }
                 developers {
                     developer {
-                        id.set("tangllty")
-                        name.set("tangllty")
+                        id.set("tang")
+                        name.set("tang")
                         email.set("tanglly@163.com")
                     }
                 }
@@ -77,14 +77,6 @@ publishing {
         maven {
             name = "Project"
             url = uri(layout.buildDirectory.dir("repositories"))
-        }
-        maven {
-            name = "GitHubPackages"
-            url = uri("https://maven.pkg.github.com/tangllty/kite")
-            credentials {
-                username = System.getenv("PACKAGES_ACTOR")
-                password = System.getenv("PACKAGES_PASSWORD")
-            }
         }
     }
 }
