@@ -42,5 +42,7 @@ jobs:
     - name: Publish Packages
       run: ./gradlew publish
       env:
-        PACKAGES_ACTOR: ${{ secrets.PACKAGES_ACTOR }}
-        PACKAGES_PASSWORD: ${{ secrets.PACKAGES_PASSWORD }}
+        SONATYPE_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
+        SONATYPE_TOKEN: ${{ secrets.SONATYPE_TOKEN }}
+        SIGNING_SECRET_KEY: ${{ secrets.SIGNING_SECRET_KEY }}
+        SIGNING_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}

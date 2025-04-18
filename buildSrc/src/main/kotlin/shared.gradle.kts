@@ -5,7 +5,7 @@ plugins {
 }
 
 group = "io.github.tangllty"
-version = "1.0.6"
+version = "1.0.7-beta1"
 
 repositories {
     gradlePluginPortal()
@@ -87,8 +87,8 @@ signing {
 }
 
 tasks.register<SonatypeCentralPublishTask>("publishToSonatypeCentral") {
-    username = "xxxxxxxx"
-    password = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+    username = System.getenv("SONATYPE_USERNAME")
+    password = System.getenv("SONATYPE_TOKEN")
 }
 
 tasks.javadoc {
