@@ -15,6 +15,7 @@
  * Refactor data source properties handling and enhance field value setting logic
  * Refactor SQL provider methods to improve readability and consistency
  * Add upload artifact to Sonatype Central task
+ * Refactor KiteConfig to split into multiple configuration classes for simplified configuration logic
 
 ## 1.0.6
 

@@ -1,6 +1,6 @@
 package com.tang.kite.wrapper.update
 
-import com.tang.kite.config.KiteConfig
+import com.tang.kite.config.SqlConfig
 import com.tang.kite.constants.SqlString.UPDATE
 import com.tang.kite.mapper.BaseMapper
 import com.tang.kite.sql.SqlStatement
@@ -74,7 +74,7 @@ class UpdateWrapper<T> : Wrapper<T> {
         sql.append("$UPDATE$table")
         updateSetWrapper.appendSql(sql, parameters)
         updateWhereWrapper.appendSql(sql, parameters)
-        return SqlStatement(KiteConfig.getSql(sql), parameters)
+        return SqlStatement(SqlConfig.getSql(sql), parameters)
     }
 
     /**

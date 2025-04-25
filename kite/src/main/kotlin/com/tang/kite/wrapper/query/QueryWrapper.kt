@@ -1,6 +1,6 @@
 package com.tang.kite.wrapper.query
 
-import com.tang.kite.config.KiteConfig
+import com.tang.kite.config.SqlConfig
 import com.tang.kite.constants.SqlString.SELECT
 import com.tang.kite.constants.SqlString.SELECT_DISTINCT
 import com.tang.kite.function.SFunction
@@ -114,7 +114,7 @@ class QueryWrapper<T> : Wrapper<T> {
         val joinedClass = queryWhereWrapper.getJoinedClass()
         querySelectWrapper.appendSql(sql, joinedClass, isMultiTableQuery)
         queryWhereWrapper.appendSql(sql, parameters, isMultiTableQuery)
-        return SqlStatement(KiteConfig.getSql(sql), parameters)
+        return SqlStatement(SqlConfig.getSql(sql), parameters)
     }
 
     private fun checkValues() {

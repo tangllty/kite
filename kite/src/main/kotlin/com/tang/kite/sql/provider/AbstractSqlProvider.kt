@@ -2,6 +2,7 @@ package com.tang.kite.sql.provider
 
 import com.tang.kite.annotation.Join
 import com.tang.kite.config.KiteConfig
+import com.tang.kite.config.SqlConfig
 import com.tang.kite.constants.SqlString
 import com.tang.kite.constants.SqlString.AND
 import com.tang.kite.constants.SqlString.ASC
@@ -51,7 +52,7 @@ abstract class AbstractSqlProvider : SqlProvider {
     }
 
     override fun getSql(sql: StringBuilder): String {
-        return KiteConfig.getSql(sql)
+        return SqlConfig.getSql(sql)
     }
 
     override fun getInCondition(sql: String, field: String, values: Iterable<Any?>, withAlias: Boolean): SqlStatement {
@@ -320,7 +321,7 @@ abstract class AbstractSqlProvider : SqlProvider {
         }
         joins.forEach {
             val joinTableAlias = getTableAlias(it.type)
-            val join = it.getAnnotation(Join::class.java)
+            val join = it.getAnnotation(Join::class.java)!!
             val selfField = join.selfField
             val targetField = join.targetField
             val joinTable = join.joinTable

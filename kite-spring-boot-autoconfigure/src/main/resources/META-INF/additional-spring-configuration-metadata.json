@@ -1,34 +1,5 @@
 {
-  "properties": [
-    {
-      "name": "kite.banner",
-      "type": "java.lang.Boolean",
-      "description": "Enable or disable the Kite banner.",
-      "defaultValue": true
-    },
-    {
-      "name": "kite.page-number",
-      "type": "java.lang.Long",
-      "description": "Default page number.",
-      "defaultValue": 1
-    },
-    {
-      "name": "kite.page-size",
-      "type": "java.lang.Long",
-      "description": "Default page size.",
-      "defaultValue": 10
-    },
-    {
-      "name": "kite.page-number-parameter",
-      "type": "java.lang.String",
-      "description": "Parameter name for page number.",
-      "defaultValue": "pageNumber"
-    },
-    {
-      "name": "kite.page-size-parameter",
-      "type": "java.lang.String",
-      "description": "Parameter name for page size.",
-      "defaultValue": "pageSize"
-    }
-  ]
+  "groups": [],
+  "properties": [],
+  "hints": []
 }

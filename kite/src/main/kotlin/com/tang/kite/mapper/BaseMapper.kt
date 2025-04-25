@@ -1,6 +1,7 @@
 package com.tang.kite.mapper
 
 import com.tang.kite.config.KiteConfig
+import com.tang.kite.config.PageConfig
 import com.tang.kite.paginate.OrderItem
 import com.tang.kite.paginate.Page
 import com.tang.kite.wrapper.query.QueryWrapper
@@ -506,7 +507,7 @@ interface BaseMapper<T> {
      * @return Page number
      */
     fun getPageNumber(request: HttpServletRequest): Long {
-        return request.getParameter(KiteConfig.pageNumberParameter)?.toLong() ?: KiteConfig.pageNumber
+        return request.getParameter(PageConfig.pageNumberParameter)?.toLong() ?: PageConfig.pageNumber
     }
 
     /**
@@ -516,7 +517,7 @@ interface BaseMapper<T> {
      * @return Page size
      */
     fun getPageSize(request: HttpServletRequest): Long {
-        return request.getParameter(KiteConfig.pageSizeParameter)?.toLong() ?: KiteConfig.pageSize
+        return request.getParameter(PageConfig.pageSizeParameter)?.toLong() ?: PageConfig.pageSize
     }
 
 }

@@ -1,6 +1,6 @@
 package com.tang.kite.wrapper.where
 
-import com.tang.kite.config.KiteConfig
+import com.tang.kite.config.SqlConfig
 import com.tang.kite.constants.SqlString.WHERE
 import com.tang.kite.function.SFunction
 import com.tang.kite.paginate.OrderItem
@@ -300,7 +300,7 @@ abstract class AbstractWhereWrapper<T, R, W>(
         val sql: StringBuilder = StringBuilder()
         val parameters: MutableList<Any?> = mutableListOf()
         appendSql(sql, parameters)
-        return SqlStatement(KiteConfig.getSql(sql), parameters)
+        return SqlStatement(SqlConfig.getSql(sql), parameters)
     }
 
     open fun appendSql(sql: StringBuilder, parameters: MutableList<Any?>, multiTableQuery: Boolean = false) {

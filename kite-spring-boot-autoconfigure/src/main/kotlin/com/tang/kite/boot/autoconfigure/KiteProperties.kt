@@ -1,6 +1,8 @@
 package com.tang.kite.boot.autoconfigure
 
 import com.tang.kite.config.KiteConfig
+import com.tang.kite.config.PageConfig
+import com.tang.kite.config.SqlConfig
 import org.springframework.boot.context.properties.ConfigurationProperties
 import java.util.function.Function
 import kotlin.reflect.KMutableProperty1
@@ -13,37 +15,54 @@ import kotlin.time.DurationUnit
  * @author Tang
  */
 @ConfigurationProperties(prefix = KiteProperties.KITE_PREFIX)
-open class KiteProperties {
+data class KiteProperties(
+
+    val banner: Boolean = KiteConfig.banner,
+
+    /**
+     * The strategy for selective query
+     */
+    val selectiveStrategy: Function<Any?, Boolean> = KiteConfig.selectiveStrategy,
+
+    val urlProviders: Map<String, Any> = KiteConfig.urlProviders,
+
+    val page: PageProperties = PageProperties(),
+
+    val sql: SqlProperties = SqlProperties()
+
+) {
+
+    data class PageProperties (
+
+        val pageNumber: Long = PageConfig.pageNumber,
+
+        val pageSize: Long = PageConfig.pageSize,
+
+        val pageNumberParameter: String = PageConfig.pageNumberParameter,
+
+        val pageSizeParameter: String = PageConfig.pageSizeParameter
+
+    )
+
+    data class SqlProperties (
+
+        var sqlLowercase: Boolean = SqlConfig.sqlLowercase,
+
+        var sqlLogging: Boolean = SqlConfig.sqlLogging,
+
+        var sqlDurationLogging: Boolean = SqlConfig.sqlDurationLogging,
+
+        var durationUnit: DurationUnit = SqlConfig.durationUnit,
+
+        var durationDecimals: Int = SqlConfig.durationDecimals
+
+    )
 
     companion object {
 
         const val KITE_PREFIX = "kite"
 
     }
-
-    var banner: Boolean = KiteConfig.banner
-
-    var pageNumber: Long = KiteConfig.pageNumber
-
-    var pageSize: Long = KiteConfig.pageSize
-
-    var pageNumberParameter: String = KiteConfig.pageNumberParameter
-
-    var pageSizeParameter: String = KiteConfig.pageSizeParameter
-
-    var selectiveStrategy: Function<Any?, Boolean> = KiteConfig.selectiveStrategy
-
-    var sqlLowercase: Boolean = KiteConfig.sqlLowercase
-
-    var urlProviders: Map<String, Any> = KiteConfig.urlProviders
-
-    var enableSqlLogging: Boolean = KiteConfig.enableSqlLogging
-
-    var enableSqlDurationLogging = true
-
-    var durationUnit = DurationUnit.MILLISECONDS
-
-    var durationDecimals = 0
 
     fun apply() {
         val fields = this.javaClass.declaredFields
