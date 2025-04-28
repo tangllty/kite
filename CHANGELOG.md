@@ -3,6 +3,7 @@
 ### Bug Fixes
 
  * Fix SQL duration logging to ensure execution time is logged when enabled
+ * Fix `KiteProperties` cannot apply properties to `KiteConfig` error
 
 ### Dependencies
 

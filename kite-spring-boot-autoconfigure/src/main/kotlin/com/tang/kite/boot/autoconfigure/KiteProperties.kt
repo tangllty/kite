@@ -109,20 +109,20 @@ data class KiteProperties(
     }
 
     fun apply() {
-        val fields = this.javaClass.declaredFields
-        for (field in fields) {
-            field.isAccessible = true
-            val value = field.get(this)
-            val instance = KiteConfig
-            val properties = KiteConfig::class.memberProperties
-            properties.filter {
-                it.name == field.name
-            }.forEach {
-                if (it is KMutableProperty1) {
-                    it.setter.call(instance, value)
-                }
-            }
-        }
+        KiteConfig.banner = banner
+        KiteConfig.selectiveStrategy = selectiveStrategy
+        KiteConfig.urlProviders = urlProviders
+
+        PageConfig.pageNumber = page.pageNumber
+        PageConfig.pageSize = page.pageSize
+        PageConfig.pageNumberParameter = page.pageNumberParameter
+        PageConfig.pageSizeParameter = page.pageSizeParameter
+
+        SqlConfig.sqlLowercase = sql.sqlLowercase
+        SqlConfig.sqlLogging = sql.sqlLogging
+        SqlConfig.sqlDurationLogging = sql.sqlDurationLogging
+        SqlConfig.durationUnit = sql.durationUnit
+        SqlConfig.durationDecimals = sql.durationDecimals
     }
 
 }
