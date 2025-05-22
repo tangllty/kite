@@ -5,6 +5,9 @@ import com.tang.kite.executor.ExecutorFactory
 import com.tang.kite.session.Configuration
 import com.tang.kite.transaction.Transaction
 
+/**
+ * @author Tang
+ */
 class DefaultExecutorFactory : ExecutorFactory {
 
     override fun newExecutor(configuration: Configuration, transaction: Transaction): Executor {
