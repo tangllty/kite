@@ -5,7 +5,7 @@ plugins {
 }
 
 group = "io.github.tangllty"
-version = "1.0.7"
+version = "1.0.8"
 
 repositories {
     gradlePluginPortal()
@@ -50,7 +50,7 @@ publishing {
             artifact(tasks["javadocJar"])
             pom {
                 name.set(project.name)
-                description.set("Kite is a lightweight ORM framework for Kotlin and Java. ")
+                description.set("Kite is a lightweight ORM framework for Kotlin and Java.")
                 url.set("https://github.com/tangllty/kite")
                 licenses {
                     license {
