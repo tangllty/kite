@@ -45,7 +45,10 @@ object Reflects {
 
     fun getFields(clazz: Class<*>): List<Field> {
         return fieldsCache.computeIfAbsent(clazz) {
-            clazz.declaredFields.toList()
+            val declaredFields = clazz.declaredFields.toList()
+            val superDeclaredFields = clazz.superclass.declaredFields.toList()
+            val fields = declaredFields + superDeclaredFields
+            fields.filter { it.name != "serialVersionUID" }
         }
     }
 

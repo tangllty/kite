@@ -18,6 +18,7 @@
  * Refactor SQL provider methods to improve readability and consistency
  * Add upload artifact to Sonatype Central task
  * Refactor KiteConfig to split into multiple configuration classes for simplified configuration logic
+ * Enhance getFields to include superclass fields and exclude serialVersionUID
 
 ## 1.0.6
 
