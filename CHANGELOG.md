@@ -4,6 +4,7 @@
 
  * Fix SQL duration logging to ensure execution time is logged when enabled
  * Fix `KiteProperties` cannot apply properties to `KiteConfig` error
+ * Fix empty WHERE clause handling in AbstractSqlProvider
 
 ### Dependencies
 

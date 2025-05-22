@@ -99,6 +99,9 @@ abstract class AbstractSqlProvider : SqlProvider {
             parameters.add(it.get(entity))
             getColumnName(it, withAlias) + EQUAL + QUESTION_MARK
         }
+        if (whereSql.isEmpty()) {
+            return ""
+        }
         return "$WHERE$whereSql"
     }
 
