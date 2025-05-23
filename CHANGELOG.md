@@ -2,6 +2,8 @@
 
 ### Bug Fixes
 
+ * Fix Kotlin List generic type issue where List<out T> is not List<T>
+
 ### Dependencies
 
 ### Features
