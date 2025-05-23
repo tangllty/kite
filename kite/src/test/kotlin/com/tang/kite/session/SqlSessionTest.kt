@@ -3,7 +3,9 @@ package com.tang.kite.session
 import com.tang.kite.BaseDataTest
 import com.tang.kite.paginate.OrderItem
 import com.tang.kite.session.entity.Account
+import com.tang.kite.session.entity.AccountAs
 import com.tang.kite.session.entity.Role
+import com.tang.kite.session.mapper.AccountAsMapper
 import com.tang.kite.session.mapper.AccountJavaMapper
 import com.tang.kite.session.mapper.AccountMapper
 import com.tang.kite.session.mapper.AccountOneToManyMapper
@@ -11,6 +13,8 @@ import com.tang.kite.session.mapper.AccountOneToManyWithJoinTableMapper
 import com.tang.kite.session.mapper.AccountOneToOneMapper
 import com.tang.kite.session.mapper.AccountOneToOneWIthJoinTableMapper
 import com.tang.kite.session.mapper.RoleMapper
+import com.tang.kite.sql.function.SqlAlias
+import com.tang.kite.sql.function.`as`
 import com.tang.kite.wrapper.query.QueryWrapper
 import com.tang.kite.wrapper.update.UpdateWrapper
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -267,6 +271,16 @@ class SqlSessionTest : BaseDataTest() {
     }
 
     @Test
+    fun selectConditionNoParam() {
+        val session = sqlSessionFactory.openSession()
+        val accountMapper = session.getMapper(AccountMapper::class.java)
+        val account = Account()
+        val accounts = accountMapper.select(account)
+        session.close()
+        assertTrue(accounts.isNotEmpty())
+    }
+
+    @Test
     fun selectCondition() {
         val session = sqlSessionFactory.openSession()
         val accountMapper = session.getMapper(AccountMapper::class.java)
@@ -412,6 +426,25 @@ class SqlSessionTest : BaseDataTest() {
             .execute()
         session.close()
         assertTrue(accounts.isNotEmpty())
+    }
+
+    @Test
+    fun queryWrapperAs() {
+        val session = sqlSessionFactory.openSession()
+        val accountMapper = session.getMapper(AccountAsMapper::class.java)
+        val queryWrapper = QueryWrapper.create<AccountAs>()
+            .select(AccountAs::id, AccountAs::username, AccountAs::password)
+            .column(SqlAlias(AccountAs::username).`as`(AccountAs::usernameAs))
+            .column(AccountAs::password `as` AccountAs::passwordAs)
+            .from(AccountAs::class.java)
+            .build()
+        val accounts = accountMapper.queryWrapper(queryWrapper)
+        session.close()
+        assertTrue(accounts.isNotEmpty())
+        accounts.forEach {
+            assertEquals(it.username, it.usernameAs)
+            assertEquals(it.password, it.passwordAs)
+        }
     }
 
     @Test

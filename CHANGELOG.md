@@ -8,6 +8,8 @@
 
 ### Features
 
+ * Support SQL column aliasing
+
 ## 1.0.7
 
 ### Bug Fixes

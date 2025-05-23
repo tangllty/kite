@@ -22,41 +22,83 @@ object ResultSetHandlers {
 
     private fun <T> getEntity(resultSet: ResultSet, type: Class<T>): T {
         val metaData = resultSet.metaData
-        val metaDataMap = mutableMapOf<String, MutableList<Pair<String, Any>>>()
+        val metaDataMap = mutableMapOf<String, MutableList<Pair<String, Any?>>>()
         val entity = type.getDeclaredConstructor().newInstance()
         val tableName = Reflects.getTableName(type)
+
         for (i in 1..metaData.columnCount) {
             val columnTableName = metaData.getTableName(i).lowercase()
             val columnName = metaData.getColumnName(i)
             val columnValue = resultSet.getObject(i)
-            if (metaDataMap.containsKey(columnTableName).not()) {
-                metaDataMap[columnTableName] = mutableListOf()
-            }
-            metaDataMap[columnTableName]!!.add(Pair(columnName, columnValue))
+
+            // If there is no table name, use special key "__NO_TABLE__"
+            val effectiveTableName = if (columnTableName.isBlank()) "__NO_TABLE__" else columnTableName
+            metaDataMap.computeIfAbsent(effectiveTableName) { mutableListOf() }
+                .add(Pair(columnName, columnValue))
         }
-        val metaDataList = metaDataMap[tableName] ?: return entity
+
+        // Handle fields with table name (main table and sub tables)
+        val metaDataList = metaDataMap[tableName] ?: emptyList()
         metaDataList.forEach { (columnName, columnValue) ->
-            val field = Reflects.getField(type, columnName) ?: return@forEach
-            Reflects.makeAccessible(field, entity as Any)
-            field.set(entity, columnValue)
+            val field = Reflects.getField(type, columnName)
+            if (field != null) {
+                Reflects.makeAccessible(field, entity as Any)
+                field.set(entity, columnValue)
+            }
         }
+
+        // Handle fields of joined tables
         val joins = Reflects.getJoins(type)
-        if (joins.isEmpty()) {
-            return entity
-        }
+        val joinEntities = mutableMapOf<String, Any>()
         joins.forEach {
             val joinTableName = Reflects.getTableName(it.type)
             val joinEntity = it.type.getDeclaredConstructor().newInstance()
+            joinEntities[joinTableName] = joinEntity
             val joinMetaData = metaDataMap[joinTableName] ?: return@forEach
-            joinMetaData.forEach metaData@ { (columnName, columnValue) ->
-                val field = Reflects.getField(it.type, columnName) ?: return@metaData
-                Reflects.makeAccessible(field, joinEntity as Any)
-                field.set(joinEntity, columnValue)
+            joinMetaData.forEach { (columnName, columnValue) ->
+                val field = Reflects.getField(it.type, columnName) ?: Reflects.getField(it.type, toCamelCase(columnName))
+                if (field != null) {
+                    Reflects.makeAccessible(field, joinEntity as Any)
+                    field.set(joinEntity, columnValue)
+                }
             }
             Reflects.makeAccessible(it, entity as Any)
             it.set(entity, joinEntity)
         }
+
+        // Handle fields without table name, assign to main table first, then to sub table if not found
+        val noTableMetaDataList = metaDataMap["__NO_TABLE__"] ?: emptyList()
+        noTableMetaDataList.forEach { (columnName, columnValue) ->
+            val mainField = Reflects.getField(type, columnName) ?: Reflects.getField(type, toCamelCase(columnName))
+            if (mainField != null) {
+                Reflects.makeAccessible(mainField, entity as Any)
+                mainField.set(entity, columnValue)
+                return@forEach
+            }
+            for (join in joins) {
+                val joinEntity = joinEntities[Reflects.getTableName(join.type)] ?: continue
+                val joinField = Reflects.getField(join.type, columnName) ?: Reflects.getField(join.type, toCamelCase(columnName))
+                if (joinField != null) {
+                    Reflects.makeAccessible(joinField, joinEntity)
+                    joinField.set(joinEntity, columnValue)
+                    break
+                }
+            }
+        }
+
         return entity
+    }
+
+    /**
+     * Convert snake_case to camelCase.
+     */
+    private fun toCamelCase(columnName: String): String {
+        return columnName.split("_")
+            .joinToString("") {
+                it.lowercase().replaceFirstChar {
+                    char -> char.uppercase()
+                }
+            }.replaceFirstChar { it.lowercase() }
     }
 
     fun getCount(resultSet: ResultSet): Long {
