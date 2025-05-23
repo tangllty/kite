@@ -10,7 +10,7 @@ import kotlin.reflect.jvm.javaField
 /**
  * @author Tang
  */
-class Column(
+open class Column(
 
     val name: String,
 

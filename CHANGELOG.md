@@ -9,6 +9,7 @@
 ### Features
 
  * Support SQL column aliasing
+ * Support SQL function
 
 ## 1.0.7
 

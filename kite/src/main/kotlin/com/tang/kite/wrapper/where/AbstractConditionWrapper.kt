@@ -1,6 +1,7 @@
 package com.tang.kite.wrapper.where
 
 import com.tang.kite.function.SFunction
+import com.tang.kite.sql.function.FunctionColumn
 import com.tang.kite.wrapper.Column
 import com.tang.kite.wrapper.enumeration.ComparisonOperator
 import com.tang.kite.wrapper.enumeration.LogicalOperator
@@ -66,6 +67,17 @@ abstract class AbstractConditionWrapper<RT, T, R, W>(
      */
     fun eq(column: Column, value: Any, effective: Boolean): RT {
         return compare(column, value, ComparisonOperator.EQUAL, effective)
+    }
+
+    /**
+     * Equal operation
+     *
+     * @param column column name
+     * @param value value
+     * @return R
+     */
+    fun eq(column: Column, value: Any): RT {
+        return eq(column, value, true)
     }
 
     /**
@@ -154,6 +166,17 @@ abstract class AbstractConditionWrapper<RT, T, R, W>(
      *
      * @param column column name
      * @param value value
+     * @return RT
+     */
+    fun ne(column: Column, value: Any): RT {
+        return ne(column, value, true)
+    }
+
+    /**
+     * Not equal operation
+     *
+     * @param column column name
+     * @param value value
      * @param effective whether effective
      * @return RT
      */
@@ -228,6 +251,17 @@ abstract class AbstractConditionWrapper<RT, T, R, W>(
      */
     fun gt(column: Column, value: Any, effective: Boolean): RT {
         return compare(column, value, ComparisonOperator.GT, effective)
+    }
+
+    /**
+     * Greater than operation
+     *
+     * @param column column name
+     * @param value value
+     * @return RT
+     */
+    fun gt(column: Column, value: Any): RT {
+        return gt(column, value, true)
     }
 
     /**
@@ -316,6 +350,17 @@ abstract class AbstractConditionWrapper<RT, T, R, W>(
      *
      * @param column column name
      * @param value value
+     * @return RT
+     */
+    fun lt(column: Column, value: Any): RT {
+        return lt(column, value, true)
+    }
+
+    /**
+     * Less than operation
+     *
+     * @param column column name
+     * @param value value
      * @param effective whether effective
      * @return RT
      */
@@ -390,6 +435,17 @@ abstract class AbstractConditionWrapper<RT, T, R, W>(
      */
     fun ge(column: Column, value: Any, effective: Boolean): RT {
         return compare(column, value, ComparisonOperator.GE, effective)
+    }
+
+    /**
+     * Greater than or equal to operation
+     *
+     * @param column column object
+     * @param value value
+     * @return RT
+     */
+    fun ge(column: Column, value: Any): RT {
+        return ge(column, value, true)
     }
 
     /**
@@ -476,6 +532,17 @@ abstract class AbstractConditionWrapper<RT, T, R, W>(
     /**
      * Less than or equal to operation
      *
+     * @param column column object
+     * @param value value
+     * @return RT
+     */
+    fun le(column: Column, value: Any): RT {
+        return le(column, value, true)
+    }
+
+    /**
+     * Less than or equal to operation
+     *
      * @param column column name
      * @param value value
      * @param effective whether effective
@@ -551,7 +618,21 @@ abstract class AbstractConditionWrapper<RT, T, R, W>(
      * @return RT
      */
     fun like(column: Column, value: Any, effective: Boolean): RT {
-        return compare(column, "%$value%", ComparisonOperator.LIKE, effective)
+        if (value is FunctionColumn) {
+            value.column = "%${value.column}%"
+        }
+        return compare(column, value, ComparisonOperator.LIKE, effective)
+    }
+
+    /**
+     * Like operation
+     *
+     * @param column column object
+     * @param value value
+     * @return RT
+     */
+    fun like(column: Column, value: Any): RT {
+        return like(column, value, true)
     }
 
     /**
@@ -632,7 +713,21 @@ abstract class AbstractConditionWrapper<RT, T, R, W>(
      * @return RT
      */
     fun leftLike(column: Column, value: Any, effective: Boolean): RT {
-        return compare(column, "%$value", ComparisonOperator.LIKE, effective)
+        if (value is FunctionColumn) {
+            value.column = "%${value.column}"
+        }
+        return compare(column, value, ComparisonOperator.LIKE, effective)
+    }
+
+    /**
+     * Left like operation
+     *
+     * @param column column object
+     * @param value value
+     * @return RT
+     */
+    fun leftLike(column: Column, value: Any): RT {
+        return leftLike(column, value, true)
     }
 
     /**
@@ -713,7 +808,21 @@ abstract class AbstractConditionWrapper<RT, T, R, W>(
      * @return RT
      */
     fun rightLike(column: Column, value: Any, effective: Boolean): RT {
-        return compare(column, "$value%", ComparisonOperator.LIKE, effective)
+        if (value is FunctionColumn) {
+            value.column = "${value.column}%"
+        }
+        return compare(column, value, ComparisonOperator.LIKE, effective)
+    }
+
+    /**
+     * Right like operation
+     *
+     * @param column column object
+     * @param value value
+     * @return RT
+     */
+    fun rightLike(column: Column, value: Any): RT {
+        return rightLike(column, value, true)
     }
 
     /**
@@ -805,6 +914,18 @@ abstract class AbstractConditionWrapper<RT, T, R, W>(
     /**
      * Between operation
      *
+     * @param column column object
+     * @param start start value
+     * @param end end value
+     * @return RT
+     */
+    fun between(column: Column, start: Any, end: Any): RT {
+        return between(column, start, end, true)
+    }
+
+    /**
+     * Between operation
+     *
      * @param column column name
      * @param start start value
      * @param end end value
@@ -891,6 +1012,17 @@ abstract class AbstractConditionWrapper<RT, T, R, W>(
             conditions.add(LogicalStatement(condition, LogicalOperator.AND))
         }
         return rtInstance
+    }
+
+    /**
+     * In operation
+     *
+     * @param column column object
+     * @param values values
+     * @return RT
+     */
+    fun `in`(column: Column, values: Iterable<Any>): RT {
+        return `in`(column, values, true)
     }
 
     /**
@@ -1040,7 +1172,21 @@ abstract class AbstractConditionWrapper<RT, T, R, W>(
      * @return RT
      */
     fun notLike(column: Column, value: Any, effective: Boolean): RT {
-        return compare(column, "%$value%", ComparisonOperator.NOT_LIKE, effective)
+        if (value is FunctionColumn) {
+            value.column = "%${value.column}%"
+        }
+        return compare(column, value, ComparisonOperator.NOT_LIKE, effective)
+    }
+
+    /**
+     * Not like operation
+     *
+     * @param column column object
+     * @param value value
+     * @return RT
+     */
+    fun notLike(column: Column, value: Any): RT {
+        return notLike(column, value, true)
     }
 
     /**
@@ -1121,7 +1267,21 @@ abstract class AbstractConditionWrapper<RT, T, R, W>(
      * @return RT
      */
     fun notLeftLike(column: Column, value: Any, effective: Boolean): RT {
-        return compare(column, "%$value", ComparisonOperator.NOT_LIKE, effective)
+        if (value is FunctionColumn) {
+            value.column = "%${value.column}"
+        }
+        return compare(column, value, ComparisonOperator.NOT_LIKE, effective)
+    }
+
+    /**
+     * Not left like operation
+     *
+     * @param column column object
+     * @param value value
+     * @return RT
+     */
+    fun notLeftLike(column: Column, value: Any): RT {
+        return notLeftLike(column, value, true)
     }
 
     /**
@@ -1202,7 +1362,21 @@ abstract class AbstractConditionWrapper<RT, T, R, W>(
      * @return RT
      */
     fun notRightLike(column: Column, value: Any, effective: Boolean): RT {
-        return compare(column, "$value%", ComparisonOperator.NOT_LIKE, effective)
+        if (value is FunctionColumn) {
+            value.column = "${value.column}%"
+        }
+        return compare(column, value, ComparisonOperator.NOT_LIKE, effective)
+    }
+
+    /**
+     * Not right like operation
+     *
+     * @param column column object
+     * @param value value
+     * @return RT
+     */
+    fun notRightLike(column: Column, value: Any): RT {
+        return notRightLike(column, value, true)
     }
 
     /**
@@ -1294,6 +1468,18 @@ abstract class AbstractConditionWrapper<RT, T, R, W>(
     /**
      * Not between operation
      *
+     * @param column column object
+     * @param start start value
+     * @param end end value
+     * @return RT
+     */
+    fun notBetween(column: Column, start: Any, end: Any): RT {
+        return notBetween(column, start, end, true)
+    }
+
+    /**
+     * Not between operation
+     *
      * @param column column name
      * @param start start value
      * @param end end value
@@ -1380,6 +1566,17 @@ abstract class AbstractConditionWrapper<RT, T, R, W>(
             conditions.add(LogicalStatement(condition, LogicalOperator.AND))
         }
         return rtInstance
+    }
+
+    /**
+     * Not in operation
+     *
+     * @param column column object
+     * @param values values
+     * @return RT
+     */
+    fun notIn(column: Column, values: Iterable<Any>): RT {
+        return notIn(column, values, true)
     }
 
     /**
@@ -1534,6 +1731,16 @@ abstract class AbstractConditionWrapper<RT, T, R, W>(
     /**
      * Is null operation
      *
+     * @param column column object
+     * @return RT
+     */
+    fun isNull(column: Column): RT {
+        return isNull(column, true)
+    }
+
+    /**
+     * Is null operation
+     *
      * @param column column name
      * @param effective whether effective
      * @return RT
@@ -1603,6 +1810,16 @@ abstract class AbstractConditionWrapper<RT, T, R, W>(
      */
     fun isNotNull(column: Column, effective: Boolean): RT {
         return compare(column, "", ComparisonOperator.IS_NOT_NULL, effective)
+    }
+
+    /**
+     * Is not null operation
+     *
+     * @param column column object
+     * @return RT
+     */
+    fun isNotNull(column: Column): RT {
+        return isNotNull(column, true)
     }
 
     /**

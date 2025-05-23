@@ -4,8 +4,10 @@ import com.tang.kite.BaseDataTest
 import com.tang.kite.paginate.OrderItem
 import com.tang.kite.session.entity.Account
 import com.tang.kite.session.entity.AccountAs
+import com.tang.kite.session.entity.AccountFunction
 import com.tang.kite.session.entity.Role
 import com.tang.kite.session.mapper.AccountAsMapper
+import com.tang.kite.session.mapper.AccountFunctionMapper
 import com.tang.kite.session.mapper.AccountJavaMapper
 import com.tang.kite.session.mapper.AccountMapper
 import com.tang.kite.session.mapper.AccountOneToManyMapper
@@ -14,6 +16,7 @@ import com.tang.kite.session.mapper.AccountOneToOneMapper
 import com.tang.kite.session.mapper.AccountOneToOneWIthJoinTableMapper
 import com.tang.kite.session.mapper.RoleMapper
 import com.tang.kite.sql.function.SqlAlias
+import com.tang.kite.sql.function.SqlFunction
 import com.tang.kite.sql.function.`as`
 import com.tang.kite.wrapper.query.QueryWrapper
 import com.tang.kite.wrapper.update.UpdateWrapper
@@ -445,6 +448,21 @@ class SqlSessionTest : BaseDataTest() {
             assertEquals(it.username, it.usernameAs)
             assertEquals(it.password, it.passwordAs)
         }
+    }
+
+    @Test
+    fun queryWrapperFunction() {
+        val session = sqlSessionFactory.openSession()
+        val accountMapper = session.getMapper(AccountFunctionMapper::class.java)
+        val queryWrapper = QueryWrapper.create<AccountFunction>()
+            .select(AccountFunction::id, AccountFunction::username)
+            .from(AccountFunction::class.java)
+            .where()
+            .like(SqlFunction.lower(AccountFunction::username), SqlFunction.lower("Tang"))
+            .build()
+        val accounts = accountMapper.queryWrapper(queryWrapper)
+        session.close()
+        assertTrue(accounts.isNotEmpty())
     }
 
     @Test
