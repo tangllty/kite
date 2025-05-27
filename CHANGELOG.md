@@ -10,6 +10,7 @@
 
  * Support SQL column aliasing
  * Support SQL function
+ * Support for SQL annotations
 
 ## 1.0.7
 

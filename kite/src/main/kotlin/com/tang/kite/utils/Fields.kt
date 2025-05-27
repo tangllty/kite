@@ -1,5 +1,6 @@
 package com.tang.kite.utils
 
+import com.tang.kite.constants.SqlString.DOT
 import com.tang.kite.function.SFunction
 import java.lang.invoke.SerializedLambda
 import java.lang.reflect.Field
@@ -70,6 +71,31 @@ object Fields {
                 field.set(instance, enumConstant)
             }
         }
+    }
+
+    /**
+     * Get the value of a field from an object or a map.
+     *
+     * @param any The object or map from which to retrieve the value.
+     * @param param The field name or a dot-separated path to the field.
+     * @return The value of the field, or null if not found.
+     */
+    fun getValue(any: Any, param: String): Any? {
+        val parts = param.split(DOT)
+        var current: Any? = any
+        for (part in parts) {
+            current = when (current) {
+                is Map<*, *> -> current[part]
+                else -> {
+                    val field = current?.javaClass?.declaredFields?.find { it.name == part }
+                        ?: throw NoSuchFieldException("Field not found: $part in ${current?.javaClass}")
+                    field.isAccessible = true
+                    field.get(current)
+                }
+            }
+            if (current == null) break
+        }
+        return current
     }
 
 }

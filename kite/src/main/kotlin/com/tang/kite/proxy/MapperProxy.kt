@@ -1,6 +1,11 @@
 package com.tang.kite.proxy
 
+import com.tang.kite.annotation.Delete
+import com.tang.kite.annotation.Insert
+import com.tang.kite.annotation.Select
+import com.tang.kite.annotation.Update
 import com.tang.kite.constants.BaseMethodName
+import com.tang.kite.enumeration.MethodType
 import com.tang.kite.session.SqlSession
 import com.tang.kite.utils.Reflects
 import java.lang.invoke.MethodHandle
@@ -10,6 +15,7 @@ import java.lang.reflect.InvocationHandler
 import java.lang.reflect.Method
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.ConcurrentMap
+import kotlin.jvm.java
 
 /**
  * Mapper proxy for mapper interface
@@ -61,6 +67,9 @@ class MapperProxy<T>(
         }
         if (BaseMethodName.isBaseMethod(method)) {
             return baseMethodInvoker(method, args)
+        }
+        if (isAnnotatedMethod(method)) {
+            return annotatedMethodsInvoker(method, args)
         }
         return method.invoke(this, *(args ?: arrayOf()))
     }
@@ -117,7 +126,18 @@ class MapperProxy<T>(
     }
 
     private fun baseMethodInvoker(method: Method, args: Array<out Any>?): Any? {
-        return sqlSession.execute(method, args, mapperInterface)
+        return sqlSession.execute(MethodType.BASE, method, args, mapperInterface)
+    }
+
+    private fun isAnnotatedMethod(method: Method): Boolean {
+        return method.isAnnotationPresent(Select::class.java) ||
+            method.isAnnotationPresent(Insert::class.java) ||
+            method.isAnnotationPresent(Update::class.java) ||
+            method.isAnnotationPresent(Delete::class.java)
+    }
+
+    private fun annotatedMethodsInvoker(method: Method, args: Array<out Any>?): Any? {
+        return sqlSession.execute(MethodType.ANNOTATED, method, args, mapperInterface)
     }
 
 }

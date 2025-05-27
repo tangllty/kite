@@ -628,4 +628,33 @@ class SqlSessionTest : BaseDataTest() {
         }
     }
 
+    @Test
+    fun selectAnnotation() {
+        val session = sqlSessionFactory.openSession()
+        val accountMapper = session.getMapper(AccountMapper::class.java)
+        val accounts = accountMapper.selectAnnotation()
+        session.close()
+        assertTrue(accounts.isNotEmpty())
+    }
+
+    @Test
+    fun insertAnnotation() {
+        val session = sqlSessionFactory.openSession(true)
+        val accountMapper = session.getMapper(AccountMapper::class.java)
+        val account = Account(username = "tang", password = "123456")
+        val rows = accountMapper.insertAnnotation(account)
+        session.close()
+        assertEquals(1, rows)
+    }
+
+    @Test
+    fun insertAnnotationParam() {
+        val session = sqlSessionFactory.openSession(true)
+        val accountMapper = session.getMapper(AccountMapper::class.java)
+        val account = Account(username = "tang", password = "123456")
+        val rows = accountMapper.insertAnnotation(account, Account(), "test")
+        session.close()
+        assertEquals(1, rows)
+    }
+
 }
