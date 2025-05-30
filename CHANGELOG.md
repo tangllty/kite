@@ -1,4 +1,14 @@
-## 1.0.8
+## 1.0.10
+
+### Bug Fixes
+
+### Dependencies
+
+### Features
+
+ * Support expression language
+
+## 1.0.9
 
 ### Bug Fixes
 
@@ -6,11 +16,26 @@
 
 ### Dependencies
 
+ * Bump gradle/actions from 4.3.1 to 4.4.0
+
 ### Features
 
  * Support SQL column aliasing
  * Support SQL function
  * Support for SQL annotations
+
+## 1.0.8
+
+### Bug Fixes
+
+ * Fix empty WHERE clause handling in AbstractSqlProvider
+
+### Dependencies
+
+### Features
+
+ * Refactor KiteConfig to split into multiple configuration classes for simplified configuration logic
+ * Enhance getFields to include superclass fields and exclude serialVersionUID
 
 ## 1.0.7
 
