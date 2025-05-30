@@ -8,6 +8,7 @@ package com.tang.kite.utils.expression
 class Lexer(private val input: String) {
 
     private var pos = 0
+
     private val tokens = mutableListOf<Token>()
 
     /**

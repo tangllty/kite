@@ -85,7 +85,13 @@ object Fields {
         var current: Any? = any
         for (part in parts) {
             current = when (current) {
-                is Map<*, *> -> current[part]
+                is Map<*, *> -> {
+                    if (current.containsKey(part)) {
+                        current[part]
+                    } else {
+                        throw NoSuchFieldException("Key not found: $part in map")
+                    }
+                }
                 else -> {
                     val field = current?.javaClass?.declaredFields?.find { it.name == part }
                         ?: throw NoSuchFieldException("Field not found: $part in ${current?.javaClass}")

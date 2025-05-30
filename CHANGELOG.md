@@ -2,6 +2,8 @@
 
 ### Bug Fixes
 
+ * Fix `Fields.getValue` not throwing an exception when the map does not contain the key
+
 ### Dependencies
 
 ### Features

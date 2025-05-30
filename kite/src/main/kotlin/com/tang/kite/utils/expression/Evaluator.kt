@@ -1,5 +1,6 @@
 package com.tang.kite.utils.expression
 
+import com.tang.kite.utils.Fields
 import kotlin.math.pow
 
 /**
@@ -20,14 +21,14 @@ class Evaluator(private val context: Map<String, Any?>) {
         is Expr.Unary -> evalUnary(expr)
         is Expr.Binary -> evalBinary(expr)
         is Expr.FunctionCall -> evalFunctionCall(expr)
-        is Expr.Index -> evalIndex(expr) // Evaluate index access
+        is Expr.Index -> evalIndex(expr)
     }
 
     /**
      * Resolve variable from context.
      */
     private fun resolveVariable(name: String): Any? {
-        return context[name] ?: throw IllegalArgumentException("Undefined variable: $name")
+        return Fields.getValue(context, name)
     }
 
     /**
