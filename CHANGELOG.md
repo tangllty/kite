@@ -6,6 +6,11 @@
 
 ### Dependencies
 
+ * Bump logback from 1.5.17 to 1.5.18
+ * Bump guava from 33.4.0-jre to 33.4.8-jre
+ * Bump spring from 6.2.3 to 6.2.7
+ * Bump spring-boot from 3.4.3 to 3.5.0
+
 ### Features
 
  * Support expression language
@@ -74,7 +79,7 @@
 * Bump slf4j from 2.0.16 to 2.0.17
 * Bump logback from 1.5.16 to 1.5.17
 * Bump spring from 6.2.2 to 6.2.3
-* Bump springBoot from 3.4.1 to 3.4.3
+* Bump spring-boot from 3.4.1 to 3.4.3
 
 ### Features
 
@@ -111,7 +116,7 @@
  * Bump logback from 1.5.12 to 1.5.16
  * Bump guava from 33.3.1-jre to 33.4.0-jre
  * Bump spring from 6.1.14 to 6.2.2
- * Bump springBoot from 3.3.5 to 3.4.1
+ * Bump spring-boot from 3.3.5 to 3.4.1
 
 ### Features
 
@@ -146,7 +151,7 @@
  * Bump logback from 1.5.6 to 1.5.12
  * Bump guava from 33.3.0-jre to 33.3.1-jre
  * Bump spring from 6.1.11 to 6.1.14
- * Bump springBoot from 3.3.2 to 3.3.5
+ * Bump spring-boot from 3.3.2 to 3.3.5
 
 ### Features
 
