@@ -657,4 +657,14 @@ class SqlSessionTest : BaseDataTest() {
         assertEquals(1, rows)
     }
 
+    @Test
+    fun selectConditionAnnotation() {
+        val session = sqlSessionFactory.openSession()
+        val accountMapper = session.getMapper(AccountMapper::class.java)
+        val account = Account(username = "admin")
+        val accounts = accountMapper.selectCondition(account)
+        session.close()
+        assertTrue(accounts.isNotEmpty())
+    }
+
 }

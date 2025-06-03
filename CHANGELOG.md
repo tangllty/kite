@@ -9,6 +9,7 @@
 ### Features
 
  * Support expression language
+ * Support SQL with annotations
 
 ## 1.0.9
 

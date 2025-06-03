@@ -20,4 +20,15 @@ interface AccountMapper : BaseMapper<Account> {
     @Insert("insert into account (username, password) values (#{account.username}, #{param3})")
     fun insertAnnotation(@Param("account") account: Account, other: Account, str: String): Int
 
+    @Select("""
+        select * from account
+        if (username != null && username != "") {
+            and username = #{username}
+        }
+        if (password != null && password != "") {
+            and password = #{password}
+        }
+    """)
+    fun selectCondition(account: Account): List<Account>
+
 }

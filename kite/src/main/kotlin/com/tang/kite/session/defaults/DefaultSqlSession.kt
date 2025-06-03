@@ -3,14 +3,11 @@ package com.tang.kite.session.defaults
 import com.tang.kite.annotation.Delete
 import com.tang.kite.annotation.Insert
 import com.tang.kite.annotation.Join
-import com.tang.kite.annotation.Param
 import com.tang.kite.annotation.Select
 import com.tang.kite.annotation.Update
 import com.tang.kite.config.PageConfig
 import com.tang.kite.config.SqlConfig
 import com.tang.kite.constants.BaseMethodName
-import com.tang.kite.constants.SqlString.DOT
-import com.tang.kite.constants.SqlString.QUESTION_MARK
 import com.tang.kite.enumeration.MethodType
 import com.tang.kite.executor.Executor
 import com.tang.kite.paginate.OrderItem
@@ -20,15 +17,13 @@ import com.tang.kite.session.Configuration
 import com.tang.kite.session.SqlSession
 import com.tang.kite.sql.SqlStatement
 import com.tang.kite.sql.provider.SqlProvider
-import com.tang.kite.utils.Fields
 import com.tang.kite.utils.Reflects
+import com.tang.kite.utils.parser.SqlParser
 import com.tang.kite.wrapper.query.QueryWrapper
 import com.tang.kite.wrapper.update.UpdateWrapper
 import org.slf4j.LoggerFactory
 import java.lang.reflect.Method
-import java.lang.reflect.Parameter
 import java.lang.reflect.ParameterizedType
-import kotlin.collections.forEachIndexed
 import kotlin.time.Duration.Companion.nanoseconds
 
 /**
@@ -169,83 +164,8 @@ class DefaultSqlSession(
     }
 
     private fun annotatedMethodParameters(method: Method, args: Array<out Any>?, sql: String): SqlStatement {
-        val parameters = mutableListOf<Any?>()
-        var parsedSql = sql
-
-        // Build a map of all available parameter names to their indices at the beginning
-        val paramValueMap = buildParamValueMap(method.parameters, args)
-
-        if (args != null && args.isNotEmpty()) {
-            val regex = Regex("#\\{([^}]+)}")
-            parsedSql = regex.replace(parsedSql) { matchResult ->
-                val paramName = matchResult.groupValues[1]
-                val value = getValue(args, paramName, paramValueMap)
-                parameters.add(value)
-                QUESTION_MARK
-            }
-            if (parameters.isEmpty()) {
-                parameters.addAll(args)
-            }
-        }
-        return SqlStatement(parsedSql, parameters)
-    }
-
-    /**
-     * Build a map of all available parameter names to their values.
-     * Supports [Param] annotation and paramN format parameter names.
-     */
-    private fun buildParamValueMap(parameters: Array<Parameter>, args: Array<out Any>?): Map<String, Any> {
-        if (args == null || args.isEmpty()) {
-            return emptyMap()
-        }
-        val map = mutableMapOf<String, Any>()
-        parameters.forEachIndexed { index, param ->
-            val ann = param.getAnnotation(Param::class.java)
-            if (ann != null) {
-                map[ann.value] = args[index]
-            }
-            map["param${index.plus(1)}"] = args[index]
-        }
-        return map
-    }
-
-    /**
-     * Extract parameter values using the parameter name map.
-     * Supports @Param annotation names, paramN format, object fields, and Map values.
-     */
-    private fun getValue(args: Array<out Any>, paramName: String, paramValueMap: Map<String, Any>): Any? {
-        val value = if (paramName.contains(DOT)) {
-            Fields.getValue(paramValueMap, paramName)
-        } else {
-            paramValueMap[paramName]
-        }
-        if (value != null) {
-            return value
-        }
-        // Handle single parameter object or Map
-        if (args.size == 1) {
-            val param = args[0]
-            return when (param) {
-                is Map<*, *> -> param[paramName]
-                else -> getFieldValueOrSelf(param, paramName)
-            }
-        }
-        throw IllegalArgumentException("Parameter '$paramName' not found. Available parameters are ${paramValueMap.keys.joinToString(", ", prefix = "[", postfix = "]")}")
-    }
-
-    /**
-     * Get the value of a field from an object. If the field does not exist, return the object itself (for primitive types).
-     */
-    private fun getFieldValueOrSelf(obj: Any, fieldName: String): Any? {
-        return try {
-            val field = obj.javaClass.declaredFields.find { it.name == fieldName }
-            field?.let {
-                it.isAccessible = true
-                it.get(obj)
-            } ?: if (obj is Number || obj is String || obj is Boolean) obj else null
-        } catch (_: Exception) {
-            if (obj is Number || obj is String || obj is Boolean) obj else null
-        }
+        val paramValueMap = SqlParser.buildParamValueMap(method.parameters, args)
+        return SqlParser.parse(sql, paramValueMap)
     }
 
     @Deprecated("This function has unchecked cast warning and I don't know how to fix it.")
