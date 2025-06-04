@@ -76,7 +76,7 @@ class SqlParserTest {
         val sql = "select * from user where age > #{age} and name = #{name}"
         val params = emptyMap<String, Any?>()
         try {
-            val parsed = SqlParser.parse(sql, params)
+            SqlParser.parse(sql, params)
             assert(false)
         } catch (e: IllegalArgumentException) {
             assert(e.message?.contains("parameter 'age' not found") == true)

@@ -54,10 +54,6 @@ class DefaultSqlSession(
         return args?.get(1) ?: throw IllegalArgumentException("Second parameter is null")
     }
 
-    private fun getThirdArg(args: Array<out Any>?): Any {
-        return args?.get(2) ?: throw IllegalArgumentException("Third parameter is null")
-    }
-
     private fun <T> toOrderBys(any: Any?): Array<OrderItem<T>> {
         if (any == null) {
             return emptyArray()
@@ -142,7 +138,7 @@ class DefaultSqlSession(
         }
     }
 
-    private fun <T> annotatedMethodsInvoker(method: Method, args: Array<out Any>?, mapperInterface: Class<T>): Any? {
+    private fun <T> annotatedMethodsInvoker(method: Method, args: Array<out Any>?, mapperInterface: Class<T>): Any {
         val start = System.nanoTime()
         val select = method.getAnnotation(Select::class.java)
         val insert = method.getAnnotation(Insert::class.java)
@@ -168,7 +164,6 @@ class DefaultSqlSession(
         return SqlParser.parse(sql, paramValueMap)
     }
 
-    @Deprecated("This function has unchecked cast warning and I don't know how to fix it.")
     private fun <M, T> getGenericType(mapperInterface: Class<M>): Class<T> {
         val baseMapper = mapperInterface.genericInterfaces[0]
         val type = (baseMapper as ParameterizedType).actualTypeArguments[0]
