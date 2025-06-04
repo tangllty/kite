@@ -5,11 +5,9 @@ import com.tang.kite.wrapper.where.AbstractWhereWrapper
 /**
  * Query where wrapper for [QueryWrapper]
  *
- * The reason is that Kotlin's List returns List<out T> instead of List<T>, so java.util.List<T> is used as the query result type.
- *
  * @author Tang
  */
-class QueryWhereWrapper<T>(private val queryWrapper: QueryWrapper<T>) : AbstractWhereWrapper<T, java.util.List<T>, QueryWrapper<T>>(queryWrapper, mutableListOf()) {
+class QueryWhereWrapper<T>(private val queryWrapper: QueryWrapper<T>) : AbstractWhereWrapper<T, MutableList<T>, QueryWrapper<T>>(queryWrapper, mutableListOf()) {
 
     private val joinedClass = mutableListOf<Class<*>>()
 
@@ -30,10 +28,9 @@ class QueryWhereWrapper<T>(private val queryWrapper: QueryWrapper<T>) : Abstract
     /**
      * Execute the query
      */
-    override fun execute(): java.util.List<T> {
+    override fun execute(): MutableList<T> {
         val list = build().baseMapper.queryWrapper(queryWrapper)
-        @Suppress("UNCHECKED_CAST")
-        return list as java.util.List<T>
+        return list.toMutableList()
     }
 
     internal fun isMultiTableQuery(): Boolean {
