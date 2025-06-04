@@ -31,7 +31,7 @@ class WhereOrderByWrapper<T, R, W>(
      * @return WhereOrderByWrapper<T, R, W>
      */
     @SafeVarargs
-    fun orderBy(vararg orderBys: OrderItem<*>): WhereOrderByWrapper<T, R, W> {
+    fun <E> orderBy(vararg orderBys: OrderItem<E>): WhereOrderByWrapper<T, R, W> {
         columns.addAll(orderBys)
         return this
     }
@@ -64,7 +64,7 @@ class WhereOrderByWrapper<T, R, W>(
      * @param asc asc or desc
      * @return WhereOrderByWrapper<T, R, W>
      */
-    fun orderBy(column: KMutableProperty1<*, *>, asc: Boolean = true): WhereOrderByWrapper<T, R, W> {
+    fun <E> orderBy(column: KMutableProperty1<E, *>, asc: Boolean = true): WhereOrderByWrapper<T, R, W> {
         return orderBy(OrderItem(column, asc))
     }
 
@@ -75,7 +75,7 @@ class WhereOrderByWrapper<T, R, W>(
      * @param asc asc or desc
      * @return WhereOrderByWrapper<T, R, W>
      */
-    fun orderBy(column: SFunction<*, *>, asc: Boolean = true): WhereOrderByWrapper<T, R, W> {
+    fun <E> orderBy(column: SFunction<E, *>, asc: Boolean = true): WhereOrderByWrapper<T, R, W> {
         return orderBy(OrderItem(column, asc))
     }
 
@@ -105,7 +105,7 @@ class WhereOrderByWrapper<T, R, W>(
      * @param column column property
      * @return WhereOrderByWrapper<T, R, W>
      */
-    fun orderByAsc(column: KMutableProperty1<*, *>): WhereOrderByWrapper<T, R, W> {
+    fun <E> orderByAsc(column: KMutableProperty1<E, *>): WhereOrderByWrapper<T, R, W> {
         return orderBy(column, true)
     }
 
@@ -115,7 +115,7 @@ class WhereOrderByWrapper<T, R, W>(
      * @param column column property
      * @return WhereOrderByWrapper<T, R, W>
      */
-    fun orderByDesc(column: KMutableProperty1<*, *>): WhereOrderByWrapper<T, R, W> {
+    fun <E> orderByDesc(column: KMutableProperty1<E, *>): WhereOrderByWrapper<T, R, W> {
         return orderBy(column, false)
     }
 
@@ -125,7 +125,7 @@ class WhereOrderByWrapper<T, R, W>(
      * @param column column function
      * @return WhereOrderByWrapper<T, R, W>
      */
-    fun orderByAsc(column: SFunction<*, *>): WhereOrderByWrapper<T, R, W> {
+    fun <E> orderByAsc(column: SFunction<E, *>): WhereOrderByWrapper<T, R, W> {
         return orderBy(column, true)
     }
 
@@ -135,7 +135,7 @@ class WhereOrderByWrapper<T, R, W>(
      * @param column column function
      * @return WhereOrderByWrapper<T, R, W>
      */
-    fun orderByDesc(column: SFunction<*, *>): WhereOrderByWrapper<T, R, W> {
+    fun <E> orderByDesc(column: SFunction<E, *>): WhereOrderByWrapper<T, R, W> {
         return orderBy(column, false)
     }
 
