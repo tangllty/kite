@@ -15,6 +15,7 @@
 
  * Support expression language
  * Support SQL with annotations
+ * Support SQLite database
 
 ## 1.0.9
 

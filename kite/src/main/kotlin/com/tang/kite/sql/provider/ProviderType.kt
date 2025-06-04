@@ -6,8 +6,11 @@ package com.tang.kite.sql.provider
  * @author Tang
  */
 enum class ProviderType {
+
     POSTGRESQL,
     MYSQL,
+    SQLITE,
     DERBY,
     H2
+
 }

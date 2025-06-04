@@ -6,6 +6,7 @@ import com.tang.kite.sql.provider.derby.DerbySqlProvider
 import com.tang.kite.sql.provider.h2.H2SqlProvider
 import com.tang.kite.sql.provider.mysql.MysqlSqlProvider
 import com.tang.kite.sql.provider.postgresql.PostgresqlSqlProvider
+import com.tang.kite.sql.provider.sqlite.SqliteSqlProvider
 import java.util.function.Function
 
 /**
@@ -34,6 +35,7 @@ object KiteConfig {
     var urlProviders: Map<String, SqlProvider> = mapOf(
         "postgresql" to PostgresqlSqlProvider(),
         "mysql" to MysqlSqlProvider(),
+        "sqlite" to SqliteSqlProvider(),
         "derby" to DerbySqlProvider(),
         "h2" to H2SqlProvider()
     )
