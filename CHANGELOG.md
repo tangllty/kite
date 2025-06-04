@@ -10,6 +10,7 @@
  * Bump guava from 33.4.0-jre to 33.4.8-jre
  * Bump spring from 6.2.3 to 6.2.7
  * Bump spring-boot from 3.4.3 to 3.5.0
+ * Bump gradle from 8.9 to 8.14.1
 
 ### Features
 
