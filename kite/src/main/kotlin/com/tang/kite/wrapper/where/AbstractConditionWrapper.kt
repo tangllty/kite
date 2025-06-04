@@ -21,7 +21,7 @@ abstract class AbstractConditionWrapper<RT, T, R, W>(
     @Suppress("UNCHECKED_CAST")
     protected var rtInstance: RT = Any() as RT
 
-    private fun compare(column: Column, value: Any, comparisonOperator: ComparisonOperator, effective: Boolean): RT {
+    private fun compare(column: Column, value: Any?, comparisonOperator: ComparisonOperator, effective: Boolean): RT {
         if (effective) {
             val condition = ComparisonStatement(column, value, comparisonOperator)
             conditions.add(LogicalStatement(condition, LogicalOperator.AND))
@@ -65,7 +65,7 @@ abstract class AbstractConditionWrapper<RT, T, R, W>(
      * @param effective whether effective
      * @return R
      */
-    fun eq(column: Column, value: Any, effective: Boolean): RT {
+    fun eq(column: Column, value: Any?, effective: Boolean): RT {
         return compare(column, value, ComparisonOperator.EQUAL, effective)
     }
 
@@ -76,7 +76,7 @@ abstract class AbstractConditionWrapper<RT, T, R, W>(
      * @param value value
      * @return R
      */
-    fun eq(column: Column, value: Any): RT {
+    fun eq(column: Column, value: Any?): RT {
         return eq(column, value, true)
     }
 
@@ -88,7 +88,7 @@ abstract class AbstractConditionWrapper<RT, T, R, W>(
      * @param effective whether effective
      * @return R
      */
-    fun eq(column: String, value: Any, effective: Boolean): RT {
+    fun eq(column: String, value: Any?, effective: Boolean): RT {
         return eq(Column(column), value, effective)
     }
 
@@ -99,7 +99,7 @@ abstract class AbstractConditionWrapper<RT, T, R, W>(
      * @param value value
      * @return R
      */
-    fun eq(column: String, value: Any): RT {
+    fun eq(column: String, value: Any?): RT {
         return eq(column, value, true)
     }
 
@@ -111,7 +111,7 @@ abstract class AbstractConditionWrapper<RT, T, R, W>(
      * @param effective whether effective
      * @return R
      */
-    fun <E> eq(column: KMutableProperty1<E, *>, value: Any, effective: Boolean): RT {
+    fun <E> eq(column: KMutableProperty1<E, *>, value: Any?, effective: Boolean): RT {
         return eq(Column(column), value, effective)
     }
 
@@ -122,7 +122,7 @@ abstract class AbstractConditionWrapper<RT, T, R, W>(
      * @param value value
      * @return R
      */
-    fun <E> eq(column: KMutableProperty1<E, *>, value: Any): RT {
+    fun <E> eq(column: KMutableProperty1<E, *>, value: Any?): RT {
         return eq(column, value, true)
     }
 
@@ -134,7 +134,7 @@ abstract class AbstractConditionWrapper<RT, T, R, W>(
      * @param effective whether effective
      * @return R
      */
-    fun <E> eq(column: SFunction<E, *>, value: Any, effective: Boolean): RT {
+    fun <E> eq(column: SFunction<E, *>, value: Any?, effective: Boolean): RT {
         return eq(Column(column), value, effective)
     }
 
@@ -145,7 +145,7 @@ abstract class AbstractConditionWrapper<RT, T, R, W>(
      * @param value value
      * @return R
      */
-    fun <E> eq(column: SFunction<E, *>, value: Any): RT {
+    fun <E> eq(column: SFunction<E, *>, value: Any?): RT {
         return eq(column, value, true)
     }
 
@@ -157,7 +157,7 @@ abstract class AbstractConditionWrapper<RT, T, R, W>(
      * @param effective whether effective
      * @return RT
      */
-    fun ne(column: Column, value: Any, effective: Boolean): RT {
+    fun ne(column: Column, value: Any?, effective: Boolean): RT {
         return compare(column, value, ComparisonOperator.NOT_EQUAL, effective)
     }
 
@@ -168,7 +168,7 @@ abstract class AbstractConditionWrapper<RT, T, R, W>(
      * @param value value
      * @return RT
      */
-    fun ne(column: Column, value: Any): RT {
+    fun ne(column: Column, value: Any?): RT {
         return ne(column, value, true)
     }
 
@@ -180,7 +180,7 @@ abstract class AbstractConditionWrapper<RT, T, R, W>(
      * @param effective whether effective
      * @return RT
      */
-    fun ne(column: String, value: Any, effective: Boolean): RT {
+    fun ne(column: String, value: Any?, effective: Boolean): RT {
         return ne(Column(column), value, effective)
     }
 
@@ -191,7 +191,7 @@ abstract class AbstractConditionWrapper<RT, T, R, W>(
      * @param value value
      * @return RT
      */
-    fun ne(column: String, value: Any): RT {
+    fun ne(column: String, value: Any?): RT {
         return ne(column, value, true)
     }
 
@@ -203,7 +203,7 @@ abstract class AbstractConditionWrapper<RT, T, R, W>(
      * @param effective whether effective
      * @return RT
      */
-    fun <E> ne(column: KMutableProperty1<E, *>, value: Any, effective: Boolean): RT {
+    fun <E> ne(column: KMutableProperty1<E, *>, value: Any?, effective: Boolean): RT {
         return ne(Column(column), value, effective)
     }
 
@@ -214,7 +214,7 @@ abstract class AbstractConditionWrapper<RT, T, R, W>(
      * @param value value
      * @return RT
      */
-    fun <E> ne(column: KMutableProperty1<E, *>, value: Any): RT {
+    fun <E> ne(column: KMutableProperty1<E, *>, value: Any?): RT {
         return ne(column, value, true)
     }
 
@@ -226,7 +226,7 @@ abstract class AbstractConditionWrapper<RT, T, R, W>(
      * @param effective whether effective
      * @return RT
      */
-    fun <E> ne(column: SFunction<E, *>, value: Any, effective: Boolean): RT {
+    fun <E> ne(column: SFunction<E, *>, value: Any?, effective: Boolean): RT {
         return ne(Column(column), value, effective)
     }
 
@@ -237,7 +237,7 @@ abstract class AbstractConditionWrapper<RT, T, R, W>(
      * @param value value
      * @return RT
      */
-    fun <E> ne(column: SFunction<E, *>, value: Any): RT {
+    fun <E> ne(column: SFunction<E, *>, value: Any?): RT {
         return ne(column, value, true)
     }
 
@@ -249,7 +249,7 @@ abstract class AbstractConditionWrapper<RT, T, R, W>(
      * @param effective whether effective
      * @return RT
      */
-    fun gt(column: Column, value: Any, effective: Boolean): RT {
+    fun gt(column: Column, value: Any?, effective: Boolean): RT {
         return compare(column, value, ComparisonOperator.GT, effective)
     }
 
@@ -260,7 +260,7 @@ abstract class AbstractConditionWrapper<RT, T, R, W>(
      * @param value value
      * @return RT
      */
-    fun gt(column: Column, value: Any): RT {
+    fun gt(column: Column, value: Any?): RT {
         return gt(column, value, true)
     }
 
@@ -272,7 +272,7 @@ abstract class AbstractConditionWrapper<RT, T, R, W>(
      * @param effective whether effective
      * @return RT
      */
-    fun gt(column: String, value: Any, effective: Boolean): RT {
+    fun gt(column: String, value: Any?, effective: Boolean): RT {
         return gt(Column(column), value, effective)
     }
 
@@ -283,7 +283,7 @@ abstract class AbstractConditionWrapper<RT, T, R, W>(
      * @param value value
      * @return RT
      */
-    fun gt(column: String, value: Any): RT {
+    fun gt(column: String, value: Any?): RT {
         return gt(column, value, true)
     }
 
@@ -295,7 +295,7 @@ abstract class AbstractConditionWrapper<RT, T, R, W>(
      * @param effective whether effective
      * @return RT
      */
-    fun <E> gt(column: KMutableProperty1<E, *>, value: Any, effective: Boolean): RT {
+    fun <E> gt(column: KMutableProperty1<E, *>, value: Any?, effective: Boolean): RT {
         return gt(Column(column), value, effective)
     }
 
@@ -306,7 +306,7 @@ abstract class AbstractConditionWrapper<RT, T, R, W>(
      * @param value value
      * @return RT
      */
-    fun <E> gt(column: KMutableProperty1<E, *>, value: Any): RT {
+    fun <E> gt(column: KMutableProperty1<E, *>, value: Any?): RT {
         return gt(column, value, true)
     }
 
@@ -318,7 +318,7 @@ abstract class AbstractConditionWrapper<RT, T, R, W>(
      * @param effective whether effective
      * @return RT
      */
-    fun <E> gt(column: SFunction<E, *>, value: Any, effective: Boolean): RT {
+    fun <E> gt(column: SFunction<E, *>, value: Any?, effective: Boolean): RT {
         return gt(Column(column), value, effective)
     }
 
@@ -329,7 +329,7 @@ abstract class AbstractConditionWrapper<RT, T, R, W>(
      * @param value value
      * @return RT
      */
-    fun <E> gt(column: SFunction<E, *>, value: Any): RT {
+    fun <E> gt(column: SFunction<E, *>, value: Any?): RT {
         return gt(column, value, true)
     }
 
@@ -341,7 +341,7 @@ abstract class AbstractConditionWrapper<RT, T, R, W>(
      * @param effective whether effective
      * @return RT
      */
-    fun lt(column: Column, value: Any, effective: Boolean): RT {
+    fun lt(column: Column, value: Any?, effective: Boolean): RT {
         return compare(column, value, ComparisonOperator.LT, effective)
     }
 
@@ -352,7 +352,7 @@ abstract class AbstractConditionWrapper<RT, T, R, W>(
      * @param value value
      * @return RT
      */
-    fun lt(column: Column, value: Any): RT {
+    fun lt(column: Column, value: Any?): RT {
         return lt(column, value, true)
     }
 
@@ -364,7 +364,7 @@ abstract class AbstractConditionWrapper<RT, T, R, W>(
      * @param effective whether effective
      * @return RT
      */
-    fun lt(column: String, value: Any, effective: Boolean): RT {
+    fun lt(column: String, value: Any?, effective: Boolean): RT {
         return lt(Column(column), value, effective)
     }
 
@@ -375,7 +375,7 @@ abstract class AbstractConditionWrapper<RT, T, R, W>(
      * @param value value
      * @return RT
      */
-    fun lt(column: String, value: Any): RT {
+    fun lt(column: String, value: Any?): RT {
         return lt(column, value, true)
     }
 
@@ -387,7 +387,7 @@ abstract class AbstractConditionWrapper<RT, T, R, W>(
      * @param effective whether effective
      * @return RT
      */
-    fun <E> lt(column: KMutableProperty1<E, *>, value: Any, effective: Boolean): RT {
+    fun <E> lt(column: KMutableProperty1<E, *>, value: Any?, effective: Boolean): RT {
         return lt(Column(column), value, effective)
     }
 
@@ -398,7 +398,7 @@ abstract class AbstractConditionWrapper<RT, T, R, W>(
      * @param value value
      * @return RT
      */
-    fun <E> lt(column: KMutableProperty1<E, *>, value: Any): RT {
+    fun <E> lt(column: KMutableProperty1<E, *>, value: Any?): RT {
         return lt(column, value, true)
     }
 
@@ -410,7 +410,7 @@ abstract class AbstractConditionWrapper<RT, T, R, W>(
      * @param effective whether effective
      * @return RT
      */
-    fun <E> lt(column: SFunction<E, *>, value: Any, effective: Boolean): RT {
+    fun <E> lt(column: SFunction<E, *>, value: Any?, effective: Boolean): RT {
         return lt(Column(column), value, effective)
     }
 
@@ -421,7 +421,7 @@ abstract class AbstractConditionWrapper<RT, T, R, W>(
      * @param value value
      * @return RT
      */
-    fun <E> lt(column: SFunction<E, *>, value: Any): RT {
+    fun <E> lt(column: SFunction<E, *>, value: Any?): RT {
         return lt(column, value, true)
     }
 
@@ -433,7 +433,7 @@ abstract class AbstractConditionWrapper<RT, T, R, W>(
      * @param effective whether effective
      * @return RT
      */
-    fun ge(column: Column, value: Any, effective: Boolean): RT {
+    fun ge(column: Column, value: Any?, effective: Boolean): RT {
         return compare(column, value, ComparisonOperator.GE, effective)
     }
 
@@ -444,7 +444,7 @@ abstract class AbstractConditionWrapper<RT, T, R, W>(
      * @param value value
      * @return RT
      */
-    fun ge(column: Column, value: Any): RT {
+    fun ge(column: Column, value: Any?): RT {
         return ge(column, value, true)
     }
 
@@ -456,7 +456,7 @@ abstract class AbstractConditionWrapper<RT, T, R, W>(
      * @param effective whether effective
      * @return RT
      */
-    fun ge(column: String, value: Any, effective: Boolean): RT {
+    fun ge(column: String, value: Any?, effective: Boolean): RT {
         return ge(Column(column), value, effective)
     }
 
@@ -467,7 +467,7 @@ abstract class AbstractConditionWrapper<RT, T, R, W>(
      * @param value value
      * @return RT
      */
-    fun ge(column: String, value: Any): RT {
+    fun ge(column: String, value: Any?): RT {
         return ge(column, value, true)
     }
 
@@ -479,7 +479,7 @@ abstract class AbstractConditionWrapper<RT, T, R, W>(
      * @param effective whether effective
      * @return RT
      */
-    fun <E> ge(column: KMutableProperty1<E, *>, value: Any, effective: Boolean): RT {
+    fun <E> ge(column: KMutableProperty1<E, *>, value: Any?, effective: Boolean): RT {
         return ge(Column(column), value, effective)
     }
 
@@ -490,7 +490,7 @@ abstract class AbstractConditionWrapper<RT, T, R, W>(
      * @param value value
      * @return RT
      */
-    fun <E> ge(column: KMutableProperty1<E, *>, value: Any): RT {
+    fun <E> ge(column: KMutableProperty1<E, *>, value: Any?): RT {
         return ge(column, value, true)
     }
 
@@ -502,7 +502,7 @@ abstract class AbstractConditionWrapper<RT, T, R, W>(
      * @param effective whether effective
      * @return RT
      */
-    fun <E> ge(column: SFunction<E, *>, value: Any, effective: Boolean): RT {
+    fun <E> ge(column: SFunction<E, *>, value: Any?, effective: Boolean): RT {
         return ge(Column(column), value, effective)
     }
 
@@ -513,7 +513,7 @@ abstract class AbstractConditionWrapper<RT, T, R, W>(
      * @param value value
      * @return RT
      */
-    fun <E> ge(column: SFunction<E, *>, value: Any): RT {
+    fun <E> ge(column: SFunction<E, *>, value: Any?): RT {
         return ge(column, value, true)
     }
 
@@ -525,7 +525,7 @@ abstract class AbstractConditionWrapper<RT, T, R, W>(
      * @param effective whether effective
      * @return RT
      */
-    fun le(column: Column, value: Any, effective: Boolean): RT {
+    fun le(column: Column, value: Any?, effective: Boolean): RT {
         return compare(column, value, ComparisonOperator.LE, effective)
     }
 
@@ -536,7 +536,7 @@ abstract class AbstractConditionWrapper<RT, T, R, W>(
      * @param value value
      * @return RT
      */
-    fun le(column: Column, value: Any): RT {
+    fun le(column: Column, value: Any?): RT {
         return le(column, value, true)
     }
 
@@ -548,7 +548,7 @@ abstract class AbstractConditionWrapper<RT, T, R, W>(
      * @param effective whether effective
      * @return RT
      */
-    fun le(column: String, value: Any, effective: Boolean): RT {
+    fun le(column: String, value: Any?, effective: Boolean): RT {
         return le(Column(column), value, effective)
     }
 
@@ -559,7 +559,7 @@ abstract class AbstractConditionWrapper<RT, T, R, W>(
      * @param value value
      * @return RT
      */
-    fun le(column: String, value: Any): RT {
+    fun le(column: String, value: Any?): RT {
         return le(column, value, true)
     }
 
@@ -571,7 +571,7 @@ abstract class AbstractConditionWrapper<RT, T, R, W>(
      * @param effective whether effective
      * @return RT
      */
-    fun <E> le(column: KMutableProperty1<E, *>, value: Any, effective: Boolean): RT {
+    fun <E> le(column: KMutableProperty1<E, *>, value: Any?, effective: Boolean): RT {
         return le(Column(column), value, effective)
     }
 
@@ -582,7 +582,7 @@ abstract class AbstractConditionWrapper<RT, T, R, W>(
      * @param value value
      * @return RT
      */
-    fun <E> le(column: KMutableProperty1<E, *>, value: Any): RT {
+    fun <E> le(column: KMutableProperty1<E, *>, value: Any?): RT {
         return le(column, value, true)
     }
 
@@ -594,7 +594,7 @@ abstract class AbstractConditionWrapper<RT, T, R, W>(
      * @param effective whether effective
      * @return RT
      */
-    fun <E> le(column: SFunction<E, *>, value: Any, effective: Boolean): RT {
+    fun <E> le(column: SFunction<E, *>, value: Any?, effective: Boolean): RT {
         return le(Column(column), value, effective)
     }
 
@@ -605,7 +605,7 @@ abstract class AbstractConditionWrapper<RT, T, R, W>(
      * @param value value
      * @return RT
      */
-    fun <E> le(column: SFunction<E, *>, value: Any): RT {
+    fun <E> le(column: SFunction<E, *>, value: Any?): RT {
         return le(column, value, true)
     }
 
@@ -617,7 +617,7 @@ abstract class AbstractConditionWrapper<RT, T, R, W>(
      * @param effective whether effective
      * @return RT
      */
-    fun like(column: Column, value: Any, effective: Boolean): RT {
+    fun like(column: Column, value: Any?, effective: Boolean): RT {
         if (value is FunctionColumn) {
             value.column = "%${value.column}%"
         }
@@ -631,7 +631,7 @@ abstract class AbstractConditionWrapper<RT, T, R, W>(
      * @param value value
      * @return RT
      */
-    fun like(column: Column, value: Any): RT {
+    fun like(column: Column, value: Any?): RT {
         return like(column, value, true)
     }
 
@@ -643,7 +643,7 @@ abstract class AbstractConditionWrapper<RT, T, R, W>(
      * @param effective whether effective
      * @return RT
      */
-    fun like(column: String, value: Any, effective: Boolean): RT {
+    fun like(column: String, value: Any?, effective: Boolean): RT {
         return like(Column(column), value, effective)
     }
 
@@ -654,7 +654,7 @@ abstract class AbstractConditionWrapper<RT, T, R, W>(
      * @param value value
      * @return RT
      */
-    fun like(column: String, value: Any): RT {
+    fun like(column: String, value: Any?): RT {
         return like(column, value, true)
     }
 
@@ -666,7 +666,7 @@ abstract class AbstractConditionWrapper<RT, T, R, W>(
      * @param effective whether effective
      * @return RT
      */
-    fun <E> like(column: KMutableProperty1<E, *>, value: Any, effective: Boolean): RT {
+    fun <E> like(column: KMutableProperty1<E, *>, value: Any?, effective: Boolean): RT {
         return like(Column(column), value, effective)
     }
 
@@ -677,7 +677,7 @@ abstract class AbstractConditionWrapper<RT, T, R, W>(
      * @param value value
      * @return RT
      */
-    fun <E> like(column: KMutableProperty1<E, *>, value: Any): RT {
+    fun <E> like(column: KMutableProperty1<E, *>, value: Any?): RT {
         return like(column, value, true)
     }
 
@@ -689,7 +689,7 @@ abstract class AbstractConditionWrapper<RT, T, R, W>(
      * @param effective whether effective
      * @return RT
      */
-    fun <E> like(column: SFunction<E, *>, value: Any, effective: Boolean): RT {
+    fun <E> like(column: SFunction<E, *>, value: Any?, effective: Boolean): RT {
         return like(Column(column), value, effective)
     }
 
@@ -700,7 +700,7 @@ abstract class AbstractConditionWrapper<RT, T, R, W>(
      * @param value value
      * @return RT
      */
-    fun <E> like(column: SFunction<E, *>, value: Any): RT {
+    fun <E> like(column: SFunction<E, *>, value: Any?): RT {
         return like(column, value, true)
     }
 
@@ -712,7 +712,7 @@ abstract class AbstractConditionWrapper<RT, T, R, W>(
      * @param effective whether effective
      * @return RT
      */
-    fun leftLike(column: Column, value: Any, effective: Boolean): RT {
+    fun leftLike(column: Column, value: Any?, effective: Boolean): RT {
         if (value is FunctionColumn) {
             value.column = "%${value.column}"
         }
@@ -726,7 +726,7 @@ abstract class AbstractConditionWrapper<RT, T, R, W>(
      * @param value value
      * @return RT
      */
-    fun leftLike(column: Column, value: Any): RT {
+    fun leftLike(column: Column, value: Any?): RT {
         return leftLike(column, value, true)
     }
 
@@ -738,7 +738,7 @@ abstract class AbstractConditionWrapper<RT, T, R, W>(
      * @param effective whether effective
      * @return RT
      */
-    fun leftLike(column: String, value: Any, effective: Boolean): RT {
+    fun leftLike(column: String, value: Any?, effective: Boolean): RT {
         return leftLike(Column(column), value, effective)
     }
 
@@ -749,7 +749,7 @@ abstract class AbstractConditionWrapper<RT, T, R, W>(
      * @param value value
      * @return RT
      */
-    fun leftLike(column: String, value: Any): RT {
+    fun leftLike(column: String, value: Any?): RT {
         return leftLike(column, value, true)
     }
 
@@ -761,7 +761,7 @@ abstract class AbstractConditionWrapper<RT, T, R, W>(
      * @param effective whether effective
      * @return RT
      */
-    fun <E> leftLike(column: KMutableProperty1<E, *>, value: Any, effective: Boolean): RT {
+    fun <E> leftLike(column: KMutableProperty1<E, *>, value: Any?, effective: Boolean): RT {
         return leftLike(Column(column), value, effective)
     }
 
@@ -772,7 +772,7 @@ abstract class AbstractConditionWrapper<RT, T, R, W>(
      * @param value value
      * @return RT
      */
-    fun <E> leftLike(column: KMutableProperty1<E, *>, value: Any): RT {
+    fun <E> leftLike(column: KMutableProperty1<E, *>, value: Any?): RT {
         return leftLike(column, value, true)
     }
 
@@ -784,7 +784,7 @@ abstract class AbstractConditionWrapper<RT, T, R, W>(
      * @param effective whether effective
      * @return RT
      */
-    fun <E> leftLike(column: SFunction<E, *>, value: Any, effective: Boolean): RT {
+    fun <E> leftLike(column: SFunction<E, *>, value: Any?, effective: Boolean): RT {
         return leftLike(Column(column), value, effective)
     }
 
@@ -795,7 +795,7 @@ abstract class AbstractConditionWrapper<RT, T, R, W>(
      * @param value value
      * @return RT
      */
-    fun <E> leftLike(column: SFunction<E, *>, value: Any): RT {
+    fun <E> leftLike(column: SFunction<E, *>, value: Any?): RT {
         return leftLike(column, value, true)
     }
 
@@ -807,7 +807,7 @@ abstract class AbstractConditionWrapper<RT, T, R, W>(
      * @param effective whether effective
      * @return RT
      */
-    fun rightLike(column: Column, value: Any, effective: Boolean): RT {
+    fun rightLike(column: Column, value: Any?, effective: Boolean): RT {
         if (value is FunctionColumn) {
             value.column = "${value.column}%"
         }
@@ -821,7 +821,7 @@ abstract class AbstractConditionWrapper<RT, T, R, W>(
      * @param value value
      * @return RT
      */
-    fun rightLike(column: Column, value: Any): RT {
+    fun rightLike(column: Column, value: Any?): RT {
         return rightLike(column, value, true)
     }
 
@@ -833,7 +833,7 @@ abstract class AbstractConditionWrapper<RT, T, R, W>(
      * @param effective whether effective
      * @return RT
      */
-    fun rightLike(column: String, value: Any, effective: Boolean): RT {
+    fun rightLike(column: String, value: Any?, effective: Boolean): RT {
         return rightLike(Column(column), value, effective)
     }
 
@@ -844,7 +844,7 @@ abstract class AbstractConditionWrapper<RT, T, R, W>(
      * @param value value
      * @return RT
      */
-    fun rightLike(column: String, value: Any): RT {
+    fun rightLike(column: String, value: Any?): RT {
         return rightLike(column, value, true)
     }
 
@@ -856,7 +856,7 @@ abstract class AbstractConditionWrapper<RT, T, R, W>(
      * @param effective whether effective
      * @return RT
      */
-    fun <E> rightLike(column: KMutableProperty1<E, *>, value: Any, effective: Boolean): RT {
+    fun <E> rightLike(column: KMutableProperty1<E, *>, value: Any?, effective: Boolean): RT {
         return rightLike(Column(column), value, effective)
     }
 
@@ -867,7 +867,7 @@ abstract class AbstractConditionWrapper<RT, T, R, W>(
      * @param value value
      * @return RT
      */
-    fun <E> rightLike(column: KMutableProperty1<E, *>, value: Any): RT {
+    fun <E> rightLike(column: KMutableProperty1<E, *>, value: Any?): RT {
         return rightLike(column, value, true)
     }
 
@@ -879,7 +879,7 @@ abstract class AbstractConditionWrapper<RT, T, R, W>(
      * @param effective whether effective
      * @return RT
      */
-    fun <E> rightLike(column: SFunction<E, *>, value: Any, effective: Boolean): RT {
+    fun <E> rightLike(column: SFunction<E, *>, value: Any?, effective: Boolean): RT {
         return rightLike(Column(column), value, effective)
     }
 
@@ -890,7 +890,7 @@ abstract class AbstractConditionWrapper<RT, T, R, W>(
      * @param value value
      * @return RT
      */
-    fun <E> rightLike(column: SFunction<E, *>, value: Any): RT {
+    fun <E> rightLike(column: SFunction<E, *>, value: Any?): RT {
         return rightLike(column, value, true)
     }
 
@@ -1006,7 +1006,7 @@ abstract class AbstractConditionWrapper<RT, T, R, W>(
      * @param effective whether effective
      * @return RT
      */
-    fun `in`(column: Column, values: Iterable<Any>, effective: Boolean): RT {
+    fun `in`(column: Column, values: Iterable<Any?>, effective: Boolean): RT {
         if (effective) {
             val condition = ComparisonStatement(column, values, ComparisonOperator.IN)
             conditions.add(LogicalStatement(condition, LogicalOperator.AND))
@@ -1021,7 +1021,7 @@ abstract class AbstractConditionWrapper<RT, T, R, W>(
      * @param values values
      * @return RT
      */
-    fun `in`(column: Column, values: Iterable<Any>): RT {
+    fun `in`(column: Column, values: Iterable<Any?>): RT {
         return `in`(column, values, true)
     }
 
@@ -1033,7 +1033,7 @@ abstract class AbstractConditionWrapper<RT, T, R, W>(
      * @param effective whether effective
      * @return RT
      */
-    fun `in`(column: String, values: Iterable<Any>, effective: Boolean): RT {
+    fun `in`(column: String, values: Iterable<Any?>, effective: Boolean): RT {
         return `in`(Column(column), values, effective)
     }
 
@@ -1044,7 +1044,7 @@ abstract class AbstractConditionWrapper<RT, T, R, W>(
      * @param values values
      * @return RT
      */
-    fun `in`(column: String, values: Iterable<Any>): RT {
+    fun `in`(column: String, values: Iterable<Any?>): RT {
         return `in`(column, values, true)
     }
 
@@ -1056,7 +1056,7 @@ abstract class AbstractConditionWrapper<RT, T, R, W>(
      * @param effective whether effective
      * @return RT
      */
-    fun <E> `in`(column: KMutableProperty1<E, *>, values: Iterable<Any>, effective: Boolean): RT {
+    fun <E> `in`(column: KMutableProperty1<E, *>, values: Iterable<Any?>, effective: Boolean): RT {
         return `in`(Column(column), values, effective)
     }
 
@@ -1067,7 +1067,7 @@ abstract class AbstractConditionWrapper<RT, T, R, W>(
      * @param values values
      * @return RT
      */
-    fun <E> `in`(column: KMutableProperty1<E, *>, values: Iterable<Any>): RT {
+    fun <E> `in`(column: KMutableProperty1<E, *>, values: Iterable<Any?>): RT {
         return `in`(column, values, true)
     }
 
@@ -1079,7 +1079,7 @@ abstract class AbstractConditionWrapper<RT, T, R, W>(
      * @param effective whether effective
      * @return RT
      */
-    fun <E> `in`(column: SFunction<E, *>, values: Iterable<Any>, effective: Boolean): RT {
+    fun <E> `in`(column: SFunction<E, *>, values: Iterable<Any?>, effective: Boolean): RT {
         return `in`(Column(column), values, effective)
     }
 
@@ -1090,7 +1090,7 @@ abstract class AbstractConditionWrapper<RT, T, R, W>(
      * @param values values
      * @return RT
      */
-    fun <E> `in`(column: SFunction<E, *>, values: Iterable<Any>): RT {
+    fun <E> `in`(column: SFunction<E, *>, values: Iterable<Any?>): RT {
         return `in`(column, values, true)
     }
 
@@ -1102,7 +1102,7 @@ abstract class AbstractConditionWrapper<RT, T, R, W>(
      * @param effective whether effective
      * @return RT
      */
-    fun `in`(column: String, values: Array<Any>, effective: Boolean): RT {
+    fun `in`(column: String, values: Array<Any?>, effective: Boolean): RT {
         return `in`(column, values.toList(), effective)
     }
 
@@ -1113,7 +1113,7 @@ abstract class AbstractConditionWrapper<RT, T, R, W>(
      * @param values values
      * @return RT
      */
-    fun `in`(column: String, values: Array<Any>): RT {
+    fun `in`(column: String, values: Array<Any?>): RT {
         return `in`(column, values, true)
     }
 
@@ -1125,7 +1125,7 @@ abstract class AbstractConditionWrapper<RT, T, R, W>(
      * @param effective whether effective
      * @return RT
      */
-    fun <E> `in`(column: KMutableProperty1<E, *>, values: Array<Any>, effective: Boolean): RT {
+    fun <E> `in`(column: KMutableProperty1<E, *>, values: Array<Any?>, effective: Boolean): RT {
         return `in`(Column(column), values.toList(), effective)
     }
 
@@ -1136,7 +1136,7 @@ abstract class AbstractConditionWrapper<RT, T, R, W>(
      * @param values values
      * @return RT
      */
-    fun <E> `in`(column: KMutableProperty1<E, *>, values: Array<Any>): RT {
+    fun <E> `in`(column: KMutableProperty1<E, *>, values: Array<Any?>): RT {
         return `in`(column, values, true)
     }
 
@@ -1148,7 +1148,7 @@ abstract class AbstractConditionWrapper<RT, T, R, W>(
      * @param effective whether effective
      * @return RT
      */
-    fun <E> `in`(column: SFunction<E, *>, values: Array<Any>, effective: Boolean): RT {
+    fun <E> `in`(column: SFunction<E, *>, values: Array<Any?>, effective: Boolean): RT {
         return `in`(Column(column), values.toList(), effective)
     }
 
@@ -1159,7 +1159,7 @@ abstract class AbstractConditionWrapper<RT, T, R, W>(
      * @param values values
      * @return RT
      */
-    fun <E> `in`(column: SFunction<E, *>, values: Array<Any>): RT {
+    fun <E> `in`(column: SFunction<E, *>, values: Array<Any?>): RT {
         return `in`(column, values, true)
     }
 
@@ -1171,7 +1171,7 @@ abstract class AbstractConditionWrapper<RT, T, R, W>(
      * @param effective whether effective
      * @return RT
      */
-    fun notLike(column: Column, value: Any, effective: Boolean): RT {
+    fun notLike(column: Column, value: Any?, effective: Boolean): RT {
         if (value is FunctionColumn) {
             value.column = "%${value.column}%"
         }
@@ -1185,7 +1185,7 @@ abstract class AbstractConditionWrapper<RT, T, R, W>(
      * @param value value
      * @return RT
      */
-    fun notLike(column: Column, value: Any): RT {
+    fun notLike(column: Column, value: Any?): RT {
         return notLike(column, value, true)
     }
 
@@ -1197,7 +1197,7 @@ abstract class AbstractConditionWrapper<RT, T, R, W>(
      * @param effective whether effective
      * @return RT
      */
-    fun notLike(column: String, value: Any, effective: Boolean): RT {
+    fun notLike(column: String, value: Any?, effective: Boolean): RT {
         return notLike(Column(column), value, effective)
     }
 
@@ -1208,7 +1208,7 @@ abstract class AbstractConditionWrapper<RT, T, R, W>(
      * @param value value
      * @return RT
      */
-    fun notLike(column: String, value: Any): RT {
+    fun notLike(column: String, value: Any?): RT {
         return notLike(column, value, true)
     }
 
@@ -1220,7 +1220,7 @@ abstract class AbstractConditionWrapper<RT, T, R, W>(
      * @param effective whether effective
      * @return RT
      */
-    fun <E> notLike(column: KMutableProperty1<E, *>, value: Any, effective: Boolean): RT {
+    fun <E> notLike(column: KMutableProperty1<E, *>, value: Any?, effective: Boolean): RT {
         return notLike(Column(column), value, effective)
     }
 
@@ -1231,7 +1231,7 @@ abstract class AbstractConditionWrapper<RT, T, R, W>(
      * @param value value
      * @return RT
      */
-    fun <E> notLike(column: KMutableProperty1<E, *>, value: Any): RT {
+    fun <E> notLike(column: KMutableProperty1<E, *>, value: Any?): RT {
         return notLike(column, value, true)
     }
 
@@ -1243,7 +1243,7 @@ abstract class AbstractConditionWrapper<RT, T, R, W>(
      * @param effective whether effective
      * @return RT
      */
-    fun <E> notLike(column: SFunction<E, *>, value: Any, effective: Boolean): RT {
+    fun <E> notLike(column: SFunction<E, *>, value: Any?, effective: Boolean): RT {
         return notLike(Column(column), value, effective)
     }
 
@@ -1254,7 +1254,7 @@ abstract class AbstractConditionWrapper<RT, T, R, W>(
      * @param value value
      * @return RT
      */
-    fun <E> notLike(column: SFunction<E, *>, value: Any): RT {
+    fun <E> notLike(column: SFunction<E, *>, value: Any?): RT {
         return notLike(column, value, true)
     }
 
@@ -1266,7 +1266,7 @@ abstract class AbstractConditionWrapper<RT, T, R, W>(
      * @param effective whether effective
      * @return RT
      */
-    fun notLeftLike(column: Column, value: Any, effective: Boolean): RT {
+    fun notLeftLike(column: Column, value: Any?, effective: Boolean): RT {
         if (value is FunctionColumn) {
             value.column = "%${value.column}"
         }
@@ -1280,7 +1280,7 @@ abstract class AbstractConditionWrapper<RT, T, R, W>(
      * @param value value
      * @return RT
      */
-    fun notLeftLike(column: Column, value: Any): RT {
+    fun notLeftLike(column: Column, value: Any?): RT {
         return notLeftLike(column, value, true)
     }
 
@@ -1292,7 +1292,7 @@ abstract class AbstractConditionWrapper<RT, T, R, W>(
      * @param effective whether effective
      * @return RT
      */
-    fun notLeftLike(column: String, value: Any, effective: Boolean): RT {
+    fun notLeftLike(column: String, value: Any?, effective: Boolean): RT {
         return notLeftLike(Column(column), value, effective)
     }
 
@@ -1303,7 +1303,7 @@ abstract class AbstractConditionWrapper<RT, T, R, W>(
      * @param value value
      * @return RT
      */
-    fun notLeftLike(column: String, value: Any): RT {
+    fun notLeftLike(column: String, value: Any?): RT {
         return notLeftLike(column, value, true)
     }
 
@@ -1315,7 +1315,7 @@ abstract class AbstractConditionWrapper<RT, T, R, W>(
      * @param effective whether effective
      * @return RT
      */
-    fun <E> notLeftLike(column: KMutableProperty1<E, *>, value: Any, effective: Boolean): RT {
+    fun <E> notLeftLike(column: KMutableProperty1<E, *>, value: Any?, effective: Boolean): RT {
         return notLeftLike(Column(column), value, effective)
     }
 
@@ -1326,7 +1326,7 @@ abstract class AbstractConditionWrapper<RT, T, R, W>(
      * @param value value
      * @return RT
      */
-    fun <E> notLeftLike(column: KMutableProperty1<E, *>, value: Any): RT {
+    fun <E> notLeftLike(column: KMutableProperty1<E, *>, value: Any?): RT {
         return notLeftLike(column, value, true)
     }
 
@@ -1338,7 +1338,7 @@ abstract class AbstractConditionWrapper<RT, T, R, W>(
      * @param effective whether effective
      * @return RT
      */
-    fun <E> notLeftLike(column: SFunction<E, *>, value: Any, effective: Boolean): RT {
+    fun <E> notLeftLike(column: SFunction<E, *>, value: Any?, effective: Boolean): RT {
         return notLeftLike(Column(column), value, effective)
     }
 
@@ -1349,7 +1349,7 @@ abstract class AbstractConditionWrapper<RT, T, R, W>(
      * @param value value
      * @return RT
      */
-    fun <E> notLeftLike(column: SFunction<E, *>, value: Any): RT {
+    fun <E> notLeftLike(column: SFunction<E, *>, value: Any?): RT {
         return notLeftLike(column, value, true)
     }
 
@@ -1361,7 +1361,7 @@ abstract class AbstractConditionWrapper<RT, T, R, W>(
      * @param effective whether effective
      * @return RT
      */
-    fun notRightLike(column: Column, value: Any, effective: Boolean): RT {
+    fun notRightLike(column: Column, value: Any?, effective: Boolean): RT {
         if (value is FunctionColumn) {
             value.column = "${value.column}%"
         }
@@ -1375,7 +1375,7 @@ abstract class AbstractConditionWrapper<RT, T, R, W>(
      * @param value value
      * @return RT
      */
-    fun notRightLike(column: Column, value: Any): RT {
+    fun notRightLike(column: Column, value: Any?): RT {
         return notRightLike(column, value, true)
     }
 
@@ -1387,7 +1387,7 @@ abstract class AbstractConditionWrapper<RT, T, R, W>(
      * @param effective whether effective
      * @return RT
      */
-    fun notRightLike(column: String, value: Any, effective: Boolean): RT {
+    fun notRightLike(column: String, value: Any?, effective: Boolean): RT {
         return notRightLike(Column(column), value, effective)
     }
 
@@ -1398,7 +1398,7 @@ abstract class AbstractConditionWrapper<RT, T, R, W>(
      * @param value value
      * @return RT
      */
-    fun notRightLike(column: String, value: Any): RT {
+    fun notRightLike(column: String, value: Any?): RT {
         return notRightLike(column, value, true)
     }
 
@@ -1410,7 +1410,7 @@ abstract class AbstractConditionWrapper<RT, T, R, W>(
      * @param effective whether effective
      * @return RT
      */
-    fun <E> notRightLike(column: KMutableProperty1<E, *>, value: Any, effective: Boolean): RT {
+    fun <E> notRightLike(column: KMutableProperty1<E, *>, value: Any?, effective: Boolean): RT {
         return notRightLike(Column(column), value, effective)
     }
 
@@ -1421,7 +1421,7 @@ abstract class AbstractConditionWrapper<RT, T, R, W>(
      * @param value value
      * @return RT
      */
-    fun <E> notRightLike(column: KMutableProperty1<E, *>, value: Any): RT {
+    fun <E> notRightLike(column: KMutableProperty1<E, *>, value: Any?): RT {
         return notRightLike(column, value, true)
     }
 
@@ -1433,7 +1433,7 @@ abstract class AbstractConditionWrapper<RT, T, R, W>(
      * @param effective whether effective
      * @return RT
      */
-    fun <E> notRightLike(column: SFunction<E, *>, value: Any, effective: Boolean): RT {
+    fun <E> notRightLike(column: SFunction<E, *>, value: Any?, effective: Boolean): RT {
         return notRightLike(Column(column), value, effective)
     }
 
@@ -1444,7 +1444,7 @@ abstract class AbstractConditionWrapper<RT, T, R, W>(
      * @param value value
      * @return RT
      */
-    fun <E> notRightLike(column: SFunction<E, *>, value: Any): RT {
+    fun <E> notRightLike(column: SFunction<E, *>, value: Any?): RT {
         return notRightLike(column, value, true)
     }
 
@@ -1560,7 +1560,7 @@ abstract class AbstractConditionWrapper<RT, T, R, W>(
      * @param effective whether effective
      * @return RT
      */
-    fun notIn(column: Column, values: Iterable<Any>, effective: Boolean): RT {
+    fun notIn(column: Column, values: Iterable<Any?>, effective: Boolean): RT {
         if (effective) {
             val condition = ComparisonStatement(column, values, ComparisonOperator.NOT_IN)
             conditions.add(LogicalStatement(condition, LogicalOperator.AND))
@@ -1575,7 +1575,7 @@ abstract class AbstractConditionWrapper<RT, T, R, W>(
      * @param values values
      * @return RT
      */
-    fun notIn(column: Column, values: Iterable<Any>): RT {
+    fun notIn(column: Column, values: Iterable<Any?>): RT {
         return notIn(column, values, true)
     }
 
@@ -1587,7 +1587,7 @@ abstract class AbstractConditionWrapper<RT, T, R, W>(
      * @param effective whether effective
      * @return RT
      */
-    fun notIn(column: String, values: Iterable<Any>, effective: Boolean): RT {
+    fun notIn(column: String, values: Iterable<Any?>, effective: Boolean): RT {
         return notIn(Column(column), values, effective)
     }
 
@@ -1598,7 +1598,7 @@ abstract class AbstractConditionWrapper<RT, T, R, W>(
      * @param values values
      * @return RT
      */
-    fun notIn(column: String, values: Iterable<Any>): RT {
+    fun notIn(column: String, values: Iterable<Any?>): RT {
         return notIn(column, values, true)
     }
 
@@ -1610,7 +1610,7 @@ abstract class AbstractConditionWrapper<RT, T, R, W>(
      * @param effective whether effective
      * @return RT
      */
-    fun <E> notIn(column: KMutableProperty1<E, *>, values: Iterable<Any>, effective: Boolean): RT {
+    fun <E> notIn(column: KMutableProperty1<E, *>, values: Iterable<Any?>, effective: Boolean): RT {
         return notIn(Column(column), values, effective)
     }
 
@@ -1621,7 +1621,7 @@ abstract class AbstractConditionWrapper<RT, T, R, W>(
      * @param values values
      * @return RT
      */
-    fun <E> notIn(column: KMutableProperty1<E, *>, values: Iterable<Any>): RT {
+    fun <E> notIn(column: KMutableProperty1<E, *>, values: Iterable<Any?>): RT {
         return notIn(column, values, true)
     }
 
@@ -1633,7 +1633,7 @@ abstract class AbstractConditionWrapper<RT, T, R, W>(
      * @param effective whether effective
      * @return RT
      */
-    fun <E> notIn(column: SFunction<E, *>, values: Iterable<Any>, effective: Boolean): RT {
+    fun <E> notIn(column: SFunction<E, *>, values: Iterable<Any?>, effective: Boolean): RT {
         return notIn(Column(column), values, effective)
     }
 
@@ -1644,7 +1644,7 @@ abstract class AbstractConditionWrapper<RT, T, R, W>(
      * @param values values
      * @return RT
      */
-    fun <E> notIn(column: SFunction<E, *>, values: Iterable<Any>): RT {
+    fun <E> notIn(column: SFunction<E, *>, values: Iterable<Any?>): RT {
         return notIn(column, values, true)
     }
 
@@ -1656,7 +1656,7 @@ abstract class AbstractConditionWrapper<RT, T, R, W>(
      * @param effective whether effective
      * @return RT
      */
-    fun notIn(column: String, values: Array<Any>, effective: Boolean): RT {
+    fun notIn(column: String, values: Array<Any?>, effective: Boolean): RT {
         return notIn(column, values.toList(), effective)
     }
 
@@ -1667,7 +1667,7 @@ abstract class AbstractConditionWrapper<RT, T, R, W>(
      * @param values values
      * @return RT
      */
-    fun notIn(column: String, values: Array<Any>): RT {
+    fun notIn(column: String, values: Array<Any?>): RT {
         return notIn(column, values, true)
     }
 
@@ -1679,7 +1679,7 @@ abstract class AbstractConditionWrapper<RT, T, R, W>(
      * @param effective whether effective
      * @return RT
      */
-    fun <E> notIn(column: KMutableProperty1<E, *>, values: Array<Any>, effective: Boolean): RT {
+    fun <E> notIn(column: KMutableProperty1<E, *>, values: Array<Any?>, effective: Boolean): RT {
         return notIn(Column(column), values.toList(), effective)
     }
 
@@ -1690,7 +1690,7 @@ abstract class AbstractConditionWrapper<RT, T, R, W>(
      * @param values values
      * @return RT
      */
-    fun <E> notIn(column: KMutableProperty1<E, *>, values: Array<Any>): RT {
+    fun <E> notIn(column: KMutableProperty1<E, *>, values: Array<Any?>): RT {
         return notIn(column, values, true)
     }
 
@@ -1702,7 +1702,7 @@ abstract class AbstractConditionWrapper<RT, T, R, W>(
      * @param effective whether effective
      * @return RT
      */
-    fun <E> notIn(column: SFunction<E, *>, values: Array<Any>, effective: Boolean): RT {
+    fun <E> notIn(column: SFunction<E, *>, values: Array<Any?>, effective: Boolean): RT {
         return notIn(Column(column), values.toList(), effective)
     }
 
@@ -1713,7 +1713,7 @@ abstract class AbstractConditionWrapper<RT, T, R, W>(
      * @param values values
      * @return RT
      */
-    fun <E> notIn(column: SFunction<E, *>, values: Array<Any>): RT {
+    fun <E> notIn(column: SFunction<E, *>, values: Array<Any?>): RT {
         return notIn(column, values, true)
     }
 

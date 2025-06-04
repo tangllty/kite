@@ -15,7 +15,7 @@ import com.tang.kite.wrapper.enumeration.ComparisonOperator
  *
  * @author Tang
  */
-class ComparisonStatement(val column: Column, val value: Any, val comparisonOperator: ComparisonOperator) {
+class ComparisonStatement(val column: Column, val value: Any?, val comparisonOperator: ComparisonOperator) {
 
     fun appendSql(sql: StringBuilder, parameters: MutableList<Any?>, withAlias: Boolean) {
         when (comparisonOperator) {
@@ -44,7 +44,7 @@ class ComparisonStatement(val column: Column, val value: Any, val comparisonOper
 
     }
 
-    fun getQuestionMark(): String {
+    private fun getQuestionMark(): String {
         if (value is FunctionColumn) {
             val function = SqlConfig.getSql(value.function)
             return "$function($QUESTION_MARK)"
@@ -52,7 +52,7 @@ class ComparisonStatement(val column: Column, val value: Any, val comparisonOper
         return QUESTION_MARK
     }
 
-    fun getColumn(withAlias: Boolean): String {
+    private fun getColumn(withAlias: Boolean): String {
         if (column is FunctionColumn) {
             val function = SqlConfig.getSql(column.function)
             return "$function(${column.toString(withAlias)})"
@@ -60,7 +60,7 @@ class ComparisonStatement(val column: Column, val value: Any, val comparisonOper
         return column.toString(withAlias)
     }
 
-    fun getColumnValue(): Any {
+    private fun getColumnValue(): Any? {
         if (value is FunctionColumn) {
             return value.column
         }

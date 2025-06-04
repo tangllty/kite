@@ -4,6 +4,7 @@
 
  * Fix `Fields.getValue` not throwing an exception when the map does not contain the key
  * Fix generic type error in `orderByAsc` and `orderByDesc` methods
+ * Fix value cannot be null error
 
 ### Dependencies
 
