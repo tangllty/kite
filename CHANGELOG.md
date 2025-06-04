@@ -17,6 +17,7 @@
  * Support expression language
  * Support SQL with annotations
  * Support SQLite database
+ * Add `orderByAsc` and `orderByDesc` methods for various column types
 
 ## 1.0.9
 

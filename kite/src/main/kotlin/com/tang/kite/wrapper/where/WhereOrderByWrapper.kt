@@ -80,6 +80,66 @@ class WhereOrderByWrapper<T, R, W>(
     }
 
     /**
+     * Order by ascending with column name
+     *
+     * @param column column name
+     * @return WhereOrderByWrapper<T, R, W>
+     */
+    fun orderByAsc(column: String): WhereOrderByWrapper<T, R, W> {
+        return orderBy(column, true)
+    }
+
+    /**
+     * Order by descending with column name
+     *
+     * @param column column name
+     * @return WhereOrderByWrapper<T, R, W>
+     */
+    fun orderByDesc(column: String): WhereOrderByWrapper<T, R, W> {
+        return orderBy(column, false)
+    }
+
+    /**
+     * Order by ascending with property reference
+     *
+     * @param column column property
+     * @return WhereOrderByWrapper<T, R, W>
+     */
+    fun orderByAsc(column: KMutableProperty1<*, *>): WhereOrderByWrapper<T, R, W> {
+        return orderBy(column, true)
+    }
+
+    /**
+     * Order by descending with property reference
+     *
+     * @param column column property
+     * @return WhereOrderByWrapper<T, R, W>
+     */
+    fun orderByDesc(column: KMutableProperty1<*, *>): WhereOrderByWrapper<T, R, W> {
+        return orderBy(column, false)
+    }
+
+    /**
+     * Order by ascending with SFunction
+     *
+     * @param column column function
+     * @return WhereOrderByWrapper<T, R, W>
+     */
+    fun orderByAsc(column: SFunction<*, *>): WhereOrderByWrapper<T, R, W> {
+        return orderBy(column, true)
+    }
+
+    /**
+     * Order by descending with SFunction
+     *
+     * @param column column function
+     * @return WhereOrderByWrapper<T, R, W>
+     */
+    fun orderByDesc(column: SFunction<*, *>): WhereOrderByWrapper<T, R, W> {
+        return orderBy(column, false)
+    }
+
+    /**
      * Build the wrapper
      *
      * @return W
@@ -94,7 +154,6 @@ class WhereOrderByWrapper<T, R, W>(
      *
      * @return R
      */
-    @Suppress("UNCHECKED_CAST")
     override fun execute(): R {
         return whereWrapper.execute()
     }
