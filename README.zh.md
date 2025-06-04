@@ -18,14 +18,14 @@ Kite 是一个使用 Kotlin 编写的轻量级 ORM 框架，旨在简化数据�
 <dependency>
    <groupId>io.github.tangllty</groupId>
    <artifactId>kite-spring-boot-starter</artifactId>
-   <version>1.0.9</version>
+   <version>1.0.10</version>
 </dependency>
 ```
 
  * Gradle
 
 ```kts
-implementation("io.github.tangllty:kite-spring-boot-starter:1.0.9")
+implementation("io.github.tangllty:kite-spring-boot-starter:1.0.10")
 ```
 
  2. 在 `application.properties` 文件中配置您的数据库连接信息
