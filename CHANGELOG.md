@@ -20,6 +20,7 @@
  * Support SQL with annotations
  * Support SQLite database
  * Add `orderByAsc` and `orderByDesc` methods for various column types
+ * Refactor field retrieval to include superclass fields in `Fields.kt`
 
 ## 1.0.9
 

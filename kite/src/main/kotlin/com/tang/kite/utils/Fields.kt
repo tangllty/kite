@@ -93,7 +93,9 @@ object Fields {
                     }
                 }
                 else -> {
-                    val field = current?.javaClass?.declaredFields?.find { it.name == part }
+                    val field = generateSequence(current?.javaClass) { it.superclass }
+                        .flatMap { it.declaredFields.asSequence() }
+                        .find { it.name == part }
                         ?: throw NoSuchFieldException("Field not found: $part in ${current?.javaClass}")
                     field.isAccessible = true
                     field.get(current)
