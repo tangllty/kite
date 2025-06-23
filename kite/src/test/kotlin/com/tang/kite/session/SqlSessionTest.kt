@@ -219,7 +219,7 @@ class SqlSessionTest : BaseDataTest() {
             .set("password", "123456", false)
             .where()
             .eq(Account::id, 1)
-            .execute()
+            .update()
         session.rollback()
         session.close()
         assertEquals(1, rows)
@@ -304,7 +304,7 @@ class SqlSessionTest : BaseDataTest() {
     }
 
     @Test
-    fun queryWrapper() {
+    fun selectWrapper() {
         val session = sqlSessionFactory.openSession()
         val accountMapper = session.getMapper(AccountMapper::class.java)
         val queryWrapper = QueryWrapper.create<Account>()
@@ -312,9 +312,24 @@ class SqlSessionTest : BaseDataTest() {
             .column(Account::password)
             .from(Account::class.java)
             .build()
-        val accounts = accountMapper.queryWrapper(queryWrapper)
+        val accounts = accountMapper.selectWrapper(queryWrapper)
         session.close()
         assertTrue(accounts.isNotEmpty())
+    }
+
+    @Test
+    fun selectOneWrapper() {
+        val session = sqlSessionFactory.openSession()
+        val accountMapper = session.getMapper(AccountMapper::class.java)
+        val queryWrapper = QueryWrapper.create<Account>()
+            .select("id", "username")
+            .column(Account::password)
+            .from(Account::class.java)
+            .eq(Account::username, "admin")
+            .build()
+        val account = accountMapper.selectOneWrapper(queryWrapper)
+        session.close()
+        assertNotNull(account)
     }
 
     @Test
@@ -325,9 +340,23 @@ class SqlSessionTest : BaseDataTest() {
             .select("id", "username")
             .column(Account::password)
             .from(Account::class.java)
-            .execute()
+            .list()
         session.close()
         assertTrue(accounts.isNotEmpty())
+    }
+
+    @Test
+    fun selectOneWrapperPost() {
+        val session = sqlSessionFactory.openSession()
+        val accountMapper = session.getMapper(AccountMapper::class.java)
+        val account = accountMapper.queryWrapper()
+            .select("id", "username")
+            .column(Account::password)
+            .from(Account::class.java)
+            .eq(Account::username, "admin")
+            .one()
+        session.close()
+        assertNotNull(account)
     }
 
     @Test
@@ -350,7 +379,7 @@ class SqlSessionTest : BaseDataTest() {
             }
             .or()
             .eq(Account::id, 3)
-            .execute()
+            .list()
         session.close()
         assertTrue(accounts.isNotEmpty())
     }
@@ -364,7 +393,7 @@ class SqlSessionTest : BaseDataTest() {
             .select("id", "username")
             .column(Account::password)
             .from(Account::class.java)
-            .execute()
+            .list()
         session.close()
         assertTrue(accounts.isNotEmpty())
     }
@@ -379,7 +408,7 @@ class SqlSessionTest : BaseDataTest() {
             .from(Account::class.java)
             .groupBy(Account::username)
             .groupBy(Account::password)
-            .execute()
+            .list()
         session.close()
         assertTrue(accounts.isNotEmpty())
     }
@@ -394,7 +423,7 @@ class SqlSessionTest : BaseDataTest() {
             .from(Account::class.java)
             .orderBy(Account::username)
             .orderBy(Account::balance, false)
-            .execute()
+            .list()
         session.close()
         assertTrue(accounts.isNotEmpty())
     }
@@ -409,7 +438,7 @@ class SqlSessionTest : BaseDataTest() {
             .from(Account::class.java)
             .groupBy(Account::username, Account::password)
             .orderBy(Account::username)
-            .execute()
+            .list()
         session.close()
         assertTrue(accounts.isNotEmpty())
     }
@@ -426,7 +455,7 @@ class SqlSessionTest : BaseDataTest() {
             .having {
                 isNotNull(Account::password)
             }
-            .execute()
+            .list()
         session.close()
         assertTrue(accounts.isNotEmpty())
     }
@@ -441,7 +470,7 @@ class SqlSessionTest : BaseDataTest() {
             .column(AccountAs::password `as` AccountAs::passwordAs)
             .from(AccountAs::class.java)
             .build()
-        val accounts = accountMapper.queryWrapper(queryWrapper)
+        val accounts = accountMapper.selectWrapper(queryWrapper)
         session.close()
         assertTrue(accounts.isNotEmpty())
         accounts.forEach {
@@ -460,7 +489,7 @@ class SqlSessionTest : BaseDataTest() {
             .where()
             .like(SqlFunction.lower(AccountFunction::username), SqlFunction.lower("Tang"))
             .build()
-        val accounts = accountMapper.queryWrapper(queryWrapper)
+        val accounts = accountMapper.selectWrapper(queryWrapper)
         session.close()
         assertTrue(accounts.isNotEmpty())
     }

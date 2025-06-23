@@ -2,101 +2,78 @@ package com.tang.kite.wrapper.where
 
 import com.tang.kite.config.SqlConfig
 import com.tang.kite.constants.SqlString.WHERE
-import com.tang.kite.function.SFunction
-import com.tang.kite.paginate.OrderItem
 import com.tang.kite.sql.SqlStatement
-import com.tang.kite.wrapper.Column
 import com.tang.kite.wrapper.Wrapper
 import com.tang.kite.wrapper.enumeration.LogicalOperator
 import com.tang.kite.wrapper.statement.LogicalStatement
 import java.util.function.Consumer
-import kotlin.reflect.KMutableProperty1
 
 /**
  * Base class for where wrapper
  *
  * @author Tang
  */
-abstract class AbstractWhereWrapper<T, R, W>(
+abstract class AbstractWhereWrapper<R, T, W>(
 
     private val wrapper: Wrapper<T>,
 
     private val conditions: MutableList<LogicalStatement>
 
-) : AbstractConditionWrapper<AbstractWhereWrapper<T, R, W>, T, R, W>(conditions) {
-
-    protected lateinit var whereGroupByWrapper: WhereGroupByWrapper<T, R, W>
-
-    lateinit var whereHavingWrapper: WhereHavingWrapper<T, R, W>
-
-    lateinit var whereOrderByWrapper: WhereOrderByWrapper<T, R, W>
-
-    init {
-        this.rtInstance = this
-    }
-
-    protected fun isGroupByInitialized(): Boolean {
-        return this::whereGroupByWrapper.isInitialized
-    }
-
-    protected fun isHavingInitialized(): Boolean {
-        return this::whereHavingWrapper.isInitialized
-    }
-
-    protected fun isOrderByInitialized(): Boolean {
-        return this::whereOrderByWrapper.isInitialized
-    }
+) : AbstractConditionWrapper<R, T, W>(conditions) {
 
     @Suppress("UNCHECKED_CAST")
-    private fun createNestedWrapper(): AbstractWhereWrapper<T, R, W> {
-        val wrapper = WhereBuilder::class.java.getMethod("build").invoke(this)
+    protected var whereInstance: R = Any() as R
+
+    @Suppress("UNCHECKED_CAST")
+    private fun createNestedWrapper(): AbstractWhereWrapper<R, T, W> {
+        val wrapper = WrapperBuilder::class.java.getMethod("build").invoke(this)
         val firstConstructor = this.javaClass.constructors.first()
-        return firstConstructor.newInstance(wrapper) as AbstractWhereWrapper<T, R, W>
+        return firstConstructor.newInstance(wrapper) as AbstractWhereWrapper<R, T, W>
     }
 
     /**
      * And operation
      *
-     * @return AbstractWhereWrapper<T, R, W>
+     * @return R
      */
-    fun and(): AbstractWhereWrapper<T, R, W> {
+    fun and(): R {
         setLastLogicalOperator(LogicalOperator.AND)
-        return this
+        return whereInstance
     }
 
     /**
      * And nested operation
      *
      * @param nested nested operation
-     * @return AbstractWhereWrapper<T, R, W>
+     * @return R
      */
-    fun and(nested: AbstractWhereWrapper<T, R, W>.() -> Unit): AbstractWhereWrapper<T, R, W> {
+    fun and(nested: AbstractWhereWrapper<R, T, W>.() -> Unit): R {
         val nestedWrapper = createNestedWrapper()
         nestedWrapper.nested()
         if (nestedWrapper.conditions.isEmpty()) {
-            return this
+            return whereInstance
         }
         conditions.last().logicalOperator = LogicalOperator.AND
         conditions.last().nestedConditions = nestedWrapper.conditions
-        return this
+        return whereInstance
     }
 
     /**
      * And nested operation
      *
      * @param nested nested operation
-     * @return AbstractWhereWrapper<T, R, W>
+     * @return R
      */
-    fun and(nested: Consumer<AbstractWhereWrapper<T, R, W>>): AbstractWhereWrapper<T, R, W> {
+    fun and(nested: Consumer<AbstractWhereWrapper<R, T, W>>): R {
         return and { nested.accept(this) }
     }
 
     /**
      * Or operation
      *
-     * @return AbstractWhereWrapper<T, R, W>
+     * @return R
      */
-    fun or(): AbstractWhereWrapper<T, R, W> {
+    fun or(): AbstractWhereWrapper<R, T, W> {
         setLastLogicalOperator(LogicalOperator.OR)
         return this
     }
@@ -105,32 +82,32 @@ abstract class AbstractWhereWrapper<T, R, W>(
      * Or nested operation
      *
      * @param nested nested operation
-     * @return AbstractWhereWrapper<T, R, W>
+     * @return R
      */
-    fun or(nested: AbstractWhereWrapper<T, R, W>.() -> Unit): AbstractWhereWrapper<T, R, W> {
+    fun or(nested: AbstractWhereWrapper<R, T, W>.() -> Unit): R {
         val nestedWrapper = createNestedWrapper()
         nestedWrapper.nested()
         conditions.last().logicalOperator = LogicalOperator.OR
         conditions.last().nestedConditions = nestedWrapper.conditions
-        return this
+        return whereInstance
     }
 
     /**
      * Or nested operation
      *
      * @param nested nested operation
-     * @return AbstractWhereWrapper<T, R, W>
+     * @return R
      */
-    fun or(nested: Consumer<AbstractWhereWrapper<T, R, W>>): AbstractWhereWrapper<T, R, W> {
+    fun or(nested: Consumer<AbstractWhereWrapper<R, T, W>>): R {
         return or { nested.accept(this) }
     }
 
     /**
      * And not operation
      *
-     * @return AbstractWhereWrapper<T, R, W>
+     * @return R
      */
-    fun andNot(): AbstractWhereWrapper<T, R, W> {
+    fun andNot(): AbstractWhereWrapper<R, T, W> {
         setLastLogicalOperator(LogicalOperator.AND_NOT)
         return this
     }
@@ -139,32 +116,32 @@ abstract class AbstractWhereWrapper<T, R, W>(
      * And not nested operation
      *
      * @param nested nested operation
-     * @return AbstractWhereWrapper<T, R, W>
+     * @return R
      */
-    fun andNot(nested: AbstractWhereWrapper<T, R, W>.() -> Unit): AbstractWhereWrapper<T, R, W> {
+    fun andNot(nested: AbstractWhereWrapper<R, T, W>.() -> Unit): R {
         val nestedWrapper = createNestedWrapper()
         nestedWrapper.nested()
         conditions.last().logicalOperator = LogicalOperator.AND_NOT
         conditions.last().nestedConditions = nestedWrapper.conditions
-        return this
+        return whereInstance
     }
 
     /**
      * And not nested operation
      *
      * @param nested nested operation
-     * @return AbstractWhereWrapper<T, R, W>
+     * @return R
      */
-    fun andNot(nested: Consumer<AbstractWhereWrapper<T, R, W>>): AbstractWhereWrapper<T, R, W> {
+    fun andNot(nested: Consumer<AbstractWhereWrapper<R, T, W>>): R {
         return andNot { nested.accept(this) }
     }
 
     /**
      * Or not operation
      *
-     * @return AbstractWhereWrapper<T, R, W>
+     * @return R
      */
-    fun orNot(): AbstractWhereWrapper<T, R, W> {
+    fun orNot(): AbstractWhereWrapper<R, T, W> {
         setLastLogicalOperator(LogicalOperator.OR_NOT)
         return this
     }
@@ -173,182 +150,24 @@ abstract class AbstractWhereWrapper<T, R, W>(
      * Or not nested operation
      *
      * @param nested nested operation
-     * @return AbstractWhereWrapper<T, R, W>
+     * @return R
      */
-    fun orNot(nested: AbstractWhereWrapper<T, R, W>.() -> Unit): AbstractWhereWrapper<T, R, W> {
+    fun orNot(nested: AbstractWhereWrapper<R, T, W>.() -> Unit): R {
         val nestedWrapper = createNestedWrapper()
         nestedWrapper.nested()
         conditions.last().logicalOperator = LogicalOperator.OR_NOT
         conditions.last().nestedConditions = nestedWrapper.conditions
-        return this
+        return whereInstance
     }
 
     /**
      * Or not nested operation
      *
      * @param nested nested operation
-     * @return AbstractWhereWrapper<T, R, W>
+     * @return R
      */
-    fun orNot(nested: Consumer<AbstractWhereWrapper<T, R, W>>): AbstractWhereWrapper<T, R, W> {
+    fun orNot(nested: Consumer<AbstractWhereWrapper<R, T, W>>): R {
         return orNot { nested.accept(this) }
-    }
-
-    /**
-     * Group by operation
-     *
-     * @param columns columns
-     * @return WhereGroupByWrapper<T, R, W>
-     */
-    fun groupBy(vararg columns: Column): WhereGroupByWrapper<T, R, W> {
-        whereGroupByWrapper = WhereGroupByWrapper(wrapper, this, columns.toMutableList())
-        return whereGroupByWrapper
-    }
-
-    /**
-     * Group by operation
-     *
-     * @param columns columns
-     * @return WhereGroupByWrapper<T, R, W>
-     */
-    fun groupBy(vararg columns: String): WhereGroupByWrapper<T, R, W> {
-        return groupBy(*columns.map { Column(it) }.toTypedArray())
-    }
-
-    /**
-     * Group by operation
-     *
-     * @param columns columns
-     * @return WhereGroupByWrapper<T, R, W>
-     */
-    @SafeVarargs
-    fun <E> groupBy(vararg columns: KMutableProperty1<E, *>): WhereGroupByWrapper<T, R, W> {
-        return groupBy(*columns.map { Column(it) }.toTypedArray())
-    }
-
-    /**
-     * Group by operation
-     *
-     * @param columns columns
-     * @return WhereGroupByWrapper<T, R, W>
-     */
-    @SafeVarargs
-    fun <E> groupBy(vararg columns: SFunction<E, *>): WhereGroupByWrapper<T, R, W> {
-        return groupBy(*columns.map { Column(it) }.toTypedArray())
-    }
-
-    /**
-     * Order by operation
-     *
-     * @param orderBys order by items
-     * @return WhereOrderByWrapper<T, R, W>
-     */
-    @SafeVarargs
-    fun orderBy(vararg orderBys: OrderItem<*>): WhereOrderByWrapper<T, R, W> {
-        whereOrderByWrapper = WhereOrderByWrapper(wrapper, this, orderBys.toMutableList())
-        return whereOrderByWrapper
-    }
-
-    /**
-     * Order by operation
-     *
-     * @param column column name
-     * @param asc asc or desc
-     * @return WhereOrderByWrapper<T, R, W>
-     */
-    fun orderBy(column: String, asc: Boolean = true): WhereOrderByWrapper<T, R, W> {
-        return orderBy(OrderItem<T>(column, asc))
-    }
-
-    /**
-     * Order by operation
-     *
-     * @param column column property
-     * @param asc asc or desc
-     * @return WhereOrderByWrapper<T, R, W>
-     */
-    fun <E> orderBy(column: KMutableProperty1<E, *>, asc: Boolean = true): WhereOrderByWrapper<T, R, W> {
-        return orderBy(OrderItem(column, asc))
-    }
-
-    /**
-     * Order by operation
-     *
-     * @param column column function
-     * @param asc asc or desc
-     * @return WhereOrderByWrapper<T, R, W>
-     */
-    fun <E> orderBy(column: SFunction<E, *>, asc: Boolean = true): WhereOrderByWrapper<T, R, W> {
-        return orderBy(OrderItem(column, asc))
-    }
-
-    /**
-     * Order by operation
-     *
-     * @param column column function
-     * @return WhereOrderByWrapper<T, R, W>
-     */
-    fun <E> orderBy(column: SFunction<E, *>): WhereOrderByWrapper<T, R, W> {
-        return orderBy(column, true)
-    }
-
-    /**
-     * Order by ascending with column name
-     *
-     * @param column column name
-     * @return WhereOrderByWrapper<T, R, W>
-     */
-    fun orderByAsc(column: String): WhereOrderByWrapper<T, R, W> {
-        return orderBy(column, true)
-    }
-
-    /**
-     * Order by descending with column name
-     *
-     * @param column column name
-     * @return WhereOrderByWrapper<T, R, W>
-     */
-    fun orderByDesc(column: String): WhereOrderByWrapper<T, R, W> {
-        return orderBy(column, false)
-    }
-
-    /**
-     * Order by ascending with property reference
-     *
-     * @param column column property
-     * @return WhereOrderByWrapper<T, R, W>
-     */
-    fun <E> orderByAsc(column: KMutableProperty1<E, *>): WhereOrderByWrapper<T, R, W> {
-        return orderBy(column, true)
-    }
-
-    /**
-     * Order by descending with property reference
-     *
-     * @param column column property
-     * @return WhereOrderByWrapper<T, R, W>
-     */
-    fun <E> orderByDesc(column: KMutableProperty1<E, *>): WhereOrderByWrapper<T, R, W> {
-        return orderBy(column, false)
-    }
-
-    /**
-     * Order by ascending with SFunction
-     *
-     * @param column column function
-     * @return WhereOrderByWrapper<T, R, W>
-     */
-    fun <E> orderByAsc(column: SFunction<E, *>): WhereOrderByWrapper<T, R, W> {
-        return orderBy(column, true)
-    }
-
-    /**
-     * Order by descending with SFunction
-     *
-     * @param column column function
-     * @return WhereOrderByWrapper<T, R, W>
-     */
-    fun <E> orderByDesc(column: SFunction<E, *>): WhereOrderByWrapper<T, R, W> {
-        return orderBy(column, false)
     }
 
     /**
@@ -363,6 +182,16 @@ abstract class AbstractWhereWrapper<T, R, W>(
         return SqlStatement(SqlConfig.getSql(sql), parameters)
     }
 
+    /**
+     * Build the wrapper
+     *
+     * @return Wrapper instance
+     */
+    @Suppress("UNCHECKED_CAST")
+    override fun build(): W {
+        return wrapper as W
+    }
+
     open fun appendSql(sql: StringBuilder, parameters: MutableList<Any?>, multiTableQuery: Boolean = false) {
         if (conditions.isNotEmpty()) {
             sql.append(WHERE)
@@ -372,15 +201,6 @@ abstract class AbstractWhereWrapper<T, R, W>(
             conditions.forEach {
                 it.appendSql(sql, parameters, multiTableQuery)
             }
-        }
-        if (isGroupByInitialized()) {
-            whereGroupByWrapper.appendSql(sql, multiTableQuery)
-        }
-        if (isHavingInitialized()) {
-            whereHavingWrapper.appendSql(sql, parameters, multiTableQuery)
-        }
-        if (isOrderByInitialized()) {
-            whereOrderByWrapper.appendSql(sql, multiTableQuery)
         }
     }
 

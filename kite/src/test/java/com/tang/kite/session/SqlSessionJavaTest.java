@@ -74,7 +74,7 @@ public class SqlSessionJavaTest extends BaseDataTest {
             .set("password", "123456", false)
             .where()
             .eq(Account::getId, 1)
-            .execute();
+            .update();
         session.rollback();
         session.close();
         assertEquals(1, rows);
@@ -89,7 +89,7 @@ public class SqlSessionJavaTest extends BaseDataTest {
             .column(Account::getPassword)
             .from(Account.class)
             .build();
-        var accounts = accountMapper.queryWrapper(queryWrapper);
+        var accounts = accountMapper.selectWrapper(queryWrapper);
         session.close();
         assertFalse(accounts.isEmpty());
     }
@@ -102,7 +102,7 @@ public class SqlSessionJavaTest extends BaseDataTest {
             .select("id", "username")
             .column(Account::getPassword)
             .from(Account.class)
-            .execute();
+            .list();
         session.close();
         assertFalse(accounts.isEmpty());
     }
@@ -127,7 +127,7 @@ public class SqlSessionJavaTest extends BaseDataTest {
             })
             .or()
             .eq(Account::getUsername, "admin")
-            .execute();
+            .list();
         session.close();
         assertFalse(accounts.isEmpty());
     }

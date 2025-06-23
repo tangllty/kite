@@ -128,10 +128,11 @@ class DefaultSqlSession(
             BaseMethodName.isDelete(method) -> delete(method, mapperInterface, type, getFirstArg(args))
             BaseMethodName.isDeleteById(method) -> deleteById(method, mapperInterface, type, getFirstArg(args))
             BaseMethodName.isSelect(method) -> processSelect(method, mapperInterface, type, args)
+            BaseMethodName.isSelectWrapper(method) -> selectListWrapper(method, mapperInterface, type, getFirstArg(args))
             BaseMethodName.isSelectById(method) -> selectById(method, mapperInterface, type, getFirstArg(args))
+            BaseMethodName.isSelectOneWrapper(method) -> selectOneWrapper(method, mapperInterface, type, getFirstArg(args))
             BaseMethodName.isSelectWithJoins(method) -> processSelectWithJoins(method, mapperInterface, type, args)
             BaseMethodName.isSelectByIdWithJoins(method) -> selectByIdWithJoins(method, mapperInterface, type, getFirstArg(args))
-            BaseMethodName.isQueryWrapper(method) -> queryWrapper(method, mapperInterface, type, getFirstArg(args))
             BaseMethodName.isCount(method) -> count(method, mapperInterface, type, args?.first())
             BaseMethodName.isPaginate(method) -> processPaginate(method, mapperInterface, type, args)
             else -> throw IllegalArgumentException("Unknown method: ${getMethodSignature(method)}")
@@ -285,19 +286,34 @@ class DefaultSqlSession(
         return list
     }
 
+    override fun <T> selectListWrapper(method: Method, mapperInterface: Class<T>, type: Class<T>, parameter: Any): List<T> {
+        val start = System.nanoTime()
+        val queryWrapper = parameter as QueryWrapper<*>
+        val sqlStatement = queryWrapper.getSqlStatement()
+        val list = executor.query(sqlStatement, type)
+        log(method, mapperInterface, sqlStatement, list.size, System.nanoTime() - start)
+        return list
+    }
+
     override fun <T> selectById(method: Method, mapperInterface: Class<T>, type: Class<T>, parameter: Any): T? {
         val entity = type.getDeclaredConstructor().newInstance()
         val idField = Reflects.getIdField(type)
         Reflects.makeAccessible(idField, entity as Any)
         idField.set(entity, parameter)
         val list = selectList(method, mapperInterface, type, entity, emptyArray())
+        return getOneFromList(list)
+    }
+
+    override fun <T> selectOneWrapper(method: Method, mapperInterface: Class<T>, type: Class<T>, parameter: Any): T? {
+        val list = selectListWrapper(method, mapperInterface, type, parameter)
+        return getOneFromList(list)
+    }
+
+    private fun <T> getOneFromList(list: List<T>): T? {
         if (list.size > 1) {
             throw IllegalArgumentException("Too many results, expected one, but got ${list.size}")
         }
-        if (list.isEmpty()) {
-            return null
-        }
-        return list.first()
+        return list.firstOrNull()
     }
 
     private fun <T> processSelectWithJoins(method: Method, mapperInterface: Class<T>, type: Class<T>, args: Array<out Any>?): List<T> {
@@ -367,15 +383,6 @@ class DefaultSqlSession(
             return null
         }
         return list.first()
-    }
-
-    override fun <T> queryWrapper(method: Method, mapperInterface: Class<T>, type: Class<T>, parameter: Any): List<T> {
-        val start = System.nanoTime()
-        val queryWrapper = parameter as QueryWrapper<*>
-        val sqlStatement = queryWrapper.getSqlStatement()
-        val list = executor.query(sqlStatement, type)
-        log(method, mapperInterface, sqlStatement, list.size, System.nanoTime() - start)
-        return list
     }
 
     override fun <T> count(method: Method, mapperInterface: Class<T>, type: Class<T>, parameter: Any?): Long {

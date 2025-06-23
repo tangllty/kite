@@ -21,6 +21,7 @@
  * Support SQLite database
  * Add `orderByAsc` and `orderByDesc` methods for various column types
  * Refactor field retrieval to include superclass fields in `Fields.kt`
+ * Refactor `QueryWrapper` and `UpdateWrapper` logic to improve readability and maintainability
 
 ## 1.0.9
 

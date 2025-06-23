@@ -7,12 +7,17 @@ import com.tang.kite.wrapper.where.AbstractWhereWrapper
  *
  * @author Tang
  */
-class UpdateWhereWrapper<T>(private val updateWrapper: UpdateWrapper<T>) : AbstractWhereWrapper<T, Int, UpdateWrapper<T>>(updateWrapper, mutableListOf()) {
+class UpdateWhereWrapper<T>(private val updateWrapper: UpdateWrapper<T>) : AbstractWhereWrapper<UpdateWhereWrapper<T>, T, UpdateWrapper<T>>(updateWrapper, mutableListOf()), UpdateBuilder<T> {
+
+    init {
+        this.whereInstance = this
+        this.conditionInstance = this
+    }
 
     /**
-     * Build the update
+     * Build the wrapper
      *
-     * @return UpdateWrapper
+     * @return Wrapper instance
      */
     override fun build(): UpdateWrapper<T> {
         this.updateWrapper.updateWhereWrapper = this
@@ -20,11 +25,11 @@ class UpdateWhereWrapper<T>(private val updateWrapper: UpdateWrapper<T>) : Abstr
     }
 
     /**
-     * Execute the update
+     * Execute the update wrapper
      *
-     * @return the number of rows affected
+     * @return The number of rows affected
      */
-    override fun execute(): Int {
+    override fun update(): Int {
         return build().baseMapper.updateWrapper(updateWrapper)
     }
 

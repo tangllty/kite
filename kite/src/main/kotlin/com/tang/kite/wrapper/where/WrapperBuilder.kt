@@ -5,20 +5,13 @@ package com.tang.kite.wrapper.where
  *
  * @author Tang
  */
-interface WhereBuilder<T, R, W> {
+interface WrapperBuilder<T, W> {
 
     /**
      * Build the wrapper
      *
-     * @return W
+     * @return Wrapper instance
      */
     fun build(): W
-
-    /**
-     * Execute the wrapper
-     *
-     * @return R
-     */
-    fun execute(): R
 
 }

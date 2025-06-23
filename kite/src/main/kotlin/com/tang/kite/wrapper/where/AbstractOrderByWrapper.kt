@@ -14,26 +14,28 @@ import kotlin.reflect.KMutableProperty1
  *
  * @author Tang
  */
-class WhereOrderByWrapper<T, R, W>(
+abstract class AbstractOrderByWrapper<R, T, W>(
 
     private val wrapper: Wrapper<T>,
 
-    private val whereWrapper: AbstractWhereWrapper<T, R, W>,
-
     private val columns: MutableList<OrderItem<*>> = mutableListOf()
 
-): WhereBuilder<T, R, W> {
+): WrapperBuilder<T, W> {
+
+
+    @Suppress("UNCHECKED_CAST")
+    protected var orderByInstance: R = Any() as R
 
     /**
      * Order by operation
      *
      * @param orderBys order by items
-     * @return WhereOrderByWrapper<T, R, W>
+     * @return R
      */
     @SafeVarargs
-    fun <E> orderBy(vararg orderBys: OrderItem<E>): WhereOrderByWrapper<T, R, W> {
+    fun <E> orderBy(vararg orderBys: OrderItem<E>): R {
         columns.addAll(orderBys)
-        return this
+        return orderByInstance
     }
 
     /**
@@ -41,9 +43,9 @@ class WhereOrderByWrapper<T, R, W>(
      *
      * @param column column name
      * @param asc asc or desc
-     * @return WhereOrderByWrapper<T, R, W>
+     * @return R
      */
-    fun orderBy(column: String, asc: Boolean = true): WhereOrderByWrapper<T, R, W> {
+    fun orderBy(column: String, asc: Boolean = true): R {
         return orderBy(OrderItem<T>(column, asc))
     }
 
@@ -51,9 +53,9 @@ class WhereOrderByWrapper<T, R, W>(
      * Order by operation
      *
      * @param column column name
-     * @return WhereOrderByWrapper<T, R, W>
+     * @return R
      */
-    fun orderBy(column: String): WhereOrderByWrapper<T, R, W> {
+    fun orderBy(column: String): R {
         return orderBy(column, true)
     }
 
@@ -62,9 +64,9 @@ class WhereOrderByWrapper<T, R, W>(
      *
      * @param column column property
      * @param asc asc or desc
-     * @return WhereOrderByWrapper<T, R, W>
+     * @return R
      */
-    fun <E> orderBy(column: KMutableProperty1<E, *>, asc: Boolean = true): WhereOrderByWrapper<T, R, W> {
+    fun <E> orderBy(column: KMutableProperty1<E, *>, asc: Boolean = true): R {
         return orderBy(OrderItem(column, asc))
     }
 
@@ -73,9 +75,9 @@ class WhereOrderByWrapper<T, R, W>(
      *
      * @param column column function
      * @param asc asc or desc
-     * @return WhereOrderByWrapper<T, R, W>
+     * @return R
      */
-    fun <E> orderBy(column: SFunction<E, *>, asc: Boolean = true): WhereOrderByWrapper<T, R, W> {
+    fun <E> orderBy(column: SFunction<E, *>, asc: Boolean = true): R {
         return orderBy(OrderItem(column, asc))
     }
 
@@ -83,9 +85,9 @@ class WhereOrderByWrapper<T, R, W>(
      * Order by ascending with column name
      *
      * @param column column name
-     * @return WhereOrderByWrapper<T, R, W>
+     * @return R
      */
-    fun orderByAsc(column: String): WhereOrderByWrapper<T, R, W> {
+    fun orderByAsc(column: String): R {
         return orderBy(column, true)
     }
 
@@ -93,9 +95,9 @@ class WhereOrderByWrapper<T, R, W>(
      * Order by descending with column name
      *
      * @param column column name
-     * @return WhereOrderByWrapper<T, R, W>
+     * @return R
      */
-    fun orderByDesc(column: String): WhereOrderByWrapper<T, R, W> {
+    fun orderByDesc(column: String): R {
         return orderBy(column, false)
     }
 
@@ -103,9 +105,9 @@ class WhereOrderByWrapper<T, R, W>(
      * Order by ascending with property reference
      *
      * @param column column property
-     * @return WhereOrderByWrapper<T, R, W>
+     * @return R
      */
-    fun <E> orderByAsc(column: KMutableProperty1<E, *>): WhereOrderByWrapper<T, R, W> {
+    fun <E> orderByAsc(column: KMutableProperty1<E, *>): R {
         return orderBy(column, true)
     }
 
@@ -113,9 +115,9 @@ class WhereOrderByWrapper<T, R, W>(
      * Order by descending with property reference
      *
      * @param column column property
-     * @return WhereOrderByWrapper<T, R, W>
+     * @return R
      */
-    fun <E> orderByDesc(column: KMutableProperty1<E, *>): WhereOrderByWrapper<T, R, W> {
+    fun <E> orderByDesc(column: KMutableProperty1<E, *>): R {
         return orderBy(column, false)
     }
 
@@ -123,9 +125,9 @@ class WhereOrderByWrapper<T, R, W>(
      * Order by ascending with SFunction
      *
      * @param column column function
-     * @return WhereOrderByWrapper<T, R, W>
+     * @return R
      */
-    fun <E> orderByAsc(column: SFunction<E, *>): WhereOrderByWrapper<T, R, W> {
+    fun <E> orderByAsc(column: SFunction<E, *>): R {
         return orderBy(column, true)
     }
 
@@ -133,29 +135,20 @@ class WhereOrderByWrapper<T, R, W>(
      * Order by descending with SFunction
      *
      * @param column column function
-     * @return WhereOrderByWrapper<T, R, W>
+     * @return R
      */
-    fun <E> orderByDesc(column: SFunction<E, *>): WhereOrderByWrapper<T, R, W> {
+    fun <E> orderByDesc(column: SFunction<E, *>): R {
         return orderBy(column, false)
     }
 
     /**
      * Build the wrapper
      *
-     * @return W
+     * @return Wrapper instance
      */
     @Suppress("UNCHECKED_CAST")
     override fun build(): W {
         return wrapper as W
-    }
-
-    /**
-     * Execute the wrapper
-     *
-     * @return R
-     */
-    override fun execute(): R {
-        return whereWrapper.execute()
     }
 
     fun appendSql(sql: StringBuilder, multiTableQuery: Boolean) {

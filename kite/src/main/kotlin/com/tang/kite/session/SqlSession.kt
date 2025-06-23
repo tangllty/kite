@@ -38,13 +38,15 @@ interface SqlSession : AutoCloseable {
 
     fun <T> selectList(method: Method, mapperInterface: Class<T>, type: Class<T>, parameter: Any?, orderBys: Array<OrderItem<T>>): List<T>
 
+    fun <T> selectListWrapper(method: Method, mapperInterface: Class<T>, type: Class<T>, parameter: Any): List<T>
+
     fun <T> selectById(method: Method, mapperInterface: Class<T>, type: Class<T>, parameter: Any): T?
+
+    fun <T> selectOneWrapper(method: Method, mapperInterface: Class<T>, type: Class<T>, parameter: Any): T?
 
     fun <T> selectListWithJoins(method: Method, mapperInterface: Class<T>, type: Class<T>, parameter: Any?, orderBys: Array<OrderItem<T>>): List<T>
 
     fun <T> selectByIdWithJoins(method: Method, mapperInterface: Class<T>, type: Class<T>, parameter: Any): T?
-
-    fun <T> queryWrapper(method: Method, mapperInterface: Class<T>, type: Class<T>, parameter: Any): List<T>
 
     fun <T> count(method: Method, mapperInterface: Class<T>, type: Class<T>, parameter: Any?): Long
 

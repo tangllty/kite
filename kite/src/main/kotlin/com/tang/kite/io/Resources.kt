@@ -11,28 +11,33 @@ import java.lang.reflect.Field
  */
 object Resources {
 
+    @JvmStatic
     fun getResourceAsStream(name: String): InputStream {
         return Resources::class.java.classLoader.getResourceAsStream(name)
             ?: throw IllegalArgumentException("Resource not found: $name")
     }
 
+    @JvmStatic
     fun getKiteProperties(inputStream: InputStream): Map<String, Map<String, String>> {
         val yaml = Yaml().load<Map<String, Map<String, Map<String, String>>>>(inputStream)
         val kite = yaml["kite"] as Map<String, Map<String, String>>
         return kite
     }
 
+    @JvmStatic
     fun <T> getKiteAsObject(inputStream: InputStream, clazz: Class<T>): T {
         val kiteProperties = getKiteProperties(inputStream)
         return propertyToObject(kiteProperties, clazz)
     }
 
+    @JvmStatic
     fun getDataSourceProperties(inputStream: InputStream): Map<String, String> {
         val kite = getKiteProperties(inputStream)
         val datasource = kite["datasource"] as Map<String, String>
         return datasource
     }
 
+    @JvmStatic
     fun <T> propertyToObject(properties: Map<*, *>, clazz: Class<T>): T {
         val instance = clazz.getDeclaredConstructor().newInstance()
         val fields = clazz.declaredFields + clazz.superclass.declaredFields

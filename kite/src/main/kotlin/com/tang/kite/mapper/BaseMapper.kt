@@ -199,12 +199,28 @@ interface BaseMapper<T> {
     }
 
     /**
+     * Select by query wrapper
+     *
+     * @param queryWrapper QueryWrapper
+     * @return Entity list
+     */
+    fun selectWrapper(queryWrapper: QueryWrapper<T>): List<T>
+
+    /**
      * Select by primary key
      *
      * @param id Entity id
      * @return Entity
      */
     fun selectById(id: Long): T?
+
+    /**
+     * Select one by query wrapper
+     *
+     * @param queryWrapper QueryWrapper
+     * @return Entity
+     */
+    fun selectOneWrapper(queryWrapper: QueryWrapper<T>): T?
 
     /**
      * Select all with joins
@@ -287,14 +303,6 @@ interface BaseMapper<T> {
      * @return Entity
      */
     fun selectByIdWithJoins(id: Long): T?
-
-    /**
-     * Select by query wrapper
-     *
-     * @param queryWrapper QueryWrapper
-     * @return Entity list
-     */
-    fun queryWrapper(queryWrapper: QueryWrapper<T>): List<T>
 
     /**
      * Select by query wrapper

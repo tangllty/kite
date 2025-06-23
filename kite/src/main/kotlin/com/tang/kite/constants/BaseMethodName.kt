@@ -129,10 +129,22 @@ object BaseMethodName {
         return isSelectParameter(method)
     }
 
+    private const val SELECT_WRAPPER = "selectWrapper"
+
+    fun isSelectWrapper(method: Method): Boolean {
+        return method.name == SELECT_WRAPPER && method.countIsOne() && method.parameterTypes[0].kotlin == QueryWrapper::class
+    }
+
     private const val SELECT_BY_ID = "selectById"
 
     fun isSelectById(method: Method): Boolean {
         return method.name == SELECT_BY_ID && method.countIsOne() && method.firstParameterIsLong()
+    }
+
+    private const val SELECT_ONE_WRAPPER = "selectOneWrapper"
+
+    fun isSelectOneWrapper(method: Method): Boolean {
+        return method.name == SELECT_ONE_WRAPPER && method.countIsOne() && method.parameterTypes[0].kotlin == QueryWrapper::class
     }
 
     private const val SELECT_WITH_JOINS = "selectWithJoins"
@@ -146,12 +158,6 @@ object BaseMethodName {
 
     fun isSelectByIdWithJoins(method: Method): Boolean {
         return method.name == SELECT_BY_ID_WITH_JOINS && method.countIsOne() && method.firstParameterIsLong()
-    }
-
-    private const val QUERY_WRAPPER = "queryWrapper"
-
-    fun isQueryWrapper(method: Method): Boolean {
-        return method.name == QUERY_WRAPPER && method.countIsOne() && method.parameterTypes[0].kotlin == QueryWrapper::class
     }
 
     private const val COUNT = "count"
@@ -181,7 +187,8 @@ object BaseMethodName {
             INSERT, INSERT_SELECTIVE, BATCH_INSERT, BATCH_INSERT_SELECTIVE,
             UPDATE, UPDATE_SELECTIVE, UPDATE_WRAPPER,
             DELETE, DELETE_BY_ID,
-            SELECT, SELECT_BY_ID, QUERY_WRAPPER,
+            SELECT, SELECT_BY_ID,
+            SELECT_WRAPPER, SELECT_ONE_WRAPPER,
             SELECT_WITH_JOINS, SELECT_BY_ID_WITH_JOINS,
             COUNT,
             PAGINATE -> true
@@ -199,10 +206,11 @@ object BaseMethodName {
             DELETE -> isDelete(method)
             DELETE_BY_ID -> isDeleteById(method)
             SELECT -> isSelect(method)
+            SELECT_WRAPPER -> isSelectWrapper(method)
             SELECT_BY_ID -> isSelectById(method)
+            SELECT_ONE_WRAPPER -> isSelectOneWrapper(method)
             SELECT_WITH_JOINS -> isSelectWithJoins(method)
             SELECT_BY_ID_WITH_JOINS -> isSelectByIdWithJoins(method)
-            QUERY_WRAPPER -> isQueryWrapper(method)
             COUNT -> isCount(method)
             PAGINATE -> isPaginate(method)
             else -> false
