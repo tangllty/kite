@@ -18,13 +18,13 @@ import kotlin.reflect.jvm.javaField
 /**
  * @author Tang
  */
-abstract class AbstractHavingWrapper<R, T, W>(
+abstract class AbstractHavingWrapper<R, T>(
 
     private val wrapper: Wrapper<T>,
 
     private val conditions: MutableList<LogicalStatement> = mutableListOf()
 
-): AbstractConditionWrapper<AbstractHavingWrapper<R, T, W>, T, W>(conditions) {
+): AbstractConditionWrapper<AbstractHavingWrapper<R, T>, T>(conditions) {
 
     init {
         this.conditionInstance = this
@@ -47,9 +47,9 @@ abstract class AbstractHavingWrapper<R, T, W>(
     /**
      * And operation
      *
-     * @return WhereHavingWrapper<R, T, W>
+     * @return AbstractHavingWrapper<R, T>
      */
-    fun and(): AbstractHavingWrapper<R, T, W> {
+    fun and(): AbstractHavingWrapper<R, T> {
         setLastLogicalOperator(LogicalOperator.AND)
         return this
     }
@@ -58,9 +58,9 @@ abstract class AbstractHavingWrapper<R, T, W>(
      * And nested operation
      *
      * @param nested nested operation
-     * @return WhereHavingWrapper<R, T, W>
+     * @return AbstractHavingWrapper<R, T>
      */
-    fun and(nested: AbstractHavingWrapper<R, T, W>.() -> Unit): AbstractHavingWrapper<R, T, W> {
+    fun and(nested: AbstractHavingWrapper<R, T>.() -> Unit): AbstractHavingWrapper<R, T> {
         val nestedWrapper = createNestedWrapper()
         nestedWrapper.nested()
         if (nestedWrapper.conditions.isEmpty()) {
@@ -75,18 +75,18 @@ abstract class AbstractHavingWrapper<R, T, W>(
      * And nested operation
      *
      * @param nested nested operation
-     * @return WhereHavingWrapper<R, T, W>
+     * @return AbstractHavingWrapper<R, T>
      */
-    fun and(nested: Consumer<AbstractHavingWrapper<R, T, W>>): AbstractHavingWrapper<R, T, W> {
+    fun and(nested: Consumer<AbstractHavingWrapper<R, T>>): AbstractHavingWrapper<R, T> {
         return and { nested.accept(this) }
     }
 
     /**
      * Or operation
      *
-     * @return WhereHavingWrapper<R, T, W>
+     * @return AbstractHavingWrapper<R, T>
      */
-    fun or(): AbstractHavingWrapper<R, T, W> {
+    fun or(): AbstractHavingWrapper<R, T> {
         setLastLogicalOperator(LogicalOperator.OR)
         return this
     }
@@ -95,9 +95,9 @@ abstract class AbstractHavingWrapper<R, T, W>(
      * Or nested operation
      *
      * @param nested nested operation
-     * @return WhereHavingWrapper<R, T, W>
+     * @return AbstractHavingWrapper<R, T>
      */
-    fun or(nested: AbstractHavingWrapper<R, T, W>.() -> Unit): AbstractHavingWrapper<R, T, W> {
+    fun or(nested: AbstractHavingWrapper<R, T>.() -> Unit): AbstractHavingWrapper<R, T> {
         val nestedWrapper = createNestedWrapper()
         nestedWrapper.nested()
         conditions.last().logicalOperator = LogicalOperator.OR
@@ -109,18 +109,18 @@ abstract class AbstractHavingWrapper<R, T, W>(
      * Or nested operation
      *
      * @param nested nested operation
-     * @return WhereHavingWrapper<R, T, W>
+     * @return AbstractHavingWrapper<R, T>
      */
-    fun or(nested: Consumer<AbstractHavingWrapper<R, T, W>>): AbstractHavingWrapper<R, T, W> {
+    fun or(nested: Consumer<AbstractHavingWrapper<R, T>>): AbstractHavingWrapper<R, T> {
         return or { nested.accept(this) }
     }
 
     /**
      * And not operation
      *
-     * @return WhereHavingWrapper<R, T, W>
+     * @return AbstractHavingWrapper<R, T>
      */
-    fun andNot(): AbstractHavingWrapper<R, T, W> {
+    fun andNot(): AbstractHavingWrapper<R, T> {
         setLastLogicalOperator(LogicalOperator.AND_NOT)
         return this
     }
@@ -129,9 +129,9 @@ abstract class AbstractHavingWrapper<R, T, W>(
      * And not nested operation
      *
      * @param nested nested operation
-     * @return WhereHavingWrapper<R, T, W>
+     * @return AbstractHavingWrapper<R, T>
      */
-    fun andNot(nested: AbstractHavingWrapper<R, T, W>.() -> Unit): AbstractHavingWrapper<R, T, W> {
+    fun andNot(nested: AbstractHavingWrapper<R, T>.() -> Unit): AbstractHavingWrapper<R, T> {
         val nestedWrapper = createNestedWrapper()
         nestedWrapper.nested()
         conditions.last().logicalOperator = LogicalOperator.AND_NOT
@@ -143,18 +143,18 @@ abstract class AbstractHavingWrapper<R, T, W>(
      * And not nested operation
      *
      * @param nested nested operation
-     * @return WhereHavingWrapper<R, T, W>
+     * @return AbstractHavingWrapper<R, T>
      */
-    fun andNot(nested: Consumer<AbstractHavingWrapper<R, T, W>>): AbstractHavingWrapper<R, T, W> {
+    fun andNot(nested: Consumer<AbstractHavingWrapper<R, T>>): AbstractHavingWrapper<R, T> {
         return andNot { nested.accept(this) }
     }
 
     /**
      * Or not operation
      *
-     * @return WhereHavingWrapper<R, T, W>
+     * @return AbstractHavingWrapper<R, T>
      */
-    fun orNot(): AbstractHavingWrapper<R, T, W> {
+    fun orNot(): AbstractHavingWrapper<R, T> {
         setLastLogicalOperator(LogicalOperator.OR_NOT)
         return this
     }
@@ -163,9 +163,9 @@ abstract class AbstractHavingWrapper<R, T, W>(
      * Or not nested operation
      *
      * @param nested nested operation
-     * @return WhereHavingWrapper<R, T, W>
+     * @return AbstractHavingWrapper<R, T>
      */
-    fun orNot(nested: AbstractHavingWrapper<R, T, W>.() -> Unit): AbstractHavingWrapper<R, T, W> {
+    fun orNot(nested: AbstractHavingWrapper<R, T>.() -> Unit): AbstractHavingWrapper<R, T> {
         val nestedWrapper = createNestedWrapper()
         nestedWrapper.nested()
         conditions.last().logicalOperator = LogicalOperator.OR_NOT
@@ -177,20 +177,19 @@ abstract class AbstractHavingWrapper<R, T, W>(
      * Or not nested operation
      *
      * @param nested nested operation
-     * @return WhereHavingWrapper<R, T, W>
+     * @return AbstractHavingWrapper<R, T>
      */
-    fun orNot(nested: Consumer<AbstractHavingWrapper<R, T, W>>): AbstractHavingWrapper<R, T, W> {
+    fun orNot(nested: Consumer<AbstractHavingWrapper<R, T>>): AbstractHavingWrapper<R, T> {
         return orNot { nested.accept(this) }
     }
 
-    @Suppress("UNCHECKED_CAST")
-    private fun createNestedWrapper(): AbstractHavingWrapper<R, T, W> {
+    private fun createNestedWrapper(): AbstractHavingWrapper<R, T> {
         val wrapper = WrapperBuilder::class.java.getMethod("build").invoke(this)
         val firstConstructor = this.javaClass.constructors.first()
-        return firstConstructor.newInstance(wrapper) as AbstractHavingWrapper<R, T, W>
+        return firstConstructor.newInstance(wrapper) as AbstractHavingWrapper<R, T>
     }
 
-    private fun compare(column: String, value: Any, comparisonOperator: ComparisonOperator, effective: Boolean): AbstractHavingWrapper<R, T, W> {
+    private fun compare(column: String, value: Any, comparisonOperator: ComparisonOperator, effective: Boolean): AbstractHavingWrapper<R, T> {
         if (effective) {
             val condition = ComparisonStatement(Column(column), value, comparisonOperator)
             conditions.add(LogicalStatement(condition, LogicalOperator.AND))
@@ -203,9 +202,8 @@ abstract class AbstractHavingWrapper<R, T, W>(
      *
      * @return Wrapper instance
      */
-    @Suppress("UNCHECKED_CAST")
-    override fun build(): W {
-        return wrapper as W
+    override fun build(): Wrapper<T> {
+        return wrapper
     }
 
     fun appendSql(sql: StringBuilder, parameters: MutableList<Any?>, multiTableQuery: Boolean) {

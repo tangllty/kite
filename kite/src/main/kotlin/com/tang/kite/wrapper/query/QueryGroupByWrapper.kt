@@ -11,7 +11,7 @@ import kotlin.reflect.KMutableProperty1
 /**
  * @author Tang
  */
-class QueryGroupByWrapper<R, T, W>(
+class QueryGroupByWrapper<R, T>(
 
     private val wrapper: Wrapper<T>,
 
@@ -19,7 +19,7 @@ class QueryGroupByWrapper<R, T, W>(
 
     columns: MutableList<Column> = mutableListOf()
 
-) : AbstractGroupByWrapper<QueryGroupByWrapper<R, T, W>, T, W>(wrapper, columns), QueryBuilder<T> {
+) : AbstractGroupByWrapper<QueryGroupByWrapper<R, T>, T>(wrapper, columns), QueryBuilder<T> {
 
     init {
         this.groupByInstance = this
@@ -28,9 +28,9 @@ class QueryGroupByWrapper<R, T, W>(
     /**
      * Having operation
      *
-     * @return QueryHavingWrapper<QueryWhereWrapper<T>, T, QueryWrapper<T>>
+     * @return QueryHavingWrapper<QueryWhereWrapper<T>, T>
      */
-    fun having(): QueryHavingWrapper<QueryWhereWrapper<T>, T, QueryWrapper<T>> {
+    fun having(): QueryHavingWrapper<QueryWhereWrapper<T>, T> {
         whereWrapper.whereHavingWrapper = QueryHavingWrapper(wrapper, whereWrapper, mutableListOf())
         return whereWrapper.whereHavingWrapper
     }
@@ -39,9 +39,9 @@ class QueryGroupByWrapper<R, T, W>(
      * Having operation
      *
      * @param nested nested operation
-     * @return QueryHavingWrapper<QueryWhereWrapper<T>, T, QueryWrapper<T>>
+     * @return QueryHavingWrapper<QueryWhereWrapper<T>, T>
      */
-    fun having(nested: QueryHavingWrapper<QueryWhereWrapper<T>, T, QueryWrapper<T>>.() -> Unit): QueryHavingWrapper<QueryWhereWrapper<T>, T, QueryWrapper<T>> {
+    fun having(nested: QueryHavingWrapper<QueryWhereWrapper<T>, T>.() -> Unit): QueryHavingWrapper<QueryWhereWrapper<T>, T> {
         whereWrapper.whereHavingWrapper = QueryHavingWrapper(wrapper, whereWrapper)
         whereWrapper.whereHavingWrapper.nested()
         return whereWrapper.whereHavingWrapper
@@ -51,9 +51,9 @@ class QueryGroupByWrapper<R, T, W>(
      * Having operation
      *
      * @param nested nested operation
-     * @return QueryHavingWrapper<QueryWhereWrapper<T>, T, QueryWrapper<T>>
+     * @return QueryHavingWrapper<QueryWhereWrapper<T>, T>
      */
-    fun having(nested: Consumer<QueryHavingWrapper<QueryWhereWrapper<T>, T, QueryWrapper<T>>>): QueryHavingWrapper<QueryWhereWrapper<T>, T, QueryWrapper<T>> {
+    fun having(nested: Consumer<QueryHavingWrapper<QueryWhereWrapper<T>, T>>): QueryHavingWrapper<QueryWhereWrapper<T>, T> {
         return having { nested.accept(this) }
     }
 
@@ -61,10 +61,10 @@ class QueryGroupByWrapper<R, T, W>(
      * Order by operation
      *
      * @param orderBys order by items
-     * @return QueryOrderByWrapper<QueryWhereWrapper<T>, T, QueryWrapper<T>>
+     * @return QueryOrderByWrapper<QueryWhereWrapper<T>, T>
      */
     @SafeVarargs
-    fun orderBy(vararg orderBys: OrderItem<T>): QueryOrderByWrapper<QueryWhereWrapper<T>, T, QueryWrapper<T>> {
+    fun orderBy(vararg orderBys: OrderItem<T>): QueryOrderByWrapper<QueryWhereWrapper<T>, T> {
         return whereWrapper.orderBy(*orderBys)
     }
 
@@ -73,9 +73,9 @@ class QueryGroupByWrapper<R, T, W>(
      *
      * @param column column name
      * @param asc asc or desc
-     * @return QueryOrderByWrapper<QueryWhereWrapper<T>, T, QueryWrapper<T>>
+     * @return QueryOrderByWrapper<QueryWhereWrapper<T>, T>
      */
-    fun orderBy(column: String, asc: Boolean = true): QueryOrderByWrapper<QueryWhereWrapper<T>, T, QueryWrapper<T>> {
+    fun orderBy(column: String, asc: Boolean = true): QueryOrderByWrapper<QueryWhereWrapper<T>, T> {
         return orderBy(OrderItem<T>(column, asc))
     }
 
@@ -84,9 +84,9 @@ class QueryGroupByWrapper<R, T, W>(
      *
      * @param column column property
      * @param asc asc or desc
-     * @return QueryOrderByWrapper<QueryWhereWrapper<T>, T, QueryWrapper<T>>
+     * @return QueryOrderByWrapper<QueryWhereWrapper<T>, T>
      */
-    fun orderBy(column: KMutableProperty1<T, *>, asc: Boolean = true): QueryOrderByWrapper<QueryWhereWrapper<T>, T, QueryWrapper<T>> {
+    fun orderBy(column: KMutableProperty1<T, *>, asc: Boolean = true): QueryOrderByWrapper<QueryWhereWrapper<T>, T> {
         return orderBy(OrderItem<T>(column, asc))
     }
 
@@ -95,9 +95,9 @@ class QueryGroupByWrapper<R, T, W>(
      *
      * @param column column function
      * @param asc asc or desc
-     * @return QueryOrderByWrapper<QueryWhereWrapper<T>, T, QueryWrapper<T>>
+     * @return QueryOrderByWrapper<QueryWhereWrapper<T>, T>
      */
-    fun orderBy(column: SFunction<T, *>, asc: Boolean = true): QueryOrderByWrapper<QueryWhereWrapper<T>, T, QueryWrapper<T>> {
+    fun orderBy(column: SFunction<T, *>, asc: Boolean = true): QueryOrderByWrapper<QueryWhereWrapper<T>, T> {
         return orderBy(OrderItem<T>(column, asc))
     }
 
@@ -105,9 +105,9 @@ class QueryGroupByWrapper<R, T, W>(
      * Order by ascending with column name
      *
      * @param column column name
-     * @return QueryOrderByWrapper<QueryWhereWrapper<T>, T, QueryWrapper<T>>
+     * @return QueryOrderByWrapper<QueryWhereWrapper<T>, T>
      */
-    fun orderByAsc(column: String): QueryOrderByWrapper<QueryWhereWrapper<T>, T, QueryWrapper<T>> {
+    fun orderByAsc(column: String): QueryOrderByWrapper<QueryWhereWrapper<T>, T> {
         return orderBy(column, true)
     }
 
@@ -115,9 +115,9 @@ class QueryGroupByWrapper<R, T, W>(
      * Order by descending with column name
      *
      * @param column column name
-     * @return QueryOrderByWrapper<QueryWhereWrapper<T>, T, QueryWrapper<T>>
+     * @return QueryOrderByWrapper<QueryWhereWrapper<T>, T>
      */
-    fun orderByDesc(column: String): QueryOrderByWrapper<QueryWhereWrapper<T>, T, QueryWrapper<T>> {
+    fun orderByDesc(column: String): QueryOrderByWrapper<QueryWhereWrapper<T>, T> {
         return orderBy(column, false)
     }
 
@@ -125,9 +125,9 @@ class QueryGroupByWrapper<R, T, W>(
      * Order by ascending with property reference
      *
      * @param column column property
-     * @return QueryOrderByWrapper<QueryWhereWrapper<T>, T, QueryWrapper<T>>
+     * @return QueryOrderByWrapper<QueryWhereWrapper<T>, T>
      */
-    fun orderByAsc(column: KMutableProperty1<T, *>): QueryOrderByWrapper<QueryWhereWrapper<T>, T, QueryWrapper<T>> {
+    fun orderByAsc(column: KMutableProperty1<T, *>): QueryOrderByWrapper<QueryWhereWrapper<T>, T> {
         return orderBy(column, true)
     }
 
@@ -135,9 +135,9 @@ class QueryGroupByWrapper<R, T, W>(
      * Order by descending with property reference
      *
      * @param column column property
-     * @return QueryOrderByWrapper<QueryWhereWrapper<T>, T, QueryWrapper<T>>
+     * @return QueryOrderByWrapper<QueryWhereWrapper<T>, T>
      */
-    fun orderByDesc(column: KMutableProperty1<T, *>): QueryOrderByWrapper<QueryWhereWrapper<T>, T, QueryWrapper<T>> {
+    fun orderByDesc(column: KMutableProperty1<T, *>): QueryOrderByWrapper<QueryWhereWrapper<T>, T> {
         return orderBy(column, false)
     }
 
@@ -145,9 +145,9 @@ class QueryGroupByWrapper<R, T, W>(
      * Order by ascending with SFunction
      *
      * @param column column function
-     * @return QueryOrderByWrapper<QueryWhereWrapper<T>, T, QueryWrapper<T>>
+     * @return QueryOrderByWrapper<QueryWhereWrapper<T>, T>
      */
-    fun orderByAsc(column: SFunction<T, *>): QueryOrderByWrapper<QueryWhereWrapper<T>, T, QueryWrapper<T>> {
+    fun orderByAsc(column: SFunction<T, *>): QueryOrderByWrapper<QueryWhereWrapper<T>, T> {
         return orderBy(column, true)
     }
 
@@ -155,9 +155,9 @@ class QueryGroupByWrapper<R, T, W>(
      * Order by descending with SFunction
      *
      * @param column column function
-     * @return QueryOrderByWrapper<QueryWhereWrapper<T>, T, QueryWrapper<T>>
+     * @return QueryOrderByWrapper<QueryWhereWrapper<T>, T>
      */
-    fun orderByDesc(column: SFunction<T, *>): QueryOrderByWrapper<QueryWhereWrapper<T>, T, QueryWrapper<T>> {
+    fun orderByDesc(column: SFunction<T, *>): QueryOrderByWrapper<QueryWhereWrapper<T>, T> {
         return orderBy(column, false)
     }
 
@@ -166,9 +166,8 @@ class QueryGroupByWrapper<R, T, W>(
      *
      * @return Wrapper instance
      */
-    @Suppress("UNCHECKED_CAST")
-    override fun build(): W {
-        return whereWrapper.build() as W
+    override fun build(): Wrapper<T> {
+        return whereWrapper.build()
     }
 
     /**

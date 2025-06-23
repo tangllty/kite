@@ -12,13 +12,13 @@ import kotlin.reflect.KMutableProperty1
  *
  * @author Tang
  */
-abstract class AbstractGroupByWrapper<R, T, W>(
+abstract class AbstractGroupByWrapper<R, T>(
 
     private val wrapper: Wrapper<T>,
 
     private val columns: MutableList<Column> = mutableListOf()
 
-): WrapperBuilder<T, W> {
+): WrapperBuilder<T> {
 
     @Suppress("UNCHECKED_CAST")
     protected var groupByInstance: R = Any() as R
@@ -71,9 +71,8 @@ abstract class AbstractGroupByWrapper<R, T, W>(
      *
      * @return Wrapper instance
      */
-    @Suppress("UNCHECKED_CAST")
-    override fun build(): W {
-        return wrapper as W
+    override fun build(): Wrapper<T> {
+        return wrapper
     }
 
     fun appendSql(sql: StringBuilder, multiTableQuery: Boolean) {

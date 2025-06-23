@@ -14,13 +14,13 @@ import kotlin.reflect.KMutableProperty1
  *
  * @author Tang
  */
-abstract class AbstractOrderByWrapper<R, T, W>(
+abstract class AbstractOrderByWrapper<R, T>(
 
     private val wrapper: Wrapper<T>,
 
     private val columns: MutableList<OrderItem<*>> = mutableListOf()
 
-): WrapperBuilder<T, W> {
+): WrapperBuilder<T> {
 
 
     @Suppress("UNCHECKED_CAST")
@@ -146,9 +146,8 @@ abstract class AbstractOrderByWrapper<R, T, W>(
      *
      * @return Wrapper instance
      */
-    @Suppress("UNCHECKED_CAST")
-    override fun build(): W {
-        return wrapper as W
+    override fun build(): Wrapper<T> {
+        return wrapper
     }
 
     fun appendSql(sql: StringBuilder, multiTableQuery: Boolean) {

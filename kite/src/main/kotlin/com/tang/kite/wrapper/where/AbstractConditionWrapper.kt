@@ -12,11 +12,11 @@ import kotlin.reflect.KMutableProperty1
 /**
  * @author Tang
  */
-abstract class AbstractConditionWrapper<R, T, W>(
+abstract class AbstractConditionWrapper<R, T>(
 
     private val conditions: MutableList<LogicalStatement> = mutableListOf()
 
-) : WrapperBuilder<T, W> {
+) : WrapperBuilder<T> {
 
     @Suppress("UNCHECKED_CAST")
     protected var conditionInstance: R = Any() as R

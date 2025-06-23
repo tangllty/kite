@@ -7,7 +7,7 @@ import com.tang.kite.wrapper.where.AbstractWhereWrapper
  *
  * @author Tang
  */
-class UpdateWhereWrapper<T>(private val updateWrapper: UpdateWrapper<T>) : AbstractWhereWrapper<UpdateWhereWrapper<T>, T, UpdateWrapper<T>>(updateWrapper, mutableListOf()), UpdateBuilder<T> {
+class UpdateWhereWrapper<T>(private val updateWrapper: UpdateWrapper<T>) : AbstractWhereWrapper<UpdateWhereWrapper<T>, T>(updateWrapper, mutableListOf()), UpdateBuilder<T> {
 
     init {
         this.whereInstance = this

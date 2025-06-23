@@ -7,7 +7,7 @@ import com.tang.kite.wrapper.where.AbstractOrderByWrapper
 /**
  * @author Tang
  */
-class QueryOrderByWrapper<R, T, W>(
+class QueryOrderByWrapper<R, T>(
 
     private val wrapper: Wrapper<T>,
 
@@ -15,7 +15,7 @@ class QueryOrderByWrapper<R, T, W>(
 
     columns: MutableList<OrderItem<*>> = mutableListOf()
 
-) : AbstractOrderByWrapper<QueryOrderByWrapper<R, T, W>, T, W>(wrapper, columns), QueryBuilder<T> {
+) : AbstractOrderByWrapper<QueryOrderByWrapper<R, T>, T>(wrapper, columns), QueryBuilder<T> {
 
     init {
         this.orderByInstance = this
