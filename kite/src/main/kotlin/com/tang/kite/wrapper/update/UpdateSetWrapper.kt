@@ -88,11 +88,9 @@ class UpdateSetWrapper<T>(val updateWrapper: UpdateWrapper<T>) {
     }
 
     /**
-     * Set the value
+     * Create a new UpdateWhereWrapper
      *
-     * @param column column name
-     * @param value value
-     * @return UpdateSetWrapper
+     * @return UpdateWhereWrapper
      */
     fun where(): UpdateWhereWrapper<T> {
         this.updateWrapper.updateWhereWrapper = UpdateWhereWrapper(updateWrapper)

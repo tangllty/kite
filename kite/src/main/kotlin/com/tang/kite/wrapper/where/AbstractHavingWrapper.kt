@@ -1,19 +1,13 @@
 package com.tang.kite.wrapper.where
 
 import com.tang.kite.constants.SqlString.HAVING
-import com.tang.kite.function.SFunction
-import com.tang.kite.utils.Fields
-import com.tang.kite.utils.Reflects
 import com.tang.kite.wrapper.Column
 import com.tang.kite.wrapper.Wrapper
 import com.tang.kite.wrapper.enumeration.ComparisonOperator
 import com.tang.kite.wrapper.enumeration.LogicalOperator
 import com.tang.kite.wrapper.statement.ComparisonStatement
 import com.tang.kite.wrapper.statement.LogicalStatement
-import java.lang.reflect.Field
 import java.util.function.Consumer
-import kotlin.reflect.KMutableProperty1
-import kotlin.reflect.jvm.javaField
 
 /**
  * @author Tang
@@ -28,20 +22,6 @@ abstract class AbstractHavingWrapper<R, T>(
 
     init {
         this.conditionInstance = this
-    }
-
-    private fun getColumnName(field: Field): String {
-        return Reflects.getColumnName(field, true)
-    }
-
-    private fun getColumnName(column: KMutableProperty1<T, *>): String {
-        val field = column.javaField!!
-        return getColumnName(field)
-    }
-
-    private fun getColumnName(column: SFunction<T, *>): String {
-        val field = Fields.getField(column)
-        return getColumnName(field)
     }
 
     /**

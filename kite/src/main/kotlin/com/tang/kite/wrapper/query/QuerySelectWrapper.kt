@@ -115,7 +115,7 @@ class QuerySelectWrapper<T>(
      */
     fun from(table: String): QueryWhereWrapper<T> {
         this.table = table
-        this.queryWrapper.queryWhereWrapper = QueryWhereWrapper<T>(queryWrapper)
+        this.queryWrapper.queryWhereWrapper = QueryWhereWrapper(queryWrapper)
         return queryWrapper.queryWhereWrapper
     }
 
@@ -137,10 +137,10 @@ class QuerySelectWrapper<T>(
     fun appendSql(sql: StringBuilder, joinedClass: List<Class<*>>, isMultiTableQuery: Boolean) {
         checkValues()
         if (columns.isEmpty()) {
-            listOf<Class<*>>(tableClass).plus(joinedClass).forEach {
+            listOf(tableClass).plus(joinedClass).forEach {
                 val fields = Reflects.getSqlFields(it)
-                fields.forEach {
-                    columns.add(Column(it))
+                fields.forEach { field ->
+                    columns.add(Column(field))
                 }
             }
         }
