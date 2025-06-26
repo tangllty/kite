@@ -20,8 +20,11 @@ abstract class AbstractGroupByWrapper<R, T>(
 
 ): WrapperBuilder<T> {
 
-    @Suppress("UNCHECKED_CAST")
-    protected var groupByInstance: R = Any() as R
+    protected var groupByInstance: R? = null
+
+    private fun getInstance(): R {
+        return groupByInstance ?: throw IllegalStateException("GroupBy instance is not initialized")
+    }
 
     /**
      * Group by operation
@@ -31,7 +34,7 @@ abstract class AbstractGroupByWrapper<R, T>(
      */
     fun groupBy(vararg columns: Column): R {
         this.columns.addAll(columns)
-        return groupByInstance
+        return getInstance()
     }
 
     /**

@@ -20,6 +20,11 @@ class QueryHavingWrapper<R, T>(
 
 ) : AbstractHavingWrapper<QueryHavingWrapper<R, T>, T>(wrapper, conditions), QueryBuilder<T> {
 
+    init {
+        this.conditionInstance = this
+        this.havingInstance = this
+    }
+
     /**
      * Order by operation
      *
@@ -40,7 +45,7 @@ class QueryHavingWrapper<R, T>(
      * @return QueryOrderByWrapper<QueryWhereWrapper<T>, T>
      */
     fun orderBy(column: String, asc: Boolean = true): QueryOrderByWrapper<QueryWhereWrapper<T>, T> {
-        return orderBy(OrderItem<T>(column, asc))
+        return orderBy(OrderItem(column, asc))
     }
 
     /**
@@ -51,7 +56,7 @@ class QueryHavingWrapper<R, T>(
      * @return QueryOrderByWrapper<QueryWhereWrapper<T>, T>
      */
     fun orderBy(column: KMutableProperty1<T, *>, asc: Boolean = true): QueryOrderByWrapper<QueryWhereWrapper<T>, T> {
-        return orderBy(OrderItem<T>(column, asc))
+        return orderBy(OrderItem(column, asc))
     }
 
     /**
@@ -62,7 +67,7 @@ class QueryHavingWrapper<R, T>(
      * @return QueryOrderByWrapper<QueryWhereWrapper<T>, T>
      */
     fun orderBy(column: SFunction<T, *>, asc: Boolean = true): QueryOrderByWrapper<QueryWhereWrapper<T>, T> {
-        return orderBy(OrderItem<T>(column, asc))
+        return orderBy(OrderItem(column, asc))
     }
 
     /**

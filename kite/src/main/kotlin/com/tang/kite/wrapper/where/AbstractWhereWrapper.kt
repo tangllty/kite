@@ -21,8 +21,11 @@ abstract class AbstractWhereWrapper<R, T>(
 
 ) : AbstractConditionWrapper<R, T>(conditions) {
 
-    @Suppress("UNCHECKED_CAST")
-    protected var whereInstance: R = Any() as R
+    protected var whereInstance: R? = null
+
+    private fun getInstance(): R {
+        return whereInstance ?: throw IllegalStateException("Where instance is not initialized")
+    }
 
     private fun createNestedWrapper(): AbstractWhereWrapper<R, T> {
         val wrapper = WrapperBuilder::class.java.getMethod("build").invoke(this)
@@ -37,7 +40,7 @@ abstract class AbstractWhereWrapper<R, T>(
      */
     fun and(): R {
         setLastLogicalOperator(LogicalOperator.AND)
-        return whereInstance
+        return getInstance()
     }
 
     /**
@@ -50,11 +53,11 @@ abstract class AbstractWhereWrapper<R, T>(
         val nestedWrapper = createNestedWrapper()
         nestedWrapper.nested()
         if (nestedWrapper.conditions.isEmpty()) {
-            return whereInstance
+            return getInstance()
         }
         conditions.last().logicalOperator = LogicalOperator.AND
         conditions.last().nestedConditions = nestedWrapper.conditions
-        return whereInstance
+        return getInstance()
     }
 
     /**
@@ -88,7 +91,7 @@ abstract class AbstractWhereWrapper<R, T>(
         nestedWrapper.nested()
         conditions.last().logicalOperator = LogicalOperator.OR
         conditions.last().nestedConditions = nestedWrapper.conditions
-        return whereInstance
+        return getInstance()
     }
 
     /**
@@ -122,7 +125,7 @@ abstract class AbstractWhereWrapper<R, T>(
         nestedWrapper.nested()
         conditions.last().logicalOperator = LogicalOperator.AND_NOT
         conditions.last().nestedConditions = nestedWrapper.conditions
-        return whereInstance
+        return getInstance()
     }
 
     /**
@@ -156,7 +159,7 @@ abstract class AbstractWhereWrapper<R, T>(
         nestedWrapper.nested()
         conditions.last().logicalOperator = LogicalOperator.OR_NOT
         conditions.last().nestedConditions = nestedWrapper.conditions
-        return whereInstance
+        return getInstance()
     }
 
     /**

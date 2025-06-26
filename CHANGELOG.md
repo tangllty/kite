@@ -23,6 +23,7 @@
  * Refactor field retrieval to include superclass fields in `Fields.kt`
  * Refactor `QueryWrapper` and `UpdateWrapper` logic to improve readability and maintainability
  * Refactor wrapper classes to remove unused type parameters for improved clarity
+ * Refactor wrapper classes to use nullable instances and improve instance retrieval logic
 
 ## 1.0.9
 

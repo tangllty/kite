@@ -22,9 +22,11 @@ abstract class AbstractOrderByWrapper<R, T>(
 
 ): WrapperBuilder<T> {
 
+    protected var orderByInstance: R? = null
 
-    @Suppress("UNCHECKED_CAST")
-    protected var orderByInstance: R = Any() as R
+    private fun getInstance(): R {
+        return orderByInstance ?: throw IllegalStateException("OrderBy instance is not initialized")
+    }
 
     /**
      * Order by operation
@@ -35,7 +37,7 @@ abstract class AbstractOrderByWrapper<R, T>(
     @SafeVarargs
     fun <E> orderBy(vararg orderBys: OrderItem<E>): R {
         columns.addAll(orderBys)
-        return orderByInstance
+        return getInstance()
     }
 
     /**

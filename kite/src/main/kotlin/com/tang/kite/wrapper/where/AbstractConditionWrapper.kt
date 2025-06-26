@@ -18,15 +18,18 @@ abstract class AbstractConditionWrapper<R, T>(
 
 ) : WrapperBuilder<T> {
 
-    @Suppress("UNCHECKED_CAST")
-    protected var conditionInstance: R = Any() as R
+    protected var conditionInstance: R? = null
+
+    private fun getInstance(): R {
+        return conditionInstance ?: throw IllegalStateException("Condition instance is not initialized")
+    }
 
     private fun compare(column: Column, value: Any?, comparisonOperator: ComparisonOperator, effective: Boolean): R {
         if (effective) {
             val condition = ComparisonStatement(column, value, comparisonOperator)
             conditions.add(LogicalStatement(condition, LogicalOperator.AND))
         }
-        return conditionInstance
+        return getInstance()
     }
 
     protected fun setLastLogicalOperator(logicalOperator: LogicalOperator) {
@@ -54,7 +57,7 @@ abstract class AbstractConditionWrapper<R, T>(
      * @return R
      */
     fun where() : R {
-        return conditionInstance
+        return getInstance()
     }
 
     /**
@@ -908,7 +911,7 @@ abstract class AbstractConditionWrapper<R, T>(
             val condition = ComparisonStatement(column, Pair(start, end), ComparisonOperator.BETWEEN)
             conditions.add(LogicalStatement(condition, LogicalOperator.AND))
         }
-        return conditionInstance
+        return getInstance()
     }
 
     /**
@@ -1011,7 +1014,7 @@ abstract class AbstractConditionWrapper<R, T>(
             val condition = ComparisonStatement(column, values, ComparisonOperator.IN)
             conditions.add(LogicalStatement(condition, LogicalOperator.AND))
         }
-        return conditionInstance
+        return getInstance()
     }
 
     /**
@@ -1462,7 +1465,7 @@ abstract class AbstractConditionWrapper<R, T>(
             val condition = ComparisonStatement(column, Pair(start, end), ComparisonOperator.NOT_BETWEEN)
             conditions.add(LogicalStatement(condition, LogicalOperator.AND))
         }
-        return conditionInstance
+        return getInstance()
     }
 
     /**
@@ -1565,7 +1568,7 @@ abstract class AbstractConditionWrapper<R, T>(
             val condition = ComparisonStatement(column, values, ComparisonOperator.NOT_IN)
             conditions.add(LogicalStatement(condition, LogicalOperator.AND))
         }
-        return conditionInstance
+        return getInstance()
     }
 
     /**

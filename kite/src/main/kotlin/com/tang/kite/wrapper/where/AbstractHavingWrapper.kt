@@ -18,148 +18,150 @@ abstract class AbstractHavingWrapper<R, T>(
 
     private val conditions: MutableList<LogicalStatement> = mutableListOf()
 
-): AbstractConditionWrapper<AbstractHavingWrapper<R, T>, T>(conditions) {
+): AbstractConditionWrapper<R, T>(conditions) {
 
-    init {
-        this.conditionInstance = this
+    protected var havingInstance: R? = null
+
+    private fun getInstance(): R {
+        return havingInstance ?: throw IllegalStateException("Having instance is not initialized")
     }
 
     /**
      * And operation
      *
-     * @return AbstractHavingWrapper<R, T>
+     * @return R
      */
-    fun and(): AbstractHavingWrapper<R, T> {
+    fun and(): R {
         setLastLogicalOperator(LogicalOperator.AND)
-        return this
+        return getInstance()
     }
 
     /**
      * And nested operation
      *
      * @param nested nested operation
-     * @return AbstractHavingWrapper<R, T>
+     * @return R
      */
-    fun and(nested: AbstractHavingWrapper<R, T>.() -> Unit): AbstractHavingWrapper<R, T> {
+    fun and(nested: AbstractHavingWrapper<R, T>.() -> Unit): R {
         val nestedWrapper = createNestedWrapper()
         nestedWrapper.nested()
         if (nestedWrapper.conditions.isEmpty()) {
-            return this
+            return getInstance()
         }
         conditions.last().logicalOperator = LogicalOperator.AND
         conditions.last().nestedConditions = nestedWrapper.conditions
-        return this
+        return getInstance()
     }
 
     /**
      * And nested operation
      *
      * @param nested nested operation
-     * @return AbstractHavingWrapper<R, T>
+     * @return R
      */
-    fun and(nested: Consumer<AbstractHavingWrapper<R, T>>): AbstractHavingWrapper<R, T> {
+    fun and(nested: Consumer<AbstractHavingWrapper<R, T>>): R {
         return and { nested.accept(this) }
     }
 
     /**
      * Or operation
      *
-     * @return AbstractHavingWrapper<R, T>
+     * @return R
      */
-    fun or(): AbstractHavingWrapper<R, T> {
+    fun or(): R {
         setLastLogicalOperator(LogicalOperator.OR)
-        return this
+        return getInstance()
     }
 
     /**
      * Or nested operation
      *
      * @param nested nested operation
-     * @return AbstractHavingWrapper<R, T>
+     * @return R
      */
-    fun or(nested: AbstractHavingWrapper<R, T>.() -> Unit): AbstractHavingWrapper<R, T> {
+    fun or(nested: AbstractHavingWrapper<R, T>.() -> Unit): R {
         val nestedWrapper = createNestedWrapper()
         nestedWrapper.nested()
         conditions.last().logicalOperator = LogicalOperator.OR
         conditions.last().nestedConditions = nestedWrapper.conditions
-        return this
+        return getInstance()
     }
 
     /**
      * Or nested operation
      *
      * @param nested nested operation
-     * @return AbstractHavingWrapper<R, T>
+     * @return R
      */
-    fun or(nested: Consumer<AbstractHavingWrapper<R, T>>): AbstractHavingWrapper<R, T> {
+    fun or(nested: Consumer<AbstractHavingWrapper<R, T>>): R {
         return or { nested.accept(this) }
     }
 
     /**
      * And not operation
      *
-     * @return AbstractHavingWrapper<R, T>
+     * @return R
      */
-    fun andNot(): AbstractHavingWrapper<R, T> {
+    fun andNot(): R {
         setLastLogicalOperator(LogicalOperator.AND_NOT)
-        return this
+        return getInstance()
     }
 
     /**
      * And not nested operation
      *
      * @param nested nested operation
-     * @return AbstractHavingWrapper<R, T>
+     * @return R
      */
-    fun andNot(nested: AbstractHavingWrapper<R, T>.() -> Unit): AbstractHavingWrapper<R, T> {
+    fun andNot(nested: AbstractHavingWrapper<R, T>.() -> Unit): R {
         val nestedWrapper = createNestedWrapper()
         nestedWrapper.nested()
         conditions.last().logicalOperator = LogicalOperator.AND_NOT
         conditions.last().nestedConditions = nestedWrapper.conditions
-        return this
+        return getInstance()
     }
 
     /**
      * And not nested operation
      *
      * @param nested nested operation
-     * @return AbstractHavingWrapper<R, T>
+     * @return R
      */
-    fun andNot(nested: Consumer<AbstractHavingWrapper<R, T>>): AbstractHavingWrapper<R, T> {
+    fun andNot(nested: Consumer<AbstractHavingWrapper<R, T>>): R {
         return andNot { nested.accept(this) }
     }
 
     /**
      * Or not operation
      *
-     * @return AbstractHavingWrapper<R, T>
+     * @return R
      */
-    fun orNot(): AbstractHavingWrapper<R, T> {
+    fun orNot(): R {
         setLastLogicalOperator(LogicalOperator.OR_NOT)
-        return this
+        return getInstance()
     }
 
     /**
      * Or not nested operation
      *
      * @param nested nested operation
-     * @return AbstractHavingWrapper<R, T>
+     * @return R
      */
-    fun orNot(nested: AbstractHavingWrapper<R, T>.() -> Unit): AbstractHavingWrapper<R, T> {
+    fun orNot(nested: AbstractHavingWrapper<R, T>.() -> Unit): R {
         val nestedWrapper = createNestedWrapper()
         nestedWrapper.nested()
         conditions.last().logicalOperator = LogicalOperator.OR_NOT
         conditions.last().nestedConditions = nestedWrapper.conditions
-        return this
+        return getInstance()
     }
 
     /**
      * Or not nested operation
      *
      * @param nested nested operation
-     * @return AbstractHavingWrapper<R, T>
+     * @return R
      */
-    fun orNot(nested: Consumer<AbstractHavingWrapper<R, T>>): AbstractHavingWrapper<R, T> {
+    fun orNot(nested: Consumer<AbstractHavingWrapper<R, T>>): R {
         return orNot { nested.accept(this) }
     }
 
@@ -169,12 +171,12 @@ abstract class AbstractHavingWrapper<R, T>(
         return firstConstructor.newInstance(wrapper) as AbstractHavingWrapper<R, T>
     }
 
-    private fun compare(column: String, value: Any, comparisonOperator: ComparisonOperator, effective: Boolean): AbstractHavingWrapper<R, T> {
+    private fun compare(column: String, value: Any, comparisonOperator: ComparisonOperator, effective: Boolean): R {
         if (effective) {
             val condition = ComparisonStatement(Column(column), value, comparisonOperator)
             conditions.add(LogicalStatement(condition, LogicalOperator.AND))
         }
-        return this
+        return getInstance()
     }
 
     /**
