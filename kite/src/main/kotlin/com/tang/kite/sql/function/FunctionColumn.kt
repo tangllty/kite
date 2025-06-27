@@ -9,7 +9,7 @@ data class FunctionColumn (
 
     val function: String,
 
-    var column: String
+    var column: String?
 
 ) : Column(column) {
 

@@ -1,3 +1,13 @@
+## 1.0.11
+
+### Bug Fixes
+
+### Dependencies
+
+### Features
+
+ * Refactor Column and FunctionColumn classes to support nullable column names
+
 ## 1.0.10
 
 ### Bug Fixes

@@ -12,7 +12,7 @@ import kotlin.reflect.jvm.javaField
  */
 open class Column(
 
-    val name: String,
+    val name: String?,
 
     val tableAlias: String? = null
 
@@ -25,6 +25,9 @@ open class Column(
     constructor(column: SFunction<*, *>): this(Fields.getField(column))
 
     override fun toString(): String {
+        if (name == null) {
+            throw IllegalArgumentException("Column name cannot be null")
+        }
         return if (tableAlias == null) {
             name
         } else {
@@ -33,6 +36,9 @@ open class Column(
     }
 
     fun toString(withAlias: Boolean): String {
+        if (name == null) {
+            throw IllegalArgumentException("Column name cannot be null")
+        }
         return if (withAlias) {
             toString()
         } else {

@@ -21,7 +21,7 @@ object SqlFunction {
     private const val UPPER = "UPPER"
     private const val STAR = "*"
 
-    private fun wrap(function: String, column: String): FunctionColumn {
+    private fun wrap(function: String, column: String?): FunctionColumn {
         return FunctionColumn(function, column)
     }
 
@@ -34,123 +34,123 @@ object SqlFunction {
     }
 
     @JvmStatic
-    fun avg(column: String): FunctionColumn {
+    fun avg(value: String?): FunctionColumn {
+        return wrap(AVG, value)
+    }
+
+    @JvmStatic
+    fun <T> avg(column: KMutableProperty1<T, *>): FunctionColumn {
         return wrap(AVG, column)
     }
 
     @JvmStatic
-    fun <T> avg(property: KMutableProperty1<T, *>): FunctionColumn {
-        return wrap(AVG, property)
+    fun <T> avg(column: SFunction<T, *>): FunctionColumn {
+        return wrap(AVG, column)
     }
 
     @JvmStatic
-    fun <T> avg(field: SFunction<T, *>): FunctionColumn {
-        return wrap(AVG, field)
+    fun count(value: String? = STAR): FunctionColumn {
+        return wrap(COUNT, value)
     }
 
     @JvmStatic
-    fun count(column: String = STAR): FunctionColumn {
+    fun <T> count(column: KMutableProperty1<T, *>): FunctionColumn {
         return wrap(COUNT, column)
     }
 
     @JvmStatic
-    fun <T> count(property: KMutableProperty1<T, *>): FunctionColumn {
-        return wrap(COUNT, property)
+    fun <T> count(column: SFunction<T, *>): FunctionColumn {
+        return wrap(COUNT, column)
     }
 
     @JvmStatic
-    fun <T> count(field: SFunction<T, *>): FunctionColumn {
-        return wrap(COUNT, field)
+    fun length(value: String?): FunctionColumn {
+        return wrap(LENGTH, value)
     }
 
     @JvmStatic
-    fun length(column: String): FunctionColumn {
+    fun <T> length(column: KMutableProperty1<T, *>): FunctionColumn {
         return wrap(LENGTH, column)
     }
 
     @JvmStatic
-    fun <T> length(property: KMutableProperty1<T, *>): FunctionColumn {
-        return wrap(LENGTH, property)
+    fun <T> length(column: SFunction<T, *>): FunctionColumn {
+        return wrap(LENGTH, column)
     }
 
     @JvmStatic
-    fun <T> length(field: SFunction<T, *>): FunctionColumn {
-        return wrap(LENGTH, field)
+    fun lower(value: String?): FunctionColumn {
+        return wrap(LOWER, value)
     }
 
     @JvmStatic
-    fun lower(column: String): FunctionColumn {
+    fun <T> lower(column: KMutableProperty1<T, *>): FunctionColumn {
         return wrap(LOWER, column)
     }
 
     @JvmStatic
-    fun <T> lower(property: KMutableProperty1<T, *>): FunctionColumn {
-        return wrap(LOWER, property)
+    fun <T> lower(column: SFunction<T, *>): FunctionColumn {
+        return wrap(LOWER, column)
     }
 
     @JvmStatic
-    fun <T> lower(field: SFunction<T, *>): FunctionColumn {
-        return wrap(LOWER, field)
+    fun max(value: String?): FunctionColumn {
+        return wrap(MAX, value)
     }
 
     @JvmStatic
-    fun max(column: String): FunctionColumn {
+    fun <T> max(column: KMutableProperty1<T, *>): FunctionColumn {
         return wrap(MAX, column)
     }
 
     @JvmStatic
-    fun <T> max(property: KMutableProperty1<T, *>): FunctionColumn {
-        return wrap(MAX, property)
+    fun <T> max(column: SFunction<T, *>): FunctionColumn {
+        return wrap(MAX, column)
     }
 
     @JvmStatic
-    fun <T> max(field: SFunction<T, *>): FunctionColumn {
-        return wrap(MAX, field)
+    fun min(value: String?): FunctionColumn {
+        return wrap(MIN, value)
     }
 
     @JvmStatic
-    fun min(column: String): FunctionColumn {
+    fun <T> min(column: KMutableProperty1<T, *>): FunctionColumn {
         return wrap(MIN, column)
     }
 
     @JvmStatic
-    fun <T> min(property: KMutableProperty1<T, *>): FunctionColumn {
-        return wrap(MIN, property)
+    fun <T> min(column: SFunction<T, *>): FunctionColumn {
+        return wrap(MIN, column)
     }
 
     @JvmStatic
-    fun <T> min(field: SFunction<T, *>): FunctionColumn {
-        return wrap(MIN, field)
+    fun sum(value: String?): FunctionColumn {
+        return wrap(SUM, value)
     }
 
     @JvmStatic
-    fun sum(column: String): FunctionColumn {
+    fun <T> sum(column: KMutableProperty1<T, *>): FunctionColumn {
         return wrap(SUM, column)
     }
 
     @JvmStatic
-    fun <T> sum(property: KMutableProperty1<T, *>): FunctionColumn {
-        return wrap(SUM, property)
+    fun <T> sum(column: SFunction<T, *>): FunctionColumn {
+        return wrap(SUM, column)
     }
 
     @JvmStatic
-    fun <T> sum(field: SFunction<T, *>): FunctionColumn {
-        return wrap(SUM, field)
+    fun upper(value: String?): FunctionColumn {
+        return wrap(UPPER, value)
     }
 
     @JvmStatic
-    fun upper(column: String): FunctionColumn {
+    fun <T> upper(column: KMutableProperty1<T, *>): FunctionColumn {
         return wrap(UPPER, column)
     }
 
     @JvmStatic
-    fun <T> upper(property: KMutableProperty1<T, *>): FunctionColumn {
-        return wrap(UPPER, property)
-    }
-
-    @JvmStatic
-    fun <T> upper(field: SFunction<T, *>): FunctionColumn {
-        return wrap(UPPER, field)
+    fun <T> upper(column: SFunction<T, *>): FunctionColumn {
+        return wrap(UPPER, column)
     }
 
 }
