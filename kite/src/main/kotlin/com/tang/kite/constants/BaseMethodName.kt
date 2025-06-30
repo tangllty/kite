@@ -42,6 +42,10 @@ object BaseMethodName {
         return parameterTypes[1].name == Long::class.java.name
     }
 
+    private fun Method.secondParameterIsInt(): Boolean {
+        return parameterTypes[1].name == Int::class.java.name
+    }
+
     private fun Method.thirdParameterIsAny(): Boolean {
         return isAny(parameterTypes[2])
     }
@@ -69,13 +73,13 @@ object BaseMethodName {
     private const val BATCH_INSERT = "batchInsert"
 
     fun isBatchInsert(method: Method): Boolean {
-        return method.name == BATCH_INSERT && method.countIsOne() && method.firstParameterIsIterable()
+        return method.name == BATCH_INSERT && method.countIsTwo() && method.firstParameterIsIterable() && method.secondParameterIsInt()
     }
 
     private const val BATCH_INSERT_SELECTIVE = "batchInsertSelective"
 
     fun isBatchInsertSelective(method: Method): Boolean {
-        return method.name == BATCH_INSERT_SELECTIVE && method.countIsOne() && method.firstParameterIsIterable()
+        return method.name == BATCH_INSERT_SELECTIVE && method.countIsTwo() && method.firstParameterIsIterable() && method.secondParameterIsInt()
     }
 
     private const val UPDATE = "update"

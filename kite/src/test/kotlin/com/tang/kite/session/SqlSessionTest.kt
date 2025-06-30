@@ -138,7 +138,7 @@ class SqlSessionTest : BaseDataTest() {
             Account(username = "tang1", password = "123456"),
             Account(username = "tang2", password = "123456")
         )
-        val rows = accountMapper.batchInsert(accounts.toTypedArray())
+        val rows = accountMapper.batchInsert(accounts)
         session.commit()
         session.close()
         assertEquals(2, rows)
@@ -152,10 +152,38 @@ class SqlSessionTest : BaseDataTest() {
             Account(username = "tang1"),
             Account(username = "tang2")
         )
-        val rows = accountMapper.batchInsertSelective(accounts.toTypedArray())
+        val rows = accountMapper.batchInsertSelective(accounts)
         session.commit()
         session.close()
         assertEquals(2, rows)
+    }
+
+    @Test
+    fun batchInsertSize() {
+        val session = sqlSessionFactory.openSession()
+        val accountMapper = session.getMapper(AccountMapper::class.java)
+        val accounts = mutableListOf<Account>()
+        for (i in 1..100) {
+            accounts.add(Account(username = "tang$i", password = "123456"))
+        }
+        val rows = accountMapper.batchInsert(accounts, 30)
+        session.commit()
+        session.close()
+        assertEquals(100, rows)
+    }
+
+    @Test
+    fun batchInsertSelectiveSize() {
+        val session = sqlSessionFactory.openSession()
+        val accountMapper = session.getMapper(AccountMapper::class.java)
+        val accounts = mutableListOf<Account>()
+        repeat(100) {
+            accounts.add(Account(username = "tang$it"))
+        }
+        val rows = accountMapper.batchInsertSelective(accounts, 30)
+        session.commit()
+        session.close()
+        assertEquals(100, rows)
     }
 
     @Test

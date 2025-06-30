@@ -37,9 +37,31 @@ interface BaseMapper<T> {
      * Batch insert entity
      *
      * @param list Entity list
+     * @param batchSize Batch size
      * @return Inserted count
      */
-    fun batchInsert(list: Iterable<T>): Int
+    fun batchInsert(list: Iterable<T>, batchSize: Int): Int
+
+    /**
+     * Batch insert entity
+     *
+     * @param list Entity list
+     * @param batchSize Batch size
+     * @return Inserted count
+     */
+    fun batchInsert(list: Array<T>, batchSize: Int): Int {
+        return batchInsert(list.toList(), batchSize)
+    }
+
+    /**
+     * Batch insert entity
+     *
+     * @param list Entity list
+     * @return Inserted count
+     */
+    fun batchInsert(list: Iterable<T>): Int {
+        return batchInsert(list, KiteConfig.batchSize)
+    }
 
     /**
      * Batch insert entity
@@ -55,9 +77,31 @@ interface BaseMapper<T> {
      * Batch insert entity selective, ignore [KiteConfig.selectiveStrategy] value
      *
      * @param list Entity list
+     * @param batchSize Batch size
      * @return Inserted count
      */
-    fun batchInsertSelective(list: Iterable<T>): Int
+    fun batchInsertSelective(list: Iterable<T>, batchSize: Int): Int
+
+    /**
+     * Batch insert entity selective, ignore [KiteConfig.selectiveStrategy] value
+     *
+     * @param list Entity list
+     * @param batchSize Batch size
+     * @return Inserted count
+     */
+    fun batchInsertSelective(list: Array<T>, batchSize: Int): Int {
+        return batchInsertSelective(list.toList())
+    }
+
+    /**
+     * Batch insert entity selective, ignore [KiteConfig.selectiveStrategy] value
+     *
+     * @param list Entity list
+     * @return Inserted count
+     */
+    fun batchInsertSelective(list: Iterable<T>): Int {
+        return batchInsertSelective(list, KiteConfig.batchSize)
+    }
 
     /**
      * Batch insert entity selective, ignore [KiteConfig.selectiveStrategy] value

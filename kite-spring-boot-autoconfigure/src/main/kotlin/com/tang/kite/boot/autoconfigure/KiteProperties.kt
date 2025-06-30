@@ -27,6 +27,11 @@ data class KiteProperties(
     val selectiveStrategy: Function<Any?, Boolean> = KiteConfig.selectiveStrategy,
 
     /**
+     * The batch size for operations like inserts or updates.
+     */
+    var batchSize: Int = KiteConfig.batchSize,
+
+    /**
      * The strategy for selective query with a default value.
      */
     val urlProviders: Map<String, SqlProvider> = KiteConfig.urlProviders,

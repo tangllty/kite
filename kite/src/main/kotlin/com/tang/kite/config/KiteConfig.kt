@@ -29,6 +29,12 @@ object KiteConfig {
     var selectiveStrategy = (Function<Any?, Boolean> { DefaultSelectiveStrategy.isSelective(it) })
 
     /**
+     * The batch size for operations like inserts or updates.
+     */
+    @JvmStatic
+    var batchSize = 1000
+
+    /**
      * The strategy for selective query with a default value.
      */
     @JvmStatic
