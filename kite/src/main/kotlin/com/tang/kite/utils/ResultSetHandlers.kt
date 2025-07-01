@@ -2,6 +2,7 @@ package com.tang.kite.utils
 
 import com.tang.kite.constants.SqlString.INSERT
 import com.tang.kite.sql.SqlStatement
+import com.tang.kite.wrapper.delete.DeleteWrapper
 import com.tang.kite.wrapper.update.UpdateWrapper
 import java.sql.PreparedStatement
 import java.sql.ResultSet
@@ -122,7 +123,8 @@ object ResultSetHandlers {
     }
 
     fun hasGeneratedKey(statement: SqlStatement, parameter: Any): Boolean {
-        if (parameter.javaClass.name in listOf(UpdateWrapper::class.java.name, Long::class.javaObjectType.name)) {
+        val excludedTypes = listOf(UpdateWrapper::class.java.name, DeleteWrapper::class.java.name, Long::class.javaObjectType.name)
+        if (parameter.javaClass.name in excludedTypes) {
             return false
         }
         var param = parameter

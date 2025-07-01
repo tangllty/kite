@@ -117,7 +117,7 @@ class QueryWrapper<T> : Wrapper<T> {
         return SqlStatement(SqlConfig.getSql(sql), parameters)
     }
 
-    private fun checkValues() {
+    override fun checkValues() {
     }
 
 }

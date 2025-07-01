@@ -4,6 +4,7 @@ import com.tang.kite.config.KiteConfig
 import com.tang.kite.config.PageConfig
 import com.tang.kite.paginate.OrderItem
 import com.tang.kite.paginate.Page
+import com.tang.kite.wrapper.delete.DeleteWrapper
 import com.tang.kite.wrapper.query.QueryWrapper
 import com.tang.kite.wrapper.update.UpdateWrapper
 import jakarta.servlet.http.HttpServletRequest
@@ -167,6 +168,18 @@ interface BaseMapper<T> {
      * @return Deleted count
      */
     fun deleteById(id: Long): Int
+
+    /**
+     * Delete entity by delete wrapper
+     */
+    fun deleteWrapper(deleteWrapper: DeleteWrapper<T>): Int
+
+    /**
+     * Delete entity by delete wrapper
+     */
+    fun deleteWrapper(): DeleteWrapper<T> {
+        return DeleteWrapper(this)
+    }
 
     /**
      * Select all

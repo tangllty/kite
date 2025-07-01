@@ -11,4 +11,6 @@ interface Wrapper<T> {
 
     fun getSqlStatement(): SqlStatement
 
+    fun checkValues()
+
 }

@@ -1,6 +1,7 @@
 package com.tang.kite.constants
 
 import com.tang.kite.paginate.OrderItem
+import com.tang.kite.wrapper.delete.DeleteWrapper
 import com.tang.kite.wrapper.query.QueryWrapper
 import com.tang.kite.wrapper.update.UpdateWrapper
 import java.lang.reflect.Method
@@ -116,6 +117,12 @@ object BaseMethodName {
         return method.name == DELETE_BY_ID && method.countIsOne() && method.firstParameterIsLong()
     }
 
+    private const val DELETE_WRAPPER = "deleteWrapper"
+
+    fun isDeleteWrapper(method: Method): Boolean {
+        return method.name == DELETE_WRAPPER && method.countIsOne() && method.parameterTypes[0].kotlin == DeleteWrapper::class
+    }
+
     private const val SELECT = "select"
 
     private fun isSelectParameter(method: Method): Boolean {
@@ -190,7 +197,7 @@ object BaseMethodName {
         val isBaseMethodName = when (methodName) {
             INSERT, INSERT_SELECTIVE, BATCH_INSERT, BATCH_INSERT_SELECTIVE,
             UPDATE, UPDATE_SELECTIVE, UPDATE_WRAPPER,
-            DELETE, DELETE_BY_ID,
+            DELETE, DELETE_BY_ID, DELETE_WRAPPER,
             SELECT, SELECT_BY_ID,
             SELECT_WRAPPER, SELECT_ONE_WRAPPER,
             SELECT_WITH_JOINS, SELECT_BY_ID_WITH_JOINS,
@@ -209,6 +216,7 @@ object BaseMethodName {
             UPDATE_WRAPPER -> isUpdateWrapper(method)
             DELETE -> isDelete(method)
             DELETE_BY_ID -> isDeleteById(method)
+            DELETE_WRAPPER -> isDeleteWrapper(method)
             SELECT -> isSelect(method)
             SELECT_WRAPPER -> isSelectWrapper(method)
             SELECT_BY_ID -> isSelectById(method)

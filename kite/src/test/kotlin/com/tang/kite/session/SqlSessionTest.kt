@@ -18,6 +18,7 @@ import com.tang.kite.session.mapper.RoleMapper
 import com.tang.kite.sql.function.SqlAlias
 import com.tang.kite.sql.function.SqlFunction
 import com.tang.kite.sql.function.`as`
+import com.tang.kite.wrapper.delete.DeleteWrapper
 import com.tang.kite.wrapper.query.QueryWrapper
 import com.tang.kite.wrapper.update.UpdateWrapper
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -269,6 +270,35 @@ class SqlSessionTest : BaseDataTest() {
         val session = sqlSessionFactory.openSession()
         val accountMapper = session.getMapper(AccountMapper::class.java)
         val rows = accountMapper.deleteById(1L)
+        session.rollback()
+        session.close()
+        assertEquals(1, rows)
+    }
+
+    @Test
+    fun deleteWrapper() {
+        val session = sqlSessionFactory.openSession()
+        val accountMapper = session.getMapper(AccountMapper::class.java)
+        val queryWrapper = DeleteWrapper.create<Account>()
+            .from(Account::class.java)
+            .eq(Account::id, 1)
+            .isNotNull(Account::username)
+            .build()
+        val rows = accountMapper.deleteWrapper(queryWrapper)
+        session.rollback()
+        session.close()
+        assertEquals(1, rows)
+    }
+
+    @Test
+    fun deleteWrapperPost() {
+        val session = sqlSessionFactory.openSession()
+        val accountMapper = session.getMapper(AccountMapper::class.java)
+        val rows = accountMapper.deleteWrapper()
+            .from(Account::class.java)
+            .eq(Account::id, 1)
+            .isNotNull(Account::username)
+            .delete()
         session.rollback()
         session.close()
         assertEquals(1, rows)
