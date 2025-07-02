@@ -269,7 +269,7 @@ class SqlSessionTest : BaseDataTest() {
     fun deleteById() {
         val session = sqlSessionFactory.openSession()
         val accountMapper = session.getMapper(AccountMapper::class.java)
-        val rows = accountMapper.deleteById(1L)
+        val rows = accountMapper.deleteById(1)
         session.rollback()
         session.close()
         assertEquals(1, rows)

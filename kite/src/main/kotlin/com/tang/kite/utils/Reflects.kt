@@ -36,7 +36,7 @@ object Reflects {
 
     private val joinFieldsCache: ConcurrentMap<Class<*>, List<Field>> = ConcurrentHashMap()
 
-    fun makeAccessible(accessibleObject: AccessibleObject, any: Any) {
+    fun <T> makeAccessible(accessibleObject: AccessibleObject, any: T) {
         if (accessibleObject.canAccess(any)) {
             return
         }
@@ -149,6 +149,22 @@ object Reflects {
     fun getGeneratedId(idField: Field): Any {
         val idStrategy = idField.getAnnotation(Id::class.java).idStrategy
         return idStrategy.java.getDeclaredConstructor().newInstance().getId(idField)
+    }
+
+    /**
+     * Set the field value, if the field type is Long and the value is Int, it will be automatically converted to Long
+     *
+     * @param field the field to set
+     * @param target the target object to set the field on
+     * @param value the value to set, can be null
+     */
+    fun <T> setValue(field: Field, target: T, value: Any?) {
+        makeAccessible(field, target)
+        if (value != null && field.type == java.lang.Long::class.java && value is Int) {
+            field.set(target, value.toLong())
+        } else {
+            field.set(target, value)
+        }
     }
 
     /**

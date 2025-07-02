@@ -8,6 +8,7 @@ import com.tang.kite.wrapper.delete.DeleteWrapper
 import com.tang.kite.wrapper.query.QueryWrapper
 import com.tang.kite.wrapper.update.UpdateWrapper
 import jakarta.servlet.http.HttpServletRequest
+import java.io.Serializable
 
 /**
  * Base mapper
@@ -167,7 +168,7 @@ interface BaseMapper<T> {
      * @param id Entity id
      * @return Deleted count
      */
-    fun deleteById(id: Long): Int
+    fun deleteById(id: Serializable): Int
 
     /**
      * Delete entity by delete wrapper
@@ -269,7 +270,7 @@ interface BaseMapper<T> {
      * @param id Entity id
      * @return Entity
      */
-    fun selectById(id: Long): T?
+    fun selectById(id: Serializable): T?
 
     /**
      * Select one by query wrapper
@@ -359,7 +360,7 @@ interface BaseMapper<T> {
      * @param id Entity id
      * @return Entity
      */
-    fun selectByIdWithJoins(id: Long): T?
+    fun selectByIdWithJoins(id: Serializable): T?
 
     /**
      * Select by query wrapper

@@ -4,6 +4,7 @@ import com.tang.kite.paginate.OrderItem
 import com.tang.kite.wrapper.delete.DeleteWrapper
 import com.tang.kite.wrapper.query.QueryWrapper
 import com.tang.kite.wrapper.update.UpdateWrapper
+import java.io.Serializable
 import java.lang.reflect.Method
 
 /**
@@ -33,6 +34,10 @@ object BaseMethodName {
 
     private fun Method.firstParameterIsLong(): Boolean {
         return parameterTypes[0].name == Long::class.java.name
+    }
+
+    private fun Method.firstParameterIsSerializable(): Boolean {
+        return parameterTypes[0].name == Serializable::class.java.name
     }
 
     private fun Method.secondParameterIsAny(): Boolean {
@@ -114,7 +119,7 @@ object BaseMethodName {
     private const val DELETE_BY_ID = "deleteById"
 
     fun isDeleteById(method: Method): Boolean {
-        return method.name == DELETE_BY_ID && method.countIsOne() && method.firstParameterIsLong()
+        return method.name == DELETE_BY_ID && method.countIsOne() && method.firstParameterIsSerializable()
     }
 
     private const val DELETE_WRAPPER = "deleteWrapper"
@@ -149,7 +154,7 @@ object BaseMethodName {
     private const val SELECT_BY_ID = "selectById"
 
     fun isSelectById(method: Method): Boolean {
-        return method.name == SELECT_BY_ID && method.countIsOne() && method.firstParameterIsLong()
+        return method.name == SELECT_BY_ID && method.countIsOne() && method.firstParameterIsSerializable()
     }
 
     private const val SELECT_ONE_WRAPPER = "selectOneWrapper"
@@ -168,7 +173,7 @@ object BaseMethodName {
     private  const val SELECT_BY_ID_WITH_JOINS = "selectByIdWithJoins"
 
     fun isSelectByIdWithJoins(method: Method): Boolean {
-        return method.name == SELECT_BY_ID_WITH_JOINS && method.countIsOne() && method.firstParameterIsLong()
+        return method.name == SELECT_BY_ID_WITH_JOINS && method.countIsOne() && method.firstParameterIsSerializable()
     }
 
     private const val COUNT = "count"

@@ -18,6 +18,7 @@ import com.tang.kite.session.SqlSession
 import com.tang.kite.sql.SqlStatement
 import com.tang.kite.sql.provider.SqlProvider
 import com.tang.kite.utils.Reflects
+import com.tang.kite.utils.Reflects.setValue
 import com.tang.kite.utils.parser.SqlParser
 import com.tang.kite.wrapper.delete.DeleteWrapper
 import com.tang.kite.wrapper.query.QueryWrapper
@@ -282,8 +283,7 @@ class DefaultSqlSession(
         val start = nanoTime()
         val entity = type.getDeclaredConstructor().newInstance()
         val idField = Reflects.getIdField(type)
-        Reflects.makeAccessible(idField, entity as Any)
-        idField.set(entity, parameter)
+        setValue(idField, entity, parameter)
         val delete = sqlProvider.delete(type, entity as Any)
         val rows = executor.update(delete, parameter)
         return returnRows(method, mapperInterface, delete, rows, elapsedSince(start))
@@ -333,8 +333,7 @@ class DefaultSqlSession(
     override fun <T> selectById(method: Method, mapperInterface: Class<T>, type: Class<T>, parameter: Any): T? {
         val entity = type.getDeclaredConstructor().newInstance()
         val idField = Reflects.getIdField(type)
-        Reflects.makeAccessible(idField, entity as Any)
-        idField.set(entity, parameter)
+        setValue(idField, entity, parameter)
         val list = selectList(method, mapperInterface, type, entity, emptyArray())
         return getOneFromList(list)
     }
@@ -408,8 +407,7 @@ class DefaultSqlSession(
     override fun <T> selectByIdWithJoins(method: Method, mapperInterface: Class<T>, type: Class<T>, parameter: Any): T? {
         val entity = type.getDeclaredConstructor().newInstance()
         val idField = Reflects.getIdField(type)
-        Reflects.makeAccessible(idField, entity as Any)
-        idField.set(entity, parameter)
+        setValue(idField, entity, parameter)
         val list = selectListWithJoins(method, mapperInterface, type, entity, emptyArray())
         if (list.size > 1) {
             throw IllegalArgumentException("Too many results, expected one, but got ${list.size}")

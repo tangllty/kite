@@ -123,8 +123,11 @@ object ResultSetHandlers {
     }
 
     fun hasGeneratedKey(statement: SqlStatement, parameter: Any): Boolean {
-        val excludedTypes = listOf(UpdateWrapper::class.java.name, DeleteWrapper::class.java.name, Long::class.javaObjectType.name)
+        val excludedTypes = listOf(UpdateWrapper::class.java.name, DeleteWrapper::class.java.name, String::class.java.name)
         if (parameter.javaClass.name in excludedTypes) {
+            return false
+        }
+        if (Number::class.java.isAssignableFrom(parameter::class.java)) {
             return false
         }
         var param = parameter
