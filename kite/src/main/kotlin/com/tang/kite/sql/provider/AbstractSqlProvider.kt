@@ -3,7 +3,6 @@ package com.tang.kite.sql.provider
 import com.tang.kite.annotation.Join
 import com.tang.kite.config.KiteConfig
 import com.tang.kite.config.SqlConfig
-import com.tang.kite.constants.SqlString
 import com.tang.kite.constants.SqlString.AND
 import com.tang.kite.constants.SqlString.ASC
 import com.tang.kite.constants.SqlString.COMMA_SPACE
@@ -12,10 +11,13 @@ import com.tang.kite.constants.SqlString.DESC
 import com.tang.kite.constants.SqlString.DOT
 import com.tang.kite.constants.SqlString.EQUAL
 import com.tang.kite.constants.SqlString.FROM
+import com.tang.kite.constants.SqlString.IN
 import com.tang.kite.constants.SqlString.INSERT_INTO
 import com.tang.kite.constants.SqlString.LEFT_BRACKET
+import com.tang.kite.constants.SqlString.LEFT_JOIN
 import com.tang.kite.constants.SqlString.LIMIT
 import com.tang.kite.constants.SqlString.OFFSET
+import com.tang.kite.constants.SqlString.ON
 import com.tang.kite.constants.SqlString.ORDER_BY
 import com.tang.kite.constants.SqlString.QUESTION_MARK
 import com.tang.kite.constants.SqlString.RIGHT_BRACKET
@@ -62,7 +64,7 @@ abstract class AbstractSqlProvider : SqlProvider {
         } else {
             sqlBuilder.append(WHERE)
         }
-        sqlBuilder.append(field, SqlString.IN, LEFT_BRACKET)
+        sqlBuilder.append(field, IN, LEFT_BRACKET)
         values.joinToString(COMMA_SPACE) {
             QUESTION_MARK
         }.let { sqlBuilder.append(it) }
@@ -77,7 +79,7 @@ abstract class AbstractSqlProvider : SqlProvider {
         } else {
             sqlBuilder.append(WHERE)
         }
-        sqlBuilder.append(field, SqlString.IN, LEFT_BRACKET, SPACE)
+        sqlBuilder.append(field, IN, LEFT_BRACKET, SPACE)
         sqlBuilder.append(SELECT, join.joinTargetColumn, FROM, join.joinTable)
         sqlBuilder.append(WHERE, join.joinSelfColumn, EQUAL, QUESTION_MARK)
         sqlBuilder.append(SPACE, RIGHT_BRACKET)
@@ -332,12 +334,12 @@ abstract class AbstractSqlProvider : SqlProvider {
             val joinTargetField = join.joinTargetColumn
             if (joinTable.isNotEmpty() && joinSelfField.isNotEmpty() && joinTargetField.isNotEmpty()) {
                 val innerJoinTableAlias = joinTable.split("_").joinToString("") { it.first().toString() }
-                sql.append(SqlString.LEFT_JOIN, joinTable, SPACE, innerJoinTableAlias, SqlString.ON)
+                sql.append(LEFT_JOIN, joinTable, SPACE, innerJoinTableAlias, ON)
                 sql.append(innerJoinTableAlias, DOT, joinSelfField, EQUAL, tableAlias, DOT, selfField)
-                sql.append(SqlString.LEFT_JOIN, getTableName(it.type), SPACE, joinTableAlias, SqlString.ON)
+                sql.append(LEFT_JOIN, getTableName(it.type), SPACE, joinTableAlias, ON)
                 sql.append(joinTableAlias, DOT, targetField, EQUAL, innerJoinTableAlias, DOT, joinTargetField)
             } else {
-                sql.append(SqlString.LEFT_JOIN, getTableName(it.type), SPACE, joinTableAlias, SqlString.ON)
+                sql.append(LEFT_JOIN, getTableName(it.type), SPACE, joinTableAlias, ON)
                 sql.append(tableAlias, DOT, selfField, EQUAL, joinTableAlias, DOT, targetField)
             }
         }
