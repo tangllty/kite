@@ -298,6 +298,23 @@ abstract class AbstractSqlProvider : SqlProvider {
         return SqlStatement(getSql(sql), parameters)
     }
 
+    override fun <T> deleteByIds(clazz: Class<T>, ids: Iterable<Any>): SqlStatement {
+        val sql = StringBuilder()
+        val parameters = mutableListOf<Any?>()
+        val idField = getIdField(clazz)
+        sql.append(DELETE_FROM + getTableName(clazz) + WHERE)
+        if (ids.none()) {
+            return SqlStatement(getSql(sql), parameters)
+        }
+        sql.append(getColumnName(idField) + IN + LEFT_BRACKET)
+        ids.joinToString(COMMA_SPACE) {
+            parameters.add(it)
+            QUESTION_MARK
+        }.let { sql.append(it) }
+        sql.append(RIGHT_BRACKET)
+        return SqlStatement(getSql(sql), parameters)
+    }
+
     override fun <T> select(clazz: Class<T>, entity: Any?, orderBys: Array<OrderItem<T>>): SqlStatement {
         val sql = StringBuilder()
         val parameters = mutableListOf<Any?>()

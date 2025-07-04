@@ -122,6 +122,12 @@ object BaseMethodName {
         return method.name == DELETE_BY_ID && method.countIsOne() && method.firstParameterIsSerializable()
     }
 
+    private const val DELETE_BY_IDS = "deleteByIds"
+
+    fun isDeleteByIds(method: Method): Boolean {
+        return method.name == DELETE_BY_IDS && method.countIsOne() && method.firstParameterIsIterable()
+    }
+
     private const val DELETE_WRAPPER = "deleteWrapper"
 
     fun isDeleteWrapper(method: Method): Boolean {
@@ -202,7 +208,7 @@ object BaseMethodName {
         val isBaseMethodName = when (methodName) {
             INSERT, INSERT_SELECTIVE, BATCH_INSERT, BATCH_INSERT_SELECTIVE,
             UPDATE, UPDATE_SELECTIVE, UPDATE_WRAPPER,
-            DELETE, DELETE_BY_ID, DELETE_WRAPPER,
+            DELETE, DELETE_BY_ID, DELETE_BY_IDS, DELETE_WRAPPER,
             SELECT, SELECT_BY_ID,
             SELECT_WRAPPER, SELECT_ONE_WRAPPER,
             SELECT_WITH_JOINS, SELECT_BY_ID_WITH_JOINS,
@@ -221,6 +227,7 @@ object BaseMethodName {
             UPDATE_WRAPPER -> isUpdateWrapper(method)
             DELETE -> isDelete(method)
             DELETE_BY_ID -> isDeleteById(method)
+            DELETE_BY_IDS -> isDeleteByIds(method)
             DELETE_WRAPPER -> isDeleteWrapper(method)
             SELECT -> isSelect(method)
             SELECT_WRAPPER -> isSelectWrapper(method)

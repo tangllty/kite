@@ -171,6 +171,24 @@ interface BaseMapper<T> {
     fun deleteById(id: Serializable): Int
 
     /**
+     * Delete entity by primary keys
+     *
+     * @param ids Entity ids
+     * @return Deleted count
+     */
+    fun deleteByIds(ids: Iterable<Serializable>): Int
+
+    /**
+     * Delete entity by primary keys
+     *
+     * @param ids Entity ids
+     * @return Deleted count
+     */
+    fun deleteByIds(ids: Array<Serializable>): Int {
+        return deleteByIds(ids.toList())
+    }
+
+    /**
      * Delete entity by delete wrapper
      */
     fun deleteWrapper(deleteWrapper: DeleteWrapper<T>): Int

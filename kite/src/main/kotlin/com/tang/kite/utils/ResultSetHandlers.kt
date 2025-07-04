@@ -130,6 +130,9 @@ object ResultSetHandlers {
         if (Number::class.java.isAssignableFrom(parameter::class.java)) {
             return false
         }
+        if (Iterable::class.java.isAssignableFrom(parameter::class.java)) {
+            return false
+        }
         var param = parameter
         if (parameter.javaClass.name == ArrayList::class.java.name) {
             val list = parameter as List<*>

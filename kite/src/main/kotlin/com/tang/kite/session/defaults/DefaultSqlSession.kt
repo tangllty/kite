@@ -64,12 +64,20 @@ class DefaultSqlSession(
         return args?.get(1) ?: throw IllegalArgumentException("Second parameter is null")
     }
 
-    private fun getSecondArgAsInt(args: Array<out Any>?): Int {
-        val secondArg = args?.get(1) ?: throw IllegalArgumentException("Second parameter is null")
-        if (secondArg is Int) {
-            return secondArg
+    private fun asIterable(arg: Any): Iterable<Any> {
+        val its = when (arg) {
+            is Iterable<*> -> arg
+            is Array<*> -> arg.toList()
+            else -> throw IllegalArgumentException("Argument is not an Iterable or Array: ${arg.javaClass.simpleName}")
         }
-        throw IllegalArgumentException("Second parameter is not an Int: ${secondArg.javaClass.simpleName}")
+        return its.map { it as Any }
+    }
+
+    private fun asInt(arg: Any): Int {
+        if (arg is Int) {
+            return arg
+        }
+        throw IllegalArgumentException("Argument is not an Int: ${arg.javaClass.simpleName}")
     }
 
     private fun <T> toOrderBys(any: Any?): Array<OrderItem<T>> {
@@ -137,14 +145,15 @@ class DefaultSqlSession(
         return when {
             BaseMethodName.isInsert(method) -> insert(method, mapperInterface, getFirstArg(args))
             BaseMethodName.isInsertSelective(method) -> insertSelective(method, mapperInterface, getFirstArg(args))
-            BaseMethodName.isBatchInsert(method) -> batchInsert(method, mapperInterface, getFirstArg(args), getSecondArgAsInt(args))
-            BaseMethodName.isBatchInsertSelective(method) -> batchInsertSelective(method, mapperInterface, getFirstArg(args), getSecondArgAsInt(args))
+            BaseMethodName.isBatchInsert(method) -> batchInsert(method, mapperInterface, getFirstArg(args), asInt(getSecondArg(args)))
+            BaseMethodName.isBatchInsertSelective(method) -> batchInsertSelective(method, mapperInterface, getFirstArg(args), asInt(getSecondArg(args)))
             BaseMethodName.isUpdate(method) -> update(method, mapperInterface, getFirstArg(args))
             BaseMethodName.isUpdateCondition(method) -> update(method, mapperInterface, getFirstArg(args), getSecondArg(args))
             BaseMethodName.isUpdateSelective(method) -> updateSelective(method, mapperInterface, getFirstArg(args))
             BaseMethodName.isUpdateWrapper(method) -> updateWrapper(method, mapperInterface, type, getFirstArg(args))
             BaseMethodName.isDelete(method) -> delete(method, mapperInterface, type, getFirstArg(args))
             BaseMethodName.isDeleteById(method) -> deleteById(method, mapperInterface, type, getFirstArg(args))
+            BaseMethodName.isDeleteByIds(method) -> deleteByIds(method, mapperInterface, type, asIterable(getFirstArg(args)))
             BaseMethodName.isDeleteWrapper(method) -> deleteWrapper(method, mapperInterface, type, getFirstArg(args))
             BaseMethodName.isSelect(method) -> processSelect(method, mapperInterface, type, args)
             BaseMethodName.isSelectWrapper(method) -> selectListWrapper(method, mapperInterface, type, getFirstArg(args))
@@ -211,15 +220,6 @@ class DefaultSqlSession(
         return returnRows(method, mapperInterface, insert, rows, elapsedSince(start))
     }
 
-    private fun asIterable(arg: Any): Iterable<Any> {
-        val its = when (arg) {
-            is Iterable<*> -> arg
-            is Array<*> -> arg.toList()
-            else -> throw IllegalArgumentException("Unsupported type: ${arg.javaClass.simpleName}")
-        }
-        return its.map { it as Any }
-    }
-
     private fun processBatch(parameter: Any, batchSize: Int): List<List<Any>> {
         val iterable = asIterable(parameter)
         return iterable.chunked(batchSize)
@@ -237,7 +237,7 @@ class DefaultSqlSession(
     override fun <T> batchInsertSelective(method: Method, mapperInterface: Class<T>, parameter: Any, batchSize: Int): Int {
         val start = nanoTime()
         return processBatch(parameter, batchSize).sumOf {
-            val insert = sqlProvider.batchInsertSelective(asIterable(it))
+            val insert = sqlProvider.batchInsertSelective(it)
             val rows = executor.update(insert, it)
             returnRows(method, mapperInterface, insert, rows, elapsedSince(start))
         }
@@ -286,6 +286,13 @@ class DefaultSqlSession(
         setValue(idField, entity, parameter)
         val delete = sqlProvider.delete(type, entity as Any)
         val rows = executor.update(delete, parameter)
+        return returnRows(method, mapperInterface, delete, rows, elapsedSince(start))
+    }
+
+    override fun <T> deleteByIds(method: Method, mapperInterface: Class<T>, type: Class<T>, ids: Iterable<Any>): Int {
+        val start = nanoTime()
+        val delete = sqlProvider.deleteByIds(type, ids)
+        val rows = executor.update(delete, ids)
         return returnRows(method, mapperInterface, delete, rows, elapsedSince(start))
     }
 

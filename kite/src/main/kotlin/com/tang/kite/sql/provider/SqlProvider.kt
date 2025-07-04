@@ -46,6 +46,8 @@ interface SqlProvider {
 
     fun <T> delete(clazz: Class<T>, entity: Any): SqlStatement
 
+    fun <T> deleteByIds(clazz: Class<T>, ids: Iterable<Any>): SqlStatement
+
     fun <T> select(clazz: Class<T>, entity: Any?, orderBys: Array<OrderItem<T>>): SqlStatement
 
     fun <T> selectWithJoins(clazz: Class<T>, entity: Any?, orderBys: Array<OrderItem<T>>, withAlias: Boolean = true): SqlStatement

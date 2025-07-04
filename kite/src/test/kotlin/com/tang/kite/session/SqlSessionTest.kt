@@ -276,6 +276,26 @@ class SqlSessionTest : BaseDataTest() {
     }
 
     @Test
+    fun deleteByIds() {
+        val session = sqlSessionFactory.openSession()
+        val accountMapper = session.getMapper(AccountMapper::class.java)
+        val rows = accountMapper.deleteByIds(listOf(1L, 2L))
+        session.rollback()
+        session.close()
+        assertEquals(2, rows)
+    }
+
+    @Test
+    fun deleteByIdArray() {
+        val session = sqlSessionFactory.openSession()
+        val accountMapper = session.getMapper(AccountMapper::class.java)
+        val rows = accountMapper.deleteByIds(arrayOf(1L, 2L))
+        session.rollback()
+        session.close()
+        assertEquals(2, rows)
+    }
+
+    @Test
     fun deleteWrapper() {
         val session = sqlSessionFactory.openSession()
         val accountMapper = session.getMapper(AccountMapper::class.java)

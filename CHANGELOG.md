@@ -6,10 +6,11 @@
 
 ### Features
 
- * Refactor Column and FunctionColumn classes to support nullable column names
+ * Refactor Column and `FunctionColumn` classes to support nullable column names
  * Add batch insert methods with customizable batch size for improved performance
- * Add DeleteWrapper and related classes for enhanced delete operations
+ * Add `DeleteWrapper` and related classes for enhanced delete operations
  * Change ID parameter type from Long to Serializable in mapper methods
+ * Add `deleteByIds` methods for batch deletion of entities
 
 ## 1.0.10
 
