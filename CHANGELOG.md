@@ -11,6 +11,7 @@
  * Add `DeleteWrapper` and related classes for enhanced delete operations
  * Change ID parameter type from Long to Serializable in mapper methods
  * Add `deleteByIds` methods for batch deletion of entities
+ * Auto convert between Int and Long types in mapper methods
 
 ## 1.0.10
 

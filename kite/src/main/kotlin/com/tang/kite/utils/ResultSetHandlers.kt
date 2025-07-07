@@ -33,7 +33,7 @@ object ResultSetHandlers {
             val columnValue = resultSet.getObject(i)
 
             // If there is no table name, use special key "__NO_TABLE__"
-            val effectiveTableName = if (columnTableName.isBlank()) "__NO_TABLE__" else columnTableName
+            val effectiveTableName = columnTableName.ifBlank { "__NO_TABLE__" }
             metaDataMap.computeIfAbsent(effectiveTableName) { mutableListOf() }
                 .add(Pair(columnName, columnValue))
         }
@@ -43,8 +43,7 @@ object ResultSetHandlers {
         metaDataList.forEach { (columnName, columnValue) ->
             val field = Reflects.getField(type, columnName)
             if (field != null) {
-                Reflects.makeAccessible(field, entity as Any)
-                field.set(entity, columnValue)
+                Fields.setValue(field, entity, columnValue)
             }
         }
 
@@ -59,12 +58,10 @@ object ResultSetHandlers {
             joinMetaData.forEach { (columnName, columnValue) ->
                 val field = Reflects.getField(it.type, columnName) ?: Reflects.getField(it.type, toCamelCase(columnName))
                 if (field != null) {
-                    Reflects.makeAccessible(field, joinEntity as Any)
-                    field.set(joinEntity, columnValue)
+                    Fields.setValue(field, joinEntity, columnValue)
                 }
             }
-            Reflects.makeAccessible(it, entity as Any)
-            it.set(entity, joinEntity)
+            Fields.setValue(it, entity, joinEntity)
         }
 
         // Handle fields without table name, assign to main table first, then to sub table if not found
@@ -72,16 +69,14 @@ object ResultSetHandlers {
         noTableMetaDataList.forEach { (columnName, columnValue) ->
             val mainField = Reflects.getField(type, columnName) ?: Reflects.getField(type, toCamelCase(columnName))
             if (mainField != null) {
-                Reflects.makeAccessible(mainField, entity as Any)
-                mainField.set(entity, columnValue)
+                Fields.setValue(mainField, entity, columnValue)
                 return@forEach
             }
             for (join in joins) {
                 val joinEntity = joinEntities[Reflects.getTableName(join.type)] ?: continue
                 val joinField = Reflects.getField(join.type, columnName) ?: Reflects.getField(join.type, toCamelCase(columnName))
                 if (joinField != null) {
-                    Reflects.makeAccessible(joinField, joinEntity)
-                    joinField.set(joinEntity, columnValue)
+                    Fields.setValue(joinField, joinEntity, columnValue)
                     break
                 }
             }
@@ -152,8 +147,7 @@ object ResultSetHandlers {
         }
         val generatedKey = resultSet.getLong(1)
         val idField = Reflects.getIdField(it.javaClass)
-        Reflects.makeAccessible(idField, it)
-        idField.set(it, generatedKey)
+        Fields.setValue(idField, it, generatedKey)
     }
 
 }
