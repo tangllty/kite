@@ -1,5 +1,6 @@
 package com.tang.kite.wrapper.update
 
+import com.tang.kite.wrapper.statement.LogicalStatement
 import com.tang.kite.wrapper.where.AbstractWhereWrapper
 
 /**
@@ -7,11 +8,19 @@ import com.tang.kite.wrapper.where.AbstractWhereWrapper
  *
  * @author Tang
  */
-class UpdateWhereWrapper<T>(private val updateWrapper: UpdateWrapper<T>) : AbstractWhereWrapper<UpdateWhereWrapper<T>, T>(updateWrapper, mutableListOf()), UpdateBuilder<T> {
+class UpdateWhereWrapper<T>(
+
+    private val updateWrapper: UpdateWrapper<T>,
+
+    whereConditions: MutableList<LogicalStatement>
+
+) : AbstractWhereWrapper<UpdateWhereWrapper<T>, T>(), UpdateBuilder<T> {
 
     init {
         this.whereInstance = this
         this.conditionInstance = this
+        this.wrapper = updateWrapper
+        this.conditions = whereConditions
     }
 
     /**

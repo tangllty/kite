@@ -8,6 +8,8 @@ import com.tang.kite.mapper.BaseMapper
 import com.tang.kite.sql.SqlStatement
 import com.tang.kite.wrapper.Column
 import com.tang.kite.wrapper.Wrapper
+import com.tang.kite.wrapper.statement.LogicalStatement
+import com.tang.kite.wrapper.where.AbstractWhereWrapper
 import kotlin.reflect.KMutableProperty1
 
 /**
@@ -15,13 +17,13 @@ import kotlin.reflect.KMutableProperty1
  *
  * @author Tang
  */
-class QueryWrapper<T> : Wrapper<T> {
+class QueryWrapper<T> : AbstractWhereWrapper<QueryWhereWrapper<T>, T>, Wrapper<T> {
 
     private var distinct: Boolean = false
 
     lateinit var baseMapper: BaseMapper<T>
 
-    private lateinit var querySelectWrapper: QuerySelectWrapper<T>
+    lateinit var querySelectWrapper: QuerySelectWrapper<T>
 
     lateinit var queryWhereWrapper: QueryWhereWrapper<T>
 
@@ -29,6 +31,12 @@ class QueryWrapper<T> : Wrapper<T> {
 
     constructor(baseMapper: BaseMapper<T>) {
         this.baseMapper = baseMapper
+    }
+
+    override fun initialize(conditions: MutableList<LogicalStatement>) {
+        querySelectWrapper = QuerySelectWrapper(this, mutableListOf())
+        queryWhereWrapper = QueryWhereWrapper(this, conditions)
+        this.conditionInstance = queryWhereWrapper
     }
 
     companion object {

@@ -13,13 +13,9 @@ import java.util.function.Consumer
  *
  * @author Tang
  */
-abstract class AbstractWhereWrapper<R, T>(
+abstract class AbstractWhereWrapper<R, T>() : AbstractConditionWrapper<R, T>() {
 
-    private val wrapper: Wrapper<T>,
-
-    private val conditions: MutableList<LogicalStatement>
-
-) : AbstractConditionWrapper<R, T>(conditions) {
+    protected lateinit var wrapper: Wrapper<T>
 
     protected var whereInstance: R? = null
 
@@ -28,9 +24,9 @@ abstract class AbstractWhereWrapper<R, T>(
     }
 
     private fun createNestedWrapper(): AbstractWhereWrapper<R, T> {
-        val wrapper = WrapperBuilder::class.java.getMethod("build").invoke(this)
+        val wrapperBuilder = WrapperBuilder::class.java.getMethod("build").invoke(this)
         val firstConstructor = this.javaClass.constructors.first()
-        return firstConstructor.newInstance(wrapper) as AbstractWhereWrapper<R, T>
+        return firstConstructor.newInstance(wrapperBuilder, mutableListOf<LogicalStatement>()) as AbstractWhereWrapper<R, T>
     }
 
     /**
@@ -177,7 +173,7 @@ abstract class AbstractWhereWrapper<R, T>(
      *
      * @return SqlStatement
      */
-    fun getSqlStatement(): SqlStatement {
+    open fun getSqlStatement(): SqlStatement {
         val sql: StringBuilder = StringBuilder()
         val parameters: MutableList<Any?> = mutableListOf()
         appendSql(sql, parameters)

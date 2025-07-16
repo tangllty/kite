@@ -3,6 +3,7 @@ package com.tang.kite.wrapper.query
 import com.tang.kite.function.SFunction
 import com.tang.kite.paginate.OrderItem
 import com.tang.kite.wrapper.Column
+import com.tang.kite.wrapper.statement.LogicalStatement
 import com.tang.kite.wrapper.where.AbstractWhereWrapper
 import kotlin.reflect.KMutableProperty1
 
@@ -11,7 +12,13 @@ import kotlin.reflect.KMutableProperty1
  *
  * @author Tang
  */
-class QueryWhereWrapper<T>(private val queryWrapper: QueryWrapper<T>) : AbstractWhereWrapper<QueryWhereWrapper<T>, T>(queryWrapper, mutableListOf()), QueryBuilder<T> {
+class QueryWhereWrapper<T>(
+
+    private val queryWrapper: QueryWrapper<T>,
+
+    whereConditions: MutableList<LogicalStatement>
+
+) : AbstractWhereWrapper<QueryWhereWrapper<T>, T>(), QueryBuilder<T> {
 
     private val joinedClass = mutableListOf<Class<*>>()
 
@@ -30,6 +37,8 @@ class QueryWhereWrapper<T>(private val queryWrapper: QueryWrapper<T>) : Abstract
     init {
         this.whereInstance = this
         this.conditionInstance = this
+        this.wrapper = queryWrapper
+        this.conditions = whereConditions
     }
 
     private fun isGroupByInitialized(): Boolean {

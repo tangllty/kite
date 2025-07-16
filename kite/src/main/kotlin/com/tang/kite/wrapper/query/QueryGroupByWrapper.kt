@@ -31,7 +31,7 @@ class QueryGroupByWrapper<R, T>(
      * @return QueryHavingWrapper<QueryWhereWrapper<T>, T>
      */
     fun having(): QueryHavingWrapper<QueryWhereWrapper<T>, T> {
-        whereWrapper.whereHavingWrapper = QueryHavingWrapper(wrapper, whereWrapper, mutableListOf())
+        whereWrapper.whereHavingWrapper = QueryHavingWrapper(wrapper, whereWrapper)
         return whereWrapper.whereHavingWrapper
     }
 

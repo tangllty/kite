@@ -239,6 +239,21 @@ class SqlSessionTest : BaseDataTest() {
     }
 
     @Test
+    fun updateWrapperShort() {
+        val session = sqlSessionFactory.openSession()
+        val accountMapper = session.getMapper(AccountMapper::class.java)
+        val updateWrapper = UpdateWrapper.create<Account>()
+            .set(Account::username, "tang")
+            .set("password", "123456", false)
+            .eq(Account::id, 1, true)
+            .build()
+        val rows = accountMapper.updateWrapper(updateWrapper)
+        session.rollback()
+        session.close()
+        assertEquals(1, rows)
+    }
+
+    @Test
     fun updateWrapperPost() {
         val session = sqlSessionFactory.openSession()
         val accountMapper = session.getMapper(AccountMapper::class.java)
@@ -247,6 +262,20 @@ class SqlSessionTest : BaseDataTest() {
             .set(Account::username, "tang")
             .set("password", "123456", false)
             .where()
+            .eq(Account::id, 1)
+            .update()
+        session.rollback()
+        session.close()
+        assertEquals(1, rows)
+    }
+
+    @Test
+    fun updateWrapperPostShort() {
+        val session = sqlSessionFactory.openSession()
+        val accountMapper = session.getMapper(AccountMapper::class.java)
+        val rows = accountMapper.updateWrapper()
+            .set(Account::username, "tang")
+            .set("password", "123456", false)
             .eq(Account::id, 1)
             .update()
         session.rollback()
@@ -299,12 +328,26 @@ class SqlSessionTest : BaseDataTest() {
     fun deleteWrapper() {
         val session = sqlSessionFactory.openSession()
         val accountMapper = session.getMapper(AccountMapper::class.java)
-        val queryWrapper = DeleteWrapper.create<Account>()
+        val deleteWrapper = DeleteWrapper.create<Account>()
             .from(Account::class.java)
             .eq(Account::id, 1)
             .isNotNull(Account::username)
             .build()
-        val rows = accountMapper.deleteWrapper(queryWrapper)
+        val rows = accountMapper.deleteWrapper(deleteWrapper)
+        session.rollback()
+        session.close()
+        assertEquals(1, rows)
+    }
+
+    @Test
+    fun deleteWrapperShort() {
+        val session = sqlSessionFactory.openSession()
+        val accountMapper = session.getMapper(AccountMapper::class.java)
+        val deleteWrapper = DeleteWrapper.create<Account>()
+            .eq(Account::id, 1)
+            .isNotNull(Account::username)
+            .build()
+        val rows = accountMapper.deleteWrapper(deleteWrapper)
         session.rollback()
         session.close()
         assertEquals(1, rows)
@@ -316,6 +359,19 @@ class SqlSessionTest : BaseDataTest() {
         val accountMapper = session.getMapper(AccountMapper::class.java)
         val rows = accountMapper.deleteWrapper()
             .from(Account::class.java)
+            .eq(Account::id, 1)
+            .isNotNull(Account::username)
+            .delete()
+        session.rollback()
+        session.close()
+        assertEquals(1, rows)
+    }
+
+    @Test
+    fun deleteWrapperPostShort() {
+        val session = sqlSessionFactory.openSession()
+        val accountMapper = session.getMapper(AccountMapper::class.java)
+        val rows = accountMapper.deleteWrapper()
             .eq(Account::id, 1)
             .isNotNull(Account::username)
             .delete()
@@ -396,6 +452,18 @@ class SqlSessionTest : BaseDataTest() {
     }
 
     @Test
+    fun selectWrapperShort() {
+        val session = sqlSessionFactory.openSession()
+        val accountMapper = session.getMapper(AccountMapper::class.java)
+        val queryWrapper = QueryWrapper.create<Account>()
+            .eq(Account::username, "admin")
+            .build()
+        val accounts = accountMapper.selectWrapper(queryWrapper)
+        session.close()
+        assertTrue(accounts.isNotEmpty())
+    }
+
+    @Test
     fun selectOneWrapper() {
         val session = sqlSessionFactory.openSession()
         val accountMapper = session.getMapper(AccountMapper::class.java)
@@ -418,6 +486,17 @@ class SqlSessionTest : BaseDataTest() {
             .select("id", "username")
             .column(Account::password)
             .from(Account::class.java)
+            .list()
+        session.close()
+        assertTrue(accounts.isNotEmpty())
+    }
+
+    @Test
+    fun selectWrapperShortPost() {
+        val session = sqlSessionFactory.openSession()
+        val accountMapper = session.getMapper(AccountMapper::class.java)
+        val accounts = accountMapper.queryWrapper()
+            .eq(Account::username, "admin")
             .list()
         session.close()
         assertTrue(accounts.isNotEmpty())

@@ -14,11 +14,9 @@ class QueryHavingWrapper<R, T>(
 
     private val wrapper: Wrapper<T>,
 
-    private val whereWrapper: QueryWhereWrapper<T>,
+    private val whereWrapper: QueryWhereWrapper<T>
 
-    conditions: MutableList<LogicalStatement> = mutableListOf()
-
-) : AbstractHavingWrapper<QueryHavingWrapper<R, T>, T>(wrapper, conditions), QueryBuilder<T> {
+) : AbstractHavingWrapper<QueryHavingWrapper<R, T>, T>(wrapper), QueryBuilder<T> {
 
     init {
         this.conditionInstance = this

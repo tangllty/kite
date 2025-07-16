@@ -12,6 +12,7 @@
  * Change ID parameter type from Long to Serializable in mapper methods
  * Add `deleteByIds` methods for batch deletion of entities
  * Auto convert between Int and Long types in mapper methods
+ * Refactor wrapper classes to improve initialization and condition handling
 
 ## 1.0.10
 

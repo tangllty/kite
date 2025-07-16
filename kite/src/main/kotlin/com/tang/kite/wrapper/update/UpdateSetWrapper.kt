@@ -5,6 +5,8 @@ import com.tang.kite.constants.SqlString.SET
 import com.tang.kite.function.SFunction
 import com.tang.kite.utils.Fields
 import com.tang.kite.utils.Reflects
+import com.tang.kite.wrapper.statement.LogicalStatement
+import com.tang.kite.wrapper.where.AbstractWhereWrapper
 import kotlin.reflect.KMutableProperty1
 import kotlin.reflect.jvm.javaField
 
@@ -13,9 +15,17 @@ import kotlin.reflect.jvm.javaField
  *
  * @author Tang
  */
-class UpdateSetWrapper<T>(val updateWrapper: UpdateWrapper<T>) {
+open class UpdateSetWrapper<T>() : AbstractWhereWrapper<UpdateWhereWrapper<T>, T>() {
+
+    lateinit var updateWrapper: UpdateWrapper<T>
 
     private var sets = mutableMapOf<String, Any>()
+
+    override fun initialize(conditions: MutableList<LogicalStatement>) {
+        this.updateWrapper.updateSetWrapper = this
+        this.updateWrapper.updateWhereWrapper = UpdateWhereWrapper(updateWrapper, conditions)
+        this.conditionInstance = updateWrapper.updateWhereWrapper
+    }
 
     /**
      * Set the value
@@ -88,16 +98,6 @@ class UpdateSetWrapper<T>(val updateWrapper: UpdateWrapper<T>) {
     }
 
     /**
-     * Create a new UpdateWhereWrapper
-     *
-     * @return UpdateWhereWrapper
-     */
-    fun where(): UpdateWhereWrapper<T> {
-        this.updateWrapper.updateWhereWrapper = UpdateWhereWrapper(updateWrapper)
-        return updateWrapper.updateWhereWrapper
-    }
-
-    /**
      * Append the SQL
      *
      * @param sql sql
@@ -115,7 +115,7 @@ class UpdateSetWrapper<T>(val updateWrapper: UpdateWrapper<T>) {
     /**
      * Check the values
      */
-    fun checkValues() {
+    open fun checkValues() {
         if (sets.isEmpty()) {
             throw IllegalArgumentException("Set value is not set")
         }

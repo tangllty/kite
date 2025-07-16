@@ -20,7 +20,7 @@ class QuerySelectWrapper<T>(
 
 ) {
 
-    private lateinit var tableClass: Class<*>
+    private lateinit var tableClass: Class<T>
 
     private lateinit var table: String
 
@@ -115,7 +115,7 @@ class QuerySelectWrapper<T>(
      */
     fun from(table: String): QueryWhereWrapper<T> {
         this.table = table
-        this.queryWrapper.queryWhereWrapper = QueryWhereWrapper(queryWrapper)
+        this.queryWrapper.queryWhereWrapper = QueryWhereWrapper(queryWrapper, mutableListOf())
         return queryWrapper.queryWhereWrapper
     }
 
@@ -124,9 +124,17 @@ class QuerySelectWrapper<T>(
      *
      * @param clazz entity class
      */
-    fun <E> from(clazz: Class<E>): QueryWhereWrapper<T> {
+    fun from(clazz: Class<T>): QueryWhereWrapper<T> {
         this.tableClass = clazz
         return from(Reflects.getTableName(clazz))
+    }
+
+    fun setTableClassIfNotSet(clazz: Class<T>) {
+        if (::tableClass.isInitialized) {
+            return
+        }
+        this.tableClass = clazz
+        this.table = Reflects.getTableName(clazz)
     }
 
     /**

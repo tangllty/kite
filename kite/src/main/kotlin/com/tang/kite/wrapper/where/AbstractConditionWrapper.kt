@@ -12,16 +12,19 @@ import kotlin.reflect.KMutableProperty1
 /**
  * @author Tang
  */
-abstract class AbstractConditionWrapper<R, T>(
+abstract class AbstractConditionWrapper<R, T>() : WrapperBuilder<T> {
 
-    private val conditions: MutableList<LogicalStatement> = mutableListOf()
-
-) : WrapperBuilder<T> {
+    protected var conditions: MutableList<LogicalStatement> = mutableListOf()
 
     protected var conditionInstance: R? = null
 
     private fun getInstance(): R {
+        conditionInstance ?: initialize(conditions)
         return conditionInstance ?: throw IllegalStateException("Condition instance is not initialized")
+    }
+
+    open fun initialize(conditions: MutableList<LogicalStatement>) {
+        throw UnsupportedOperationException("This method should be overridden in subclasses")
     }
 
     private fun compare(column: Column, value: Any?, comparisonOperator: ComparisonOperator, effective: Boolean): R {

@@ -6,13 +6,15 @@ import com.tang.kite.mapper.BaseMapper
 import com.tang.kite.sql.SqlStatement
 import com.tang.kite.utils.Reflects
 import com.tang.kite.wrapper.Wrapper
+import com.tang.kite.wrapper.statement.LogicalStatement
+import com.tang.kite.wrapper.where.AbstractWhereWrapper
 
 /**
  * Delete wrapper for delete operation
  *
  * @author Tang
  */
-class DeleteWrapper<T> : Wrapper<T> {
+class DeleteWrapper<T> : AbstractWhereWrapper<DeleteWhereWrapper<T>, T>, Wrapper<T> {
 
     private lateinit var table: String
 
@@ -24,6 +26,11 @@ class DeleteWrapper<T> : Wrapper<T> {
 
     constructor(baseMapper: BaseMapper<T>) {
         this.baseMapper = baseMapper
+    }
+
+    override fun initialize(conditions: MutableList<LogicalStatement>) {
+        deleteWhereWrapper = DeleteWhereWrapper(this, conditions)
+        this.conditionInstance = deleteWhereWrapper
     }
 
     companion object {
@@ -46,7 +53,7 @@ class DeleteWrapper<T> : Wrapper<T> {
      */
     fun from(table: String): DeleteWhereWrapper<T> {
         this.table = table
-        this.deleteWhereWrapper = DeleteWhereWrapper(this)
+        this.deleteWhereWrapper = DeleteWhereWrapper(this, mutableListOf())
         return deleteWhereWrapper
     }
 
@@ -57,6 +64,13 @@ class DeleteWrapper<T> : Wrapper<T> {
      */
     fun from(clazz: Class<T>): DeleteWhereWrapper<T> {
         return from(Reflects.getTableName(clazz))
+    }
+
+    fun setTableClassIfNotSet(clazz: Class<T>) {
+        if (::table.isInitialized) {
+            return
+        }
+        this.table = Reflects.getTableName(clazz)
     }
 
     override fun getSqlStatement(): SqlStatement {

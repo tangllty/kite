@@ -1,5 +1,6 @@
 package com.tang.kite.wrapper.delete
 
+import com.tang.kite.wrapper.statement.LogicalStatement
 import com.tang.kite.wrapper.where.AbstractWhereWrapper
 
 /**
@@ -7,11 +8,19 @@ import com.tang.kite.wrapper.where.AbstractWhereWrapper
  *
  * @author Tang
  */
-class DeleteWhereWrapper<T>(private val deleteWrapper: DeleteWrapper<T>) : AbstractWhereWrapper<DeleteWhereWrapper<T>, T>(deleteWrapper, mutableListOf()), DeleteBuilder<T> {
+class DeleteWhereWrapper<T>(
+
+    private val deleteWrapper: DeleteWrapper<T>,
+
+    whereConditions: MutableList<LogicalStatement>
+
+) : AbstractWhereWrapper<DeleteWhereWrapper<T>, T>(), DeleteBuilder<T> {
 
     init {
         this.whereInstance = this
         this.conditionInstance = this
+        this.wrapper = deleteWrapper
+        this.conditions = whereConditions
     }
 
     /**

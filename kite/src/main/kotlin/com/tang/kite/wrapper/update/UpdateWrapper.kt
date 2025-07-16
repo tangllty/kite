@@ -6,19 +6,20 @@ import com.tang.kite.mapper.BaseMapper
 import com.tang.kite.sql.SqlStatement
 import com.tang.kite.utils.Reflects
 import com.tang.kite.wrapper.Wrapper
+import com.tang.kite.wrapper.statement.LogicalStatement
 
 /**
  * Update wrapper for update operation
  *
  * @author Tang
  */
-class UpdateWrapper<T> : Wrapper<T> {
+class UpdateWrapper<T> : UpdateSetWrapper<T>, Wrapper<T> {
 
     private lateinit var table: String
 
     lateinit var baseMapper: BaseMapper<T>
 
-    private lateinit var updateSetWrapper: UpdateSetWrapper<T>
+    lateinit var updateSetWrapper: UpdateSetWrapper<T>
 
     lateinit var updateWhereWrapper: UpdateWhereWrapper<T>
 
@@ -26,6 +27,11 @@ class UpdateWrapper<T> : Wrapper<T> {
 
     constructor(baseMapper: BaseMapper<T>) {
         this.baseMapper = baseMapper
+    }
+
+    override fun initialize(conditions: MutableList<LogicalStatement>) {
+        updateWrapper = this
+        super.initialize(conditions)
     }
 
     companion object {
@@ -49,7 +55,8 @@ class UpdateWrapper<T> : Wrapper<T> {
      */
     fun from(table: String): UpdateSetWrapper<T> {
         this.table = table
-        this.updateSetWrapper = UpdateSetWrapper(this)
+        this.updateSetWrapper = UpdateSetWrapper()
+        this.updateSetWrapper.updateWrapper = this
         return updateSetWrapper
     }
 
@@ -60,6 +67,13 @@ class UpdateWrapper<T> : Wrapper<T> {
      */
     fun from(clazz: Class<T>): UpdateSetWrapper<T> {
         return from(Reflects.getTableName(clazz))
+    }
+
+    fun setTableClassIfNotSet(clazz: Class<T>) {
+        if (::table.isInitialized) {
+            return
+        }
+        this.table = Reflects.getTableName(clazz)
     }
 
     /**
