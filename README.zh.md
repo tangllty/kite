@@ -41,12 +41,4 @@ Kite 使用 MIT 许可证。更多详情请查阅 [LICENSE](https://gitee.com/ta
 
 ## 交流群
 
-- 微信
-
-  - ![WeChat](https://gitee.com/tangllty/tang-docs/raw/master/docs/public/wechat.png)
-- Telegram
-
-  - ![Telegram](https://gitee.com/tangllty/tang-docs/raw/master/docs/public/telegram.png)
-- QQ
-
-  - ![QQ](https://gitee.com/tangllty/tang-docs/raw/master/docs/public/qq.png)
+通知：交流群目前已关闭，项目达到一定规模后将重新开放。
