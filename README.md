@@ -4,7 +4,7 @@
 
 ## Project Description
 
-Kite is a lightweight ORM framework written in Kotlin, which is designed to simplify the development of database operations. It supports multiple databases, such as PostgreSQL, MySQL, Derby, etc., and provides a variety of APIs to facilitate the development of database operations.
+Kite is a high-performance, lightweight ORM framework written in Kotlin. It is designed to be ready to use out of the box, with built-in features for pagination, CRUD operations, and support for multi-table operations. Kite supports multiple databases such as PostgreSQL, MySQL, Derby, etc., and aims to simplify database operations, reduce code complexity, and enhance development efficiency.
 
 ## Usage
 
