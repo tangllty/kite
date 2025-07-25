@@ -13,6 +13,7 @@
  * Add `deleteByIds` methods for batch deletion of entities
  * Auto convert between Int and Long types in mapper methods
  * Refactor wrapper classes to improve initialization and condition handling
+ * Refactor result handling logic to improve clarity and maintainability
 
 ## 1.0.10
 
