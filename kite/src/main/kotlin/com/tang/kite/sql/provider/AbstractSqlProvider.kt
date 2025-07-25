@@ -87,6 +87,9 @@ abstract class AbstractSqlProvider : SqlProvider {
     }
 
     override fun getColumns(fieldList: List<Field>, withAlias: Boolean): String {
+        if (fieldList.isEmpty()) {
+            throw IllegalArgumentException("Field list cannot be empty")
+        }
         return fieldList.joinToString(COMMA_SPACE) { getColumnName(it, withAlias) }
     }
 
