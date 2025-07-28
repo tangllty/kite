@@ -14,6 +14,7 @@
  * Auto convert between Int and Long types in mapper methods
  * Refactor wrapper classes to improve initialization and condition handling
  * Refactor result handling logic to improve clarity and maintainability
+ * Improve the testing of the time package
 
 ## 1.0.10
 

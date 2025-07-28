@@ -18,8 +18,7 @@ class TimestampResultHandler : ResultHandler {
             is Timestamp -> field.set(instance, value)
             is LocalDate -> field.set(instance, Timestamp.valueOf(value.atStartOfDay()))
             is LocalDateTime -> field.set(instance, Timestamp.valueOf(value))
-            is Long -> field.set(instance, value)
-            is Number -> field.set(instance, value.toLong())
+            is Number -> field.set(instance, Timestamp(value.toLong()))
             else -> throw IllegalArgumentException("Unsupported type: ${value::class.java.name} for field: ${field.name}")
         }
     }

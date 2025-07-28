@@ -18,9 +18,9 @@ class InstantResultHandler : ResultHandler {
 
     override fun <T> setValue(field: Field, instance: T, value: Any) {
         when (value) {
-            is Date -> field.set(instance, value.toInstant())
-            is Time -> field.set(instance, value.toInstant())
-            is Timestamp -> field.set(instance, value.toInstant())
+            is Date -> field.set(instance, Instant.ofEpochMilli(value.time))
+            is Time -> field.set(instance, Instant.ofEpochMilli(value.time))
+            is Timestamp -> field.set(instance, Instant.ofEpochMilli(value.time))
             is LocalDate -> field.set(instance, value.atStartOfDay(ZoneId.systemDefault()).toInstant())
             is LocalTime -> {
                 val dateTime = LocalDateTime.of(LocalDate.ofEpochDay(0), value)

@@ -20,13 +20,18 @@ class SqlDateResultHandler : ResultHandler {
             is Date -> field.set(instance, value)
             is Time -> field.set(instance, Date(value.time))
             is Timestamp -> field.set(instance, Date(value.time))
-            is LocalDate -> field.set(instance, Date.from(value.atStartOfDay(ZoneId.systemDefault()).toInstant()))
+            is LocalDate -> field.set(instance, java.sql.Date.valueOf(value))
             is LocalTime -> {
                 val dateTime = LocalDateTime.of(LocalDate.ofEpochDay(0), value)
                 val date = Date.from(dateTime.atZone(ZoneId.systemDefault()).toInstant())
-                field.set(instance, date)
+                val sqlDate = Date(date.time)
+                field.set(instance, sqlDate)
             }
-            is LocalDateTime -> field.set(instance, Date.from(value.atZone(ZoneId.systemDefault()).toInstant()))
+            is LocalDateTime -> {
+                val date = Date.from(value.atZone(ZoneId.systemDefault()).toInstant())
+                val sqlDate = Date(date.time)
+                field.set(instance, sqlDate)
+            }
             is Long -> field.set(instance, Date(value))
             else -> throw IllegalArgumentException("Unsupported type: ${value::class.java.name} for field: ${field.name}")
         }
