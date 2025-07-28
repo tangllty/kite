@@ -1,6 +1,8 @@
 package com.tang.kite.result.primitive
 
+import com.tang.kite.exception.UnsupportedTypeException
 import com.tang.kite.result.ResultHandler
+import com.tang.kite.utils.Reflects
 import java.lang.reflect.Field
 
 /**
@@ -9,11 +11,12 @@ import java.lang.reflect.Field
 class IntResultHandler : ResultHandler {
 
     override fun <T> setValue(field: Field, instance: T, value: Any) {
-        when (value) {
-            is Int -> field.set(instance, value)
-            is Number -> field.set(instance, value.toInt())
-            else -> throw IllegalArgumentException("Unsupported type: ${value::class.java.name} for field: ${field.name}")
+        val int = when (value) {
+            is Int -> value
+            is Number -> value.toInt()
+            else -> throw UnsupportedTypeException(value::class, field)
         }
+        Reflects.setValue(field, instance, int)
     }
 
 }

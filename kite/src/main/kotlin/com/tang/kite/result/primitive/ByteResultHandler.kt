@@ -1,6 +1,8 @@
 package com.tang.kite.result.primitive
 
+import com.tang.kite.exception.UnsupportedTypeException
 import com.tang.kite.result.ResultHandler
+import com.tang.kite.utils.Reflects
 import java.lang.reflect.Field
 
 /**
@@ -9,11 +11,12 @@ import java.lang.reflect.Field
 class ByteResultHandler : ResultHandler {
 
     override fun <T> setValue(field: Field, instance: T, value: Any) {
-        when (value) {
-            is Byte -> field.set(instance, value)
-            is Number -> field.set(instance, value.toByte())
-            else -> throw IllegalArgumentException("Unsupported type: ${value::class.java.name} for field: ${field.name}")
+        val byte = when (value) {
+            is Byte -> value
+            is Number -> value.toByte()
+            else -> throw UnsupportedTypeException(value::class, field)
         }
+        Reflects.setValue(field, instance, byte)
     }
 
 }

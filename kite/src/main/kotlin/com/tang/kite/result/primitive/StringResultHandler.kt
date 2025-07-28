@@ -1,6 +1,8 @@
 package com.tang.kite.result.primitive
 
+import com.tang.kite.exception.UnsupportedTypeException
 import com.tang.kite.result.ResultHandler
+import com.tang.kite.utils.Reflects
 import java.lang.reflect.Field
 import java.sql.Clob
 
@@ -10,12 +12,13 @@ import java.sql.Clob
 class StringResultHandler : ResultHandler {
 
     override fun <T> setValue(field: Field, instance: T, value: Any) {
-        when (value) {
-            is String -> field.set(instance, value)
-            is Number, is Boolean, is Char -> field.set(instance, value.toString())
-            is Clob -> field.set(instance, value.getSubString(1, value.length().toInt()))
-            else -> throw IllegalArgumentException("Unsupported type: ${value::class.java.name} for field: ${field.name}")
+        val string = when (value) {
+            is String -> value
+            is Number, is Boolean, is Char -> value.toString()
+            is Clob -> value.getSubString(1, value.length().toInt())
+            else -> throw UnsupportedTypeException(value::class, field)
         }
+        Reflects.setValue(field, instance, string)
     }
 
 }

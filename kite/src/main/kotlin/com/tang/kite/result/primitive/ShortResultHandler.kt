@@ -1,6 +1,8 @@
 package com.tang.kite.result.primitive
 
+import com.tang.kite.exception.UnsupportedTypeException
 import com.tang.kite.result.ResultHandler
+import com.tang.kite.utils.Reflects
 import java.lang.reflect.Field
 
 /**
@@ -9,11 +11,12 @@ import java.lang.reflect.Field
 class ShortResultHandler : ResultHandler {
 
     override fun <T> setValue(field: Field, instance: T, value: Any) {
-        when (value) {
-            is Short -> field.set(instance, value)
-            is Number -> field.set(instance, value.toShort())
-            else -> throw IllegalArgumentException("Unsupported type: ${value::class.java.name} for field: ${field.name}")
+        val short = when (value) {
+            is Short -> value
+            is Number -> value.toShort()
+            else -> throw UnsupportedTypeException(value::class, field)
         }
+        Reflects.setValue(field, instance, short)
     }
 
 }

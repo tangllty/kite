@@ -1,6 +1,8 @@
 package com.tang.kite.result.time
 
+import com.tang.kite.exception.UnsupportedTypeException
 import com.tang.kite.result.ResultHandler
+import com.tang.kite.utils.Reflects
 import java.lang.reflect.Field
 import java.sql.Date
 import java.sql.Timestamp
@@ -13,14 +15,15 @@ import java.time.LocalDateTime
 class TimestampResultHandler : ResultHandler {
 
     override fun <T> setValue(field: Field, instance: T, value: Any) {
-        when (value) {
-            is Date -> field.set(instance, Timestamp(value.time))
-            is Timestamp -> field.set(instance, value)
-            is LocalDate -> field.set(instance, Timestamp.valueOf(value.atStartOfDay()))
-            is LocalDateTime -> field.set(instance, Timestamp.valueOf(value))
-            is Number -> field.set(instance, Timestamp(value.toLong()))
-            else -> throw IllegalArgumentException("Unsupported type: ${value::class.java.name} for field: ${field.name}")
+        val timestamp = when (value) {
+            is Date -> Timestamp(value.time)
+            is Timestamp -> value
+            is LocalDate -> Timestamp.valueOf(value.atStartOfDay())
+            is LocalDateTime -> Timestamp.valueOf(value)
+            is Number -> Timestamp(value.toLong())
+            else -> throw UnsupportedTypeException(value::class, field)
         }
+        Reflects.setValue(field, instance, timestamp)
     }
 
 }

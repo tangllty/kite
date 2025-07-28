@@ -1,6 +1,8 @@
 package com.tang.kite.result.time
 
+import com.tang.kite.exception.UnsupportedTypeException
 import com.tang.kite.result.ResultHandler
+import com.tang.kite.utils.Reflects
 import java.lang.reflect.Field
 import java.sql.Date
 import java.sql.Time
@@ -16,46 +18,28 @@ import java.util.Calendar
 class CalendarResultHandler : ResultHandler {
 
     override fun <T> setValue(field: Field, instance: T, value: Any) {
-        when (value) {
-            is Date -> {
-                val calendar = Calendar.getInstance()
-                calendar.time = value
-                field.set(instance, calendar)
+        val calendar = getCalendarInstance {
+            when (value) {
+                is Date -> time = value
+                is Time -> time = value
+                is Timestamp -> time = value
+                is LocalDate -> set(value.year, value.monthValue - 1, value.dayOfMonth)
+                is LocalTime -> {
+                    set(Calendar.HOUR_OF_DAY, value.hour)
+                    set(Calendar.MINUTE, value.minute)
+                    set(Calendar.SECOND, value.second)
+                }
+                is LocalDateTime -> set(value.year, value.monthValue - 1, value.dayOfMonth, value.hour, value.minute, value.second)
+                is Long -> timeInMillis = value
+                is Calendar -> timeInMillis = value.timeInMillis
+                else -> throw UnsupportedTypeException(value::class, field)
             }
-            is Time -> {
-                val calendar = Calendar.getInstance()
-                calendar.time = value
-                field.set(instance, calendar)
-            }
-            is Timestamp -> {
-                val calendar = Calendar.getInstance()
-                calendar.time = value
-                field.set(instance, calendar)
-            }
-            is LocalDate -> {
-                val calendar = Calendar.getInstance()
-                calendar.set(value.year, value.monthValue - 1, value.dayOfMonth)
-                field.set(instance, calendar)
-            }
-            is LocalTime -> {
-                val calendar = Calendar.getInstance()
-                calendar.set(Calendar.HOUR_OF_DAY, value.hour)
-                calendar.set(Calendar.MINUTE, value.minute)
-                calendar.set(Calendar.SECOND, value.second)
-                field.set(instance, calendar)
-            }
-            is LocalDateTime -> {
-                val calendar = Calendar.getInstance()
-                calendar.set(value.year, value.monthValue - 1, value.dayOfMonth, value.hour, value.minute, value.second)
-                field.set(instance, calendar)
-            }
-            is Long -> {
-                val calendar = Calendar.getInstance()
-                calendar.timeInMillis = value
-                field.set(instance, calendar)
-            }
-            else -> throw IllegalArgumentException("Unsupported type: ${value::class.java.name} for field: ${field.name}")
         }
+        Reflects.setValue(field, instance, calendar)
+    }
+
+    private fun getCalendarInstance(block: Calendar.() -> Unit): Calendar {
+        return Calendar.getInstance().apply(block)
     }
 
 }

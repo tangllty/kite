@@ -1,6 +1,8 @@
 package com.tang.kite.result.math
 
+import com.tang.kite.exception.UnsupportedTypeException
 import com.tang.kite.result.ResultHandler
+import com.tang.kite.utils.Reflects
 import java.lang.reflect.Field
 import java.math.BigInteger
 
@@ -10,11 +12,12 @@ import java.math.BigInteger
 class BigIntegerResultHandler : ResultHandler {
 
     override fun <T> setValue(field: Field, instance: T, value: Any) {
-        when (value) {
-            is BigInteger -> field.set(instance, value)
-            is String -> field.set(instance, BigInteger(value))
-            else -> throw IllegalArgumentException("Unsupported type: ${value::class.java.name} for field: ${field.name}")
+        val bigInteger = when (value) {
+            is BigInteger -> value
+            is String -> BigInteger(value)
+            else -> throw UnsupportedTypeException(value::class, field)
         }
+        Reflects.setValue(field, instance, bigInteger)
     }
 
 }
