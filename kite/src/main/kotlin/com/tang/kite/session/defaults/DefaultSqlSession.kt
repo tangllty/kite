@@ -26,6 +26,7 @@ import com.tang.kite.wrapper.update.UpdateWrapper
 import org.slf4j.LoggerFactory
 import java.lang.reflect.Method
 import java.lang.reflect.ParameterizedType
+import kotlin.reflect.KClass
 import kotlin.time.Duration.Companion.nanoseconds
 
 /**
@@ -46,6 +47,10 @@ class DefaultSqlSession(
     override fun <T> getMapper(clazz: Class<T>): T {
         val mapperProxyFactory = MapperProxyFactory(clazz)
         return mapperProxyFactory.newInstance(this)
+    }
+
+    override fun <T : Any> getMapper(clazz: KClass<T>): T {
+        return getMapper(clazz.java)
     }
 
     private fun nanoTime(): Long {

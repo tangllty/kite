@@ -4,6 +4,7 @@ import com.tang.kite.enumeration.MethodType
 import com.tang.kite.paginate.OrderItem
 import com.tang.kite.paginate.Page
 import java.lang.reflect.Method
+import kotlin.reflect.KClass
 
 /**
  * SQL session
@@ -13,6 +14,8 @@ import java.lang.reflect.Method
 interface SqlSession : AutoCloseable {
 
     fun <T> getMapper(clazz: Class<T>): T
+
+    fun <T : Any> getMapper(clazz: KClass<T>): T
 
     fun <T> execute(type: MethodType, method: Method, args: Array<out Any>?, mapperInterface: Class<T>): Any?
 

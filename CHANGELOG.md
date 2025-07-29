@@ -17,6 +17,7 @@
  * Improve the testing of the time package
  * Support `enum` type in result handling
  * Support custom `ResultHandler` for flexible result processing
+ * `SqlSession.getMapper` now supports `KClass<T>` for enhanced Kotlin compatibility
 
 ## 1.0.10
 

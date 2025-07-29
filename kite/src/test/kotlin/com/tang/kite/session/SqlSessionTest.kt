@@ -37,7 +37,7 @@ class SqlSessionTest : BaseDataTest() {
     @Test
     fun getMapper() {
         val session = sqlSessionFactory.openSession()
-        val accountMapper = session.getMapper(AccountMapper::class.java)
+        val accountMapper = session.getMapper(AccountMapper::class)
         session.close()
         assertNotNull(accountMapper)
     }
@@ -45,7 +45,7 @@ class SqlSessionTest : BaseDataTest() {
     @Test
     fun insert() {
         val session = sqlSessionFactory.openSession(true)
-        val accountMapper = session.getMapper(AccountMapper::class.java)
+        val accountMapper = session.getMapper(AccountMapper::class)
         val account = Account(username = "tang", password = "123456")
         val rows = accountMapper.insert(account)
         session.close()
@@ -55,7 +55,7 @@ class SqlSessionTest : BaseDataTest() {
     @Test
     fun insertSelective() {
         val session = sqlSessionFactory.openSession(true)
-        val accountMapper = session.getMapper(AccountMapper::class.java)
+        val accountMapper = session.getMapper(AccountMapper::class)
         val account = Account(username = "tang")
         val rows = accountMapper.insertSelective(account)
         session.close()
@@ -65,7 +65,7 @@ class SqlSessionTest : BaseDataTest() {
     @Test
     fun javaInsert() {
         val session = sqlSessionFactory.openSession(true)
-        val accountMapper = session.getMapper(AccountJavaMapper::class.java)
+        val accountMapper = session.getMapper(AccountJavaMapper::class)
         val account = Account(username = "tang", password = "123456")
         val rows = accountMapper.insert(account)
         session.close()
@@ -75,7 +75,7 @@ class SqlSessionTest : BaseDataTest() {
     @Test
     fun insertAccount() {
         val session = sqlSessionFactory.openSession(true)
-        val accountMapper = session.getMapper(AccountMapper::class.java)
+        val accountMapper = session.getMapper(AccountMapper::class)
         val account = Account(
             username = "tang",
             password = "123456",
@@ -91,7 +91,7 @@ class SqlSessionTest : BaseDataTest() {
     @Test
     fun javaInsertAccount() {
         val session = sqlSessionFactory.openSession()
-        val accountMapper = session.getMapper(AccountJavaMapper::class.java)
+        val accountMapper = session.getMapper(AccountJavaMapper::class)
         val account = Account(username = "tang", password = "123456")
         val rows = accountMapper.insertAccount(account)
         session.commit()
@@ -103,8 +103,8 @@ class SqlSessionTest : BaseDataTest() {
     fun multiSqlSession() {
         val session1 = sqlSessionFactory.openSession()
         val session2 = sqlSessionFactory.openSession()
-        val accountMapper1 = session1.getMapper(AccountMapper::class.java)
-        val accountMapper2 = session2.getMapper(AccountMapper::class.java)
+        val accountMapper1 = session1.getMapper(AccountMapper::class)
+        val accountMapper2 = session2.getMapper(AccountMapper::class)
         val account1 = Account(username = "tang1", password = "123456")
         val account2 = Account(username = "tang2", password = "123456")
         val rows1 = accountMapper1.insert(account1)
@@ -120,7 +120,7 @@ class SqlSessionTest : BaseDataTest() {
     @Test
     fun multiInsert() {
         val session = sqlSessionFactory.openSession()
-        val accountMapper1 = session.getMapper(AccountMapper::class.java)
+        val accountMapper1 = session.getMapper(AccountMapper::class)
         val account1 = Account(username = "tang1", password = "123456")
         val account2 = Account(username = "tang2", password = "123456")
         val rows1 = accountMapper1.insert(account1)
@@ -134,7 +134,7 @@ class SqlSessionTest : BaseDataTest() {
     @Test
     fun batchInsert() {
         val session = sqlSessionFactory.openSession()
-        val accountMapper = session.getMapper(AccountMapper::class.java)
+        val accountMapper = session.getMapper(AccountMapper::class)
         val accounts = listOf(
             Account(username = "tang1", password = "123456"),
             Account(username = "tang2", password = "123456")
@@ -148,7 +148,7 @@ class SqlSessionTest : BaseDataTest() {
     @Test
     fun batchInsertSelective() {
         val session = sqlSessionFactory.openSession()
-        val accountMapper = session.getMapper(AccountMapper::class.java)
+        val accountMapper = session.getMapper(AccountMapper::class)
         val accounts = listOf(
             Account(username = "tang1"),
             Account(username = "tang2")
@@ -162,7 +162,7 @@ class SqlSessionTest : BaseDataTest() {
     @Test
     fun batchInsertSize() {
         val session = sqlSessionFactory.openSession()
-        val accountMapper = session.getMapper(AccountMapper::class.java)
+        val accountMapper = session.getMapper(AccountMapper::class)
         val accounts = mutableListOf<Account>()
         for (i in 1..100) {
             accounts.add(Account(username = "tang$i", password = "123456"))
@@ -176,7 +176,7 @@ class SqlSessionTest : BaseDataTest() {
     @Test
     fun batchInsertSelectiveSize() {
         val session = sqlSessionFactory.openSession()
-        val accountMapper = session.getMapper(AccountMapper::class.java)
+        val accountMapper = session.getMapper(AccountMapper::class)
         val accounts = mutableListOf<Account>()
         repeat(100) {
             accounts.add(Account(username = "tang$it"))
@@ -190,7 +190,7 @@ class SqlSessionTest : BaseDataTest() {
     @Test
     fun update() {
         val session = sqlSessionFactory.openSession()
-        val accountMapper = session.getMapper(AccountMapper::class.java)
+        val accountMapper = session.getMapper(AccountMapper::class)
         val account = Account(id = 1, username = "tang", password = "654321")
         val rows = accountMapper.update(account)
         session.rollback()
@@ -201,7 +201,7 @@ class SqlSessionTest : BaseDataTest() {
     @Test
     fun updateCondition() {
         val session = sqlSessionFactory.openSession()
-        val accountMapper = session.getMapper(AccountMapper::class.java)
+        val accountMapper = session.getMapper(AccountMapper::class)
         val account = Account(username = "tang", password = "654321")
         val condition = Account(id = 1)
         val rows = accountMapper.update(account, condition)
@@ -213,7 +213,7 @@ class SqlSessionTest : BaseDataTest() {
     @Test
     fun updateSelective() {
         val session = sqlSessionFactory.openSession()
-        val accountMapper = session.getMapper(AccountMapper::class.java)
+        val accountMapper = session.getMapper(AccountMapper::class)
         val account = Account(id = 1, username = "tang")
         val rows = accountMapper.updateSelective(account)
         session.rollback()
@@ -224,7 +224,7 @@ class SqlSessionTest : BaseDataTest() {
     @Test
     fun updateWrapper() {
         val session = sqlSessionFactory.openSession()
-        val accountMapper = session.getMapper(AccountMapper::class.java)
+        val accountMapper = session.getMapper(AccountMapper::class)
         val updateWrapper = UpdateWrapper.create<Account>()
             .from(Account::class.java)
             .set(Account::username, "tang")
@@ -241,7 +241,7 @@ class SqlSessionTest : BaseDataTest() {
     @Test
     fun updateWrapperShort() {
         val session = sqlSessionFactory.openSession()
-        val accountMapper = session.getMapper(AccountMapper::class.java)
+        val accountMapper = session.getMapper(AccountMapper::class)
         val updateWrapper = UpdateWrapper.create<Account>()
             .set(Account::username, "tang")
             .set("password", "123456", false)
@@ -256,7 +256,7 @@ class SqlSessionTest : BaseDataTest() {
     @Test
     fun updateWrapperPost() {
         val session = sqlSessionFactory.openSession()
-        val accountMapper = session.getMapper(AccountMapper::class.java)
+        val accountMapper = session.getMapper(AccountMapper::class)
         val rows = accountMapper.updateWrapper()
             .from(Account::class.java)
             .set(Account::username, "tang")
@@ -272,7 +272,7 @@ class SqlSessionTest : BaseDataTest() {
     @Test
     fun updateWrapperPostShort() {
         val session = sqlSessionFactory.openSession()
-        val accountMapper = session.getMapper(AccountMapper::class.java)
+        val accountMapper = session.getMapper(AccountMapper::class)
         val rows = accountMapper.updateWrapper()
             .set(Account::username, "tang")
             .set("password", "123456", false)
@@ -286,7 +286,7 @@ class SqlSessionTest : BaseDataTest() {
     @Test
     fun delete() {
         val session = sqlSessionFactory.openSession()
-        val accountMapper = session.getMapper(AccountMapper::class.java)
+        val accountMapper = session.getMapper(AccountMapper::class)
         val account = Account(id = 1)
         val rows = accountMapper.delete(account)
         session.rollback()
@@ -297,7 +297,7 @@ class SqlSessionTest : BaseDataTest() {
     @Test
     fun deleteById() {
         val session = sqlSessionFactory.openSession()
-        val accountMapper = session.getMapper(AccountMapper::class.java)
+        val accountMapper = session.getMapper(AccountMapper::class)
         val rows = accountMapper.deleteById(1)
         session.rollback()
         session.close()
@@ -307,7 +307,7 @@ class SqlSessionTest : BaseDataTest() {
     @Test
     fun deleteByIds() {
         val session = sqlSessionFactory.openSession()
-        val accountMapper = session.getMapper(AccountMapper::class.java)
+        val accountMapper = session.getMapper(AccountMapper::class)
         val rows = accountMapper.deleteByIds(listOf(1L, 2L))
         session.rollback()
         session.close()
@@ -317,7 +317,7 @@ class SqlSessionTest : BaseDataTest() {
     @Test
     fun deleteByIdArray() {
         val session = sqlSessionFactory.openSession()
-        val accountMapper = session.getMapper(AccountMapper::class.java)
+        val accountMapper = session.getMapper(AccountMapper::class)
         val rows = accountMapper.deleteByIds(arrayOf(1L, 2L))
         session.rollback()
         session.close()
@@ -327,7 +327,7 @@ class SqlSessionTest : BaseDataTest() {
     @Test
     fun deleteWrapper() {
         val session = sqlSessionFactory.openSession()
-        val accountMapper = session.getMapper(AccountMapper::class.java)
+        val accountMapper = session.getMapper(AccountMapper::class)
         val deleteWrapper = DeleteWrapper.create<Account>()
             .from(Account::class.java)
             .eq(Account::id, 1)
@@ -342,7 +342,7 @@ class SqlSessionTest : BaseDataTest() {
     @Test
     fun deleteWrapperShort() {
         val session = sqlSessionFactory.openSession()
-        val accountMapper = session.getMapper(AccountMapper::class.java)
+        val accountMapper = session.getMapper(AccountMapper::class)
         val deleteWrapper = DeleteWrapper.create<Account>()
             .eq(Account::id, 1)
             .isNotNull(Account::username)
@@ -356,7 +356,7 @@ class SqlSessionTest : BaseDataTest() {
     @Test
     fun deleteWrapperPost() {
         val session = sqlSessionFactory.openSession()
-        val accountMapper = session.getMapper(AccountMapper::class.java)
+        val accountMapper = session.getMapper(AccountMapper::class)
         val rows = accountMapper.deleteWrapper()
             .from(Account::class.java)
             .eq(Account::id, 1)
@@ -370,7 +370,7 @@ class SqlSessionTest : BaseDataTest() {
     @Test
     fun deleteWrapperPostShort() {
         val session = sqlSessionFactory.openSession()
-        val accountMapper = session.getMapper(AccountMapper::class.java)
+        val accountMapper = session.getMapper(AccountMapper::class)
         val rows = accountMapper.deleteWrapper()
             .eq(Account::id, 1)
             .isNotNull(Account::username)
@@ -383,7 +383,7 @@ class SqlSessionTest : BaseDataTest() {
     @Test
     fun select() {
         val session = sqlSessionFactory.openSession()
-        val accountMapper = session.getMapper(AccountMapper::class.java)
+        val accountMapper = session.getMapper(AccountMapper::class)
         val accounts = accountMapper.select()
         session.close()
         assertTrue(accounts.isNotEmpty())
@@ -392,7 +392,7 @@ class SqlSessionTest : BaseDataTest() {
     @Test
     fun selectOrderBy() {
         val session = sqlSessionFactory.openSession()
-        val accountMapper = session.getMapper(AccountMapper::class.java)
+        val accountMapper = session.getMapper(AccountMapper::class)
         val accounts = accountMapper.select(OrderItem("id", false))
         session.close()
         assertTrue(accounts.isNotEmpty())
@@ -401,7 +401,7 @@ class SqlSessionTest : BaseDataTest() {
     @Test
     fun selectById() {
         val session = sqlSessionFactory.openSession()
-        val accountMapper = session.getMapper(AccountMapper::class.java)
+        val accountMapper = session.getMapper(AccountMapper::class)
         val account = accountMapper.selectById(1)
         session.close()
         assertNotNull(account)
@@ -410,7 +410,7 @@ class SqlSessionTest : BaseDataTest() {
     @Test
     fun selectConditionNoParam() {
         val session = sqlSessionFactory.openSession()
-        val accountMapper = session.getMapper(AccountMapper::class.java)
+        val accountMapper = session.getMapper(AccountMapper::class)
         val account = Account()
         val accounts = accountMapper.select(account)
         session.close()
@@ -420,7 +420,7 @@ class SqlSessionTest : BaseDataTest() {
     @Test
     fun selectCondition() {
         val session = sqlSessionFactory.openSession()
-        val accountMapper = session.getMapper(AccountMapper::class.java)
+        val accountMapper = session.getMapper(AccountMapper::class)
         val account = Account(username = "admin")
         val accounts = accountMapper.select(account)
         session.close()
@@ -430,7 +430,7 @@ class SqlSessionTest : BaseDataTest() {
     @Test
     fun selectConditionOrderBy() {
         val session = sqlSessionFactory.openSession()
-        val accountMapper = session.getMapper(AccountMapper::class.java)
+        val accountMapper = session.getMapper(AccountMapper::class)
         val account = Account(username = "admin")
         val accounts = accountMapper.select(account, OrderItem("id", false))
         session.close()
@@ -440,7 +440,7 @@ class SqlSessionTest : BaseDataTest() {
     @Test
     fun selectWrapper() {
         val session = sqlSessionFactory.openSession()
-        val accountMapper = session.getMapper(AccountMapper::class.java)
+        val accountMapper = session.getMapper(AccountMapper::class)
         val queryWrapper = QueryWrapper.create<Account>()
             .select("id", "username")
             .column(Account::password)
@@ -454,7 +454,7 @@ class SqlSessionTest : BaseDataTest() {
     @Test
     fun selectWrapperShort() {
         val session = sqlSessionFactory.openSession()
-        val accountMapper = session.getMapper(AccountMapper::class.java)
+        val accountMapper = session.getMapper(AccountMapper::class)
         val queryWrapper = QueryWrapper.create<Account>()
             .eq(Account::username, "admin")
             .build()
@@ -466,7 +466,7 @@ class SqlSessionTest : BaseDataTest() {
     @Test
     fun selectOneWrapper() {
         val session = sqlSessionFactory.openSession()
-        val accountMapper = session.getMapper(AccountMapper::class.java)
+        val accountMapper = session.getMapper(AccountMapper::class)
         val queryWrapper = QueryWrapper.create<Account>()
             .select("id", "username")
             .column(Account::password)
@@ -481,7 +481,7 @@ class SqlSessionTest : BaseDataTest() {
     @Test
     fun queryWrapperPost() {
         val session = sqlSessionFactory.openSession()
-        val accountMapper = session.getMapper(AccountMapper::class.java)
+        val accountMapper = session.getMapper(AccountMapper::class)
         val accounts = accountMapper.queryWrapper()
             .select("id", "username")
             .column(Account::password)
@@ -494,7 +494,7 @@ class SqlSessionTest : BaseDataTest() {
     @Test
     fun selectWrapperShortPost() {
         val session = sqlSessionFactory.openSession()
-        val accountMapper = session.getMapper(AccountMapper::class.java)
+        val accountMapper = session.getMapper(AccountMapper::class)
         val accounts = accountMapper.queryWrapper()
             .eq(Account::username, "admin")
             .list()
@@ -505,7 +505,7 @@ class SqlSessionTest : BaseDataTest() {
     @Test
     fun selectOneWrapperPost() {
         val session = sqlSessionFactory.openSession()
-        val accountMapper = session.getMapper(AccountMapper::class.java)
+        val accountMapper = session.getMapper(AccountMapper::class)
         val account = accountMapper.queryWrapper()
             .select("id", "username")
             .column(Account::password)
@@ -519,7 +519,7 @@ class SqlSessionTest : BaseDataTest() {
     @Test
     fun queryWrapperNestedCondition() {
         val session = sqlSessionFactory.openSession()
-        val accountMapper = session.getMapper(AccountMapper::class.java)
+        val accountMapper = session.getMapper(AccountMapper::class)
         val accounts = accountMapper.queryWrapper()
             .select(Account::id, Account::username, Account::balance)
             .from(Account::class.java)
@@ -544,7 +544,7 @@ class SqlSessionTest : BaseDataTest() {
     @Test
     fun selectDistinct() {
         val session = sqlSessionFactory.openSession()
-        val accountMapper = session.getMapper(AccountMapper::class.java)
+        val accountMapper = session.getMapper(AccountMapper::class)
         val accounts = accountMapper.queryWrapper()
             .distinct()
             .select("id", "username")
@@ -558,7 +558,7 @@ class SqlSessionTest : BaseDataTest() {
     @Test
     fun selectWrapperGroupBy() {
         val session = sqlSessionFactory.openSession()
-        val accountMapper = session.getMapper(AccountMapper::class.java)
+        val accountMapper = session.getMapper(AccountMapper::class)
         val accounts = accountMapper.queryWrapper()
             .select()
             .columns(Account::username, Account::password)
@@ -573,7 +573,7 @@ class SqlSessionTest : BaseDataTest() {
     @Test
     fun selectWrapperOrderBy() {
         val session = sqlSessionFactory.openSession()
-        val accountMapper = session.getMapper(AccountMapper::class.java)
+        val accountMapper = session.getMapper(AccountMapper::class)
         val accounts = accountMapper.queryWrapper()
             .select()
             .columns(Account::username, Account::password)
@@ -588,7 +588,7 @@ class SqlSessionTest : BaseDataTest() {
     @Test
     fun selectWrapperGroupByOrderBy() {
         val session = sqlSessionFactory.openSession()
-        val accountMapper = session.getMapper(AccountMapper::class.java)
+        val accountMapper = session.getMapper(AccountMapper::class)
         val accounts = accountMapper.queryWrapper()
             .select()
             .columns(Account::username, Account::password)
@@ -603,7 +603,7 @@ class SqlSessionTest : BaseDataTest() {
     @Test
     fun selectWrapperHaving() {
         val session = sqlSessionFactory.openSession()
-        val accountMapper = session.getMapper(AccountMapper::class.java)
+        val accountMapper = session.getMapper(AccountMapper::class)
         val accounts = accountMapper.queryWrapper()
             .select()
             .columns(Account::username, Account::password)
@@ -620,7 +620,7 @@ class SqlSessionTest : BaseDataTest() {
     @Test
     fun queryWrapperAs() {
         val session = sqlSessionFactory.openSession()
-        val accountMapper = session.getMapper(AccountAsMapper::class.java)
+        val accountMapper = session.getMapper(AccountAsMapper::class)
         val queryWrapper = QueryWrapper.create<AccountAs>()
             .select(AccountAs::id, AccountAs::username, AccountAs::password)
             .column(SqlAlias(AccountAs::username).`as`(AccountAs::usernameAs))
@@ -639,7 +639,7 @@ class SqlSessionTest : BaseDataTest() {
     @Test
     fun queryWrapperFunction() {
         val session = sqlSessionFactory.openSession()
-        val accountMapper = session.getMapper(AccountFunctionMapper::class.java)
+        val accountMapper = session.getMapper(AccountFunctionMapper::class)
         val queryWrapper = QueryWrapper.create<AccountFunction>()
             .select(AccountFunction::id, AccountFunction::username)
             .from(AccountFunction::class.java)
@@ -654,7 +654,7 @@ class SqlSessionTest : BaseDataTest() {
     @Test
     fun count() {
         val session = sqlSessionFactory.openSession()
-        val accountMapper = session.getMapper(AccountMapper::class.java)
+        val accountMapper = session.getMapper(AccountMapper::class)
         val count = accountMapper.count()
         session.close()
         assertNotEquals(0, count)
@@ -663,7 +663,7 @@ class SqlSessionTest : BaseDataTest() {
     @Test
     fun countCondition() {
         val session = sqlSessionFactory.openSession()
-        val accountMapper = session.getMapper(AccountMapper::class.java)
+        val accountMapper = session.getMapper(AccountMapper::class)
         val account = Account(username = "admin")
         val count = accountMapper.count(account)
         session.close()
@@ -673,7 +673,7 @@ class SqlSessionTest : BaseDataTest() {
     @Test
     fun paginate() {
         val session = sqlSessionFactory.openSession()
-        val accountMapper = session.getMapper(AccountMapper::class.java)
+        val accountMapper = session.getMapper(AccountMapper::class)
         val page = accountMapper.paginate(2, 5)
         session.close()
         assertNotEquals(0, page.total)
@@ -682,7 +682,7 @@ class SqlSessionTest : BaseDataTest() {
     @Test
     fun paginateCondition() {
         val session = sqlSessionFactory.openSession()
-        val accountMapper = session.getMapper(AccountMapper::class.java)
+        val accountMapper = session.getMapper(AccountMapper::class)
         val page = accountMapper.paginate(2, 5, Account(username = "tang"))
         session.close()
         assertNotEquals(0, page.total)
@@ -691,7 +691,7 @@ class SqlSessionTest : BaseDataTest() {
     @Test
     fun paginateOderBy() {
         val session = sqlSessionFactory.openSession()
-        val accountMapper = session.getMapper(AccountMapper::class.java)
+        val accountMapper = session.getMapper(AccountMapper::class)
         val page = accountMapper.paginate(2, 5, OrderItem("id", false))
         session.close()
         assertNotEquals(0, page.total)
@@ -700,7 +700,7 @@ class SqlSessionTest : BaseDataTest() {
     @Test
     fun paginateOderByKMutableProperty1() {
         val session = sqlSessionFactory.openSession()
-        val accountMapper = session.getMapper(AccountMapper::class.java)
+        val accountMapper = session.getMapper(AccountMapper::class)
         val page = accountMapper.paginate(2, 5, OrderItem(Account::updateTime, false))
         session.close()
         assertNotEquals(0, page.total)
@@ -709,7 +709,7 @@ class SqlSessionTest : BaseDataTest() {
     @Test
     fun paginateOrderBys() {
         val session = sqlSessionFactory.openSession()
-        val accountMapper = session.getMapper(AccountMapper::class.java)
+        val accountMapper = session.getMapper(AccountMapper::class)
         val page = accountMapper.paginate(2, 5, listOf(OrderItem("id", false), OrderItem("username", true)))
         session.close()
         assertNotEquals(0, page.total)
@@ -718,7 +718,7 @@ class SqlSessionTest : BaseDataTest() {
     @Test
     fun paginateOrderBysCondition() {
         val session = sqlSessionFactory.openSession()
-        val accountMapper = session.getMapper(AccountMapper::class.java)
+        val accountMapper = session.getMapper(AccountMapper::class)
         val page = accountMapper.paginate(2, 5, Account(username = "tang"), arrayOf(OrderItem("id", false)))
         session.close()
         assertNotEquals(0, page.total)
@@ -727,7 +727,7 @@ class SqlSessionTest : BaseDataTest() {
     @Test
     fun sqlInjection() {
         val session = sqlSessionFactory.openSession()
-        val accountMapper = session.getMapper(AccountMapper::class.java)
+        val accountMapper = session.getMapper(AccountMapper::class)
         val account = Account(username = "admin' or '1'='1")
         val list = accountMapper.select(account)
         session.close()
@@ -737,7 +737,7 @@ class SqlSessionTest : BaseDataTest() {
     @Test
     fun autoFillId() {
         val session = sqlSessionFactory.openSession()
-        val roleMapper = session.getMapper(RoleMapper::class.java)
+        val roleMapper = session.getMapper(RoleMapper::class)
         val role = Role(name = "tang")
         val rows = roleMapper.insert(role)
         session.commit()
@@ -748,7 +748,7 @@ class SqlSessionTest : BaseDataTest() {
     @Test
     fun paginateRequest() {
         val session = sqlSessionFactory.openSession()
-        val accountMapper = session.getMapper(AccountMapper::class.java)
+        val accountMapper = session.getMapper(AccountMapper::class)
         val page = accountMapper.paginate(request)
         session.close()
         assertNotEquals(0, page.total)
@@ -757,7 +757,7 @@ class SqlSessionTest : BaseDataTest() {
     @Test
     fun selectOneToOne() {
         val session = sqlSessionFactory.openSession()
-        val accountMapper = session.getMapper(AccountOneToOneMapper::class.java)
+        val accountMapper = session.getMapper(AccountOneToOneMapper::class)
         val account = accountMapper.selectByIdWithJoins(1)
         session.close()
         assertNotNull(account)
@@ -771,7 +771,7 @@ class SqlSessionTest : BaseDataTest() {
     @Test
     fun selectOneToOneWithJoinTable() {
         val session = sqlSessionFactory.openSession()
-        val accountMapper = session.getMapper(AccountOneToOneWIthJoinTableMapper::class.java)
+        val accountMapper = session.getMapper(AccountOneToOneWIthJoinTableMapper::class)
         val account = accountMapper.selectByIdWithJoins(1)
         session.close()
         assertNotNull(account)
@@ -785,7 +785,7 @@ class SqlSessionTest : BaseDataTest() {
     @Test
     fun selectOneToMany() {
         val session = sqlSessionFactory.openSession()
-        val accountMapper = session.getMapper(AccountOneToManyMapper::class.java)
+        val accountMapper = session.getMapper(AccountOneToManyMapper::class)
         val account = accountMapper.selectByIdWithJoins(2)
         session.close()
         assertNotNull(account)
@@ -801,7 +801,7 @@ class SqlSessionTest : BaseDataTest() {
     @Test
     fun selectOneToManyWithJoinTable() {
         val session = sqlSessionFactory.openSession()
-        val accountMapper = session.getMapper(AccountOneToManyWithJoinTableMapper::class.java)
+        val accountMapper = session.getMapper(AccountOneToManyWithJoinTableMapper::class)
         val account = accountMapper.selectByIdWithJoins(2)
         session.close()
         assertNotNull(account)
@@ -817,7 +817,7 @@ class SqlSessionTest : BaseDataTest() {
     @Test
     fun selectAnnotation() {
         val session = sqlSessionFactory.openSession()
-        val accountMapper = session.getMapper(AccountMapper::class.java)
+        val accountMapper = session.getMapper(AccountMapper::class)
         val accounts = accountMapper.selectAnnotation()
         session.close()
         assertTrue(accounts.isNotEmpty())
@@ -826,7 +826,7 @@ class SqlSessionTest : BaseDataTest() {
     @Test
     fun insertAnnotation() {
         val session = sqlSessionFactory.openSession(true)
-        val accountMapper = session.getMapper(AccountMapper::class.java)
+        val accountMapper = session.getMapper(AccountMapper::class)
         val account = Account(username = "tang", password = "123456")
         val rows = accountMapper.insertAnnotation(account)
         session.close()
@@ -836,7 +836,7 @@ class SqlSessionTest : BaseDataTest() {
     @Test
     fun insertAnnotationParam() {
         val session = sqlSessionFactory.openSession(true)
-        val accountMapper = session.getMapper(AccountMapper::class.java)
+        val accountMapper = session.getMapper(AccountMapper::class)
         val account = Account(username = "tang", password = "123456")
         val rows = accountMapper.insertAnnotation(account, Account(), "test")
         session.close()
@@ -846,7 +846,7 @@ class SqlSessionTest : BaseDataTest() {
     @Test
     fun selectConditionAnnotation() {
         val session = sqlSessionFactory.openSession()
-        val accountMapper = session.getMapper(AccountMapper::class.java)
+        val accountMapper = session.getMapper(AccountMapper::class)
         val account = Account(username = "admin")
         val accounts = accountMapper.selectCondition(account)
         session.close()
