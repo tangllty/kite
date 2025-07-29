@@ -15,6 +15,7 @@
  * Refactor wrapper classes to improve initialization and condition handling
  * Refactor result handling logic to improve clarity and maintainability
  * Improve the testing of the time package
+ * Support `enum` type in result handling
 
 ## 1.0.10
 

@@ -65,6 +65,8 @@ class ResultHandlerFactory {
             // Math types
             BigDecimal::class.java -> BigDecimalResultHandler()
             BigInteger::class.java -> BigIntegerResultHandler()
+            // Enum types
+            Enum::class.java -> EnumResultHandler()
             else -> DefaultResultHandler()
         }
     }
