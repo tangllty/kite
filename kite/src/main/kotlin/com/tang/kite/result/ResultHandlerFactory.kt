@@ -1,5 +1,6 @@
 package com.tang.kite.result
 
+import com.tang.kite.annotation.Column
 import com.tang.kite.result.math.BigDecimalResultHandler
 import com.tang.kite.result.math.BigIntegerResultHandler
 import com.tang.kite.result.primitive.BooleanResultHandler
@@ -40,7 +41,21 @@ import kotlin.Long
  */
 class ResultHandlerFactory {
 
+    /**
+     * Creates a new instance of [ResultHandler] based on the field type or the [Column] annotation.
+     *
+     * @param field The field for which to create a result handler.
+     * @return A new instance of [ResultHandler].
+     *
+     * @see [Column.resultHandler]
+     */
     fun newResultHandler(field: Field): ResultHandler {
+        if (field.isAnnotationPresent(Column::class.java)) {
+            val column = field.getAnnotation(Column::class.java)
+            if (column.resultHandler != ResultHandler::class) {
+                return column.resultHandler.java.getDeclaredConstructor().newInstance()
+            }
+        }
         return when (field.type) {
             // Primitive types
             Char::class.java -> CharResultHandler()

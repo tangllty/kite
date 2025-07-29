@@ -1,5 +1,8 @@
 package com.tang.kite.annotation
 
+import com.tang.kite.result.ResultHandler
+import kotlin.reflect.KClass
+
 /**
  * Column annotation
  *
@@ -18,6 +21,13 @@ annotation class Column(
     /**
      * Ignore this column when generate SQL
      */
-    val ignore: Boolean = false
+    val ignore: Boolean = false,
+
+    /**
+     * Result handler for this column
+     *
+     * @see ResultHandler
+     */
+    val resultHandler: KClass<out ResultHandler> = ResultHandler::class
 
 )
