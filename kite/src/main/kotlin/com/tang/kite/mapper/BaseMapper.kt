@@ -22,18 +22,18 @@ interface BaseMapper<T> {
     /**
      * Insert entity
      *
-     * @param type Entity
+     * @param entity Entity
      * @return Inserted count
      */
-    fun insert(type: T): Int
+    fun insert(entity: T): Int
 
     /**
      * Insert entity selective, ignore [KiteConfig.selectiveStrategy] value
      *
-     * @param type Entity
+     * @param entity Entity
      * @return Inserted count
      */
-    fun insertSelective(type: T): Int
+    fun insertSelective(entity: T): Int
 
     /**
      * Batch insert entity
@@ -118,21 +118,21 @@ interface BaseMapper<T> {
     /**
      * Update entity by primary key
      *
-     * @param type Entity
+     * @param entity Entity
      * @return Updated count
      */
-    fun update(type: T): Int
+    fun update(entity: T): Int
 
     /**
      * Update entity by where entity condition, ignore [KiteConfig.selectiveStrategy] value
      *
      * The primary key will also be updated, if set in the value entity
      *
-     * @param type Value entity
+     * @param entity Value entity
      * @param condition Condition entity
      * @return Updated count
      */
-    fun update(type: T, condition: T): Int
+    fun update(entity: T, condition: T): Int
 
     /**
      * Update entity by update wrapper
@@ -149,18 +149,18 @@ interface BaseMapper<T> {
     /**
      * Update entity selective by primary key, ignore [KiteConfig.selectiveStrategy] value
      *
-     * @param type Entity
+     * @param entity Entity
      * @return Updated count
      */
-    fun updateSelective(type: T): Int
+    fun updateSelective(entity: T): Int
 
     /**
      * Delete entity by condition, all fields are used as condition, ignore [KiteConfig.selectiveStrategy] value
      *
-     * @param type Entity
+     * @param entity Entity
      * @return Deleted count
      */
-    fun delete(type: T): Int
+    fun delete(entity: T): Int
 
     /**
      * Delete entity by primary key
@@ -238,40 +238,40 @@ interface BaseMapper<T> {
     /**
      * Select by condition, ignore [KiteConfig.selectiveStrategy] value
      *
-     * @param type Entity
+     * @param entity Entity
      * @return Entity list
      */
-    fun select(type: T): List<T>
+    fun select(entity: T): List<T>
 
     /**
      * Select by condition and order by
      *
-     * @param type Entity
+     * @param entity Entity
      * @param orderBy Order by
      * @return Entity list
      */
-    fun select(type: T, orderBy: OrderItem<T>): List<T> {
-        return select(type, arrayOf(orderBy))
+    fun select(entity: T, orderBy: OrderItem<T>): List<T> {
+        return select(entity, arrayOf(orderBy))
     }
 
     /**
      * Select by condition and order by
      *
-     * @param type Entity
+     * @param entity Entity
      * @param orderBys Order by array
      * @return Entity list
      */
-    fun select(type: T, orderBys: Array<OrderItem<T>>): List<T>
+    fun select(entity: T, orderBys: Array<OrderItem<T>>): List<T>
 
     /**
      * Select by condition and order by
      *
-     * @param type Entity
+     * @param entity Entity
      * @param orderBys Order by list
      * @return Entity list
      */
-    fun select(type: T, orderBys: List<OrderItem<T>>): List<T> {
-        return select(type, orderBys.toTypedArray())
+    fun select(entity: T, orderBys: List<OrderItem<T>>): List<T> {
+        return select(entity, orderBys.toTypedArray())
     }
 
     /**
@@ -336,40 +336,40 @@ interface BaseMapper<T> {
     /**
      * Select by condition with joins, ignore [KiteConfig.selectiveStrategy] value
      *
-     * @param type Entity
+     * @param entity Entity
      * @return Entity list
      */
-    fun selectWithJoins(type: T): List<T>
+    fun selectWithJoins(entity: T): List<T>
 
     /**
      * Select by condition and order by with joins
      *
-     * @param type Entity
+     * @param entity Entity
      * @param orderBy Order by
      * @return Entity list
      */
-    fun selectWithJoins(type: T, orderBy: OrderItem<T>): List<T> {
-        return select(type, arrayOf(orderBy))
+    fun selectWithJoins(entity: T, orderBy: OrderItem<T>): List<T> {
+        return select(entity, arrayOf(orderBy))
     }
 
     /**
      * Select by condition and order by with joins
      *
-     * @param type Entity
+     * @param entity Entity
      * @param orderBys Order by array
      * @return Entity list
      */
-    fun selectWithJoins(type: T, orderBys: Array<OrderItem<T>>): List<T>
+    fun selectWithJoins(entity: T, orderBys: Array<OrderItem<T>>): List<T>
 
     /**
      * Select by condition and order by with joins
      *
-     * @param type Entity
+     * @param entity Entity
      * @param orderBys Order by list
      * @return Entity list
      */
-    fun selectWithJoins(type: T, orderBys: List<OrderItem<T>>): List<T> {
-        return select(type, orderBys.toTypedArray())
+    fun selectWithJoins(entity: T, orderBys: List<OrderItem<T>>): List<T> {
+        return select(entity, orderBys.toTypedArray())
     }
 
     /**
@@ -399,10 +399,10 @@ interface BaseMapper<T> {
     /**
      * Count by condition, ignore [KiteConfig.selectiveStrategy] value
      *
-     * @param type Entity
+     * @param entity Entity
      * @return Count
      */
-    fun count(type: T): Long
+    fun count(entity: T): Long
 
     /**
      * Paginate by page number and page size
@@ -418,10 +418,10 @@ interface BaseMapper<T> {
      *
      * @param pageNumber Page number
      * @param pageSize Page size
-     * @param type Entity
+     * @param entity Entity
      * @return Page
      */
-    fun paginate(pageNumber: Long, pageSize: Long, type: T): Page<T>
+    fun paginate(pageNumber: Long, pageSize: Long, entity: T): Page<T>
 
     /**
      * Paginate by page number, page size and order by
@@ -462,12 +462,12 @@ interface BaseMapper<T> {
      *
      * @param pageNumber Page number
      * @param pageSize Page size
-     * @param type Entity
+     * @param entity Entity
      * @param orderBy Order by
      * @return Page
      */
-    fun paginate(pageNumber: Long, pageSize: Long, type: T, orderBy: OrderItem<T>): Page<T> {
-        return paginate(pageNumber, pageSize, type, arrayOf(orderBy))
+    fun paginate(pageNumber: Long, pageSize: Long, entity: T, orderBy: OrderItem<T>): Page<T> {
+        return paginate(pageNumber, pageSize, entity, arrayOf(orderBy))
     }
 
     /**
@@ -475,23 +475,23 @@ interface BaseMapper<T> {
      *
      * @param pageNumber Page number
      * @param pageSize Page size
-     * @param type Entity
+     * @param entity Entity
      * @param orderBys Order by array
      * @return Page
      */
-    fun paginate(pageNumber: Long, pageSize: Long, type: T, orderBys: Array<OrderItem<T>>): Page<T>
+    fun paginate(pageNumber: Long, pageSize: Long, entity: T, orderBys: Array<OrderItem<T>>): Page<T>
 
     /**
      * Paginate by page number, page size, order by and condition, ignore [KiteConfig.selectiveStrategy] value
      *
      * @param pageNumber Page number
      * @param pageSize Page size
-     * @param type Entity
+     * @param entity Entity
      * @param orderBys Order by list
      * @return Page
      */
-    fun paginate(pageNumber: Long, pageSize: Long, type: T, orderBys: List<OrderItem<T>>): Page<T> {
-        return paginate(pageNumber, pageSize, type, orderBys.toTypedArray())
+    fun paginate(pageNumber: Long, pageSize: Long, entity: T, orderBys: List<OrderItem<T>>): Page<T> {
+        return paginate(pageNumber, pageSize, entity, orderBys.toTypedArray())
     }
 
     /**
@@ -508,11 +508,11 @@ interface BaseMapper<T> {
      * Paginate by request and condition, ignore [KiteConfig.selectiveStrategy] value
      *
      * @param request HttpServletRequest
-     * @param type Entity
+     * @param entity Entity
      * @return Page
      */
-    fun paginate(request: HttpServletRequest, type: T): Page<T> {
-        return paginate(getPageNumber(request), getPageSize(request), type)
+    fun paginate(request: HttpServletRequest, entity: T): Page<T> {
+        return paginate(getPageNumber(request), getPageSize(request), entity)
     }
 
     /**
@@ -552,36 +552,36 @@ interface BaseMapper<T> {
      * Paginate by request, order by and condition, ignore [KiteConfig.selectiveStrategy] value
      *
      * @param request HttpServletRequest
-     * @param type Entity
+     * @param entity Entity
      * @param orderBy Order by
      * @return Page
      */
-    fun paginate(request: HttpServletRequest, type: T, orderBy: OrderItem<T>): Page<T> {
-        return paginate(request, type, arrayOf(orderBy))
+    fun paginate(request: HttpServletRequest, entity: T, orderBy: OrderItem<T>): Page<T> {
+        return paginate(request, entity, arrayOf(orderBy))
     }
 
     /**
      * Paginate by request, order by and condition, ignore [KiteConfig.selectiveStrategy] value
      *
      * @param request HttpServletRequest
-     * @param type Entity
+     * @param entity Entity
      * @param orderBys Order by array
      * @return Page
      */
-    fun paginate(request: HttpServletRequest, type: T, orderBys: Array<OrderItem<T>>): Page<T> {
-        return paginate(getPageNumber(request), getPageSize(request), type, orderBys)
+    fun paginate(request: HttpServletRequest, entity: T, orderBys: Array<OrderItem<T>>): Page<T> {
+        return paginate(getPageNumber(request), getPageSize(request), entity, orderBys)
     }
 
     /**
      * Paginate by request, order by and condition, ignore [KiteConfig.selectiveStrategy] value
      *
      * @param request HttpServletRequest
-     * @param type Entity
+     * @param entity Entity
      * @param orderBys Order by list
      * @return Page
      */
-    fun paginate(request: HttpServletRequest, type: T, orderBys: List<OrderItem<T>>): Page<T> {
-        return paginate(request, type, orderBys.toTypedArray())
+    fun paginate(request: HttpServletRequest, entity: T, orderBys: List<OrderItem<T>>): Page<T> {
+        return paginate(request, entity, orderBys.toTypedArray())
     }
 
     /**
