@@ -10,7 +10,7 @@ class Role(
 
     @Id(type = IdType.GENERATOR)
     var id: Long? = null,
-    var name: String = ""
+    var name: String? = null
 
 ) {
     override fun toString(): String {

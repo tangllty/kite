@@ -13,14 +13,14 @@ class Account (
 
     @Id(type = IdType.AUTO)
     var id: Long? = null,
-    var username: String = "",
-    var password: String = "",
+    var username: String? = null,
+    var password: String? = null,
     var createTime: Date? = null,
     @Column("update_time")
     var updateTime: Date? = null,
     var balance: BigDecimal? = null,
     @Column(ignore = true)
-    var beIgnore: String = ""
+    var beIgnore: String? = null
 
 ) {
     override fun toString(): String {
