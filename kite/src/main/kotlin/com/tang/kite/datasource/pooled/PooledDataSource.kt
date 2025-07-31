@@ -26,7 +26,7 @@ class PooledDataSource(private val properties: PooledProperties) : DataSource {
     init {
         val start = System.currentTimeMillis()
         Class.forName(properties.driver)
-        for (i in 0 until properties.initialConnections) {
+        repeat(properties.initialConnections) {
             freeConnections.add(newConnection())
         }
         logger.debug("Initialized pooled data source with ${properties.initialConnections} connections in ${System.currentTimeMillis() - start} ms.")
