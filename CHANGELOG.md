@@ -2,6 +2,8 @@
 
 ### Bug Fixes
 
+ * Modify `DefaultSelectiveStrategy` rule to ignore only null values
+
 ### Dependencies
 
 ### Features
