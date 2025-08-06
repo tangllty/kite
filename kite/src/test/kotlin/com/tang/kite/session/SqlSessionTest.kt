@@ -25,7 +25,7 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Test
 import java.math.BigDecimal
-import java.sql.Date
+import java.time.LocalDateTime
 import kotlin.test.assertNotEquals
 import kotlin.test.assertTrue
 
@@ -79,7 +79,7 @@ class SqlSessionTest : BaseDataTest() {
         val account = Account(
             username = "tang",
             password = "123456",
-            createTime = Date(System.currentTimeMillis()),
+            createTime = LocalDateTime.now(),
             updateTime = null,
             balance = BigDecimal(100.00)
         )
@@ -132,6 +132,20 @@ class SqlSessionTest : BaseDataTest() {
     }
 
     @Test
+    fun insertValues() {
+        val session = sqlSessionFactory.openSession()
+        val accountMapper = session.getMapper(AccountMapper::class)
+        val accounts = mutableListOf<Account>()
+        for (i in 1..100) {
+            accounts.add(Account(username = "tang$i", password = "123456"))
+        }
+        val rows = accountMapper.insertValues(accounts, 30)
+        session.commit()
+        session.close()
+        assertEquals(100, rows)
+    }
+
+    @Test
     fun batchInsert() {
         val session = sqlSessionFactory.openSession()
         val accountMapper = session.getMapper(AccountMapper::class)
@@ -150,8 +164,8 @@ class SqlSessionTest : BaseDataTest() {
         val session = sqlSessionFactory.openSession()
         val accountMapper = session.getMapper(AccountMapper::class)
         val accounts = listOf(
-            Account(username = "tang1"),
-            Account(username = "tang2")
+            Account(username = "tang1", password = "123456"),
+            Account(username = "tang2", balance = BigDecimal(2000))
         )
         val rows = accountMapper.batchInsertSelective(accounts)
         session.commit()
@@ -281,6 +295,34 @@ class SqlSessionTest : BaseDataTest() {
         session.rollback()
         session.close()
         assertEquals(1, rows)
+    }
+
+    @Test
+    fun batchUpdate() {
+        val session = sqlSessionFactory.openSession()
+        val accountMapper = session.getMapper(AccountMapper::class)
+        val accounts = arrayOf(
+            Account(id = 1, username = "admin", password = "123456", updateTime = LocalDateTime.now(), balance = BigDecimal(1000.00)),
+            Account(id = 4, username = "tang", password = "123456", updateTime = LocalDateTime.now(), balance = BigDecimal(2000.00))
+        )
+        val rows = accountMapper.batchUpdate(accounts)
+        session.rollback()
+        session.close()
+        assertEquals(2, rows)
+    }
+
+    @Test
+    fun batchUpdateSelective() {
+        val session = sqlSessionFactory.openSession()
+        val accountMapper = session.getMapper(AccountMapper::class)
+        val accounts = arrayOf(
+            Account(id = 1, username = "admin"),
+            Account(id = 4, username = "tang")
+        )
+        val rows = accountMapper.batchUpdateSelective(accounts)
+        session.rollback()
+        session.close()
+        assertEquals(2, rows)
     }
 
     @Test

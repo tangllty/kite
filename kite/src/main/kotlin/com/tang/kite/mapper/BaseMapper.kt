@@ -36,6 +36,46 @@ interface BaseMapper<T> {
     fun insertSelective(entity: T): Int
 
     /**
+     * Insert entity values, ignore [KiteConfig.selectiveStrategy] value
+     *
+     * @param entities Entity list
+     * @param batchSize Batch size
+     * @return Inserted count
+     */
+    fun insertValues(entities: Iterable<T>, batchSize: Int): Int
+
+    /**
+     * Insert entity values, ignore [KiteConfig.selectiveStrategy] value
+     *
+     * @param entities Entity array
+     * @param batchSize Batch size
+     * @return Inserted count
+     */
+    fun insertValues(entities: Array<T>, batchSize: Int): Int {
+        return insertValues(entities.toList(), batchSize)
+    }
+
+    /**
+     * Insert entity values, ignore [KiteConfig.selectiveStrategy] value
+     *
+     * @param entities Entity list
+     * @return Inserted count
+     */
+    fun insertValues(entities: Iterable<T>): Int {
+        return insertValues(entities, KiteConfig.batchSize)
+    }
+
+    /**
+     * Insert entity values, ignore [KiteConfig.selectiveStrategy] value
+     *
+     * @param entities Entity array
+     * @return Inserted count
+     */
+    fun insertValues(entities: Array<T>): Int {
+        return insertValues(entities.toList())
+    }
+
+    /**
      * Batch insert entity
      *
      * @param list Entity list
@@ -47,72 +87,72 @@ interface BaseMapper<T> {
     /**
      * Batch insert entity
      *
-     * @param list Entity list
+     * @param entities Entity array
      * @param batchSize Batch size
      * @return Inserted count
      */
-    fun batchInsert(list: Array<T>, batchSize: Int): Int {
-        return batchInsert(list.toList(), batchSize)
+    fun batchInsert(entities: Array<T>, batchSize: Int): Int {
+        return batchInsert(entities.toList(), batchSize)
     }
 
     /**
      * Batch insert entity
      *
-     * @param list Entity list
+     * @param entities Entity list
      * @return Inserted count
      */
-    fun batchInsert(list: Iterable<T>): Int {
-        return batchInsert(list, KiteConfig.batchSize)
+    fun batchInsert(entities: Iterable<T>): Int {
+        return batchInsert(entities, KiteConfig.batchSize)
     }
 
     /**
      * Batch insert entity
      *
-     * @param list Entity list
+     * @param entities Entity array
      * @return Inserted count
      */
-    fun batchInsert(list: Array<T>): Int {
-        return batchInsert(list.toList())
+    fun batchInsert(entities: Array<T>): Int {
+        return batchInsert(entities.toList())
     }
 
     /**
      * Batch insert entity selective, ignore [KiteConfig.selectiveStrategy] value
      *
-     * @param list Entity list
+     * @param entities Entity list
      * @param batchSize Batch size
      * @return Inserted count
      */
-    fun batchInsertSelective(list: Iterable<T>, batchSize: Int): Int
+    fun batchInsertSelective(entities: Iterable<T>, batchSize: Int): Int
 
     /**
      * Batch insert entity selective, ignore [KiteConfig.selectiveStrategy] value
      *
-     * @param list Entity list
+     * @param entities Entity array
      * @param batchSize Batch size
      * @return Inserted count
      */
-    fun batchInsertSelective(list: Array<T>, batchSize: Int): Int {
-        return batchInsertSelective(list.toList())
+    fun batchInsertSelective(entities: Array<T>, batchSize: Int): Int {
+        return batchInsertSelective(entities.toList())
     }
 
     /**
      * Batch insert entity selective, ignore [KiteConfig.selectiveStrategy] value
      *
-     * @param list Entity list
+     * @param entities Entity list
      * @return Inserted count
      */
-    fun batchInsertSelective(list: Iterable<T>): Int {
-        return batchInsertSelective(list, KiteConfig.batchSize)
+    fun batchInsertSelective(entities: Iterable<T>): Int {
+        return batchInsertSelective(entities, KiteConfig.batchSize)
     }
 
     /**
      * Batch insert entity selective, ignore [KiteConfig.selectiveStrategy] value
      *
-     * @param list Entity list
+     * @param entities Entity array
      * @return Inserted count
      */
-    fun batchInsertSelective(list: Array<T>): Int {
-        return batchInsertSelective(list.toList())
+    fun batchInsertSelective(entities: Array<T>): Int {
+        return batchInsertSelective(entities.toList())
     }
 
     /**
@@ -129,10 +169,29 @@ interface BaseMapper<T> {
      * The primary key will also be updated, if set in the value entity
      *
      * @param entity Value entity
-     * @param condition Condition entity
+     * @param conditionEntity Condition entity
      * @return Updated count
      */
-    fun update(entity: T, condition: T): Int
+    fun update(entity: T, conditionEntity: T): Int
+
+    /**
+     * Update entity selective by primary key, ignore [KiteConfig.selectiveStrategy] value
+     *
+     * @param entity Entity
+     * @return Updated count
+     */
+    fun updateSelective(entity: T): Int
+
+    /**
+     * Update entity selective by where entity condition, ignore [KiteConfig.selectiveStrategy] value
+     *
+     * The primary key will also be updated, if set in the value entity
+     *
+     * @param entity Value entity
+     * @param conditionEntity Condition entity
+     * @return Updated count
+     */
+    fun updateSelective(entity: T, conditionEntity: T): Int
 
     /**
      * Update entity by update wrapper
@@ -147,12 +206,84 @@ interface BaseMapper<T> {
     }
 
     /**
-     * Update entity selective by primary key, ignore [KiteConfig.selectiveStrategy] value
+     * Batch update entity by primary key
      *
-     * @param entity Entity
+     * @param entities Entity list
+     * @param batchSize Batch size
      * @return Updated count
      */
-    fun updateSelective(entity: T): Int
+    fun batchUpdate(entities: Iterable<T>, batchSize: Int): Int
+
+    /**
+     * Batch update entity by primary key
+     *
+     * @param entities Entity array
+     * @param batchSize Batch size
+     * @return Updated count
+     */
+    fun batchUpdate(entities: Array<T>, batchSize: Int): Int {
+        return batchUpdate(entities.toList(), batchSize)
+    }
+
+    /**
+     * Batch update entity by primary key
+     *
+     * @param entities Entity list
+     * @return Updated count
+     */
+    fun batchUpdate(entities: Iterable<T>): Int {
+        return batchUpdate(entities, KiteConfig.batchSize)
+    }
+
+    /**
+     * Batch update entity by primary key
+     *
+     * @param entities Entity array
+     * @return Updated count
+     */
+    fun batchUpdate(entities: Array<T>): Int {
+        return batchUpdate(entities.toList())
+    }
+
+    /**
+     * Batch update entity selective by primary key, ignore [KiteConfig.selectiveStrategy] value
+     *
+     * @param entities Entity list
+     * @param batchSize Batch size
+     * @return Updated count
+     */
+    fun batchUpdateSelective(entities: Iterable<T>, batchSize: Int): Int
+
+    /**
+     * Batch update entity selective by primary key, ignore [KiteConfig.selectiveStrategy] value
+     *
+     * @param entities Entity array
+     * @param batchSize Batch size
+     * @return Updated count
+     */
+    fun batchUpdateSelective(entities: Array<T>, batchSize: Int): Int {
+        return batchUpdateSelective(entities.toList(), batchSize)
+    }
+
+    /**
+     * Batch update entity selective by primary key, ignore [KiteConfig.selectiveStrategy] value
+     *
+     * @param entities Entity list
+     * @return Updated count
+     */
+    fun batchUpdateSelective(entities: Iterable<T>): Int {
+        return batchUpdateSelective(entities, KiteConfig.batchSize)
+    }
+
+    /**
+     * Batch update entity selective by primary key, ignore [KiteConfig.selectiveStrategy] value
+     *
+     * @param entities Entity array
+     * @return Updated count
+     */
+    fun batchUpdateSelective(entities: Array<T>): Int {
+        return batchUpdateSelective(entities.toList())
+    }
 
     /**
      * Delete entity by condition, all fields are used as condition, ignore [KiteConfig.selectiveStrategy] value

@@ -23,6 +23,8 @@ interface SqlSession : AutoCloseable {
 
     fun <T> insertSelective(method: Method, mapperInterface: Class<T>, parameter: Any): Int
 
+    fun <T> insertValues(method: Method, mapperInterface: Class<T>, parameter: Any, batchSize: Int): Int
+
     fun <T> batchInsert(method: Method, mapperInterface: Class<T>, parameter: Any, batchSize: Int): Int
 
     fun <T> batchInsertSelective(method: Method, mapperInterface: Class<T>, parameter: Any, batchSize: Int): Int
@@ -34,6 +36,10 @@ interface SqlSession : AutoCloseable {
     fun <T> updateSelective(method: Method, mapperInterface: Class<T>, parameter: Any): Int
 
     fun <T> updateWrapper(method: Method, mapperInterface: Class<T>, type: Class<T>, parameter: Any): Int
+
+    fun <T> batchUpdate(method: Method, mapperInterface: Class<T>, parameter: Any, batchSize: Int): Int
+
+    fun <T> batchUpdateSelective(method: Method, mapperInterface: Class<T>, parameter: Any, batchSize: Int): Int
 
     fun <T> delete(method: Method, mapperInterface: Class<T>, type: Class<T>, parameter: Any): Int
 

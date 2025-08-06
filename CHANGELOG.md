@@ -20,6 +20,7 @@
  * Support `enum` type in result handling
  * Support custom `ResultHandler` for flexible result processing
  * `SqlSession.getMapper` now supports `KClass<T>` for enhanced Kotlin compatibility
+ * Add `insertValues`, `batchUpdate`, and `batchUpdateSelective` methods for batch operations
 
 ## 1.0.10
 

@@ -18,6 +18,7 @@ object ResultSetHandlers {
             val entity = getEntity(resultSet, type)
             list.add(entity)
         }
+        resultSet.close()
         return list
     }
 
@@ -99,11 +100,13 @@ object ResultSetHandlers {
 
     fun getCount(resultSet: ResultSet): Long {
         resultSet.next()
-        return resultSet.getLong(1)
+        val count = resultSet.getLong(1)
+        resultSet.close()
+        return count
     }
 
-    fun setGeneratedKey(statement: SqlStatement, preparedStatement: PreparedStatement, parameter: Any) {
-        if (hasGeneratedKey(statement, parameter).not()) {
+    fun setGeneratedKey(sql: String, preparedStatement: PreparedStatement, parameter: Any) {
+        if (hasGeneratedKey(sql, parameter).not()) {
             return
         }
         val resultSet = preparedStatement.generatedKeys
@@ -112,12 +115,14 @@ object ResultSetHandlers {
             list.forEach {
                 setIdValue(resultSet, it!!)
             }
+            resultSet.close()
             return
         }
         setIdValue(resultSet, parameter)
+        resultSet.close()
     }
 
-    fun hasGeneratedKey(statement: SqlStatement, parameter: Any): Boolean {
+    fun hasGeneratedKey(sql: String, parameter: Any): Boolean {
         val excludedTypes = listOf(UpdateWrapper::class.java.name, DeleteWrapper::class.java.name, String::class.java.name)
         if (parameter.javaClass.name in excludedTypes) {
             return false
@@ -137,7 +142,7 @@ object ResultSetHandlers {
         }
         val idField = Reflects.getIdField(param.javaClass)
         val autoIncrementId = Reflects.isAutoIncrementId(idField)
-        return statement.sql.startsWith(INSERT, true) && autoIncrementId
+        return sql.startsWith(INSERT, true) && autoIncrementId
     }
 
     private fun setIdValue(resultSet: ResultSet, it: Any) {

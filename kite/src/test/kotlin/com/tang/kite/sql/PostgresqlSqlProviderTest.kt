@@ -41,23 +41,23 @@ class PostgresqlSqlProviderTest : SqlProviderTest {
     @Test
     override fun batchInsert() {
         val accounts = listOf(
-            Account(username = "tang", password = "123456"),
-            Account(username = "tang", password = "123456")
+            Account(username = "tang1", password = "123456"),
+            Account(username = "tang2", password = "123456")
         )
         val statement = sqlProvider.batchInsert(accounts)
-        equals("insert into account ($columnsWithoutId) values (?, ?, ?, ?, ?), (?, ?, ?, ?, ?)", statement.sql)
-        equals("insert into account ($columnsWithoutId) values ('tang', '123456', NULL, NULL, NULL), ('tang', '123456', NULL, NULL, NULL)", statement.getActualSql())
+        equals("insert into account ($columnsWithoutId) values (?, ?, ?, ?, ?)", statement.sql)
+        equals("[[tang1, 123456, null, null, null], [tang2, 123456, null, null, null]]", statement.parameters.toString())
     }
 
     @Test
     override fun batchInsertSelective() {
         val accounts = listOf(
-            Account(username = "tang", password = "123456"),
-            Account(username = "tang", password = "123456")
+            Account(username = "tang1", password = "123456"),
+            Account(username = "tang2", password = "123456")
         )
         val statement = sqlProvider.batchInsertSelective(accounts)
-        equals("insert into account (username, password) values (?, ?), (?, ?)", statement.sql)
-        equals("insert into account (username, password) values ('tang', '123456'), ('tang', '123456')", statement.getActualSql())
+        equals("insert into account (username, password) values (?, ?)", statement.first().sql)
+        equals("[[tang1, 123456], [tang2, 123456]]", statement.map { it.parameters }.toString())
     }
 
     @Test

@@ -15,6 +15,7 @@ import com.tang.kite.paginate.Page
 import com.tang.kite.proxy.MapperProxyFactory
 import com.tang.kite.session.Configuration
 import com.tang.kite.session.SqlSession
+import com.tang.kite.sql.BatchSqlStatement
 import com.tang.kite.sql.SqlStatement
 import com.tang.kite.sql.provider.SqlProvider
 import com.tang.kite.utils.Reflects
@@ -23,6 +24,7 @@ import com.tang.kite.utils.parser.SqlParser
 import com.tang.kite.wrapper.delete.DeleteWrapper
 import com.tang.kite.wrapper.query.QueryWrapper
 import com.tang.kite.wrapper.update.UpdateWrapper
+import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.lang.reflect.Method
 import java.lang.reflect.ParameterizedType
@@ -98,30 +100,113 @@ class DefaultSqlSession(
         return parameter?.let { "$it(${it.javaClass.simpleName})" } ?: null.toString()
     }
 
-    private fun log(method: Method, mapperInterface: Class<*>, sqlStatement: SqlStatement, rows: Long, duration: Long) {
-        if (SqlConfig.sqlLogging.not()) {
-            return
-        }
-        val logger = LoggerFactory.getLogger(mapperInterface.canonicalName + "." + method.name)
-        val preparing = "==>  Preparing: ${sqlStatement.sql}"
-        val parameters = "==> Parameters: ${sqlStatement.parameters.joinToString { parameterToString(it) }}"
+    private fun getMapperLogger(mapperInterface: Class<*>, method: Method): Logger {
+        return LoggerFactory.getLogger(mapperInterface.canonicalName + "." + method.name)
+    }
+
+    private fun logSqlInfo(logger: Logger, message: String) {
+        logger.debug(message)
+    }
+
+    private fun logPreparing(logger: Logger, sql: String) {
+        val preparing = "==>  Preparing: $sql"
+        logSqlInfo(logger, preparing)
+    }
+
+    private fun logParameters(logger: Logger, parameters: List<Any?>) {
+        val parameters = "==> Parameters: ${parameters.joinToString { parameterToString(it) }}"
+        logSqlInfo(logger, parameters)
+    }
+
+    private fun logTotal(logger: Logger, rows: Long) {
         val total = "<==      Total: $rows"
+        logSqlInfo(logger, total)
+    }
+
+    private fun logUpdates(logger: Logger, rows: Long) {
         val updates = "<==    Updates: $rows"
-        val isSelect = sqlStatement.sql.trim().startsWith("SELECT", ignoreCase = true)
-        val result = if (isSelect) total else updates
+        logSqlInfo(logger, updates)
+    }
+
+    private fun logTotalOrUpdates(logger: Logger, sql: String, rows: Long) {
+        val isSelect = getIsSelect(sql)
         if (isSelect.not()) {
             isDirty = true
         }
-        logger.debug(preparing)
-        logger.debug(parameters)
-        logger.debug(result)
+        if (isSelect) {
+            logTotal(logger, rows)
+        } else {
+            logUpdates(logger, rows)
+        }
+    }
+
+    private fun getIsSelect(sql: String): Boolean {
+        return sql.trim().startsWith("SELECT", ignoreCase = true)
+    }
+
+    private fun logDuration(logger: Logger, duration: Long) {
         if (SqlConfig.sqlDurationLogging.not()) {
             return
         }
         val unit = SqlConfig.durationUnit
         val decimals = SqlConfig.durationDecimals
-        val execution = "<==  Execution: ${duration.nanoseconds.toString(unit, decimals)}"
-        logger.debug(execution)
+        val executionDuration = "<==   Duration: ${duration.nanoseconds.toString(unit, decimals)}"
+        logger.debug(executionDuration)
+    }
+
+    private fun log(method: Method, mapperInterface: Class<*>, batchSqlStatement: BatchSqlStatement, rows: Long, duration: Long) {
+        if (SqlConfig.sqlLogging.not()) {
+            return
+        }
+        val logger = getMapperLogger(mapperInterface, method)
+        logPreparing(logger, batchSqlStatement.sql)
+        for (parameters in batchSqlStatement.parameters) {
+            logParameters(logger, parameters)
+        }
+        logTotalOrUpdates(logger, batchSqlStatement.sql, rows)
+        logDuration(logger, duration)
+    }
+
+    private fun returnRows(method: Method, mapperInterface: Class<*>, batchSqlStatement: BatchSqlStatement, rows: Long, duration: Long): Long {
+        log(method, mapperInterface, batchSqlStatement, rows, duration)
+        return rows
+    }
+
+    private fun returnRows(method: Method, mapperInterface: Class<*>, batchSqlStatement: BatchSqlStatement, rows: Int, duration: Long): Int {
+        return returnRows(method, mapperInterface, batchSqlStatement, rows.toLong(), duration).toInt()
+    }
+
+    private fun log(method: Method, mapperInterface: Class<*>, sqlStatements: List<SqlStatement>, rows: Long, duration: Long) {
+        if (SqlConfig.sqlLogging.not()) {
+            return
+        }
+        val logger = getMapperLogger(mapperInterface, method)
+        for (sqlStatement in sqlStatements) {
+            logPreparing(logger, sqlStatement.sql)
+            logParameters(logger, sqlStatement.parameters)
+        }
+        logTotalOrUpdates(logger, sqlStatements.first().sql, rows)
+        logDuration(logger, duration)
+    }
+
+    private fun returnRows(method: Method, mapperInterface: Class<*>, sqlStatements: List<SqlStatement>, rows: Long, duration: Long): Long {
+        log(method, mapperInterface, sqlStatements, rows, duration)
+        return rows
+    }
+
+    private fun returnRows(method: Method, mapperInterface: Class<*>, sqlStatements: List<SqlStatement>, rows: Int, duration: Long): Int {
+        return returnRows(method, mapperInterface, sqlStatements, rows.toLong(), duration).toInt()
+    }
+
+    private fun log(method: Method, mapperInterface: Class<*>, sqlStatement: SqlStatement, rows: Long, duration: Long) {
+        if (SqlConfig.sqlLogging.not()) {
+            return
+        }
+        val logger = getMapperLogger(mapperInterface, method)
+        logPreparing(logger, sqlStatement.sql)
+        logParameters(logger, sqlStatement.parameters)
+        logTotalOrUpdates(logger, sqlStatement.sql, rows)
+        logDuration(logger, duration)
     }
 
     private fun log(method: Method, mapperInterface: Class<*>, sqlStatement: SqlStatement, rows: Int, execution: Long) {
@@ -150,12 +235,15 @@ class DefaultSqlSession(
         return when {
             BaseMethodName.isInsert(method) -> insert(method, mapperInterface, getFirstArg(args))
             BaseMethodName.isInsertSelective(method) -> insertSelective(method, mapperInterface, getFirstArg(args))
+            BaseMethodName.isInsertValues(method) -> insertValues(method, mapperInterface, getFirstArg(args), asInt(getSecondArg(args)))
             BaseMethodName.isBatchInsert(method) -> batchInsert(method, mapperInterface, getFirstArg(args), asInt(getSecondArg(args)))
             BaseMethodName.isBatchInsertSelective(method) -> batchInsertSelective(method, mapperInterface, getFirstArg(args), asInt(getSecondArg(args)))
             BaseMethodName.isUpdate(method) -> update(method, mapperInterface, getFirstArg(args))
             BaseMethodName.isUpdateCondition(method) -> update(method, mapperInterface, getFirstArg(args), getSecondArg(args))
             BaseMethodName.isUpdateSelective(method) -> updateSelective(method, mapperInterface, getFirstArg(args))
             BaseMethodName.isUpdateWrapper(method) -> updateWrapper(method, mapperInterface, type, getFirstArg(args))
+            BaseMethodName.isBatchUpdate(method) -> batchUpdate(method, mapperInterface, getFirstArg(args), asInt(getSecondArg(args)))
+            BaseMethodName.isBatchUpdateSelective(method) -> batchUpdateSelective(method, mapperInterface, getFirstArg(args), asInt(getSecondArg(args)))
             BaseMethodName.isDelete(method) -> delete(method, mapperInterface, type, getFirstArg(args))
             BaseMethodName.isDeleteById(method) -> deleteById(method, mapperInterface, type, getFirstArg(args))
             BaseMethodName.isDeleteByIds(method) -> deleteByIds(method, mapperInterface, type, asIterable(getFirstArg(args)))
@@ -225,26 +313,36 @@ class DefaultSqlSession(
         return returnRows(method, mapperInterface, insert, rows, elapsedSince(start))
     }
 
-    private fun processBatch(parameter: Any, batchSize: Int): List<List<Any>> {
+    private fun processBatch(parameter: Any, batchSize: Int, action: (List<Any>) -> Int): Int {
         val iterable = asIterable(parameter)
-        return iterable.chunked(batchSize)
+        val chunks = iterable.chunked(batchSize)
+        return chunks.sumOf { action(it) }
+    }
+
+    override fun <T> insertValues(method: Method, mapperInterface: Class<T>, parameter: Any, batchSize: Int): Int {
+        val start = nanoTime()
+        return processBatch(parameter, batchSize) {
+            val insertValues = sqlProvider.insertValues(it)
+            val rows = executor.update(insertValues, it)
+            returnRows(method, mapperInterface, insertValues, rows, elapsedSince(start))
+        }
     }
 
     override fun <T> batchInsert(method: Method, mapperInterface: Class<T>, parameter: Any, batchSize: Int): Int {
         val start = nanoTime()
-        return processBatch(parameter, batchSize).sumOf {
-            val insert = sqlProvider.batchInsert(it)
-            val rows = executor.update(insert, it)
-            returnRows(method, mapperInterface, insert, rows, elapsedSince(start))
+        return processBatch(parameter, batchSize) {
+            val batchInsert = sqlProvider.batchInsert(it)
+            val rows = executor.update(batchInsert, it)
+            returnRows(method, mapperInterface, batchInsert, rows, elapsedSince(start))
         }
     }
 
     override fun <T> batchInsertSelective(method: Method, mapperInterface: Class<T>, parameter: Any, batchSize: Int): Int {
         val start = nanoTime()
-        return processBatch(parameter, batchSize).sumOf {
-            val insert = sqlProvider.batchInsertSelective(it)
-            val rows = executor.update(insert, it)
-            returnRows(method, mapperInterface, insert, rows, elapsedSince(start))
+        return processBatch(parameter, batchSize) {
+            val batchInsertSelective = sqlProvider.batchInsertSelective(it)
+            val rows = executor.update(batchInsertSelective, it)
+            returnRows(method, mapperInterface, batchInsertSelective, rows, elapsedSince(start))
         }
     }
 
@@ -277,6 +375,24 @@ class DefaultSqlSession(
         val sqlStatement = updateWrapper.getSqlStatement()
         val rows = executor.update(sqlStatement, parameter)
         return returnRows(method, mapperInterface, sqlStatement, rows, elapsedSince(start))
+    }
+
+    override fun <T> batchUpdate(method: Method, mapperInterface: Class<T>, parameter: Any, batchSize: Int): Int {
+        val start = nanoTime()
+        return processBatch(parameter, batchSize) {
+            val batchUpdate = sqlProvider.batchUpdate(it)
+            val rows = executor.update(batchUpdate, it)
+            returnRows(method, mapperInterface, batchUpdate, rows, elapsedSince(start))
+        }
+    }
+
+    override fun <T> batchUpdateSelective(method: Method, mapperInterface: Class<T>, parameter: Any, batchSize: Int): Int {
+        val start = nanoTime()
+        return processBatch(parameter, batchSize) {
+            val batchUpdateSelective = sqlProvider.batchUpdateSelective(it)
+            val rows = executor.update(batchUpdateSelective, it)
+            returnRows(method, mapperInterface, batchUpdateSelective, rows, elapsedSince(start))
+        }
     }
 
     override fun <T> delete(method: Method, mapperInterface: Class<T>, type: Class<T>, parameter: Any): Int {

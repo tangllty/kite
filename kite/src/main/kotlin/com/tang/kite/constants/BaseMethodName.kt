@@ -76,6 +76,12 @@ object BaseMethodName {
         return method.name == INSERT_SELECTIVE && method.countIsOne() && method.firstParameterIsAny()
     }
 
+    private const val INSERT_VALUES = "insertValues"
+
+    fun isInsertValues(method: Method): Boolean {
+        return method.name == INSERT_VALUES && method.countIsTwo() && method.firstParameterIsIterable() && method.secondParameterIsInt()
+    }
+
     private const val BATCH_INSERT = "batchInsert"
 
     fun isBatchInsert(method: Method): Boolean {
@@ -108,6 +114,18 @@ object BaseMethodName {
 
     fun isUpdateWrapper(method: Method): Boolean {
         return method.name == UPDATE_WRAPPER && method.countIsOne() && method.parameterTypes[0].kotlin == UpdateWrapper::class
+    }
+
+    private const val BATCH_UPDATE = "batchUpdate"
+
+    fun isBatchUpdate(method: Method): Boolean {
+        return method.name == BATCH_UPDATE && method.countIsTwo() && method.firstParameterIsIterable() && method.secondParameterIsInt()
+    }
+
+    private const val BATCH_UPDATE_SELECTIVE = "batchUpdateSelective"
+
+    fun isBatchUpdateSelective(method: Method): Boolean {
+        return method.name == BATCH_UPDATE_SELECTIVE && method.countIsTwo() && method.firstParameterIsIterable() && method.secondParameterIsInt()
     }
 
     private const val DELETE = "delete"
@@ -206,8 +224,8 @@ object BaseMethodName {
     fun isBaseMethod(method: Method): Boolean {
         val methodName = method.name
         val isBaseMethodName = when (methodName) {
-            INSERT, INSERT_SELECTIVE, BATCH_INSERT, BATCH_INSERT_SELECTIVE,
-            UPDATE, UPDATE_SELECTIVE, UPDATE_WRAPPER,
+            INSERT, INSERT_SELECTIVE, INSERT_VALUES, BATCH_INSERT, BATCH_INSERT_SELECTIVE,
+            UPDATE, UPDATE_SELECTIVE, UPDATE_WRAPPER, BATCH_UPDATE, BATCH_UPDATE_SELECTIVE,
             DELETE, DELETE_BY_ID, DELETE_BY_IDS, DELETE_WRAPPER,
             SELECT, SELECT_BY_ID,
             SELECT_WRAPPER, SELECT_ONE_WRAPPER,
@@ -220,11 +238,14 @@ object BaseMethodName {
         return when (methodName) {
             INSERT -> isInsert(method)
             INSERT_SELECTIVE -> isInsertSelective(method)
+            INSERT_VALUES -> isInsertValues(method)
             BATCH_INSERT -> isBatchInsert(method)
             BATCH_INSERT_SELECTIVE -> isBatchInsertSelective(method)
             UPDATE -> isUpdate(method) || isUpdateCondition(method)
             UPDATE_SELECTIVE -> isUpdateSelective(method)
             UPDATE_WRAPPER -> isUpdateWrapper(method)
+            BATCH_UPDATE -> isBatchUpdate(method)
+            BATCH_UPDATE_SELECTIVE -> isBatchUpdateSelective(method)
             DELETE -> isDelete(method)
             DELETE_BY_ID -> isDeleteById(method)
             DELETE_BY_IDS -> isDeleteByIds(method)

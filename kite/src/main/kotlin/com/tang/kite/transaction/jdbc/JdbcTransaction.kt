@@ -49,11 +49,17 @@ class JdbcTransaction : Transaction {
     }
 
     override fun commit() {
+        if (::connection.isInitialized.not() || connection.isClosed) {
+            return
+        }
         logger.debug("Committing JDBC Connection [{}]", connection)
         connection.commit()
     }
 
     override fun rollback() {
+        if (::connection.isInitialized.not() || connection.isClosed) {
+            return
+        }
         logger.debug("Rolling back JDBC Connection [{}]", connection)
         connection.rollback()
     }

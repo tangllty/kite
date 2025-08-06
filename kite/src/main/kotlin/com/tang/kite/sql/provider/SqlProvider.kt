@@ -2,6 +2,7 @@ package com.tang.kite.sql.provider
 
 import com.tang.kite.annotation.Join
 import com.tang.kite.paginate.OrderItem
+import com.tang.kite.sql.BatchSqlStatement
 import com.tang.kite.sql.SqlStatement
 import java.lang.reflect.Field
 
@@ -34,15 +35,21 @@ interface SqlProvider {
 
     fun insertSelective(entity: Any): SqlStatement
 
-    fun batchInsert(entities: Iterable<Any>): SqlStatement
+    fun insertValues(entities: Iterable<Any>): SqlStatement
 
-    fun batchInsertSelective(entities: Iterable<Any>): SqlStatement
+    fun batchInsert(entities: Iterable<Any>): BatchSqlStatement
+
+    fun batchInsertSelective(entities: Iterable<Any>): List<SqlStatement>
 
     fun update(entity: Any): SqlStatement
 
     fun update(entity: Any, where: Any): SqlStatement
 
     fun updateSelective(entity: Any): SqlStatement
+
+    fun batchUpdate(entities: Iterable<Any>): BatchSqlStatement
+
+    fun batchUpdateSelective(entities: Iterable<Any>): List<SqlStatement>
 
     fun <T> delete(clazz: Class<T>, entity: Any): SqlStatement
 

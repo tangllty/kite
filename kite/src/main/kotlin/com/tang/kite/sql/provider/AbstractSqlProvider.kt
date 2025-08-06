@@ -29,6 +29,7 @@ import com.tang.kite.constants.SqlString.UPDATE
 import com.tang.kite.constants.SqlString.VALUES
 import com.tang.kite.constants.SqlString.WHERE
 import com.tang.kite.paginate.OrderItem
+import com.tang.kite.sql.BatchSqlStatement
 import com.tang.kite.sql.SqlStatement
 import com.tang.kite.utils.Reflects
 import com.tang.kite.utils.Reflects.getColumnName
@@ -174,7 +175,7 @@ abstract class AbstractSqlProvider : SqlProvider {
         return SqlStatement(getSql(sql), parameters)
     }
 
-    override fun batchInsert(entities: Iterable<Any>): SqlStatement {
+    override fun insertValues(entities: Iterable<Any>): SqlStatement {
         val sql = StringBuilder()
         val fieldNameList = arrayListOf<String>()
         val parameters = mutableListOf<Any?>()
@@ -199,30 +200,34 @@ abstract class AbstractSqlProvider : SqlProvider {
         return SqlStatement(getSql(sql), parameters)
     }
 
-    override fun batchInsertSelective(entities: Iterable<Any>): SqlStatement {
+    override fun batchInsert(entities: Iterable<Any>): BatchSqlStatement {
         val sql = StringBuilder()
         val fieldNameList = arrayListOf<String>()
-        val parameters = mutableListOf<Any?>()
         entities.first().let { entity ->
             val clazz = entity::class.java
-            val fieldMap: Map<Field, Any?> = getFieldValueMap(entity)
+            val idField = getIdField(clazz)
+            val autoIncrementId = isAutoIncrementId(idField)
+            val fieldList = getSqlFields(clazz).filter { getColumnName(it) != getColumnName(idField) || !autoIncrementId }
             sql.append(INSERT_INTO + getTableName(clazz) + SPACE + LEFT_BRACKET)
-            fieldMap.filter { selectiveStrategy(it.value) }
-                .map { getColumnName(it.key) }
-                .joinToString(COMMA_SPACE)
-                .let { sql.append(it) }
-            fieldNameList.addAll(fieldMap.filter { selectiveStrategy(it.value) }.map { getColumnName(it.key) })
+            sql.append(getColumns(fieldList))
             sql.append(RIGHT_BRACKET + VALUES)
+            fieldNameList.addAll(fieldList.map { getColumnName(it) })
+            sql.append(LEFT_BRACKET)
+            fieldList.joinToString(COMMA_SPACE) { QUESTION_MARK }.let { sql.append(it) }
+            sql.append(RIGHT_BRACKET)
         }
-        entities.joinToString("$RIGHT_BRACKET$COMMA_SPACE$LEFT_BRACKET", LEFT_BRACKET, RIGHT_BRACKET) { entity ->
-            val fieldMap: Map<Field, Any?> = entity::class.java.declaredFields.associateWith { makeAccessible(it, entity); it.get(entity) }
-            fieldMap.filter { selectiveStrategy(it.value) }
-                .map {
-                    parameters.add(it.value)
-                    QUESTION_MARK
-                }.joinToString(COMMA_SPACE)
-        }.let { sql.append(it) }
-        return SqlStatement(getSql(sql), parameters)
+        val parameters = entities.map { entity ->
+            val fieldList = entity::class.java.declaredFields.filter { getColumnName(it) in fieldNameList }
+            fieldList.map { field ->
+                makeAccessible(field, entity)
+                field.get(entity)
+            }.toMutableList()
+        }.toMutableList()
+        return BatchSqlStatement(getSql(sql), parameters)
+    }
+
+    override fun batchInsertSelective(entities: Iterable<Any>): List<SqlStatement> {
+        return entities.map { insertSelective(it) }
     }
 
     override fun update(entity: Any): SqlStatement {
@@ -281,6 +286,37 @@ abstract class AbstractSqlProvider : SqlProvider {
             parameters.add(it.get(entity))
             getColumnName(it) + EQUAL + QUESTION_MARK
         }.let { sql.append(it) }
+    }
+
+    override fun batchUpdate(entities: Iterable<Any>): BatchSqlStatement {
+        val sql = StringBuilder()
+        val clazz = entities.first()::class.java
+        sql.append(UPDATE + getTableName(clazz) + SET)
+        val idField = getIdField(clazz)
+        val autoIncrementId = isAutoIncrementId(idField)
+        val fieldList = getSqlFields(clazz).filter { getColumnName(it) != getColumnName(idField) || !autoIncrementId }
+        fieldList.joinToString(COMMA_SPACE) { getColumnName(it) + EQUAL + QUESTION_MARK }.let { sql.append(it) }
+        sql.append(WHERE + getColumnName(idField) + EQUAL + QUESTION_MARK)
+
+        val parameterList = mutableListOf<MutableList<Any?>>()
+        entities.forEach { entity ->
+            val clazz = entity::class.java
+            val parameters = mutableListOf<Any?>()
+            val idField = getIdField(clazz)
+            val fieldList = getSqlFields(clazz).filter { getColumnName(it) != getColumnName(idField) }
+            fieldList.forEach {
+                makeAccessible(it, entity)
+                parameters.add(it.get(entity))
+            }
+            makeAccessible(idField, entity)
+            parameters.add(idField.get(entity))
+            parameterList.add(parameters)
+        }
+        return BatchSqlStatement(getSql(sql), parameterList)
+    }
+
+    override fun batchUpdateSelective(entities: Iterable<Any>): List<SqlStatement> {
+        return entities.map { entity -> update(entity) { selectiveStrategy(it) } }
     }
 
     override fun <T> delete(clazz: Class<T>, entity: Any): SqlStatement {
