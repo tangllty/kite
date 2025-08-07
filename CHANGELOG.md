@@ -6,6 +6,8 @@
 
 ### Dependencies
 
+ * Bump gradle from 8.14.1 to 9.0.0
+
 ### Features
 
  * Refactor Column and `FunctionColumn` classes to support nullable column names
