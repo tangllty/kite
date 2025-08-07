@@ -10,27 +10,7 @@ Kite is a high-performance, lightweight ORM framework written in Kotlin. It is d
 
  > Maven central: [kite-spring-boot-starter](https://central.sonatype.com/artifact/io.github.tangllty/kite-spring-boot-starter)
 
- 1. Add the following dependencies to your project:
-
- * Maven
-
-```xml
-<dependency>
-   <groupId>io.github.tangllty</groupId>
-   <artifactId>kite-spring-boot-starter</artifactId>
-   <version>1.0.11</version>
-</dependency>
-```
-
- * Gradle
-
-```kts
-implementation("io.github.tangllty:kite-spring-boot-starter:1.0.11")
-```
-
- 2. Configure your database connection information in the `application.properties` file
-
- 3. Extend the `BaseMapper` interface to create a Mapper interface
+ * [Getting Started](https://tangllty.eu.org/guide/getting-started/)
 
 ## Contributing
 
