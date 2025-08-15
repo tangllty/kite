@@ -28,9 +28,11 @@ import com.tang.kite.constants.SqlString.SPACE
 import com.tang.kite.constants.SqlString.UPDATE
 import com.tang.kite.constants.SqlString.VALUES
 import com.tang.kite.constants.SqlString.WHERE
+import com.tang.kite.enumeration.SqlType
 import com.tang.kite.paginate.OrderItem
 import com.tang.kite.sql.BatchSqlStatement
 import com.tang.kite.sql.SqlStatement
+import com.tang.kite.utils.Fields.getValue
 import com.tang.kite.utils.Reflects
 import com.tang.kite.utils.Reflects.getColumnName
 import com.tang.kite.utils.Reflects.getIdField
@@ -99,10 +101,9 @@ abstract class AbstractSqlProvider : SqlProvider {
             return ""
         }
         val whereSql = getSqlFields(clazz).filter {
-            makeAccessible(it, entity)
-            selectiveStrategy(it.get(entity))
+            selectiveStrategy(getValue(it, entity, SqlType.SELECT))
         }.joinToString(AND) {
-            parameters.add(it.get(entity))
+            parameters.add(getValue(it, entity, SqlType.SELECT))
             getColumnName(it, withAlias) + EQUAL + QUESTION_MARK
         }
         if (whereSql.isEmpty()) {
@@ -138,11 +139,10 @@ abstract class AbstractSqlProvider : SqlProvider {
         sql.append(getColumns(fieldList))
         sql.append(RIGHT_BRACKET + VALUES + LEFT_BRACKET)
         fieldList.joinToString {
-            makeAccessible(it, entity)
             if (it == idField && !autoIncrementId) {
                 parameters.add(Reflects.getGeneratedId(idField))
             } else {
-                parameters.add(it.get(entity))
+                parameters.add(getValue(it, entity, SqlType.INSERT))
             }
             QUESTION_MARK
         }.let { sql.append(it) }
@@ -151,7 +151,7 @@ abstract class AbstractSqlProvider : SqlProvider {
     }
 
     private fun getFieldValueMap(entity: Any): Map<Field, Any?> {
-        return entity::class.java.declaredFields.associateWith { makeAccessible(it, entity); it.get(entity) }
+        return entity::class.java.declaredFields.associateWith { getValue(it, entity, SqlType.INSERT) }
     }
 
     override fun insertSelective(entity: Any): SqlStatement {
@@ -192,8 +192,7 @@ abstract class AbstractSqlProvider : SqlProvider {
         entities.joinToString("$RIGHT_BRACKET$COMMA_SPACE$LEFT_BRACKET", LEFT_BRACKET, RIGHT_BRACKET) { entity ->
             val fieldList = entity::class.java.declaredFields.filter { getColumnName(it) in fieldNameList }
             fieldList.joinToString { field ->
-                makeAccessible(field, entity)
-                parameters.add(field.get(entity))
+                parameters.add(getValue(field, entity, SqlType.INSERT))
                 QUESTION_MARK
             }
         }.let { sql.append(it) }
@@ -218,10 +217,7 @@ abstract class AbstractSqlProvider : SqlProvider {
         }
         val parameters = entities.map { entity ->
             val fieldList = entity::class.java.declaredFields.filter { getColumnName(it) in fieldNameList }
-            fieldList.map { field ->
-                makeAccessible(field, entity)
-                field.get(entity)
-            }.toMutableList()
+            fieldList.map { field -> getValue(field, entity, SqlType.INSERT) }.toMutableList()
         }.toMutableList()
         return BatchSqlStatement(getSql(sql), parameters)
     }
@@ -239,19 +235,16 @@ abstract class AbstractSqlProvider : SqlProvider {
         val sql = StringBuilder()
         val parameters = mutableListOf<Any?>()
         val fieldList = getSqlFields(clazz).filter {
-            makeAccessible(it, entity)
-            selectiveStrategy(it.get(entity))
+            selectiveStrategy(getValue(it, entity, SqlType.UPDATE))
         }
         val whereFieldList = where::class.java.declaredFields.filter {
-            makeAccessible(it, where)
-            selectiveStrategy(it.get(where))
+            selectiveStrategy(getValue(it, where, SqlType.UPDATE))
         }
         sql.append(UPDATE + getTableName(clazz) + SET)
         appendSetValues(sql, parameters, fieldList, entity)
         sql.append(WHERE)
         whereFieldList.joinToString(AND) {
-            makeAccessible(it, where)
-            parameters.add(it.get(where))
+            parameters.add(getValue(it, where, SqlType.UPDATE))
             getColumnName(it) + EQUAL + QUESTION_MARK
         }.let { sql.append(it) }
         return SqlStatement(getSql(sql), parameters)
@@ -269,21 +262,19 @@ abstract class AbstractSqlProvider : SqlProvider {
         val fieldList = getSqlFields(clazz)
             .filter { getColumnName(it) != getColumnName(idField) }
             .filter {
-                makeAccessible(it, entity)
-                strategy(it.get(entity))
+                strategy(getValue(it, entity, SqlType.UPDATE))
             }
         sql.append(UPDATE + getTableName(clazz) + SET)
         appendSetValues(sql, parameters, fieldList, entity)
         makeAccessible(idField, entity)
         sql.append(WHERE + getColumnName(idField) + EQUAL).append(QUESTION_MARK)
-        parameters.add(idField.get(entity))
+        parameters.add(getValue(idField, entity, SqlType.UPDATE))
         return SqlStatement(getSql(sql), parameters)
     }
 
     private fun appendSetValues(sql: StringBuilder, parameters: MutableList<Any?>, fieldList: List<Field>, entity: Any) {
         fieldList.joinToString(COMMA_SPACE) {
-            makeAccessible(it, entity)
-            parameters.add(it.get(entity))
+            parameters.add(getValue(it, entity, SqlType.UPDATE))
             getColumnName(it) + EQUAL + QUESTION_MARK
         }.let { sql.append(it) }
     }
@@ -305,11 +296,9 @@ abstract class AbstractSqlProvider : SqlProvider {
             val idField = getIdField(clazz)
             val fieldList = getSqlFields(clazz).filter { getColumnName(it) != getColumnName(idField) }
             fieldList.forEach {
-                makeAccessible(it, entity)
-                parameters.add(it.get(entity))
+                parameters.add(getValue(it, entity, SqlType.UPDATE))
             }
-            makeAccessible(idField, entity)
-            parameters.add(idField.get(entity))
+            parameters.add(getValue(idField, entity, SqlType.UPDATE))
             parameterList.add(parameters)
         }
         return BatchSqlStatement(getSql(sql), parameterList)
@@ -322,16 +311,12 @@ abstract class AbstractSqlProvider : SqlProvider {
     override fun <T> delete(clazz: Class<T>, entity: Any): SqlStatement {
         val sql = StringBuilder()
         val parameters = mutableListOf<Any?>()
-        val idField = getIdField(clazz)
-        makeAccessible(idField, entity)
         sql.append(DELETE_FROM + getTableName(clazz) + WHERE)
         val fieldList = getSqlFields(clazz).filter {
-            makeAccessible(it, entity)
-            selectiveStrategy(it.get(entity))
+            selectiveStrategy(getValue(it, entity, SqlType.DELETE))
         }
         fieldList.joinToString(AND) {
-            makeAccessible(it, entity)
-            parameters.add(it.get(entity))
+            parameters.add(getValue(it, entity, SqlType.DELETE))
             getColumnName(it) + EQUAL + QUESTION_MARK
         }.let { sql.append(it) }
         return SqlStatement(getSql(sql), parameters)

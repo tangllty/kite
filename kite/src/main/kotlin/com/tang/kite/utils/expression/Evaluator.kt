@@ -54,8 +54,7 @@ class Evaluator(private val context: Map<String, Any?>) {
         }
         try {
             val field = kClass.java.getDeclaredField(name)
-            field.isAccessible = true
-            return field.get(target)
+            return Fields.getValue(field, target)
         } catch (_: Exception) {}
         throw IllegalArgumentException("Property '$name' not found on ${kClass.simpleName}")
     }

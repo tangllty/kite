@@ -36,8 +36,8 @@ object Reflects {
 
     private val joinFieldsCache: ConcurrentMap<Class<*>, List<Field>> = ConcurrentHashMap()
 
-    fun <T> makeAccessible(accessibleObject: AccessibleObject, any: T) {
-        if (accessibleObject.canAccess(any)) {
+    fun <T> makeAccessible(accessibleObject: AccessibleObject, instance: T) {
+        if (accessibleObject.canAccess(instance)) {
             return
         }
         accessibleObject.trySetAccessible()

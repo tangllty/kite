@@ -9,7 +9,8 @@
 
 ### Features
 
-* Enhance `setValue` method to support additional data types for `PreparedStatement`
+ * Enhance `setValue` method to support additional data types for `PreparedStatement`
+ * Support automatic fill handlers
 
 ## 1.0.12
 

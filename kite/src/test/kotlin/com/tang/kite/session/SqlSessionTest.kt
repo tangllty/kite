@@ -202,6 +202,23 @@ class SqlSessionTest : BaseDataTest() {
     }
 
     @Test
+    fun insertAccountFill() {
+        val session = sqlSessionFactory.openSession(true)
+        val accountMapper = session.getMapper(AccountMapper::class)
+        val account = Account(
+            username = "tang",
+            password = "123456",
+            balance = BigDecimal(100.00)
+        )
+        val rows = accountMapper.insert(account)
+        session.commit()
+        session.close()
+        assertEquals(1, rows)
+        val account2 = accountMapper.selectById(account.id!!)
+        assertNotNull(account2?.createTime)
+    }
+
+    @Test
     fun update() {
         val session = sqlSessionFactory.openSession()
         val accountMapper = session.getMapper(AccountMapper::class)

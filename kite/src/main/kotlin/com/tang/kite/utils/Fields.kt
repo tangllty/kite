@@ -1,8 +1,12 @@
 package com.tang.kite.utils
 
+import com.tang.kite.config.KiteConfig
 import com.tang.kite.constants.SqlString.DOT
+import com.tang.kite.enumeration.SqlType
 import com.tang.kite.function.SFunction
+import com.tang.kite.handler.fill.FillKey
 import com.tang.kite.result.ResultHandlerFactory
+import com.tang.kite.utils.Reflects.makeAccessible
 import java.lang.invoke.SerializedLambda
 import java.lang.reflect.Field
 import java.util.Locale
@@ -16,7 +20,7 @@ object Fields {
 
     private fun <T> getSerializedLambda(function: SFunction<T, *>): SerializedLambda {
         val writeReplaceMethod = function.javaClass.getDeclaredMethod("writeReplace")
-        Reflects.makeAccessible(writeReplaceMethod, function)
+        makeAccessible(writeReplaceMethod, function)
         return writeReplaceMethod.invoke(function) as SerializedLambda
     }
 
@@ -46,13 +50,34 @@ object Fields {
     }
 
     fun <T> setValue(field: Field, instance: T, value: Any?) {
-        Reflects.makeAccessible(field, instance)
+        makeAccessible(field, instance)
         val resultHandler = ResultHandlerFactory().newResultHandler(field)
         if (value == null) {
             resultHandler.setNullValue(field, instance, value)
         } else {
             resultHandler.setValue(field, instance, value)
         }
+    }
+
+    fun <T> getValue(field: Field, entity: T): Any? {
+        makeAccessible(field, entity)
+        return field.get(entity)
+    }
+
+    fun <T> getValue(field: Field, entity: T, sqlType: SqlType): Any? {
+        if (sqlType == SqlType.SELECT) {
+            return getValue(field, entity)
+        }
+        makeAccessible(field, entity)
+        val fillAnnotationHandlers = KiteConfig.fillHandlers
+        val annotations = field.annotations
+        for (annotation in annotations) {
+            val handler = fillAnnotationHandlers[FillKey(annotation.annotationClass, sqlType)]
+            if (handler != null) {
+                return handler.fillValue(annotation, field, entity as Any)
+            }
+        }
+        return getValue(field, entity)
     }
 
     /**
@@ -79,8 +104,7 @@ object Fields {
                         .flatMap { it.declaredFields.asSequence() }
                         .find { it.name == part }
                         ?: throw NoSuchFieldException("Field not found: $part in ${current?.javaClass}")
-                    field.isAccessible = true
-                    field.get(current)
+                    getValue(field, current)
                 }
             }
             if (current == null) break

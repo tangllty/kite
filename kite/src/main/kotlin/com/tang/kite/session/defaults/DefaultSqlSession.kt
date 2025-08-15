@@ -18,6 +18,7 @@ import com.tang.kite.session.SqlSession
 import com.tang.kite.sql.BatchSqlStatement
 import com.tang.kite.sql.SqlStatement
 import com.tang.kite.sql.provider.SqlProvider
+import com.tang.kite.utils.Fields
 import com.tang.kite.utils.Reflects
 import com.tang.kite.utils.Reflects.setValue
 import com.tang.kite.utils.parser.SqlParser
@@ -519,7 +520,7 @@ class DefaultSqlSession(
                 val joinTargetField = joinAnnotation.joinTargetColumn
                 val selfField = Reflects.getField(type, joinAnnotation.selfField)
                 Reflects.makeAccessible(selfField!!, it as Any)
-                val selfFieldValue = selfField.get(it)
+                val selfFieldValue = Fields.getValue(selfField, it)
                 // TODO The parameter null could probably be replaced with a conditional parameter
                 var joinSelect = sqlProvider.selectWithJoins(joinType, null, emptyArray())
                 val joinSqlStatement = if (joinTable.isNotEmpty() && joinSelfField.isNotEmpty() && joinTargetField.isNotEmpty()) {

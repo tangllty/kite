@@ -3,6 +3,8 @@ package com.tang.kite.boot.autoconfigure
 import com.tang.kite.config.KiteConfig
 import com.tang.kite.config.PageConfig
 import com.tang.kite.config.SqlConfig
+import com.tang.kite.handler.fill.FillHandler
+import com.tang.kite.handler.fill.FillKey
 import com.tang.kite.sql.provider.SqlProvider
 import org.springframework.boot.context.properties.ConfigurationProperties
 import java.util.function.Function
@@ -34,7 +36,12 @@ data class KiteProperties(
     /**
      * The strategy for selective query with a default value.
      */
-    val urlProviders: Map<String, SqlProvider> = KiteConfig.urlProviders,
+    val urlProviders: MutableMap<String, SqlProvider> = KiteConfig.urlProviders,
+
+    /**
+     * Fill handlers for handling fill annotations.
+     */
+    val fillHandlers: MutableMap<FillKey, FillHandler> = KiteConfig.fillHandlers,
 
     /**
      * Page properties for pagination configuration.
@@ -117,6 +124,7 @@ data class KiteProperties(
         KiteConfig.banner = banner
         KiteConfig.selectiveStrategy = selectiveStrategy
         KiteConfig.urlProviders = urlProviders
+        KiteConfig.fillHandlers = fillHandlers
 
         PageConfig.pageNumber = page.pageNumber
         PageConfig.pageSize = page.pageSize

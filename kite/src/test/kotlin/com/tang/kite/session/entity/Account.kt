@@ -1,6 +1,7 @@
 package com.tang.kite.session.entity
 
 import com.tang.kite.annotation.Column
+import com.tang.kite.annotation.fill.CreateTime
 import com.tang.kite.annotation.id.Id
 import com.tang.kite.annotation.id.IdType
 import java.math.BigDecimal
@@ -15,6 +16,7 @@ class Account (
     var id: Long? = null,
     var username: String? = null,
     var password: String? = null,
+    @CreateTime
     var createTime: LocalDateTime? = null,
     @Column("update_time")
     var updateTime: LocalDateTime? = null,
