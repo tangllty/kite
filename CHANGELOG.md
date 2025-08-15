@@ -4,6 +4,9 @@
 
 ### Dependencies
 
+ * Bump gradle/actions from 4.4.1 to 4.4.2
+ * Bump actions/checkout from 4 to 5
+
 ### Features
 
 * Enhance `setValue` method to support additional data types for `PreparedStatement`
