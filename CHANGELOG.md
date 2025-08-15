@@ -1,4 +1,14 @@
-## 1.0.11
+## 1.0.13
+
+### Bug Fixes
+
+### Dependencies
+
+### Features
+
+* Enhance `setValue` method to support additional data types for `PreparedStatement`
+
+## 1.0.12
 
 ### Bug Fixes
 
@@ -24,6 +34,20 @@
  * `SqlSession.getMapper` now supports `KClass<T>` for enhanced Kotlin compatibility
  * Add `insertValues`, `batchUpdate`, and `batchUpdateSelective` methods for batch operations
 
+## 1.0.11
+
+### Bug Fixes
+
+### Dependencies
+
+ * Bump gradle/actions from 4.4.0 to 4.4.1
+
+### Features
+
+ * Refactor `QueryWrapper` and `UpdateWrapper` logic to improve readability and maintainability
+ * Refactor wrapper classes to remove unused type parameters for improved clarity
+ * Refactor wrapper classes to use nullable instances and improve instance retrieval logic
+
 ## 1.0.10
 
 ### Bug Fixes
@@ -47,9 +71,6 @@
  * Support SQLite database
  * Add `orderByAsc` and `orderByDesc` methods for various column types
  * Refactor field retrieval to include superclass fields in `Fields.kt`
- * Refactor `QueryWrapper` and `UpdateWrapper` logic to improve readability and maintainability
- * Refactor wrapper classes to remove unused type parameters for improved clarity
- * Refactor wrapper classes to use nullable instances and improve instance retrieval logic
 
 ## 1.0.9
 
