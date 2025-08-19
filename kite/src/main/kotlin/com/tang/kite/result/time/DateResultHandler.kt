@@ -19,21 +19,6 @@ import java.util.Date
 class DateResultHandler : ResultHandler {
 
     override fun <T> setValue(field: Field, instance: T, value: Any) {
-        // when (value) {
-        //     is SqlDate -> field.set(instance, value)
-        //     is Time -> field.set(instance, Date(value.time))
-        //     is Timestamp -> field.set(instance, Date(value.time))
-        //     is LocalDate -> field.set(instance, Date.from(value.atStartOfDay(ZoneId.systemDefault()).toInstant()))
-        //     is LocalTime -> {
-        //         val dateTime = LocalDateTime.of(LocalDate.ofEpochDay(0), value)
-        //         val date = SqlDate.from(dateTime.atZone(ZoneId.systemDefault()).toInstant())
-        //         field.set(instance, date)
-        //     }
-        //     is LocalDateTime -> field.set(instance, Date.from(value.atZone(ZoneId.systemDefault()).toInstant()))
-        //     is Long -> field.set(instance, Date(value))
-        //     else -> throw UnsupportedTypeException(value::class, field)
-        // }
-
         val date = when (value) {
             is SqlDate -> value
             is Time, is Timestamp -> Date(value.time)

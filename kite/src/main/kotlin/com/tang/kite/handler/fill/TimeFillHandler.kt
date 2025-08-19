@@ -1,5 +1,6 @@
 package com.tang.kite.handler.fill
 
+import com.tang.kite.exception.UnsupportedTypeException
 import java.lang.reflect.Field
 import java.sql.Date as SqlDate
 import java.sql.Time
@@ -39,7 +40,7 @@ class TimeFillHandler : FillHandler {
             OffsetTime::class.java -> OffsetTime.now()
             OffsetDateTime::class.java -> OffsetDateTime.now()
             ZonedDateTime::class.java -> ZonedDateTime.now()
-            else -> throw IllegalArgumentException("Unsupported field type: ${field.type}")
+            else -> throw UnsupportedTypeException(entity::class, field)
         }
     }
 
