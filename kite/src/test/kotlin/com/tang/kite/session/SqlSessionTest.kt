@@ -686,7 +686,7 @@ class SqlSessionTest : BaseDataTest() {
             .column(AccountAs::password `as` AccountAs::passwordAs)
             .from(AccountAs::class.java)
             .build()
-        val accounts = accountMapper.selectWrapper(queryWrapper)
+        val accounts = accountMapper.queryWrapper(queryWrapper)
         session.close()
         assertTrue(accounts.isNotEmpty())
         accounts.forEach {
