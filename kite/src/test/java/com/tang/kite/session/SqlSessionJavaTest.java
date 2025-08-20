@@ -89,7 +89,7 @@ public class SqlSessionJavaTest extends BaseDataTest {
             .column(Account::getPassword)
             .from(Account.class)
             .build();
-        var accounts = accountMapper.selectWrapper(queryWrapper);
+        var accounts = accountMapper.queryWrapper(queryWrapper);
         session.close();
         assertFalse(accounts.isEmpty());
     }

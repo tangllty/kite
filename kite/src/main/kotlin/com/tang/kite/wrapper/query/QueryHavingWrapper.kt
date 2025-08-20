@@ -134,7 +134,7 @@ class QueryHavingWrapper<R, T>(
      * @return List of results
      */
     override fun list(): MutableList<T> {
-        return whereWrapper.build().baseMapper.selectWrapper(wrapper as QueryWrapper<T>).toMutableList()
+        return whereWrapper.build().baseMapper.queryWrapper(wrapper as QueryWrapper<T>).toMutableList()
     }
 
 }

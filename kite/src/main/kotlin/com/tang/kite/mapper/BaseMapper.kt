@@ -411,7 +411,7 @@ interface BaseMapper<T> {
      * @param queryWrapper QueryWrapper
      * @return Entity list
      */
-    fun selectWrapper(queryWrapper: QueryWrapper<T>): List<T>
+    fun queryWrapper(queryWrapper: QueryWrapper<T>): List<T>
 
     /**
      * Select by primary key

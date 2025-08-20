@@ -250,7 +250,7 @@ class DefaultSqlSession(
             BaseMethodName.isDeleteByIds(method) -> deleteByIds(method, mapperInterface, type, asIterable(getFirstArg(args)))
             BaseMethodName.isDeleteWrapper(method) -> deleteWrapper(method, mapperInterface, type, getFirstArg(args))
             BaseMethodName.isSelect(method) -> processSelect(method, mapperInterface, type, args)
-            BaseMethodName.isSelectWrapper(method) -> selectListWrapper(method, mapperInterface, type, getFirstArg(args))
+            BaseMethodName.isQueryWrapper(method) -> queryWrapper(method, mapperInterface, type, getFirstArg(args))
             BaseMethodName.isSelectById(method) -> selectById(method, mapperInterface, type, getFirstArg(args))
             BaseMethodName.isSelectOneWrapper(method) -> selectOneWrapper(method, mapperInterface, type, getFirstArg(args))
             BaseMethodName.isSelectWithJoins(method) -> processSelectWithJoins(method, mapperInterface, type, args)
@@ -454,7 +454,7 @@ class DefaultSqlSession(
         return list
     }
 
-    override fun <T> selectListWrapper(method: Method, mapperInterface: Class<T>, type: Class<T>, parameter: Any): List<T> {
+    override fun <T> queryWrapper(method: Method, mapperInterface: Class<T>, type: Class<T>, parameter: Any): List<T> {
         val start = nanoTime()
         @Suppress("UNCHECKED_CAST")
         val queryWrapper = parameter as QueryWrapper<T>
@@ -474,7 +474,7 @@ class DefaultSqlSession(
     }
 
     override fun <T> selectOneWrapper(method: Method, mapperInterface: Class<T>, type: Class<T>, parameter: Any): T? {
-        val list = selectListWrapper(method, mapperInterface, type, parameter)
+        val list = queryWrapper(method, mapperInterface, type, parameter)
         return getOneFromList(list)
     }
 

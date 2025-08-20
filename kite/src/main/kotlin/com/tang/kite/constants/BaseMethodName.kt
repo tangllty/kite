@@ -169,10 +169,10 @@ object BaseMethodName {
         return isSelectParameter(method)
     }
 
-    private const val SELECT_WRAPPER = "selectWrapper"
+    private const val QUERY_WRAPPER = "queryWrapper"
 
-    fun isSelectWrapper(method: Method): Boolean {
-        return method.name == SELECT_WRAPPER && method.countIsOne() && method.parameterTypes[0].kotlin == QueryWrapper::class
+    fun isQueryWrapper(method: Method): Boolean {
+        return method.name == QUERY_WRAPPER && method.countIsOne() && method.parameterTypes[0].kotlin == QueryWrapper::class
     }
 
     private const val SELECT_BY_ID = "selectById"
@@ -228,7 +228,7 @@ object BaseMethodName {
             UPDATE, UPDATE_SELECTIVE, UPDATE_WRAPPER, BATCH_UPDATE, BATCH_UPDATE_SELECTIVE,
             DELETE, DELETE_BY_ID, DELETE_BY_IDS, DELETE_WRAPPER,
             SELECT, SELECT_BY_ID,
-            SELECT_WRAPPER, SELECT_ONE_WRAPPER,
+            QUERY_WRAPPER, SELECT_ONE_WRAPPER,
             SELECT_WITH_JOINS, SELECT_BY_ID_WITH_JOINS,
             COUNT,
             PAGINATE -> true
@@ -251,7 +251,7 @@ object BaseMethodName {
             DELETE_BY_IDS -> isDeleteByIds(method)
             DELETE_WRAPPER -> isDeleteWrapper(method)
             SELECT -> isSelect(method)
-            SELECT_WRAPPER -> isSelectWrapper(method)
+            QUERY_WRAPPER -> isQueryWrapper(method)
             SELECT_BY_ID -> isSelectById(method)
             SELECT_ONE_WRAPPER -> isSelectOneWrapper(method)
             SELECT_WITH_JOINS -> isSelectWithJoins(method)

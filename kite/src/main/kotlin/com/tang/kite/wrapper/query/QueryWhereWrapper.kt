@@ -256,7 +256,7 @@ class QueryWhereWrapper<T>(
      * @return List of results
      */
     override fun list(): MutableList<T> {
-        val list = build().baseMapper.selectWrapper(queryWrapper)
+        val list = build().baseMapper.queryWrapper(queryWrapper)
         return list.toMutableList()
     }
 
