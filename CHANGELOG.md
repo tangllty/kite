@@ -11,6 +11,7 @@
 
  * Enhance `setValue` method to support additional data types for `PreparedStatement`
  * Support automatic fill handlers
+ * Make wrapper chain operations support fill handlers
 
 ## 1.0.12
 

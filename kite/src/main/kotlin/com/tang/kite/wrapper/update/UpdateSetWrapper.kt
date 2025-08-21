@@ -19,7 +19,7 @@ open class UpdateSetWrapper<T>() : AbstractWhereWrapper<UpdateWhereWrapper<T>, T
 
     lateinit var updateWrapper: UpdateWrapper<T>
 
-    private var sets = mutableMapOf<String, Any>()
+    private var sets = mutableMapOf<String, Any?>()
 
     override fun initialize(conditions: MutableList<LogicalStatement>) {
         this.updateWrapper.updateSetWrapper = this
@@ -34,7 +34,7 @@ open class UpdateSetWrapper<T>() : AbstractWhereWrapper<UpdateWhereWrapper<T>, T
      * @param value value
      * @return UpdateSetWrapper
      */
-    fun set(column: String, value: Any): UpdateSetWrapper<T> {
+    fun set(column: String, value: Any?): UpdateSetWrapper<T> {
         return set(column, value, true)
     }
 
@@ -46,7 +46,7 @@ open class UpdateSetWrapper<T>() : AbstractWhereWrapper<UpdateWhereWrapper<T>, T
      * @param effective whether effective
      * @return UpdateSetWrapper
      */
-    fun set(column: String, value: Any, effective: Boolean): UpdateSetWrapper<T> {
+    fun set(column: String, value: Any?, effective: Boolean): UpdateSetWrapper<T> {
         if (effective) {
             sets[column] = value
         }
@@ -60,7 +60,7 @@ open class UpdateSetWrapper<T>() : AbstractWhereWrapper<UpdateWhereWrapper<T>, T
      * @param value value
      * @return UpdateSetWrapper
      */
-    fun set(column: KMutableProperty1<T, *>, value: Any, effective: Boolean): UpdateSetWrapper<T> {
+    fun set(column: KMutableProperty1<T, *>, value: Any?, effective: Boolean): UpdateSetWrapper<T> {
         return set(Reflects.getColumnName(column.javaField!!), value, effective)
     }
 
@@ -71,7 +71,7 @@ open class UpdateSetWrapper<T>() : AbstractWhereWrapper<UpdateWhereWrapper<T>, T
      * @param value value
      * @return UpdateSetWrapper
      */
-    fun set(column: KMutableProperty1<T, *>, value: Any): UpdateSetWrapper<T> {
+    fun set(column: KMutableProperty1<T, *>, value: Any?): UpdateSetWrapper<T> {
         return set(column, value, true)
     }
 
@@ -82,7 +82,7 @@ open class UpdateSetWrapper<T>() : AbstractWhereWrapper<UpdateWhereWrapper<T>, T
      * @param value value
      * @return UpdateSetWrapper
      */
-    fun set(column: SFunction<T, *>, value: Any, effective: Boolean): UpdateSetWrapper<T> {
+    fun set(column: SFunction<T, *>, value: Any?, effective: Boolean): UpdateSetWrapper<T> {
         return set(Reflects.getColumnName(Fields.getField(column)), value, effective)
     }
 
@@ -93,7 +93,7 @@ open class UpdateSetWrapper<T>() : AbstractWhereWrapper<UpdateWhereWrapper<T>, T
      * @param value value
      * @return UpdateSetWrapper
      */
-    fun set(column: SFunction<T, *>, value: Any): UpdateSetWrapper<T> {
+    fun set(column: SFunction<T, *>, value: Any?): UpdateSetWrapper<T> {
         return set(column, value, true)
     }
 

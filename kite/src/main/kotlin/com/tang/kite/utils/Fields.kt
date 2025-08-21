@@ -64,6 +64,21 @@ object Fields {
         return field.get(entity)
     }
 
+    fun <T> isFillField(field: Field, entity: T, sqlType: SqlType): Boolean {
+        if (sqlType == SqlType.SELECT) {
+            return false
+        }
+        makeAccessible(field, entity)
+        val fillAnnotationHandlers = KiteConfig.fillHandlers
+        val annotations = field.annotations
+        for (annotation in annotations) {
+            if (fillAnnotationHandlers.containsKey(FillKey(annotation.annotationClass, sqlType))) {
+                return true
+            }
+        }
+        return false
+    }
+
     fun <T> getValue(field: Field, entity: T, sqlType: SqlType): Any? {
         if (sqlType == SqlType.SELECT) {
             return getValue(field, entity)
@@ -80,11 +95,26 @@ object Fields {
         return getValue(field, entity)
     }
 
+    fun <T> setTableFillFields(tableClass: Class<T>?, sqlType: SqlType, action: (String, Any?) -> Unit) {
+        if (tableClass == null) {
+            throw IllegalArgumentException("Table class is not set")
+        }
+        val fields = Reflects.getSqlFields(tableClass)
+        val entity = tableClass.getDeclaredConstructor().newInstance()
+        fields.forEach {
+            makeAccessible(it, entity)
+            if (isFillField(it, entity, SqlType.UPDATE).not()) {
+                return@forEach
+            }
+            action(Reflects.getColumnName(it), getValue(it, entity, sqlType))
+        }
+    }
+
     /**
      * Get the value of a field from an object or a map.
      *
-     * @param any The object or map from which to retrieve the value.
-     * @param param The field name or a dot-separated path to the field.
+     * @param any The object or map from which to retrpieve the value.
+     * @param param The field name or a dot-separated ath to the field.
      * @return The value of the field, or null if not found.
      */
     fun getValue(any: Any, param: String): Any? {

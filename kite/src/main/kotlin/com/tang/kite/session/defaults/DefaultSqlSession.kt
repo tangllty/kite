@@ -373,6 +373,7 @@ class DefaultSqlSession(
         @Suppress("UNCHECKED_CAST")
         val updateWrapper = parameter as UpdateWrapper<T>
         updateWrapper.setTableClassIfNotSet(type)
+        updateWrapper.setTableFillFields()
         val sqlStatement = updateWrapper.getSqlStatement()
         val rows = executor.update(sqlStatement, parameter)
         return returnRows(method, mapperInterface, sqlStatement, rows, elapsedSince(start))
@@ -425,6 +426,7 @@ class DefaultSqlSession(
         @Suppress("UNCHECKED_CAST")
         val deleteWrapper = parameter as DeleteWrapper<T>
         deleteWrapper.setTableClassIfNotSet(type)
+        deleteWrapper.setTableFillFields()
         val sqlStatement = deleteWrapper.getSqlStatement()
         val rows = executor.update(sqlStatement, parameter)
         return returnRows(method, mapperInterface, sqlStatement, rows, elapsedSince(start))
@@ -459,6 +461,7 @@ class DefaultSqlSession(
         @Suppress("UNCHECKED_CAST")
         val queryWrapper = parameter as QueryWrapper<T>
         queryWrapper.querySelectWrapper.setTableClassIfNotSet(type)
+        queryWrapper.querySelectWrapper.setTableFillFields()
         val sqlStatement = queryWrapper.getSqlStatement()
         val list = executor.query(sqlStatement, type)
         log(method, mapperInterface, sqlStatement, list.size, elapsedSince(start))
@@ -521,7 +524,6 @@ class DefaultSqlSession(
                 val selfField = Reflects.getField(type, joinAnnotation.selfField)
                 Reflects.makeAccessible(selfField!!, it as Any)
                 val selfFieldValue = Fields.getValue(selfField, it)
-                // TODO The parameter null could probably be replaced with a conditional parameter
                 var joinSelect = sqlProvider.selectWithJoins(joinType, null, emptyArray())
                 val joinSqlStatement = if (joinTable.isNotEmpty() && joinSelfField.isNotEmpty() && joinTargetField.isNotEmpty()) {
                     sqlProvider.getNestedSelect(joinSelect.sql, joinAnnotation.targetField, listOf(selfFieldValue), joinAnnotation)

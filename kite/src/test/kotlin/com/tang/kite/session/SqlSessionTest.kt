@@ -315,6 +315,23 @@ class SqlSessionTest : BaseDataTest() {
     }
 
     @Test
+    fun updateWrapperFill() {
+        val session = sqlSessionFactory.openSession()
+        val accountMapper = session.getMapper(AccountMapper::class)
+        val rows = accountMapper.updateWrapper()
+            .set(Account::username, "tang")
+            .set(Account::password, null)
+            .set(Account::updateTime, LocalDateTime.of(2000, 1, 1, 1, 1))
+            .eq(Account::id, 1)
+            .update()
+        session.commit()
+        session.close()
+        assertEquals(1, rows)
+        val account = accountMapper.selectById(1)
+        assertNotNull(account?.updateTime)
+    }
+
+    @Test
     fun batchUpdate() {
         val session = sqlSessionFactory.openSession()
         val accountMapper = session.getMapper(AccountMapper::class)

@@ -2,8 +2,10 @@ package com.tang.kite.wrapper.update
 
 import com.tang.kite.config.SqlConfig
 import com.tang.kite.constants.SqlString.UPDATE
+import com.tang.kite.enumeration.SqlType
 import com.tang.kite.mapper.BaseMapper
 import com.tang.kite.sql.SqlStatement
+import com.tang.kite.utils.Fields
 import com.tang.kite.utils.Reflects
 import com.tang.kite.wrapper.Wrapper
 import com.tang.kite.wrapper.statement.LogicalStatement
@@ -14,6 +16,8 @@ import com.tang.kite.wrapper.statement.LogicalStatement
  * @author Tang
  */
 class UpdateWrapper<T> : UpdateSetWrapper<T>, Wrapper<T> {
+
+    private lateinit var tableClass: Class<T>
 
     private lateinit var table: String
 
@@ -70,10 +74,17 @@ class UpdateWrapper<T> : UpdateSetWrapper<T>, Wrapper<T> {
     }
 
     fun setTableClassIfNotSet(clazz: Class<T>) {
-        if (::table.isInitialized) {
+        if (::tableClass.isInitialized) {
             return
         }
+        this.tableClass = clazz
         this.table = Reflects.getTableName(clazz)
+    }
+
+    fun setTableFillFields() {
+        Fields.setTableFillFields(tableClass, SqlType.UPDATE) { column, value ->
+            updateSetWrapper.set(column, value)
+        }
     }
 
     /**
