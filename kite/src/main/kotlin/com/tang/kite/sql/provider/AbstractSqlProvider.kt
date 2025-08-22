@@ -32,13 +32,13 @@ import com.tang.kite.enumeration.SqlType
 import com.tang.kite.paginate.OrderItem
 import com.tang.kite.sql.BatchSqlStatement
 import com.tang.kite.sql.SqlStatement
-import com.tang.kite.utils.Fields.getValue
 import com.tang.kite.utils.Reflects
 import com.tang.kite.utils.Reflects.getColumnName
 import com.tang.kite.utils.Reflects.getIdField
 import com.tang.kite.utils.Reflects.getSqlFields
 import com.tang.kite.utils.Reflects.getTableAlias
 import com.tang.kite.utils.Reflects.getTableName
+import com.tang.kite.utils.Reflects.getValue
 import com.tang.kite.utils.Reflects.isAutoIncrementId
 import com.tang.kite.utils.Reflects.makeAccessible
 import java.lang.reflect.Field
@@ -238,13 +238,13 @@ abstract class AbstractSqlProvider : SqlProvider {
             selectiveStrategy(getValue(it, entity, SqlType.UPDATE))
         }
         val whereFieldList = where::class.java.declaredFields.filter {
-            selectiveStrategy(getValue(it, where, SqlType.UPDATE))
+            selectiveStrategy(getValue(it, where, SqlType.SELECT))
         }
         sql.append(UPDATE + getTableName(clazz) + SET)
         appendSetValues(sql, parameters, fieldList, entity)
         sql.append(WHERE)
         whereFieldList.joinToString(AND) {
-            parameters.add(getValue(it, where, SqlType.UPDATE))
+            parameters.add(getValue(it, where, SqlType.SELECT))
             getColumnName(it) + EQUAL + QUESTION_MARK
         }.let { sql.append(it) }
         return SqlStatement(getSql(sql), parameters)

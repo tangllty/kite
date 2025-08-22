@@ -4,7 +4,6 @@ import com.tang.kite.constants.SqlString.COMMA_SPACE
 import com.tang.kite.constants.SqlString.FROM
 import com.tang.kite.enumeration.SqlType
 import com.tang.kite.function.SFunction
-import com.tang.kite.utils.Fields
 import com.tang.kite.utils.Reflects
 import com.tang.kite.wrapper.Column
 import kotlin.reflect.KMutableProperty1
@@ -140,7 +139,7 @@ class QuerySelectWrapper<T>(
     }
 
     fun setTableFillFields() {
-        Fields.setTableFillFields(tableClass, SqlType.SELECT) { column, value ->
+        Reflects.setTableFillFields(tableClass, SqlType.SELECT) { column, value ->
             queryWrapper.queryWhereWrapper.eq(column, value)
         }
     }

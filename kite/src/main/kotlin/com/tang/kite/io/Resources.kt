@@ -1,7 +1,7 @@
 package com.tang.kite.io
 
 import com.google.common.base.CaseFormat
-import com.tang.kite.utils.Fields
+import com.tang.kite.utils.Reflects
 import org.yaml.snakeyaml.Yaml
 import java.io.InputStream
 import java.lang.reflect.Field
@@ -52,7 +52,7 @@ object Resources {
                 val nestedObject = propertyToObject(value, field.type)
                 field.set(instance, nestedObject)
             } else {
-                Fields.setValue(field, instance as Any, value)
+                Reflects.setValue(field, instance as Any, value)
             }
         }
         return instance

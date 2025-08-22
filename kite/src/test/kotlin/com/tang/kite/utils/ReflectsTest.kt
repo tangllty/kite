@@ -31,7 +31,7 @@ class ReflectsTest {
     }
 
     @Test
-    fun getField() {
+    fun getFieldByName() {
         val field = Reflects.getField(Account::class.java, "id")
         assertEquals("id", field?.name)
     }
@@ -60,6 +60,41 @@ class ReflectsTest {
     fun getTableAlias() {
         val tableAlias = Reflects.getTableAlias(Account::class.java)
         assertEquals("a", tableAlias)
+    }
+
+    @Test
+    fun getFieldName() {
+        val fieldName = Reflects.getFieldName(Account::id)
+        assertEquals("id", fieldName)
+    }
+
+    @Test
+    fun getField() {
+        val field = Reflects.getField(Account::id)
+        assertEquals("id", field.name)
+    }
+
+    @Test
+    fun getValue() {
+        val map = mapOf(
+            "id" to 1,
+            "name" to "test",
+            "details" to mapOf(
+                "age" to 30,
+                "address" to "123 Street",
+                "hobbies" to mapOf(
+                    "hobby1" to "reading",
+                    "hobby2" to "gaming"
+                )
+            )
+        )
+
+        val name = Reflects.getValue(map, "name")
+        assertEquals("test", name)
+        val age = Reflects.getValue(map, "details.age")
+        assertEquals(30, age)
+        val hobby2 = Reflects.getValue(map, "details.hobbies.hobby2")
+        assertEquals("gaming", hobby2)
     }
 
 }

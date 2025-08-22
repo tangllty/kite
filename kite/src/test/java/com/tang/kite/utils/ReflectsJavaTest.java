@@ -8,17 +8,17 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 /**
  * @author Tang
  */
-public class FieldsJavaTest {
+public class ReflectsJavaTest {
 
     @Test
     public void getFieldName() {
-        var fieldName = Fields.INSTANCE.getFieldName(JavaAccount::getId);
+        var fieldName = Reflects.getFieldName(JavaAccount::getId);
         assertEquals("id", fieldName);
     }
 
     @Test
     public void getField() {
-        var field = Fields.INSTANCE.getField(JavaAccount::getId);
+        var field = Reflects.getField(JavaAccount::getId);
         assertEquals("id", field.getName());
     }
 

@@ -1,7 +1,6 @@
 package com.tang.kite.wrapper
 
 import com.tang.kite.function.SFunction
-import com.tang.kite.utils.Fields
 import com.tang.kite.utils.Reflects
 import java.lang.reflect.Field
 import kotlin.reflect.KMutableProperty1
@@ -22,7 +21,7 @@ open class Column(
 
     constructor(column: KMutableProperty1<*, *>): this(column.javaField!!)
 
-    constructor(column: SFunction<*, *>): this(Fields.getField(column))
+    constructor(column: SFunction<*, *>): this(Reflects.getField(column))
 
     override fun toString(): String {
         if (name == null) {

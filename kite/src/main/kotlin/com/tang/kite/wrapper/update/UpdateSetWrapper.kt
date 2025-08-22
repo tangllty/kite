@@ -3,7 +3,6 @@ package com.tang.kite.wrapper.update
 import com.tang.kite.constants.SqlString.QUESTION_MARK
 import com.tang.kite.constants.SqlString.SET
 import com.tang.kite.function.SFunction
-import com.tang.kite.utils.Fields
 import com.tang.kite.utils.Reflects
 import com.tang.kite.wrapper.statement.LogicalStatement
 import com.tang.kite.wrapper.where.AbstractWhereWrapper
@@ -83,7 +82,7 @@ open class UpdateSetWrapper<T>() : AbstractWhereWrapper<UpdateWhereWrapper<T>, T
      * @return UpdateSetWrapper
      */
     fun set(column: SFunction<T, *>, value: Any?, effective: Boolean): UpdateSetWrapper<T> {
-        return set(Reflects.getColumnName(Fields.getField(column)), value, effective)
+        return set(Reflects.getColumnName(Reflects.getField(column)), value, effective)
     }
 
     /**

@@ -1,6 +1,6 @@
 package com.tang.kite.utils.expression
 
-import com.tang.kite.utils.Fields
+import com.tang.kite.utils.Reflects
 import kotlin.math.pow
 
 /**
@@ -28,7 +28,7 @@ class Evaluator(private val context: Map<String, Any?>) {
      * Resolve variable from context.
      */
     private fun resolveVariable(name: String): Any? {
-        return Fields.getValue(context, name)
+        return Reflects.getValue(context, name)
     }
 
     /**
@@ -54,7 +54,7 @@ class Evaluator(private val context: Map<String, Any?>) {
         }
         try {
             val field = kClass.java.getDeclaredField(name)
-            return Fields.getValue(field, target)
+            return Reflects.getValue(field, target)
         } catch (_: Exception) {}
         throw IllegalArgumentException("Property '$name' not found on ${kClass.simpleName}")
     }

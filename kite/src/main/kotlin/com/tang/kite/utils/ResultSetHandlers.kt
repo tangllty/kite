@@ -1,7 +1,7 @@
 package com.tang.kite.utils
 
 import com.tang.kite.constants.SqlString.INSERT
-import com.tang.kite.sql.SqlStatement
+import com.tang.kite.utils.Reflects.setResultValue
 import com.tang.kite.wrapper.delete.DeleteWrapper
 import com.tang.kite.wrapper.update.UpdateWrapper
 import java.sql.PreparedStatement
@@ -44,7 +44,7 @@ object ResultSetHandlers {
         metaDataList.forEach { (columnName, columnValue) ->
             val field = Reflects.getField(type, columnName)
             if (field != null) {
-                Fields.setValue(field, entity, columnValue)
+                setResultValue(field, entity, columnValue)
             }
         }
 
@@ -59,10 +59,10 @@ object ResultSetHandlers {
             joinMetaData.forEach { (columnName, columnValue) ->
                 val field = Reflects.getField(it.type, columnName) ?: Reflects.getField(it.type, toCamelCase(columnName))
                 if (field != null) {
-                    Fields.setValue(field, joinEntity, columnValue)
+                    setResultValue(field, joinEntity, columnValue)
                 }
             }
-            Fields.setValue(it, entity, joinEntity)
+            setResultValue(it, entity, joinEntity)
         }
 
         // Handle fields without table name, assign to main table first, then to sub table if not found
@@ -70,14 +70,14 @@ object ResultSetHandlers {
         noTableMetaDataList.forEach { (columnName, columnValue) ->
             val mainField = Reflects.getField(type, columnName) ?: Reflects.getField(type, toCamelCase(columnName))
             if (mainField != null) {
-                Fields.setValue(mainField, entity, columnValue)
+                setResultValue(mainField, entity, columnValue)
                 return@forEach
             }
             for (join in joins) {
                 val joinEntity = joinEntities[Reflects.getTableName(join.type)] ?: continue
                 val joinField = Reflects.getField(join.type, columnName) ?: Reflects.getField(join.type, toCamelCase(columnName))
                 if (joinField != null) {
-                    Fields.setValue(joinField, joinEntity, columnValue)
+                    setResultValue(joinField, joinEntity, columnValue)
                     break
                 }
             }
@@ -152,7 +152,7 @@ object ResultSetHandlers {
         }
         val generatedKey = resultSet.getLong(1)
         val idField = Reflects.getIdField(it.javaClass)
-        Fields.setValue(idField, it, generatedKey)
+        setResultValue(idField, it, generatedKey)
     }
 
 }

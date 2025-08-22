@@ -12,6 +12,7 @@
  * Enhance `setValue` method to support additional data types for `PreparedStatement`
  * Support automatic fill handlers
  * Make wrapper chain operations support fill handlers
+ * Refactor utility methods to use `Reflects` instead of `Fields`
 
 ## 1.0.12
 

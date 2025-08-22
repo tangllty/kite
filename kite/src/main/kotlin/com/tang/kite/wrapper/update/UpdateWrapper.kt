@@ -5,7 +5,6 @@ import com.tang.kite.constants.SqlString.UPDATE
 import com.tang.kite.enumeration.SqlType
 import com.tang.kite.mapper.BaseMapper
 import com.tang.kite.sql.SqlStatement
-import com.tang.kite.utils.Fields
 import com.tang.kite.utils.Reflects
 import com.tang.kite.wrapper.Wrapper
 import com.tang.kite.wrapper.statement.LogicalStatement
@@ -82,7 +81,7 @@ class UpdateWrapper<T> : UpdateSetWrapper<T>, Wrapper<T> {
     }
 
     fun setTableFillFields() {
-        Fields.setTableFillFields(tableClass, SqlType.UPDATE) { column, value ->
+        Reflects.setTableFillFields(tableClass, SqlType.UPDATE) { column, value ->
             updateSetWrapper.set(column, value)
         }
     }

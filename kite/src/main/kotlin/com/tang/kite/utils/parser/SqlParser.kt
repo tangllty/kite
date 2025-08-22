@@ -2,7 +2,6 @@ package com.tang.kite.utils.parser
 
 import com.tang.kite.annotation.Param
 import com.tang.kite.sql.SqlStatement
-import com.tang.kite.utils.Fields
 import com.tang.kite.utils.Reflects
 import com.tang.kite.utils.expression.ExpressionParser
 import java.lang.reflect.Parameter
@@ -59,7 +58,7 @@ object SqlParser {
                     val fields = Reflects.getFields(singleArg.javaClass)
                     fields.forEach { field ->
                         Reflects.makeAccessible(field, singleArg)
-                        map[field.name] = Fields.getValue(singleArg, field.name)
+                        map[field.name] = Reflects.getValue(singleArg, field.name)
                     }
                 }
             }
@@ -337,7 +336,7 @@ object SqlParser {
         }
         val rootObj = params[rootKey]
         return if (paramName.contains('.') && rootObj != null) {
-            Fields.getValue(rootObj, paramName.removePrefix("$rootKey."))
+            Reflects.getValue(rootObj, paramName.removePrefix("$rootKey."))
         } else {
             rootObj
         }

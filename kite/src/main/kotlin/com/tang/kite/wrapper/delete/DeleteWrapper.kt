@@ -5,7 +5,6 @@ import com.tang.kite.constants.SqlString.DELETE_FROM
 import com.tang.kite.enumeration.SqlType
 import com.tang.kite.mapper.BaseMapper
 import com.tang.kite.sql.SqlStatement
-import com.tang.kite.utils.Fields
 import com.tang.kite.utils.Reflects
 import com.tang.kite.wrapper.Wrapper
 import com.tang.kite.wrapper.statement.LogicalStatement
@@ -79,7 +78,7 @@ class DeleteWrapper<T> : AbstractWhereWrapper<DeleteWhereWrapper<T>, T>, Wrapper
     }
 
     fun setTableFillFields() {
-        Fields.setTableFillFields(tableClass, SqlType.DELETE) { column, value ->
+        Reflects.setTableFillFields(tableClass, SqlType.DELETE) { column, value ->
             deleteWhereWrapper.eq(column, value)
         }
     }
