@@ -13,6 +13,7 @@
  * Support automatic fill handlers
  * Make wrapper chain operations support fill handlers
  * Refactor utility methods to use `Reflects` instead of `Fields`
+ * Refactor SQL execution methods to use a common template for improved readability and maintainability
 
 ## 1.0.12
 

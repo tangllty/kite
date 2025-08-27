@@ -105,37 +105,37 @@ object ResultSetHandlers {
         return count
     }
 
-    fun setGeneratedKey(sql: String, preparedStatement: PreparedStatement, parameter: Any) {
-        if (hasGeneratedKey(sql, parameter).not()) {
+    fun setGeneratedKey(sql: String, preparedStatement: PreparedStatement, parameters: Any) {
+        if (hasGeneratedKey(sql, parameters).not()) {
             return
         }
         val resultSet = preparedStatement.generatedKeys
-        if (parameter.javaClass.name == ArrayList::class.java.name) {
-            val list = parameter as List<*>
+        if (parameters.javaClass.name == ArrayList::class.java.name) {
+            val list = parameters as List<*>
             list.forEach {
                 setIdValue(resultSet, it!!)
             }
             resultSet.close()
             return
         }
-        setIdValue(resultSet, parameter)
+        setIdValue(resultSet, parameters)
         resultSet.close()
     }
 
-    fun hasGeneratedKey(sql: String, parameter: Any): Boolean {
+    fun hasGeneratedKey(sql: String, parameters: Any): Boolean {
         val excludedTypes = listOf(UpdateWrapper::class.java.name, DeleteWrapper::class.java.name, String::class.java.name)
-        if (parameter.javaClass.name in excludedTypes) {
+        if (parameters.javaClass.name in excludedTypes) {
             return false
         }
-        if (Number::class.java.isAssignableFrom(parameter::class.java)) {
+        if (Number::class.java.isAssignableFrom(parameters::class.java)) {
             return false
         }
-        if (Iterable::class.java.isAssignableFrom(parameter::class.java)) {
+        if (Iterable::class.java.isAssignableFrom(parameters::class.java)) {
             return false
         }
-        var param = parameter
-        if (parameter.javaClass.name == ArrayList::class.java.name) {
-            val list = parameter as List<*>
+        var param = parameters
+        if (parameters.javaClass.name == ArrayList::class.java.name) {
+            val list = parameters as List<*>
             if (list.isNotEmpty()) {
                 param = list.first()!!
             }
