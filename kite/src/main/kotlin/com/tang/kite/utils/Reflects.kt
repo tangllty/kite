@@ -1,6 +1,5 @@
 package com.tang.kite.utils
 
-import com.google.common.base.CaseFormat
 import com.tang.kite.annotation.Column
 import com.tang.kite.annotation.Join
 import com.tang.kite.annotation.Table

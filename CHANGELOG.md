@@ -6,6 +6,7 @@
 
  * Bump gradle/actions from 4.4.1 to 4.4.2
  * Bump actions/checkout from 4 to 5
+ * Remove guava
 
 ### Features
 

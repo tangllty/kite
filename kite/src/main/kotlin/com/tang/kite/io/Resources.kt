@@ -1,6 +1,6 @@
 package com.tang.kite.io
 
-import com.google.common.base.CaseFormat
+import com.tang.kite.utils.CaseFormat
 import com.tang.kite.utils.Reflects
 import org.yaml.snakeyaml.Yaml
 import java.io.InputStream
