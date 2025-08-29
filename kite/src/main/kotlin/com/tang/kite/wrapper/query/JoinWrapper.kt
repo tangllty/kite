@@ -9,6 +9,7 @@ import com.tang.kite.wrapper.enumeration.ComparisonOperator
 import com.tang.kite.wrapper.enumeration.LogicalOperator
 import com.tang.kite.wrapper.statement.ComparisonStatement
 import com.tang.kite.wrapper.statement.LogicalStatement
+import com.tang.kite.wrapper.where.WrapperBuilder
 import kotlin.reflect.KMutableProperty1
 
 /**
@@ -22,7 +23,7 @@ class JoinWrapper<T>(
 
     internal val joinTables: MutableList<JoinTable>
 
-) {
+) : WrapperBuilder<T>, QueryBuilder<T> {
 
     fun leftJoin(clazz: Class<*>) : JoinWrapper<T> {
         joinedClass.add(clazz)
@@ -42,39 +43,43 @@ class JoinWrapper<T>(
         return this
     }
 
-    fun eq(left: String, right: String): JoinWrapper<T> {
+    fun on(left: String, right: String): JoinWrapper<T> {
         val condition = ComparisonStatement(Column(left), right, ComparisonOperator.EQUAL)
-        joinTables.last().condition.add(LogicalStatement(condition, LogicalOperator.AND))
+        joinTables.last().conditions.add(LogicalStatement(condition, LogicalOperator.AND))
         return this
     }
 
-    fun eq(left: KMutableProperty1<*, *>, right: KMutableProperty1<*, *>): JoinWrapper<T> {
-        return eq(getColumnName(left, true), getColumnName(right, true))
+    fun on(left: KMutableProperty1<*, *>, right: KMutableProperty1<*, *>): JoinWrapper<T> {
+        return on(getColumnName(left, true), getColumnName(right, true))
     }
 
-    fun <E1, E2> eq(left: SFunction<E1, *>, right: SFunction<E2, *>): JoinWrapper<T> {
-        return eq(getColumnName(left, true), getColumnName(right, true))
+    fun <E1, E2> on(left: SFunction<E1, *>, right: SFunction<E2, *>): JoinWrapper<T> {
+        return on(getColumnName(left, true), getColumnName(right, true))
     }
 
     fun where() : QueryWhereWrapper<T> {
         return queryWhereWrapper
     }
 
-    fun build() : QueryWrapper<T> {
+    override fun build() : QueryWrapper<T> {
         return queryWhereWrapper.build()
     }
 
-    fun appendSql(sql: StringBuilder, parameters: MutableList<Any?>) {
-        joinTables.forEach {
-            sql.append(" ${it.joinType.name}${SqlString.JOIN}")
-            val tableAlias = Reflects.getTableAlias(it.clazz)
-            sql.append("${Reflects.getTableName(it.clazz)} $tableAlias${SqlString.ON}")
+    override fun list(): MutableList<T> {
+        return queryWhereWrapper.list()
+    }
 
-            it.condition.last().logicalOperator = null
-            it.condition.forEach {
-                val condition = it.condition
+    fun appendSql(sql: StringBuilder, parameters: MutableList<Any?>) {
+        joinTables.forEach { table ->
+            sql.append(" ${table.joinType.name}${SqlString.JOIN}")
+            val tableAlias = Reflects.getTableAlias(table.clazz)
+            sql.append("${Reflects.getTableName(table.clazz)} $tableAlias${SqlString.ON}")
+
+            table.conditions.last().logicalOperator = null
+            table.conditions.forEach { logicalStatement ->
+                val condition = logicalStatement.condition
                 sql.append("${condition.column}${condition.comparisonOperator.value}${condition.value}")
-                it.logicalOperator?.let { sql.append(it.value) }
+                logicalStatement.logicalOperator?.let { sql.append(it.value) }
             }
         }
     }

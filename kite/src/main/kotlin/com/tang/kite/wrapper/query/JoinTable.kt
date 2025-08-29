@@ -11,6 +11,6 @@ class JoinTable(
 
     val joinType: JoinType,
 
-    val condition: MutableList<LogicalStatement> = mutableListOf()
+    val conditions: MutableList<LogicalStatement> = mutableListOf()
 
 )

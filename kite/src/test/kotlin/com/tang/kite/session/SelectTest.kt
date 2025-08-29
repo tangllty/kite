@@ -5,6 +5,11 @@ import com.tang.kite.paginate.OrderItem
 import com.tang.kite.session.entity.Account
 import com.tang.kite.session.entity.AccountAs
 import com.tang.kite.session.entity.AccountFunction
+import com.tang.kite.session.entity.AccountOneToManyWithJoinTable
+import com.tang.kite.session.entity.AccountOneToOne
+import com.tang.kite.session.entity.AccountOneToOneWIthJoinTable
+import com.tang.kite.session.entity.AccountRole
+import com.tang.kite.session.entity.Role
 import com.tang.kite.session.mapper.AccountAsMapper
 import com.tang.kite.session.mapper.AccountFunctionMapper
 import com.tang.kite.session.mapper.AccountMapper
@@ -300,6 +305,48 @@ class SelectTest : BaseDataTest() {
     }
 
     @Test
+    fun queryWrapperOneToOne() {
+        val session = sqlSessionFactory.openSession()
+        val accountMapper = session.getMapper(AccountOneToOneMapper::class)
+        val list = accountMapper.queryWrapper()
+            .select()
+            .from(AccountOneToOne::class.java)
+            .leftJoin(Role::class.java)
+            .on(Role::id, Account::id)
+            .list()
+        session.close()
+        assertTrue(list.isNotEmpty())
+    }
+
+    @Test
+    fun queryWrapperOneToOneWithJoinTable() {
+        val session = sqlSessionFactory.openSession()
+        val accountMapper = session.getMapper(AccountOneToOneWIthJoinTableMapper::class)
+        val list = accountMapper.queryWrapper()
+            .select()
+            .from(AccountOneToOneWIthJoinTable::class.java)
+            .leftJoin(AccountRole::class.java).on(AccountRole::accountId, Account::id)
+            .leftJoin(Role::class.java).on(Role::id, AccountRole::roleId)
+            .list()
+        session.close()
+        assertTrue(list.isNotEmpty())
+    }
+
+    @Test
+    fun queryWrapperOneToManyWithJoinTable() {
+        val session = sqlSessionFactory.openSession()
+        val accountMapper = session.getMapper(AccountOneToManyWithJoinTableMapper::class)
+        val list = accountMapper.queryWrapper()
+            .select()
+            .from(AccountOneToManyWithJoinTable::class.java)
+            .leftJoin(AccountRole::class.java).on(AccountRole::accountId, Account::id)
+            .leftJoin(Role::class.java).on(Role::id, AccountRole::roleId)
+            .list()
+        session.close()
+        assertTrue(list.isNotEmpty())
+    }
+
+    @Test
     fun count() {
         val session = sqlSessionFactory.openSession()
         val accountMapper = session.getMapper(AccountMapper::class)
@@ -382,9 +429,38 @@ class SelectTest : BaseDataTest() {
     }
 
     @Test
+    fun selectOneToOneById() {
+        val session = sqlSessionFactory.openSession()
+        val accountMapper = session.getMapper(AccountOneToOneMapper::class)
+        val account = accountMapper.selectByIdWithJoins(1)
+        session.close()
+        assertNotNull(account)
+        assertNotNull(account!!.id)
+        assertNotNull(account.username)
+        assertNotNull(account.role)
+        assertNotNull(account.role!!.id)
+        assertNotNull(account.role!!.name)
+    }
+
+    @Test
     fun selectOneToOne() {
         val session = sqlSessionFactory.openSession()
         val accountMapper = session.getMapper(AccountOneToOneMapper::class)
+        val accounts = accountMapper.selectWithJoins()
+        session.close()
+        assertNotNull(accounts)
+        assertTrue(accounts.isNotEmpty())
+        accounts.forEach {
+            assertNotNull(it.id)
+            assertNotNull(it.username)
+            assertNotNull(it.role)
+        }
+    }
+
+    @Test
+    fun selectOneToOneWithJoinTableById() {
+        val session = sqlSessionFactory.openSession()
+        val accountMapper = session.getMapper(AccountOneToOneWIthJoinTableMapper::class)
         val account = accountMapper.selectByIdWithJoins(1)
         session.close()
         assertNotNull(account)
@@ -399,20 +475,58 @@ class SelectTest : BaseDataTest() {
     fun selectOneToOneWithJoinTable() {
         val session = sqlSessionFactory.openSession()
         val accountMapper = session.getMapper(AccountOneToOneWIthJoinTableMapper::class)
-        val account = accountMapper.selectByIdWithJoins(1)
+        val accounts = accountMapper.selectWithJoins()
+        session.close()
+        assertNotNull(accounts)
+        assertTrue(accounts.isNotEmpty())
+        accounts.forEach {
+            assertNotNull(it.id)
+            assertNotNull(it.username)
+            assertNotNull(it.role)
+            assertNotNull(it.role!!.id)
+            assertNotNull(it.role!!.name)
+        }
+    }
+
+    @Test
+    fun selectOneToManyById() {
+        val session = sqlSessionFactory.openSession()
+        val accountMapper = session.getMapper(AccountOneToManyMapper::class)
+        val account = accountMapper.selectByIdWithJoins(2)
         session.close()
         assertNotNull(account)
         assertNotNull(account!!.id)
         assertNotNull(account.username)
-        assertNotNull(account.role)
-        assertNotNull(account.role!!.id)
-        assertNotNull(account.role!!.name)
+        assertNotNull(account.roles)
+        account.roles!!.forEach {
+            assertNotNull(it.id)
+            assertNotNull(it.name)
+        }
     }
 
     @Test
     fun selectOneToMany() {
         val session = sqlSessionFactory.openSession()
         val accountMapper = session.getMapper(AccountOneToManyMapper::class)
+        val accounts = accountMapper.selectWithJoins()
+        session.close()
+        assertNotNull(accounts)
+        assertNotNull(accounts.isNotEmpty())
+        accounts.forEach {
+            assertNotNull(it.id)
+            assertNotNull(it.username)
+            assertNotNull(it.roles)
+            it.roles!!.forEach { role ->
+                assertNotNull(role.id)
+                assertNotNull(role.name)
+            }
+        }
+    }
+
+    @Test
+    fun selectOneToManyWithJoinTableById() {
+        val session = sqlSessionFactory.openSession()
+        val accountMapper = session.getMapper(AccountOneToManyWithJoinTableMapper::class)
         val account = accountMapper.selectByIdWithJoins(2)
         session.close()
         assertNotNull(account)
@@ -429,15 +543,18 @@ class SelectTest : BaseDataTest() {
     fun selectOneToManyWithJoinTable() {
         val session = sqlSessionFactory.openSession()
         val accountMapper = session.getMapper(AccountOneToManyWithJoinTableMapper::class)
-        val account = accountMapper.selectByIdWithJoins(2)
+        val account = accountMapper.selectWithJoins()
         session.close()
         assertNotNull(account)
-        assertNotNull(account!!.id)
-        assertNotNull(account.username)
-        assertNotNull(account.roles)
-        account.roles!!.forEach {
+        assertNotNull(account.isNotEmpty())
+        account.forEach {
             assertNotNull(it.id)
-            assertNotNull(it.name)
+            assertNotNull(it.username)
+            assertNotNull(it.roles)
+            it.roles!!.forEach { role ->
+                assertNotNull(role.id)
+                assertNotNull(role.name)
+            }
         }
     }
 

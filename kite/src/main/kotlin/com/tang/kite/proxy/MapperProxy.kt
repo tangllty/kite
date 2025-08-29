@@ -30,11 +30,13 @@ class MapperProxy<T>(
 
 ) : InvocationHandler {
 
-    private val defaultImplsSuffix = "\$DefaultImpls"
-
-    private val methodHandleMap: ConcurrentMap<Method, MethodHandle> = ConcurrentHashMap()
+    private val defaultImplsSuffix = $$"$DefaultImpls"
 
     private val classCache: ConcurrentMap<String, Class<*>> = ConcurrentHashMap()
+
+    private val javaInvokerCache: ConcurrentMap<Method, MethodHandle> = ConcurrentHashMap()
+
+    private val kotlinMethodDefaultCache: ConcurrentMap<Method, Boolean> = ConcurrentHashMap()
 
     private val allowedModes = MethodHandles.Lookup.PRIVATE or MethodHandles.Lookup.PROTECTED or MethodHandles.Lookup.PACKAGE or MethodHandles.Lookup.PUBLIC
 
@@ -93,7 +95,7 @@ class MapperProxy<T>(
     }
 
     private fun javaInvoker(proxy: Any, method: Method, args: Array<out Any>?): Any {
-        val defaultMethodHandle = methodHandleMap.computeIfAbsent(method) {
+        val defaultMethodHandle = javaInvokerCache.computeIfAbsent(method) {
             val methodHandle = getSpecialMethodHandle(method)
             methodHandle.bindTo(proxy)
         }
@@ -107,10 +109,12 @@ class MapperProxy<T>(
     }
 
     private fun isKotlinDefaultMethod(method: Method): Boolean {
-        return runCatching {
-            val impl = getKotlinImpl(method)
-            return impl.methods.any { isSameMethod(it, method) }
-        }.getOrDefault(false)
+        return kotlinMethodDefaultCache.computeIfAbsent(method) {
+            runCatching {
+                val impl = getKotlinImpl(method)
+                impl.methods.any { isSameMethod(it, method) }
+            }.getOrDefault(false)
+        }
     }
 
     private fun kotlinInvoker(proxy: Any, method: Method, args: Array<out Any>?): Any {

@@ -15,6 +15,7 @@
  * Make wrapper chain operations support fill handlers
  * Refactor utility methods to use `Reflects` instead of `Fields`
  * Refactor SQL execution methods to use a common template for improved readability and maintainability
+ * Refactor result set handling and join operations for improved clarity and consistency
 
 ## 1.0.12
 

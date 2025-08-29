@@ -1,9 +1,12 @@
-package com.tang.kite.utils
+package com.tang.kite.utils.resultset
 
-import com.tang.kite.constants.SqlString.INSERT
+import com.tang.kite.constants.SqlString
+import com.tang.kite.utils.Reflects
+import com.tang.kite.utils.Reflects.getField
 import com.tang.kite.utils.Reflects.setResultValue
 import com.tang.kite.wrapper.delete.DeleteWrapper
 import com.tang.kite.wrapper.update.UpdateWrapper
+import java.sql.JDBCType
 import java.sql.PreparedStatement
 import java.sql.ResultSet
 
@@ -24,60 +27,62 @@ object ResultSetHandlers {
 
     private fun <T> getEntity(resultSet: ResultSet, type: Class<T>): T {
         val metaData = resultSet.metaData
-        val metaDataMap = mutableMapOf<String, MutableList<Pair<String, Any?>>>()
+        val metaDataMap = mutableMapOf<String, MutableList<MetaData>>()
         val entity = type.getDeclaredConstructor().newInstance()
         val tableName = Reflects.getTableName(type)
 
         for (i in 1..metaData.columnCount) {
             val columnTableName = metaData.getTableName(i).lowercase()
+            val className = metaData.getColumnClassName(i)
+            val jdbcType = JDBCType.valueOf(metaData.getColumnType(i))
             val columnName = metaData.getColumnName(i)
             val columnValue = resultSet.getObject(i)
 
             // If there is no table name, use special key "__NO_TABLE__"
             val effectiveTableName = columnTableName.ifBlank { "__NO_TABLE__" }
             metaDataMap.computeIfAbsent(effectiveTableName) { mutableListOf() }
-                .add(Pair(columnName, columnValue))
+                .add(MetaData(className, jdbcType, columnName, columnValue))
         }
 
         // Handle fields with table name (main table and sub tables)
         val metaDataList = metaDataMap[tableName] ?: emptyList()
-        metaDataList.forEach { (columnName, columnValue) ->
-            val field = Reflects.getField(type, columnName)
+        metaDataList.forEach {
+            val field = getField(type, it.columnName)
             if (field != null) {
-                setResultValue(field, entity, columnValue)
+                setResultValue(field, entity, it.columnValue)
             }
         }
 
         // Handle fields of joined tables
         val joins = Reflects.getJoins(type)
         val joinEntities = mutableMapOf<String, Any>()
-        joins.forEach {
-            val joinTableName = Reflects.getTableName(it.type)
-            val joinEntity = it.type.getDeclaredConstructor().newInstance()
+        joins.forEach { join ->
+            val joinTableName = Reflects.getTableName(join.type)
+            val joinEntity = join.type.getDeclaredConstructor().newInstance()
             joinEntities[joinTableName] = joinEntity
             val joinMetaData = metaDataMap[joinTableName] ?: return@forEach
-            joinMetaData.forEach { (columnName, columnValue) ->
-                val field = Reflects.getField(it.type, columnName) ?: Reflects.getField(it.type, toCamelCase(columnName))
+            joinMetaData.forEach {
+                val field = getField(join.type, it.columnName) ?: getField(join.type, toCamelCase(it.columnName))
                 if (field != null) {
-                    setResultValue(field, joinEntity, columnValue)
+                    setResultValue(field, joinEntity, it.columnValue)
                 }
             }
-            setResultValue(it, entity, joinEntity)
+            setResultValue(join, entity, joinEntity)
         }
 
         // Handle fields without table name, assign to main table first, then to sub table if not found
         val noTableMetaDataList = metaDataMap["__NO_TABLE__"] ?: emptyList()
-        noTableMetaDataList.forEach { (columnName, columnValue) ->
-            val mainField = Reflects.getField(type, columnName) ?: Reflects.getField(type, toCamelCase(columnName))
+        noTableMetaDataList.forEach {
+            val mainField = getField(type, it.columnName) ?: getField(type, toCamelCase(it.columnName))
             if (mainField != null) {
-                setResultValue(mainField, entity, columnValue)
+                setResultValue(mainField, entity, it.columnValue)
                 return@forEach
             }
             for (join in joins) {
                 val joinEntity = joinEntities[Reflects.getTableName(join.type)] ?: continue
-                val joinField = Reflects.getField(join.type, columnName) ?: Reflects.getField(join.type, toCamelCase(columnName))
+                val joinField = getField(join.type, it.columnName) ?: getField(join.type, toCamelCase(it.columnName))
                 if (joinField != null) {
-                    setResultValue(joinField, joinEntity, columnValue)
+                    setResultValue(joinField, joinEntity, it.columnValue)
                     break
                 }
             }
@@ -142,7 +147,7 @@ object ResultSetHandlers {
         }
         val idField = Reflects.getIdField(param.javaClass)
         val autoIncrementId = Reflects.isAutoIncrementId(idField)
-        return sql.startsWith(INSERT, true) && autoIncrementId
+        return sql.startsWith(SqlString.INSERT, true) && autoIncrementId
     }
 
     private fun setIdValue(resultSet: ResultSet, it: Any) {

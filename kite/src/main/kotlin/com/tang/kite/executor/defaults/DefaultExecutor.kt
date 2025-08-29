@@ -5,7 +5,7 @@ import com.tang.kite.session.Configuration
 import com.tang.kite.sql.BatchSqlStatement
 import com.tang.kite.sql.SqlStatement
 import com.tang.kite.transaction.Transaction
-import com.tang.kite.utils.ResultSetHandlers
+import com.tang.kite.utils.resultset.ResultSetHandlers
 import com.tang.kite.utils.Statements
 import org.slf4j.LoggerFactory
 import java.sql.Connection
