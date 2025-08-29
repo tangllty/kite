@@ -7,6 +7,8 @@
  * Bump gradle/actions from 4.4.1 to 4.4.2
  * Bump actions/checkout from 4 to 5
  * Remove guava
+ * Bump spring from 6.2.7 to 6.2.10
+ * Bump spring-boot from 3.5.0 to 3.5.5
 
 ### Features
 

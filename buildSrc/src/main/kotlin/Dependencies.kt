@@ -15,9 +15,9 @@ class Versions {
     // https://mvnrepository.com/artifact/jakarta.servlet/jakarta.servlet-api
     val servlet = "6.1.0"
     // https://mvnrepository.com/artifact/org.springframework/spring-core
-    val spring = "6.2.7"
+    val spring = "6.2.10"
     // https://mvnrepository.com/artifact/org.springframework.boot/spring-boot
-    val springBoot = "3.5.0"
+    val springBoot = "3.5.5"
 }
 
 class Libraries {
