@@ -23,6 +23,7 @@ class InsertTest : BaseDataTest() {
         val accountMapper = session.getMapper(AccountMapper::class)
         val account = Account(username = "tang", password = "123456")
         val rows = accountMapper.insert(account)
+        session.commit()
         session.close()
         assertEquals(1, rows)
     }
@@ -33,6 +34,7 @@ class InsertTest : BaseDataTest() {
         val accountMapper = session.getMapper(AccountMapper::class)
         val account = Account(username = "tang")
         val rows = accountMapper.insertSelective(account)
+        session.commit()
         session.close()
         assertEquals(1, rows)
     }
@@ -43,6 +45,7 @@ class InsertTest : BaseDataTest() {
         val accountMapper = session.getMapper(AccountJavaMapper::class)
         val account = Account(username = "tang", password = "123456")
         val rows = accountMapper.insert(account)
+        session.commit()
         session.close()
         assertEquals(1, rows)
     }
@@ -59,6 +62,7 @@ class InsertTest : BaseDataTest() {
             balance = BigDecimal(100.00)
         )
         val rows = accountMapper.insert(account)
+        session.commit()
         session.close()
         assertEquals(1, rows)
     }
@@ -199,6 +203,7 @@ class InsertTest : BaseDataTest() {
         val accountMapper = session.getMapper(AccountMapper::class)
         val account = Account(username = "tang", password = "123456")
         val rows = accountMapper.insertAnnotation(account)
+        session.commit()
         session.close()
         assertEquals(1, rows)
     }
@@ -209,6 +214,7 @@ class InsertTest : BaseDataTest() {
         val accountMapper = session.getMapper(AccountMapper::class)
         val account = Account(username = "tang", password = "123456")
         val rows = accountMapper.insertAnnotation(account, Account(), "test")
+        session.commit()
         session.close()
         assertEquals(1, rows)
     }

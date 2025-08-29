@@ -120,10 +120,7 @@ object Reflects {
      */
     private fun getJoinFields(clazz: Class<*>): List<Field> {
         return joinFieldsCache.computeIfAbsent(clazz) {
-            getFields(clazz)
-                .filter { it.isAnnotationPresent(Join::class.java) }
-                .filter { Iterable::class.java.isAssignableFrom(it.type) }
-                .filter { it.type.classLoader != null }
+            getFields(clazz).filter { it.isAnnotationPresent(Join::class.java) }
         }
     }
 
