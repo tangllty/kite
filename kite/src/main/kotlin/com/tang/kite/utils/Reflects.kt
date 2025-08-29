@@ -134,7 +134,7 @@ object Reflects {
     @JvmStatic
     fun getJoins(clazz: Class<*>): List<Field> {
         return getJoinFields(clazz)
-            .filter { Iterable::class.java.isAssignableFrom(it.type).not() }
+            .filter { Iterable::class.java.isAssignableFrom(it.type).not() && it.type.isArray.not() }
             .filter { it.isAnnotationPresent(Column::class.java).not() || it.getAnnotation(Column::class.java).ignore.not() }
     }
 
@@ -148,8 +148,13 @@ object Reflects {
     @JvmStatic
     fun getIterableJoins(clazz: Class<*>): List<Field> {
         return getJoinFields(clazz)
-            .filter { Iterable::class.java.isAssignableFrom(it.type) }
+            .filter { Iterable::class.java.isAssignableFrom(it.type) || it.type.isArray }
             .filter { it.isAnnotationPresent(Column::class.java).not() || it.getAnnotation(Column::class.java).ignore.not() }
+    }
+
+    fun getAllJoins(clazz: Class<*>): List<Field> {
+        return getFields(clazz)
+            .filter { Iterable::class.java.isAssignableFrom(it.type) || it.type.isArray || it.type.classLoader != null }
     }
 
     @JvmStatic

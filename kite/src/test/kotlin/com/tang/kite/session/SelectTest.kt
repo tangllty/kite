@@ -91,262 +91,6 @@ class SelectTest : BaseDataTest() {
     }
 
     @Test
-    fun queryWrapper() {
-        val session = sqlSessionFactory.openSession()
-        val accountMapper = session.getMapper(AccountMapper::class)
-        val queryWrapper = QueryWrapper.create<Account>()
-            .select("id", "username")
-            .column(Account::password)
-            .from(Account::class.java)
-            .build()
-        val accounts = accountMapper.queryWrapper(queryWrapper)
-        session.close()
-        assertTrue(accounts.isNotEmpty())
-    }
-
-    @Test
-    fun queryWrapperShort() {
-        val session = sqlSessionFactory.openSession()
-        val accountMapper = session.getMapper(AccountMapper::class)
-        val queryWrapper = QueryWrapper.create<Account>()
-            .eq(Account::username, "admin")
-            .build()
-        val accounts = accountMapper.queryWrapper(queryWrapper)
-        session.close()
-        assertTrue(accounts.isNotEmpty())
-    }
-
-    @Test
-    fun selectOneWrapper() {
-        val session = sqlSessionFactory.openSession()
-        val accountMapper = session.getMapper(AccountMapper::class)
-        val queryWrapper = QueryWrapper.create<Account>()
-            .select("id", "username")
-            .column(Account::password)
-            .from(Account::class.java)
-            .eq(Account::username, "admin")
-            .build()
-        val account = accountMapper.selectOneWrapper(queryWrapper)
-        session.close()
-        assertNotNull(account)
-    }
-
-    @Test
-    fun queryWrapperPost() {
-        val session = sqlSessionFactory.openSession()
-        val accountMapper = session.getMapper(AccountMapper::class)
-        val accounts = accountMapper.queryWrapper()
-            .select("id", "username")
-            .column(Account::password)
-            .from(Account::class.java)
-            .list()
-        session.close()
-        assertTrue(accounts.isNotEmpty())
-    }
-
-    @Test
-    fun selectWrapperShortPost() {
-        val session = sqlSessionFactory.openSession()
-        val accountMapper = session.getMapper(AccountMapper::class)
-        val accounts = accountMapper.queryWrapper()
-            .eq(Account::username, "admin")
-            .list()
-        session.close()
-        assertTrue(accounts.isNotEmpty())
-    }
-
-    @Test
-    fun selectOneWrapperPost() {
-        val session = sqlSessionFactory.openSession()
-        val accountMapper = session.getMapper(AccountMapper::class)
-        val account = accountMapper.queryWrapper()
-            .select("id", "username")
-            .column(Account::password)
-            .from(Account::class.java)
-            .eq(Account::username, "admin")
-            .one()
-        session.close()
-        assertNotNull(account)
-    }
-
-    @Test
-    fun queryWrapperNestedCondition() {
-        val session = sqlSessionFactory.openSession()
-        val accountMapper = session.getMapper(AccountMapper::class)
-        val accounts = accountMapper.queryWrapper()
-            .select(Account::id, Account::username, Account::balance)
-            .from(Account::class.java)
-            .eq(Account::id, 1)
-            .or()
-            .eq(Account::id, 2)
-            .and {
-                eq(Account::username, "tang")
-                or {
-                    eq(Account::username, "admin")
-                    or()
-                    eq(Account::balance, BigDecimal(1000.00))
-                }
-            }
-            .or()
-            .eq(Account::id, 3)
-            .list()
-        session.close()
-        assertTrue(accounts.isNotEmpty())
-    }
-
-    @Test
-    fun selectDistinct() {
-        val session = sqlSessionFactory.openSession()
-        val accountMapper = session.getMapper(AccountMapper::class)
-        val accounts = accountMapper.queryWrapper()
-            .distinct()
-            .select("id", "username")
-            .column(Account::password)
-            .from(Account::class.java)
-            .list()
-        session.close()
-        assertTrue(accounts.isNotEmpty())
-    }
-
-    @Test
-    fun selectWrapperGroupBy() {
-        val session = sqlSessionFactory.openSession()
-        val accountMapper = session.getMapper(AccountMapper::class)
-        val accounts = accountMapper.queryWrapper()
-            .select()
-            .columns(Account::username, Account::password)
-            .from(Account::class.java)
-            .groupBy(Account::username)
-            .groupBy(Account::password)
-            .list()
-        session.close()
-        assertTrue(accounts.isNotEmpty())
-    }
-
-    @Test
-    fun selectWrapperOrderBy() {
-        val session = sqlSessionFactory.openSession()
-        val accountMapper = session.getMapper(AccountMapper::class)
-        val accounts = accountMapper.queryWrapper()
-            .select()
-            .columns(Account::username, Account::password)
-            .from(Account::class.java)
-            .orderBy(Account::username)
-            .orderBy(Account::balance, false)
-            .list()
-        session.close()
-        assertTrue(accounts.isNotEmpty())
-    }
-
-    @Test
-    fun selectWrapperGroupByOrderBy() {
-        val session = sqlSessionFactory.openSession()
-        val accountMapper = session.getMapper(AccountMapper::class)
-        val accounts = accountMapper.queryWrapper()
-            .select()
-            .columns(Account::username, Account::password)
-            .from(Account::class.java)
-            .groupBy(Account::username, Account::password)
-            .orderBy(Account::username)
-            .list()
-        session.close()
-        assertTrue(accounts.isNotEmpty())
-    }
-
-    @Test
-    fun selectWrapperHaving() {
-        val session = sqlSessionFactory.openSession()
-        val accountMapper = session.getMapper(AccountMapper::class)
-        val accounts = accountMapper.queryWrapper()
-            .select()
-            .columns(Account::username, Account::password)
-            .from(Account::class.java)
-            .groupBy(Account::username, Account::password)
-            .having {
-                isNotNull(Account::password)
-            }
-            .list()
-        session.close()
-        assertTrue(accounts.isNotEmpty())
-    }
-
-    @Test
-    fun queryWrapperAs() {
-        val session = sqlSessionFactory.openSession()
-        val accountMapper = session.getMapper(AccountAsMapper::class)
-        val queryWrapper = QueryWrapper.create<AccountAs>()
-            .select(AccountAs::id, AccountAs::username, AccountAs::password)
-            .column(SqlAlias(AccountAs::username).`as`(AccountAs::usernameAs))
-            .column(AccountAs::password `as` AccountAs::passwordAs)
-            .from(AccountAs::class.java)
-            .build()
-        val accounts = accountMapper.queryWrapper(queryWrapper)
-        session.close()
-        assertTrue(accounts.isNotEmpty())
-        accounts.forEach {
-            assertEquals(it.username, it.usernameAs)
-            assertEquals(it.password, it.passwordAs)
-        }
-    }
-
-    @Test
-    fun queryWrapperFunction() {
-        val session = sqlSessionFactory.openSession()
-        val accountMapper = session.getMapper(AccountFunctionMapper::class)
-        val queryWrapper = QueryWrapper.create<AccountFunction>()
-            .select(AccountFunction::id, AccountFunction::username)
-            .from(AccountFunction::class.java)
-            .where()
-            .like(SqlFunction.lower(AccountFunction::username), SqlFunction.lower("Tang"))
-            .build()
-        val accounts = accountMapper.queryWrapper(queryWrapper)
-        session.close()
-        assertTrue(accounts.isNotEmpty())
-    }
-
-    @Test
-    fun queryWrapperOneToOne() {
-        val session = sqlSessionFactory.openSession()
-        val accountMapper = session.getMapper(AccountOneToOneMapper::class)
-        val list = accountMapper.queryWrapper()
-            .select()
-            .from(AccountOneToOne::class.java)
-            .leftJoin(Role::class.java)
-            .on(Role::id, Account::id)
-            .list()
-        session.close()
-        assertTrue(list.isNotEmpty())
-    }
-
-    @Test
-    fun queryWrapperOneToOneWithJoinTable() {
-        val session = sqlSessionFactory.openSession()
-        val accountMapper = session.getMapper(AccountOneToOneWIthJoinTableMapper::class)
-        val list = accountMapper.queryWrapper()
-            .select()
-            .from(AccountOneToOneWIthJoinTable::class.java)
-            .leftJoin(AccountRole::class.java).on(AccountRole::accountId, Account::id)
-            .leftJoin(Role::class.java).on(Role::id, AccountRole::roleId)
-            .list()
-        session.close()
-        assertTrue(list.isNotEmpty())
-    }
-
-    @Test
-    fun queryWrapperOneToManyWithJoinTable() {
-        val session = sqlSessionFactory.openSession()
-        val accountMapper = session.getMapper(AccountOneToManyWithJoinTableMapper::class)
-        val list = accountMapper.queryWrapper()
-            .select()
-            .from(AccountOneToManyWithJoinTable::class.java)
-            .leftJoin(AccountRole::class.java).on(AccountRole::accountId, Account::id)
-            .leftJoin(Role::class.java).on(Role::id, AccountRole::roleId)
-            .list()
-        session.close()
-        assertTrue(list.isNotEmpty())
-    }
-
-    @Test
     fun count() {
         val session = sqlSessionFactory.openSession()
         val accountMapper = session.getMapper(AccountMapper::class)
@@ -543,11 +287,11 @@ class SelectTest : BaseDataTest() {
     fun selectOneToManyWithJoinTable() {
         val session = sqlSessionFactory.openSession()
         val accountMapper = session.getMapper(AccountOneToManyWithJoinTableMapper::class)
-        val account = accountMapper.selectWithJoins()
+        val accounts = accountMapper.selectWithJoins()
         session.close()
-        assertNotNull(account)
-        assertNotNull(account.isNotEmpty())
-        account.forEach {
+        assertNotNull(accounts)
+        assertNotNull(accounts.isNotEmpty())
+        accounts.forEach {
             assertNotNull(it.id)
             assertNotNull(it.username)
             assertNotNull(it.roles)
@@ -585,6 +329,262 @@ class SelectTest : BaseDataTest() {
         val list = accountMapper.select(account)
         session.close()
         assertEquals(0, list.size)
+    }
+
+    @Test
+    fun queryWrapper() {
+        val session = sqlSessionFactory.openSession()
+        val accountMapper = session.getMapper(AccountMapper::class)
+        val queryWrapper = QueryWrapper.create<Account>()
+            .select("id", "username")
+            .column(Account::password)
+            .from(Account::class.java)
+            .build()
+        val accounts = accountMapper.queryWrapper(queryWrapper)
+        session.close()
+        assertTrue(accounts.isNotEmpty())
+    }
+
+    @Test
+    fun queryWrapperShort() {
+        val session = sqlSessionFactory.openSession()
+        val accountMapper = session.getMapper(AccountMapper::class)
+        val queryWrapper = QueryWrapper.create<Account>()
+            .eq(Account::username, "admin")
+            .build()
+        val accounts = accountMapper.queryWrapper(queryWrapper)
+        session.close()
+        assertTrue(accounts.isNotEmpty())
+    }
+
+    @Test
+    fun queryOneWrapper() {
+        val session = sqlSessionFactory.openSession()
+        val accountMapper = session.getMapper(AccountMapper::class)
+        val queryWrapper = QueryWrapper.create<Account>()
+            .select("id", "username")
+            .column(Account::password)
+            .from(Account::class.java)
+            .eq(Account::username, "admin")
+            .build()
+        val account = accountMapper.selectOneWrapper(queryWrapper)
+        session.close()
+        assertNotNull(account)
+    }
+
+    @Test
+    fun queryWrapperPost() {
+        val session = sqlSessionFactory.openSession()
+        val accountMapper = session.getMapper(AccountMapper::class)
+        val accounts = accountMapper.queryWrapper()
+            .select("id", "username")
+            .column(Account::password)
+            .from(Account::class.java)
+            .list()
+        session.close()
+        assertTrue(accounts.isNotEmpty())
+    }
+
+    @Test
+    fun queryWrapperShortPost() {
+        val session = sqlSessionFactory.openSession()
+        val accountMapper = session.getMapper(AccountMapper::class)
+        val accounts = accountMapper.queryWrapper()
+            .eq(Account::username, "admin")
+            .list()
+        session.close()
+        assertTrue(accounts.isNotEmpty())
+    }
+
+    @Test
+    fun queryOneWrapperPost() {
+        val session = sqlSessionFactory.openSession()
+        val accountMapper = session.getMapper(AccountMapper::class)
+        val account = accountMapper.queryWrapper()
+            .select("id", "username")
+            .column(Account::password)
+            .from(Account::class.java)
+            .eq(Account::username, "admin")
+            .one()
+        session.close()
+        assertNotNull(account)
+    }
+
+    @Test
+    fun queryWrapperNestedCondition() {
+        val session = sqlSessionFactory.openSession()
+        val accountMapper = session.getMapper(AccountMapper::class)
+        val accounts = accountMapper.queryWrapper()
+            .select(Account::id, Account::username, Account::balance)
+            .from(Account::class.java)
+            .eq(Account::id, 1)
+            .or()
+            .eq(Account::id, 2)
+            .and {
+                eq(Account::username, "tang")
+                or {
+                    eq(Account::username, "admin")
+                    or()
+                    eq(Account::balance, BigDecimal(1000.00))
+                }
+            }
+            .or()
+            .eq(Account::id, 3)
+            .list()
+        session.close()
+        assertTrue(accounts.isNotEmpty())
+    }
+
+    @Test
+    fun queryWrapperDistinct() {
+        val session = sqlSessionFactory.openSession()
+        val accountMapper = session.getMapper(AccountMapper::class)
+        val accounts = accountMapper.queryWrapper()
+            .distinct()
+            .select("id", "username")
+            .column(Account::password)
+            .from(Account::class.java)
+            .list()
+        session.close()
+        assertTrue(accounts.isNotEmpty())
+    }
+
+    @Test
+    fun queryWrapperGroupBy() {
+        val session = sqlSessionFactory.openSession()
+        val accountMapper = session.getMapper(AccountMapper::class)
+        val accounts = accountMapper.queryWrapper()
+            .select()
+            .columns(Account::username, Account::password)
+            .from(Account::class.java)
+            .groupBy(Account::username)
+            .groupBy(Account::password)
+            .list()
+        session.close()
+        assertTrue(accounts.isNotEmpty())
+    }
+
+    @Test
+    fun queryWrapperOrderBy() {
+        val session = sqlSessionFactory.openSession()
+        val accountMapper = session.getMapper(AccountMapper::class)
+        val accounts = accountMapper.queryWrapper()
+            .select()
+            .columns(Account::username, Account::password)
+            .from(Account::class.java)
+            .orderBy(Account::username)
+            .orderBy(Account::balance, false)
+            .list()
+        session.close()
+        assertTrue(accounts.isNotEmpty())
+    }
+
+    @Test
+    fun queryWrapperGroupByOrderBy() {
+        val session = sqlSessionFactory.openSession()
+        val accountMapper = session.getMapper(AccountMapper::class)
+        val accounts = accountMapper.queryWrapper()
+            .select()
+            .columns(Account::username, Account::password)
+            .from(Account::class.java)
+            .groupBy(Account::username, Account::password)
+            .orderBy(Account::username)
+            .list()
+        session.close()
+        assertTrue(accounts.isNotEmpty())
+    }
+
+    @Test
+    fun queryWrapperHaving() {
+        val session = sqlSessionFactory.openSession()
+        val accountMapper = session.getMapper(AccountMapper::class)
+        val accounts = accountMapper.queryWrapper()
+            .select()
+            .columns(Account::username, Account::password)
+            .from(Account::class.java)
+            .groupBy(Account::username, Account::password)
+            .having {
+                isNotNull(Account::password)
+            }
+            .list()
+        session.close()
+        assertTrue(accounts.isNotEmpty())
+    }
+
+    @Test
+    fun queryWrapperAs() {
+        val session = sqlSessionFactory.openSession()
+        val accountMapper = session.getMapper(AccountAsMapper::class)
+        val queryWrapper = QueryWrapper.create<AccountAs>()
+            .select(AccountAs::id, AccountAs::username, AccountAs::password)
+            .column(SqlAlias(AccountAs::username).`as`(AccountAs::usernameAs))
+            .column(AccountAs::password `as` AccountAs::passwordAs)
+            .from(AccountAs::class.java)
+            .build()
+        val accounts = accountMapper.queryWrapper(queryWrapper)
+        session.close()
+        assertTrue(accounts.isNotEmpty())
+        accounts.forEach {
+            assertEquals(it.username, it.usernameAs)
+            assertEquals(it.password, it.passwordAs)
+        }
+    }
+
+    @Test
+    fun queryWrapperFunction() {
+        val session = sqlSessionFactory.openSession()
+        val accountMapper = session.getMapper(AccountFunctionMapper::class)
+        val queryWrapper = QueryWrapper.create<AccountFunction>()
+            .select(AccountFunction::id, AccountFunction::username)
+            .from(AccountFunction::class.java)
+            .where()
+            .like(SqlFunction.lower(AccountFunction::username), SqlFunction.lower("Tang"))
+            .build()
+        val accounts = accountMapper.queryWrapper(queryWrapper)
+        session.close()
+        assertTrue(accounts.isNotEmpty())
+    }
+
+    @Test
+    fun queryWrapperOneToOne() {
+        val session = sqlSessionFactory.openSession()
+        val accountMapper = session.getMapper(AccountOneToOneMapper::class)
+        val list = accountMapper.queryWrapper()
+            .select()
+            .from(AccountOneToOne::class.java)
+            .leftJoin(Role::class.java)
+            .on(Role::id, Account::id)
+            .list()
+        session.close()
+        assertTrue(list.isNotEmpty())
+    }
+
+    @Test
+    fun queryWrapperOneToOneWithJoinTable() {
+        val session = sqlSessionFactory.openSession()
+        val accountMapper = session.getMapper(AccountOneToOneWIthJoinTableMapper::class)
+        val list = accountMapper.queryWrapper()
+            .select()
+            .from(AccountOneToOneWIthJoinTable::class.java)
+            .leftJoin(AccountRole::class.java).on(AccountRole::accountId, Account::id)
+            .leftJoin(Role::class.java).on(Role::id, AccountRole::roleId)
+            .list()
+        session.close()
+        assertTrue(list.isNotEmpty())
+    }
+
+    @Test
+    fun queryWrapperOneToManyWithJoinTable() {
+        val session = sqlSessionFactory.openSession()
+        val accountMapper = session.getMapper(AccountOneToManyWithJoinTableMapper::class)
+        val list = accountMapper.queryWrapper()
+            .select()
+            .from(AccountOneToManyWithJoinTable::class.java)
+            .leftJoin(AccountRole::class.java).on(AccountRole::accountId, Account::id)
+            .leftJoin(Role::class.java).on(Role::id, AccountRole::roleId)
+            .list()
+        session.close()
+        assertTrue(list.isNotEmpty())
     }
 
 }

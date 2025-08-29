@@ -1,3 +1,13 @@
+## 1.0.14
+
+### Bug Fixes
+
+### Dependencies
+
+### Features
+
+ * Enhance join handling in `Reflects` and `ResultSetHandlers` for improved data retrieval and merging
+
 ## 1.0.13
 
 ### Bug Fixes
