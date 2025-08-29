@@ -5,7 +5,7 @@ plugins {
 }
 
 group = "io.github.tangllty"
-version = "1.0.12"
+version = "1.0.13"
 
 repositories {
     gradlePluginPortal()
