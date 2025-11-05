@@ -11,6 +11,15 @@ import java.io.Serializable
  */
 class Page<T> : Serializable {
 
+    constructor()
+
+    constructor(rows: List<T>, total: Long, pageNumber: Long, pageSize: Long) {
+        this.rows = rows
+        this.total = total
+        this.pageNumber = pageNumber
+        this.pageSize = pageSize
+    }
+
     /**
      * Rows data
      */

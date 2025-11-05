@@ -716,6 +716,96 @@ interface BaseMapper<T> {
     }
 
     /**
+     * Paginate with joins by page number and page size
+     *
+     * @param pageNumber Page number
+     * @param pageSize Page size
+     * @return Page
+     */
+    fun paginateWithJoins(pageNumber: Long, pageSize: Long): Page<T>
+
+    /**
+     * Paginate with joins by page number, page size and condition, ignore [KiteConfig.selectiveStrategy] value
+     *
+     * @param pageNumber Page number
+     * @param pageSize Page size
+     * @param entity Entity
+     * @return Page
+     */
+    fun paginateWithJoins(pageNumber: Long, pageSize: Long, entity: T): Page<T>
+
+    /**
+     * Paginate with joins by page number, page size and order by
+     *
+     * @param pageNumber Page number
+     * @param pageSize Page size
+     * @param orderBy Order by
+     * @return Page
+     */
+    fun paginateWithJoins(pageNumber: Long, pageSize: Long, orderBy: OrderItem<T>): Page<T> {
+        return paginateWithJoins(pageNumber, pageSize, arrayOf(orderBy))
+    }
+
+    /**
+     * Paginate with joins by page number, page size and order by
+     *
+     * @param pageNumber Page number
+     * @param pageSize Page size
+     * @param orderBys Order by array
+     * @return Page
+     */
+    fun paginateWithJoins(pageNumber: Long, pageSize: Long, orderBys: Array<OrderItem<T>>): Page<T>
+
+    /**
+     * Paginate with joins by page number, page size and order by
+     *
+     * @param pageNumber Page number
+     * @param pageSize Page size
+     * @param orderBys Order by list
+     * @return Page
+     */
+    fun paginateWithJoins(pageNumber: Long, pageSize: Long, orderBys: List<OrderItem<T>>): Page<T> {
+        return paginateWithJoins(pageNumber, pageSize, orderBys.toTypedArray())
+    }
+
+    /**
+     * Paginate with joins by page number, page size, order by and condition, ignore [KiteConfig.selectiveStrategy] value
+     *
+     * @param pageNumber Page number
+     * @param pageSize Page size
+     * @param entity Entity
+     * @param orderBy Order by
+     * @return Page
+     */
+    fun paginateWithJoins(pageNumber: Long, pageSize: Long, entity: T, orderBy: OrderItem<T>): Page<T> {
+        return paginateWithJoins(pageNumber, pageSize, entity, arrayOf(orderBy))
+    }
+
+    /**
+     * Paginate with joins by page number, page size, order by and condition, ignore [KiteConfig.selectiveStrategy] value
+     *
+     * @param pageNumber Page number
+     * @param pageSize Page size
+     * @param entity Entity
+     * @param orderBys Order by array
+     * @return Page
+     */
+    fun paginateWithJoins(pageNumber: Long, pageSize: Long, entity: T, orderBys: Array<OrderItem<T>>): Page<T>
+
+    /**
+     * Paginate with joins by page number, page size, order by and condition, ignore [KiteConfig.selectiveStrategy] value
+     *
+     * @param pageNumber Page number
+     * @param pageSize Page size
+     * @param entity Entity
+     * @param orderBys Order by list
+     * @return Page
+     */
+    fun paginateWithJoins(pageNumber: Long, pageSize: Long, entity: T, orderBys: List<OrderItem<T>>): Page<T> {
+        return paginateWithJoins(pageNumber, pageSize, entity, orderBys.toTypedArray())
+    }
+
+    /**
      * Get page number from request
      *
      * @param request HttpServletRequest

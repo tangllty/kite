@@ -152,8 +152,6 @@ object BaseMethodName {
         return method.name == DELETE_WRAPPER && method.countIsOne() && method.parameterTypes[0].kotlin == DeleteWrapper::class
     }
 
-    private const val SELECT = "select"
-
     private fun isSelectParameter(method: Method): Boolean {
         if (method.countIsZero()) return true
         if (method.countIsOne()) {
@@ -164,9 +162,10 @@ object BaseMethodName {
         return false
     }
 
+    private const val SELECT = "select"
+
     fun isSelect(method: Method): Boolean {
-        if (method.name != SELECT) return false
-        return isSelectParameter(method)
+        return method.name == SELECT && isSelectParameter(method)
     }
 
     private const val QUERY_WRAPPER = "queryWrapper"
@@ -190,8 +189,7 @@ object BaseMethodName {
     private const val SELECT_WITH_JOINS = "selectWithJoins"
 
     fun isSelectWithJoins(method: Method): Boolean {
-        if (method.name != SELECT_WITH_JOINS) return false
-        return isSelectParameter(method)
+        return method.name == SELECT_WITH_JOINS && isSelectParameter(method)
     }
 
     private  const val SELECT_BY_ID_WITH_JOINS = "selectByIdWithJoins"
@@ -206,11 +204,9 @@ object BaseMethodName {
         return method.name ==  COUNT && (method.countIsZero() || method.countIsOne() && method.firstParameterIsAny())
     }
 
-    private const val PAGINATE = "paginate"
-
-    fun isPaginate(method: Method): Boolean {
-        if (method.name != PAGINATE) return false
-        if (!method.firstParameterIsLong() || !method.secondParameterIsLong()) return false
+    fun isPaginateParameter(method: Method): Boolean {
+        if (method.parameterCount < 2) return false
+        if (method.firstParameterIsLong().not() || method.secondParameterIsLong().not()) return false
         if (method.countIsTwo()) return true
         if (method.parameterCount == 3) {
             if (method.thirdParameterIsAny()) return true
@@ -219,6 +215,18 @@ object BaseMethodName {
         if (method.parameterCount == 4 && isAny(method.parameterTypes[2])
             && isOrderItem(method.parameterTypes[3].componentType)) return true
         return false
+    }
+
+    private const val PAGINATE = "paginate"
+
+    fun isPaginate(method: Method): Boolean {
+        return method.name == PAGINATE && isPaginateParameter(method)
+    }
+
+    private const val PAGINATE_WITH_JOINS = "paginateWithJoins"
+
+    fun isPaginateWithJoins(method: Method): Boolean {
+        return method.name == PAGINATE_WITH_JOINS && isPaginateParameter(method)
     }
 
     fun isBaseMethod(method: Method): Boolean {
@@ -231,7 +239,7 @@ object BaseMethodName {
             QUERY_WRAPPER, SELECT_ONE_WRAPPER,
             SELECT_WITH_JOINS, SELECT_BY_ID_WITH_JOINS,
             COUNT,
-            PAGINATE -> true
+            PAGINATE, PAGINATE_WITH_JOINS -> true
             else -> false
         }
         if (!isBaseMethodName) return false
@@ -258,6 +266,7 @@ object BaseMethodName {
             SELECT_BY_ID_WITH_JOINS -> isSelectByIdWithJoins(method)
             COUNT -> isCount(method)
             PAGINATE -> isPaginate(method)
+            PAGINATE_WITH_JOINS -> isPaginateWithJoins(method)
             else -> false
         }
 

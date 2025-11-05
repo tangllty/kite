@@ -256,6 +256,7 @@ class DefaultSqlSession(
             BaseMethodName.isSelectByIdWithJoins(method) -> selectByIdWithJoins(method, mapperInterface, type, getFirstArg(args))
             BaseMethodName.isCount(method) -> count(method, mapperInterface, type, args?.first())
             BaseMethodName.isPaginate(method) -> processPaginate(method, mapperInterface, type, args)
+            BaseMethodName.isPaginateWithJoins(method) -> processPaginateWithJoins(method, mapperInterface, type, args)
             else -> throw IllegalArgumentException("Unknown method: ${getMethodSignature(method)}")
         }
     }
@@ -588,18 +589,67 @@ class DefaultSqlSession(
 
     override fun <T> paginate(method: Method, mapperInterface: Class<T>, type: Class<T>, pageNumber: Long, pageSize: Long, parameter: Any?, orderBys: Array<OrderItem<T>>): Page<T> {
         val start = nanoTime()
-        val reasonable = reasonable(method, mapperInterface, type, pageNumber, pageSize)
-        val reasonablePageNumber = reasonable.first
-        val total = reasonable.second
+        val (reasonablePageNumber, total) = reasonable(method, mapperInterface, type, pageNumber, pageSize)
         val paginate = sqlProvider.paginate(type, parameter, orderBys, reasonablePageNumber, pageSize)
         val list = executor.query(paginate, type)
         log(method, mapperInterface, paginate, list.size, elapsedSince(start))
-        val page = Page<T>()
-        page.rows = list
-        page.total = total
-        page.pageNumber = reasonablePageNumber
-        page.pageSize = pageSize
-        return page
+        return Page(list, total, reasonablePageNumber, pageSize)
+    }
+
+    private fun <T> processPaginateWithJoins(method: Method, mapperInterface: Class<T>, type: Class<T>, args: Array<out Any>?): Page<T> {
+        if (args == null || args.isEmpty()) {
+            return paginateWithJoins(method, mapperInterface, type, PageConfig.pageNumber, PageConfig.pageSize, null, emptyArray())
+        }
+        val pageNumber = args[0] as Long
+        val pageSize = args[1] as Long
+        if (args.size == 2) {
+            return paginateWithJoins(method, mapperInterface, type, pageNumber, pageSize, null, emptyArray())
+        }
+        if (!args[2].javaClass.isArray) {
+            return paginateWithJoins(method, mapperInterface, type, pageNumber, pageSize, args[2], emptyArray())
+        }
+        val orderByArray = args[2] as Array<*>
+        val orderBys = orderByArray.filterIsInstance<OrderItem<T>>().toTypedArray()
+        val parameter = args.getOrNull(3)
+        return paginateWithJoins(method, mapperInterface, type, pageNumber, pageSize, parameter, orderBys)
+    }
+
+override fun <T> paginateWithJoins(method: Method, mapperInterface: Class<T>, type: Class<T>, pageNumber: Long, pageSize: Long, parameter: Any?, orderBys: Array<OrderItem<T>>): Page<T> {
+        val start = nanoTime()
+        val (reasonablePageNumber, total) = reasonable(method, mapperInterface, type, pageNumber, pageSize)
+        val paginate = sqlProvider.paginateWithJoins(type, parameter, orderBys, reasonablePageNumber, pageSize)
+        val list = executor.query(paginate, type)
+        log(method, mapperInterface, paginate, list.size, elapsedSince(start))
+        val joins = Reflects.getIterableJoins(type)
+        if (joins.isEmpty()) {
+            return Page(list, total, reasonablePageNumber, pageSize)
+        }
+        list.forEach {
+            joins.forEach { join ->
+                val joinStart = nanoTime()
+                val joinType = (join.genericType as ParameterizedType).actualTypeArguments[0] as Class<*>
+                val joinAnnotation = join.getAnnotation(Join::class.java)!!
+                val joinTable = joinAnnotation.joinTable
+                val joinSelfField = joinAnnotation.joinSelfColumn
+                val joinTargetField = joinAnnotation.joinTargetColumn
+                val selfField = Reflects.getField(type, joinAnnotation.selfField)
+                Reflects.makeAccessible(selfField!!, it as Any)
+                val selfFieldValue = Reflects.getValue(selfField, it)
+                var joinSelect = sqlProvider.selectWithJoins(joinType, null, emptyArray())
+                val joinSqlStatement = if (joinTable.isNotEmpty() && joinSelfField.isNotEmpty() && joinTargetField.isNotEmpty()) {
+                    sqlProvider.getNestedSelect(joinSelect.sql, joinAnnotation.targetField, listOf(selfFieldValue), joinAnnotation)
+                } else {
+                    sqlProvider.getInCondition(joinSelect.sql, joinAnnotation.targetField, listOf(selfFieldValue))
+                }
+                val parameters = joinSelect.parameters.plus(joinSqlStatement.parameters).toMutableList()
+                joinSelect = SqlStatement(joinSqlStatement.sql, parameters)
+                val joinList = executor.query(joinSelect, joinType)
+                log(method, mapperInterface, joinSelect, joinList.size, nanoTime() - joinStart)
+                Reflects.makeAccessible(join, it as Any)
+                join.set(it, joinList)
+            }
+        }
+        return Page(list, total, reasonablePageNumber, pageSize)
     }
 
     override fun commit() {

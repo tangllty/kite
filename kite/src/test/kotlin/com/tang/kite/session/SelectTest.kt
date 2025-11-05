@@ -5,6 +5,7 @@ import com.tang.kite.paginate.OrderItem
 import com.tang.kite.session.entity.Account
 import com.tang.kite.session.entity.AccountAs
 import com.tang.kite.session.entity.AccountFunction
+import com.tang.kite.session.entity.AccountOneToMany
 import com.tang.kite.session.entity.AccountOneToManyWithJoinTable
 import com.tang.kite.session.entity.AccountOneToOne
 import com.tang.kite.session.entity.AccountOneToOneWIthJoinTable
@@ -292,6 +293,162 @@ class SelectTest : BaseDataTest() {
         assertNotNull(accounts)
         assertNotNull(accounts.isNotEmpty())
         accounts.forEach {
+            assertNotNull(it.id)
+            assertNotNull(it.username)
+            assertNotNull(it.roles)
+            it.roles!!.forEach { role ->
+                assertNotNull(role.id)
+                assertNotNull(role.name)
+            }
+        }
+    }
+
+    @Test
+    fun paginateOneToOne() {
+        val session = sqlSessionFactory.openSession()
+        val accountMapper = session.getMapper(AccountOneToOneMapper::class);
+        val page = accountMapper.paginateWithJoins(2, 5)
+        session.close()
+        assertNotNull(page)
+        val rows = page.rows
+        assertNotNull(rows)
+        assertTrue(rows.isNotEmpty())
+        rows.forEach {
+            assertNotNull(it.id)
+            assertNotNull(it.username)
+            assertNotNull(it.role)
+        }
+    }
+
+    @Test
+    fun paginateOneToOneWithJoinTable() {
+        val session = sqlSessionFactory.openSession()
+        val accountMapper = session.getMapper(AccountOneToOneWIthJoinTableMapper::class)
+        val page = accountMapper.paginateWithJoins(2, 5)
+        session.close()
+        assertNotNull(page)
+        val rows = page.rows
+        assertNotNull(rows)
+        assertTrue(rows.isNotEmpty())
+        rows.forEach {
+            assertNotNull(it.id)
+            assertNotNull(it.username)
+            assertNotNull(it.role)
+            assertNotNull(it.role!!.id)
+            assertNotNull(it.role!!.name)
+        }
+    }
+
+    @Test
+    fun paginateOneToMany() {
+        val session = sqlSessionFactory.openSession()
+        val accountMapper = session.getMapper(AccountOneToManyMapper::class)
+        val page = accountMapper.paginateWithJoins(2, 5)
+        session.close()
+        assertNotNull(page)
+        val rows = page.rows
+        assertNotNull(rows)
+        assertTrue(rows.isNotEmpty())
+        rows.forEach {
+            assertNotNull(it.id)
+            assertNotNull(it.username)
+            assertNotNull(it.roles)
+            it.roles!!.forEach { role ->
+                assertNotNull(role.id)
+                assertNotNull(role.name)
+            }
+        }
+    }
+
+    @Test
+    fun paginateOneToManyWithJoinTable() {
+        val session = sqlSessionFactory.openSession()
+        val accountMapper = session.getMapper(AccountOneToManyWithJoinTableMapper::class)
+        val page = accountMapper.paginateWithJoins(2, 5)
+        session.close()
+        assertNotNull(page)
+        val rows = page.rows
+        assertNotNull(rows)
+        assertTrue(rows.isNotEmpty())
+        rows.forEach {
+            assertNotNull(it.id)
+            assertNotNull(it.username)
+            assertNotNull(it.roles)
+            it.roles!!.forEach { role ->
+                assertNotNull(role.id)
+                assertNotNull(role.name)
+            }
+        }
+    }
+
+    @Test
+    fun paginateConditionOneToOne() {
+        val session = sqlSessionFactory.openSession()
+        val accountMapper = session.getMapper(AccountOneToOneMapper::class)
+        val page = accountMapper.paginateWithJoins(2, 5, AccountOneToOne(username = "tang"))
+        session.close()
+        assertNotNull(page)
+        val rows = page.rows
+        assertNotNull(rows)
+        assertTrue(rows.isNotEmpty())
+        rows.forEach {
+            assertNotNull(it.id)
+            assertNotNull(it.username)
+            assertNotNull(it.role)
+        }
+    }
+
+    @Test
+    fun paginateConditionOneToOneWithJoinTable() {
+        val session = sqlSessionFactory.openSession()
+        val accountMapper = session.getMapper(AccountOneToOneWIthJoinTableMapper::class)
+        val page = accountMapper.paginateWithJoins(2, 5, AccountOneToOneWIthJoinTable(username = "tang"))
+        session.close()
+        assertNotNull(page)
+        val rows = page.rows
+        assertNotNull(rows)
+        assertTrue(rows.isNotEmpty())
+        rows.forEach {
+            assertNotNull(it.id)
+            assertNotNull(it.username)
+            assertNotNull(it.role)
+            assertNotNull(it.role!!.id)
+            assertNotNull(it.role!!.name)
+        }
+    }
+
+    @Test
+    fun paginateConditionOneToMany() {
+        val session = sqlSessionFactory.openSession()
+        val accountMapper = session.getMapper(AccountOneToManyMapper::class)
+        val page = accountMapper.paginateWithJoins(2, 5, AccountOneToMany(username = "tang"))
+        session.close()
+        assertNotNull(page)
+        val rows = page.rows
+        assertNotNull(rows)
+        assertTrue(rows.isNotEmpty())
+        rows.forEach {
+            assertNotNull(it.id)
+            assertNotNull(it.username)
+            assertNotNull(it.roles)
+            it.roles!!.forEach { role ->
+                assertNotNull(role.id)
+                assertNotNull(role.name)
+            }
+        }
+    }
+
+    @Test
+    fun paginateConditionOneToManyWithJoinTable() {
+        val session = sqlSessionFactory.openSession()
+        val accountMapper = session.getMapper(AccountOneToManyWithJoinTableMapper::class)
+        val page = accountMapper.paginateWithJoins(2, 5, AccountOneToManyWithJoinTable(username = "tang"))
+        session.close()
+        assertNotNull(page)
+        val rows = page.rows
+        assertNotNull(rows)
+        assertTrue(rows.isNotEmpty())
+        rows.forEach {
             assertNotNull(it.id)
             assertNotNull(it.username)
             assertNotNull(it.roles)

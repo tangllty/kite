@@ -409,4 +409,44 @@ abstract class AbstractSqlProvider : SqlProvider {
         return SqlStatement(getSql(sql), parameters)
     }
 
+    override fun <T> paginateWithJoins(clazz: Class<T>, entity: Any?, orderBys: Array<OrderItem<T>>, pageNumber: Long, pageSize: Long, withAlias: Boolean): SqlStatement {
+        val sql = StringBuilder()
+        val parameters = mutableListOf<Any?>()
+        val tableName = getTableName(clazz)
+        val tableAlias = getTableAlias(clazz)
+        val joins = Reflects.getJoins(clazz)
+        val addAlias = joins.isNotEmpty()
+        sql.append(SELECT)
+        val sqlFields = getSqlFields(clazz).toMutableList()
+        joins.forEach { sqlFields.addAll(getSqlFields(it.type)) }
+        sql.append(getColumns(sqlFields, addAlias))
+        sql.append(FROM, tableName)
+        if (addAlias) {
+            sql.append(SPACE, tableAlias)
+        }
+        joins.forEach {
+            val joinTableAlias = getTableAlias(it.type)
+            val join = it.getAnnotation(Join::class.java)!!
+            val selfField = join.selfField
+            val targetField = join.targetField
+            val joinTable = join.joinTable
+            val joinSelfField = join.joinSelfColumn
+            val joinTargetField = join.joinTargetColumn
+            if (joinTable.isNotEmpty() && joinSelfField.isNotEmpty() && joinTargetField.isNotEmpty()) {
+                val innerJoinTableAlias = joinTable.split("_").joinToString("") { it.first().toString() }
+                sql.append(LEFT_JOIN, joinTable, SPACE, innerJoinTableAlias, ON)
+                sql.append(innerJoinTableAlias, DOT, joinSelfField, EQUAL, tableAlias, DOT, selfField)
+                sql.append(LEFT_JOIN, getTableName(it.type), SPACE, joinTableAlias, ON)
+                sql.append(joinTableAlias, DOT, targetField, EQUAL, innerJoinTableAlias, DOT, joinTargetField)
+            } else {
+                sql.append(LEFT_JOIN, getTableName(it.type), SPACE, joinTableAlias, ON)
+                sql.append(tableAlias, DOT, selfField, EQUAL, joinTableAlias, DOT, targetField)
+            }
+        }
+        sql.append(getWhere(parameters, clazz, entity, addAlias))
+        sql.append(getOrderBy(orderBys, addAlias))
+        sql.append(getLimit(parameters, pageNumber, pageSize))
+        return SqlStatement(getSql(sql), parameters)
+    }
+
 }

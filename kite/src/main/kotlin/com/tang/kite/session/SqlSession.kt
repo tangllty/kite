@@ -65,6 +65,8 @@ interface SqlSession : AutoCloseable {
 
     fun <T> paginate(method: Method, mapperInterface: Class<T>, type: Class<T>, pageNumber: Long, pageSize: Long, parameter: Any?, orderBys: Array<OrderItem<T>>): Page<T>
 
+    fun <T> paginateWithJoins(method: Method, mapperInterface: Class<T>, type: Class<T>, pageNumber: Long, pageSize: Long, parameter: Any?, orderBys: Array<OrderItem<T>>): Page<T>
+
     fun commit()
 
     fun rollback()

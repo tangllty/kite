@@ -7,6 +7,7 @@
 ### Features
 
  * Enhance join handling in `Reflects` and `ResultSetHandlers` for improved data retrieval and merging
+ * Add pagination support with joins in SQL provider and mappers
 
 ## 1.0.13
 
