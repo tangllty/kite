@@ -15,7 +15,7 @@ import com.tang.kite.wrapper.where.AbstractWhereWrapper
  *
  * @author Tang
  */
-class DeleteWrapper<T> : AbstractWhereWrapper<DeleteWhereWrapper<T>, T>, Wrapper<T> {
+class DeleteWrapper<T : Any> : AbstractWhereWrapper<DeleteWhereWrapper<T>, T>, Wrapper<T> {
 
     private lateinit var tableClass: Class<T>
 
@@ -44,7 +44,7 @@ class DeleteWrapper<T> : AbstractWhereWrapper<DeleteWhereWrapper<T>, T>, Wrapper
          * @return DeleteWrapper
          */
         @JvmStatic
-        fun <T> create(): DeleteWrapper<T> {
+        fun <T : Any> create(): DeleteWrapper<T> {
             return DeleteWrapper()
         }
     }

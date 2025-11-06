@@ -13,7 +13,7 @@ import kotlin.reflect.KMutableProperty1
  *
  * @author Tang
  */
-class QuerySelectWrapper<T>(
+class QuerySelectWrapper<T : Any>(
 
     private val queryWrapper: QueryWrapper<T>,
 

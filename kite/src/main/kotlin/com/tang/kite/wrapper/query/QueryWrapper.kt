@@ -17,7 +17,7 @@ import kotlin.reflect.KMutableProperty1
  *
  * @author Tang
  */
-class QueryWrapper<T> : AbstractWhereWrapper<QueryWhereWrapper<T>, T>, Wrapper<T> {
+class QueryWrapper<T : Any> : AbstractWhereWrapper<QueryWhereWrapper<T>, T>, Wrapper<T> {
 
     private var distinct: Boolean = false
 
@@ -45,7 +45,7 @@ class QueryWrapper<T> : AbstractWhereWrapper<QueryWhereWrapper<T>, T>, Wrapper<T
          * Create a new QueryWrapper instance
          */
         @JvmStatic
-        fun <T> create(): QueryWrapper<T> {
+        fun <T : Any> create(): QueryWrapper<T> {
             return QueryWrapper()
         }
 

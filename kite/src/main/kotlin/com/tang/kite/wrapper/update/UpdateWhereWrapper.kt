@@ -8,7 +8,7 @@ import com.tang.kite.wrapper.where.AbstractWhereWrapper
  *
  * @author Tang
  */
-class UpdateWhereWrapper<T>(
+class UpdateWhereWrapper<T : Any>(
 
     private val updateWrapper: UpdateWrapper<T>,
 

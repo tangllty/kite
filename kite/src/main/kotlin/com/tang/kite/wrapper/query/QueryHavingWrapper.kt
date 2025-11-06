@@ -10,7 +10,7 @@ import kotlin.reflect.KMutableProperty1
 /**
  * @author Tang
  */
-class QueryHavingWrapper<R, T>(
+class QueryHavingWrapper<R, T : Any>(
 
     private val wrapper: Wrapper<T>,
 

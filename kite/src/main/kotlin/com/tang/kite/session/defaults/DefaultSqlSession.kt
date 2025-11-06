@@ -614,7 +614,7 @@ class DefaultSqlSession(
         return paginateWithJoins(method, mapperInterface, type, pageNumber, pageSize, parameter, orderBys)
     }
 
-override fun <T> paginateWithJoins(method: Method, mapperInterface: Class<T>, type: Class<T>, pageNumber: Long, pageSize: Long, parameter: Any?, orderBys: Array<OrderItem<T>>): Page<T> {
+    override fun <T> paginateWithJoins(method: Method, mapperInterface: Class<T>, type: Class<T>, pageNumber: Long, pageSize: Long, parameter: Any?, orderBys: Array<OrderItem<T>>): Page<T> {
         val start = nanoTime()
         val (reasonablePageNumber, total) = reasonable(method, mapperInterface, type, pageNumber, pageSize)
         val paginate = sqlProvider.paginateWithJoins(type, parameter, orderBys, reasonablePageNumber, pageSize)

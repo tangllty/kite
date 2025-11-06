@@ -14,7 +14,7 @@ import kotlin.reflect.jvm.javaField
  *
  * @author Tang
  */
-open class UpdateSetWrapper<T>() : AbstractWhereWrapper<UpdateWhereWrapper<T>, T>() {
+open class UpdateSetWrapper<T : Any>() : AbstractWhereWrapper<UpdateWhereWrapper<T>, T>() {
 
     lateinit var updateWrapper: UpdateWrapper<T>
 

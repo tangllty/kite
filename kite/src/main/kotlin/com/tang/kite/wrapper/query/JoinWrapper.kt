@@ -15,7 +15,7 @@ import kotlin.reflect.KMutableProperty1
 /**
  * @author Tang
  */
-class JoinWrapper<T>(
+class JoinWrapper<T : Any>(
 
     private val queryWhereWrapper: QueryWhereWrapper<T>,
 

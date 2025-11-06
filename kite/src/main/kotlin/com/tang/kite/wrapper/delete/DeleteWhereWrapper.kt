@@ -8,7 +8,7 @@ import com.tang.kite.wrapper.where.AbstractWhereWrapper
  *
  * @author Tang
  */
-class DeleteWhereWrapper<T>(
+class DeleteWhereWrapper<T : Any>(
 
     private val deleteWrapper: DeleteWrapper<T>,
 

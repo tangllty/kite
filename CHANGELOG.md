@@ -9,6 +9,7 @@
  * Enhance join handling in `Reflects` and `ResultSetHandlers` for improved data retrieval and merging
  * Add pagination support with joins in SQL provider and mappers
  * Add unit tests for `CaseFormat` conversion functions
+ * Add type constraint for generic parameters in mapper and wrapper classes
 
 ## 1.0.13
 

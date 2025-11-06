@@ -14,7 +14,7 @@ import com.tang.kite.wrapper.statement.LogicalStatement
  *
  * @author Tang
  */
-class UpdateWrapper<T> : UpdateSetWrapper<T>, Wrapper<T> {
+class UpdateWrapper<T : Any> : UpdateSetWrapper<T>, Wrapper<T> {
 
     private lateinit var tableClass: Class<T>
 
@@ -45,7 +45,7 @@ class UpdateWrapper<T> : UpdateSetWrapper<T>, Wrapper<T> {
          * @return UpdateWrapper
          */
         @JvmStatic
-        fun <T> create(): UpdateWrapper<T> {
+        fun <T : Any> create(): UpdateWrapper<T> {
             return UpdateWrapper()
         }
 

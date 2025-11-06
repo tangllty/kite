@@ -17,7 +17,7 @@ import java.io.Serializable
  *
  * @author Tang
  */
-interface BaseMapper<T> {
+interface BaseMapper<T : Any> {
 
     /**
      * Insert entity

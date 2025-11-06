@@ -5,7 +5,7 @@ package com.tang.kite.wrapper.query
  *
  * @author Tang
  */
-interface QueryBuilder<T> {
+interface QueryBuilder<T : Any> {
 
     /**
      * Execute the query wrapper and return a list of results

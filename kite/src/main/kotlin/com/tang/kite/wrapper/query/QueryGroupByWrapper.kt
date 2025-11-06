@@ -11,7 +11,7 @@ import kotlin.reflect.KMutableProperty1
 /**
  * @author Tang
  */
-class QueryGroupByWrapper<R, T>(
+class QueryGroupByWrapper<R, T : Any>(
 
     private val wrapper: Wrapper<T>,
 

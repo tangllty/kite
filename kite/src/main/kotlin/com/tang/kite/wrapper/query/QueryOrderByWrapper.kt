@@ -7,7 +7,7 @@ import com.tang.kite.wrapper.where.AbstractOrderByWrapper
 /**
  * @author Tang
  */
-class QueryOrderByWrapper<R, T>(
+class QueryOrderByWrapper<R, T : Any>(
 
     private val wrapper: Wrapper<T>,
 
