@@ -10,6 +10,7 @@
  * Add pagination support with joins in SQL provider and mappers
  * Add unit tests for `CaseFormat` conversion functions
  * Add type constraint for generic parameters in mapper and wrapper classes
+ * Add support for Kotlin class references in methods
 
 ## 1.0.13
 

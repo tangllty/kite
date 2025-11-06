@@ -10,6 +10,7 @@ import com.tang.kite.wrapper.enumeration.LogicalOperator
 import com.tang.kite.wrapper.statement.ComparisonStatement
 import com.tang.kite.wrapper.statement.LogicalStatement
 import com.tang.kite.wrapper.where.WrapperBuilder
+import kotlin.reflect.KClass
 import kotlin.reflect.KMutableProperty1
 
 /**
@@ -31,16 +32,28 @@ class JoinWrapper<T : Any>(
         return this
     }
 
+    fun leftJoin(clazz: KClass<*>) : JoinWrapper<T> {
+        return leftJoin(clazz.java)
+    }
+
     fun rightJoin(clazz: Class<*>) : JoinWrapper<T> {
         joinedClass.add(clazz)
         joinTables.add(JoinTable(clazz, JoinType.RIGHT))
         return this
     }
 
+    fun rightJoin(clazz: KClass<*>) : JoinWrapper<T> {
+        return rightJoin(clazz.java)
+    }
+
     fun innerJoin(clazz: Class<*>) : JoinWrapper<T> {
         joinedClass.add(clazz)
         joinTables.add(JoinTable(clazz, JoinType.INNER))
         return this
+    }
+
+    fun innerJoin(clazz: KClass<*>) : JoinWrapper<T> {
+        return innerJoin(clazz.java)
     }
 
     fun on(left: String, right: String): JoinWrapper<T> {

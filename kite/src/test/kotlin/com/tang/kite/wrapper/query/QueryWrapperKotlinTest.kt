@@ -13,7 +13,7 @@ class QueryWrapperKotlinTest : QueryWrapperTest, QueryWrapperConstants() {
     override fun selectAll() {
         val sqlStatement = QueryWrapper<Account>()
             .select()
-            .from(Account::class.java)
+            .from(Account::class)
             .build()
             .getSqlStatement()
         assertEquals(selectFromAccount, sqlStatement.sql)
@@ -23,7 +23,7 @@ class QueryWrapperKotlinTest : QueryWrapperTest, QueryWrapperConstants() {
     override fun selectSpecificColumns() {
         val sqlStatement = QueryWrapper<Account>()
             .select(Account::id, Account::username, Account::createTime)
-            .from(Account::class.java)
+            .from(Account::class)
             .build()
             .getSqlStatement()
         assertEquals("select id, username, create_time from account", sqlStatement.sql)
@@ -33,7 +33,7 @@ class QueryWrapperKotlinTest : QueryWrapperTest, QueryWrapperConstants() {
     override fun selectWhere() {
         val sqlStatement = QueryWrapper<Account>()
             .select()
-            .from(Account::class.java)
+            .from(Account::class)
             .where()
             .eq(Account::id, 1)
             .eq(Account::username, "tang")
@@ -47,7 +47,7 @@ class QueryWrapperKotlinTest : QueryWrapperTest, QueryWrapperConstants() {
     override fun selectGroupBy() {
         val sqlStatement = QueryWrapper<Account>()
             .select()
-            .from(Account::class.java)
+            .from(Account::class)
             .groupBy(Account::username)
             .build()
             .getSqlStatement()
@@ -58,7 +58,7 @@ class QueryWrapperKotlinTest : QueryWrapperTest, QueryWrapperConstants() {
     override fun selectHaving() {
         val sqlStatement = QueryWrapper<Account>()
             .select()
-            .from(Account::class.java)
+            .from(Account::class)
             .groupBy(Account::username)
             .having()
             .eq(Account::username, "Tang")
@@ -72,7 +72,7 @@ class QueryWrapperKotlinTest : QueryWrapperTest, QueryWrapperConstants() {
     override fun selectOrderBy() {
         val sqlStatement = QueryWrapper<Account>()
             .select()
-            .from(Account::class.java)
+            .from(Account::class)
             .orderBy(Account::id)
             .build()
             .getSqlStatement()

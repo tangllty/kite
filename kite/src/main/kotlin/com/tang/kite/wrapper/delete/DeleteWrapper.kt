@@ -9,6 +9,7 @@ import com.tang.kite.utils.Reflects
 import com.tang.kite.wrapper.Wrapper
 import com.tang.kite.wrapper.statement.LogicalStatement
 import com.tang.kite.wrapper.where.AbstractWhereWrapper
+import kotlin.reflect.KClass
 
 /**
  * Delete wrapper for delete operation
@@ -67,6 +68,15 @@ class DeleteWrapper<T : Any> : AbstractWhereWrapper<DeleteWhereWrapper<T>, T>, W
      */
     fun from(clazz: Class<T>): DeleteWhereWrapper<T> {
         return from(Reflects.getTableName(clazz))
+    }
+
+    /**
+     * Set the table name by kotlin class
+     *
+     * @param clazz entity class
+     */
+    fun from(clazz: KClass<T>): DeleteWhereWrapper<T> {
+        return from(clazz.java)
     }
 
     fun setTableClassIfNotSet(clazz: Class<T>) {

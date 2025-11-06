@@ -27,7 +27,7 @@ class ResourcesTest {
     @Test
     fun getKiteAsObject() {
         val inputStream = Resources.getResourceAsStream(resource)
-        val kiteProperties = Resources.getKiteAsObject(inputStream, TestKiteProperties::class.java)
+        val kiteProperties = Resources.getKiteAsObject(inputStream, TestKiteProperties::class)
         assertNotNull(kiteProperties)
     }
 

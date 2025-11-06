@@ -8,6 +8,7 @@ import com.tang.kite.sql.SqlStatement
 import com.tang.kite.utils.Reflects
 import com.tang.kite.wrapper.Wrapper
 import com.tang.kite.wrapper.statement.LogicalStatement
+import kotlin.reflect.KClass
 
 /**
  * Update wrapper for update operation
@@ -70,6 +71,15 @@ class UpdateWrapper<T : Any> : UpdateSetWrapper<T>, Wrapper<T> {
      */
     fun from(clazz: Class<T>): UpdateSetWrapper<T> {
         return from(Reflects.getTableName(clazz))
+    }
+
+    /**
+     * Set the table name by kotlin class
+     *
+     * @param clazz entity class
+     */
+    fun from(clazz: KClass<T>): UpdateSetWrapper<T> {
+        return from(clazz.java)
     }
 
     fun setTableClassIfNotSet(clazz: Class<T>) {

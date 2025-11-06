@@ -5,6 +5,7 @@ import com.tang.kite.utils.Reflects
 import org.yaml.snakeyaml.Yaml
 import java.io.InputStream
 import java.lang.reflect.Field
+import kotlin.reflect.KClass
 
 /**
  * @author Tang
@@ -28,6 +29,10 @@ object Resources {
     fun <T> getKiteAsObject(inputStream: InputStream, clazz: Class<T>): T {
         val kiteProperties = getKiteProperties(inputStream)
         return propertyToObject(kiteProperties, clazz)
+    }
+
+    fun <T : Any> getKiteAsObject(inputStream: InputStream, clazz: KClass<T>): T {
+        return getKiteAsObject(inputStream, clazz.java)
     }
 
     @JvmStatic

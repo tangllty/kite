@@ -6,6 +6,7 @@ import com.tang.kite.enumeration.SqlType
 import com.tang.kite.function.SFunction
 import com.tang.kite.utils.Reflects
 import com.tang.kite.wrapper.Column
+import kotlin.reflect.KClass
 import kotlin.reflect.KMutableProperty1
 
 /**
@@ -126,8 +127,18 @@ class QuerySelectWrapper<T : Any>(
      * @param clazz entity class
      */
     fun from(clazz: Class<T>): QueryWhereWrapper<T> {
+        clazz.kotlin
         this.tableClass = clazz
         return from(Reflects.getTableName(clazz))
+    }
+
+    /**
+     * Set the table name by class
+     *
+     * @param clazz entity class
+     */
+    fun from(clazz: KClass<T>): QueryWhereWrapper<T> {
+        return from(clazz.java)
     }
 
     fun setTableClassIfNotSet(clazz: Class<T>) {

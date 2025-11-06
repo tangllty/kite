@@ -5,6 +5,7 @@ import com.tang.kite.paginate.OrderItem
 import com.tang.kite.wrapper.Column
 import com.tang.kite.wrapper.statement.LogicalStatement
 import com.tang.kite.wrapper.where.AbstractWhereWrapper
+import kotlin.reflect.KClass
 import kotlin.reflect.KMutableProperty1
 
 /**
@@ -61,6 +62,12 @@ class QueryWhereWrapper<T : Any>(
         return joinedClass
     }
 
+    /**
+     * Left join operation
+     *
+     * @param clazz class
+     * @return JoinWrapper<T>
+     */
     fun leftJoin(clazz: Class<*>) : JoinWrapper<T> {
         multiTableQuery = true
         joinedClass.add(clazz)
@@ -68,6 +75,22 @@ class QueryWhereWrapper<T : Any>(
         return joinWrapper
     }
 
+    /**
+     * Left join operation
+     *
+     * @param clazz class
+     * @return JoinWrapper<T>
+     */
+    fun leftJoin(clazz: KClass<*>) : JoinWrapper<T> {
+        return leftJoin(clazz.java)
+    }
+
+    /**
+     * Right join operation
+     *
+     * @param clazz class
+     * @return JoinWrapper<T>
+     */
     fun rightJoin(clazz: Class<*>) : JoinWrapper<T> {
         multiTableQuery = true
         joinedClass.add(clazz)
@@ -75,11 +98,37 @@ class QueryWhereWrapper<T : Any>(
         return joinWrapper
     }
 
+    /**
+     * Right join operation
+     *
+     * @param clazz class
+     * @return JoinWrapper<T>
+     */
+    fun rightJoin(clazz: KClass<*>) : JoinWrapper<T> {
+        return rightJoin(clazz.java)
+    }
+
+    /**
+     * Inner join operation
+     *
+     * @param clazz class
+     * @return JoinWrapper<T>
+     */
     fun innerJoin(clazz: Class<*>) : JoinWrapper<T> {
         multiTableQuery = true
         joinedClass.add(clazz)
         joinWrapper.joinTables.add(JoinTable(clazz, JoinType.INNER))
         return joinWrapper
+    }
+
+    /**
+     * Inner join operation
+     *
+     * @param clazz class
+     * @return JoinWrapper<T>
+     */
+    fun innerJoin(clazz: KClass<*>) : JoinWrapper<T> {
+       return innerJoin(clazz.java)
     }
 
     /**
