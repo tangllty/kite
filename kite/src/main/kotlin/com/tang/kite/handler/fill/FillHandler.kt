@@ -1,5 +1,6 @@
 package com.tang.kite.handler.fill
 
+import com.tang.kite.sql.enumeration.ComparisonOperator
 import java.lang.reflect.Field
 
 /**

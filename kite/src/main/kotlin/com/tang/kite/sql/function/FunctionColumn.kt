@@ -1,6 +1,6 @@
 package com.tang.kite.sql.function
 
-import com.tang.kite.wrapper.Column
+import com.tang.kite.sql.Column
 
 /**
  * @author Tang

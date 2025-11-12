@@ -4,7 +4,7 @@ import com.tang.kite.constants.SqlString.QUESTION_MARK
 import com.tang.kite.constants.SqlString.SET
 import com.tang.kite.function.SFunction
 import com.tang.kite.utils.Reflects
-import com.tang.kite.wrapper.statement.LogicalStatement
+import com.tang.kite.sql.statement.LogicalStatement
 import com.tang.kite.wrapper.where.AbstractWhereWrapper
 import kotlin.reflect.KMutableProperty1
 import kotlin.reflect.jvm.javaField

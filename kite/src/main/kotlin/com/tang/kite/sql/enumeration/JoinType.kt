@@ -1,4 +1,4 @@
-package com.tang.kite.wrapper.query
+package com.tang.kite.sql.enumeration
 
 /**
  * @author Tang

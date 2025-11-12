@@ -1,6 +1,7 @@
-package com.tang.kite.wrapper.query
+package com.tang.kite.sql
 
-import com.tang.kite.wrapper.statement.LogicalStatement
+import com.tang.kite.sql.enumeration.JoinType
+import com.tang.kite.sql.statement.LogicalStatement
 
 /**
  * @author Tang

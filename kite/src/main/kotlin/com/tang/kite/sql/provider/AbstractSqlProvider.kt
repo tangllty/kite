@@ -30,8 +30,8 @@ import com.tang.kite.constants.SqlString.VALUES
 import com.tang.kite.constants.SqlString.WHERE
 import com.tang.kite.enumeration.SqlType
 import com.tang.kite.paginate.OrderItem
-import com.tang.kite.sql.BatchSqlStatement
-import com.tang.kite.sql.SqlStatement
+import com.tang.kite.sql.statement.BatchSqlStatement
+import com.tang.kite.sql.statement.SqlStatement
 import com.tang.kite.utils.Reflects
 import com.tang.kite.utils.Reflects.getColumnName
 import com.tang.kite.utils.Reflects.getIdField

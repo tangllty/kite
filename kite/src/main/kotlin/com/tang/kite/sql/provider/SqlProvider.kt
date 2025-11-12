@@ -2,8 +2,8 @@ package com.tang.kite.sql.provider
 
 import com.tang.kite.annotation.Join
 import com.tang.kite.paginate.OrderItem
-import com.tang.kite.sql.BatchSqlStatement
-import com.tang.kite.sql.SqlStatement
+import com.tang.kite.sql.statement.BatchSqlStatement
+import com.tang.kite.sql.statement.SqlStatement
 import java.lang.reflect.Field
 
 /**

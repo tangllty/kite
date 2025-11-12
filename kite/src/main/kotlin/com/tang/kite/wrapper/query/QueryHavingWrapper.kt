@@ -3,7 +3,6 @@ package com.tang.kite.wrapper.query
 import com.tang.kite.function.SFunction
 import com.tang.kite.paginate.OrderItem
 import com.tang.kite.wrapper.Wrapper
-import com.tang.kite.wrapper.statement.LogicalStatement
 import com.tang.kite.wrapper.where.AbstractHavingWrapper
 import kotlin.reflect.KMutableProperty1
 

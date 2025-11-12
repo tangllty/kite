@@ -11,6 +11,7 @@
  * Add unit tests for `CaseFormat` conversion functions
  * Add type constraint for generic parameters in mapper and wrapper classes
  * Add support for Kotlin class references in methods
+ * Refactor SQL wrapper imports to unify package structure and improve clarity
 
 ## 1.0.13
 

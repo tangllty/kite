@@ -1,4 +1,4 @@
-package com.tang.kite.sql
+package com.tang.kite.sql.statement
 
 /**
  * @author Tang

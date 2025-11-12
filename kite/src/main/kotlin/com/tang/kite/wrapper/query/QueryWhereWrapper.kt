@@ -1,9 +1,11 @@
 package com.tang.kite.wrapper.query
 
+import com.tang.kite.sql.JoinTable
+import com.tang.kite.sql.enumeration.JoinType
 import com.tang.kite.function.SFunction
 import com.tang.kite.paginate.OrderItem
-import com.tang.kite.wrapper.Column
-import com.tang.kite.wrapper.statement.LogicalStatement
+import com.tang.kite.sql.Column
+import com.tang.kite.sql.statement.LogicalStatement
 import com.tang.kite.wrapper.where.AbstractWhereWrapper
 import kotlin.reflect.KClass
 import kotlin.reflect.KMutableProperty1

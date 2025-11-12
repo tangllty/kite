@@ -4,10 +4,10 @@ import com.tang.kite.config.SqlConfig
 import com.tang.kite.constants.SqlString.UPDATE
 import com.tang.kite.enumeration.SqlType
 import com.tang.kite.mapper.BaseMapper
-import com.tang.kite.sql.SqlStatement
+import com.tang.kite.sql.statement.SqlStatement
 import com.tang.kite.utils.Reflects
 import com.tang.kite.wrapper.Wrapper
-import com.tang.kite.wrapper.statement.LogicalStatement
+import com.tang.kite.sql.statement.LogicalStatement
 import kotlin.reflect.KClass
 
 /**

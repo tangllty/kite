@@ -1,14 +1,16 @@
 package com.tang.kite.wrapper.query
 
+import com.tang.kite.sql.JoinTable
+import com.tang.kite.sql.enumeration.JoinType
 import com.tang.kite.constants.SqlString
 import com.tang.kite.function.SFunction
 import com.tang.kite.utils.Reflects
 import com.tang.kite.utils.Reflects.getColumnName
-import com.tang.kite.wrapper.Column
-import com.tang.kite.wrapper.enumeration.ComparisonOperator
-import com.tang.kite.wrapper.enumeration.LogicalOperator
-import com.tang.kite.wrapper.statement.ComparisonStatement
-import com.tang.kite.wrapper.statement.LogicalStatement
+import com.tang.kite.sql.Column
+import com.tang.kite.sql.enumeration.ComparisonOperator
+import com.tang.kite.sql.enumeration.LogicalOperator
+import com.tang.kite.sql.statement.ComparisonStatement
+import com.tang.kite.sql.statement.LogicalStatement
 import com.tang.kite.wrapper.where.WrapperBuilder
 import kotlin.reflect.KClass
 import kotlin.reflect.KMutableProperty1

@@ -1,8 +1,8 @@
-package com.tang.kite.wrapper.statement
+package com.tang.kite.sql.statement
 
 import com.tang.kite.constants.SqlString.LEFT_BRACKET
 import com.tang.kite.constants.SqlString.RIGHT_BRACKET
-import com.tang.kite.wrapper.enumeration.LogicalOperator
+import com.tang.kite.sql.enumeration.LogicalOperator
 
 /**
  * Logical statement

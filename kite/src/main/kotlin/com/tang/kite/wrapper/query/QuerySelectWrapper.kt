@@ -5,7 +5,7 @@ import com.tang.kite.constants.SqlString.FROM
 import com.tang.kite.enumeration.SqlType
 import com.tang.kite.function.SFunction
 import com.tang.kite.utils.Reflects
-import com.tang.kite.wrapper.Column
+import com.tang.kite.sql.Column
 import kotlin.reflect.KClass
 import kotlin.reflect.KMutableProperty1
 

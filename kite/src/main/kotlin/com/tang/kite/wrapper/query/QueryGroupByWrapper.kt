@@ -2,7 +2,7 @@ package com.tang.kite.wrapper.query
 
 import com.tang.kite.function.SFunction
 import com.tang.kite.paginate.OrderItem
-import com.tang.kite.wrapper.Column
+import com.tang.kite.sql.Column
 import com.tang.kite.wrapper.Wrapper
 import com.tang.kite.wrapper.where.AbstractGroupByWrapper
 import java.util.function.Consumer

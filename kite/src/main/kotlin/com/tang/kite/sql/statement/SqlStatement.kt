@@ -1,8 +1,10 @@
-package com.tang.kite.sql
+package com.tang.kite.sql.statement
 
-import com.tang.kite.constants.SqlString.QUESTION_MARK
+import com.tang.kite.constants.SqlString
 import com.tang.kite.utils.Statements
+import java.sql.Date
 import java.sql.PreparedStatement
+import kotlin.collections.iterator
 
 /**
  * SQL statement
@@ -18,14 +20,14 @@ class SqlStatement(
 ) {
 
     fun getActualSql(): String {
-        val placeholderCount = sql.count { it == QUESTION_MARK.first() }
+        val placeholderCount = sql.count { it == SqlString.QUESTION_MARK.first() }
         if (placeholderCount == 0) {
             return sql // No placeholders, return the SQL as is
         }
         if (placeholderCount != parameters.size) {
             throw IllegalArgumentException("The number of placeholders in the SQL statement does not match the number of parameters provided for a single execution.")
         }
-        val sqlParts = sql.split(QUESTION_MARK)
+        val sqlParts = sql.split(SqlString.QUESTION_MARK)
         val resolvedSql = StringBuilder()
         for (i in sqlParts.indices) {
             resolvedSql.append(sqlParts[i])
@@ -41,8 +43,8 @@ class SqlStatement(
             null -> "NULL"
             is String -> "'${escapeSql(parameter)}'"
             is Number, is Boolean -> parameter.toString()
-            is java.sql.Date -> "'$parameter'"
-            is java.util.Date -> "'${java.sql.Date(parameter.time)}'"
+            is Date -> "'$parameter'"
+            is java.util.Date -> "'${Date(parameter.time)}'"
             else -> "'${escapeSql(parameter.toString())}'"
         }
     }

@@ -3,7 +3,7 @@ package com.tang.kite.wrapper.where
 import com.tang.kite.constants.SqlString.COMMA_SPACE
 import com.tang.kite.constants.SqlString.GROUP_BY
 import com.tang.kite.function.SFunction
-import com.tang.kite.wrapper.Column
+import com.tang.kite.sql.Column
 import com.tang.kite.wrapper.Wrapper
 import kotlin.reflect.KMutableProperty1
 

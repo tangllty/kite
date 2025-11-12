@@ -1,6 +1,6 @@
 package com.tang.kite.wrapper
 
-import com.tang.kite.sql.SqlStatement
+import com.tang.kite.sql.statement.SqlStatement
 
 /**
  * Marker interface for all wrappers

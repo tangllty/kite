@@ -5,10 +5,10 @@ import com.tang.kite.constants.SqlString.SELECT
 import com.tang.kite.constants.SqlString.SELECT_DISTINCT
 import com.tang.kite.function.SFunction
 import com.tang.kite.mapper.BaseMapper
-import com.tang.kite.sql.SqlStatement
-import com.tang.kite.wrapper.Column
+import com.tang.kite.sql.statement.SqlStatement
+import com.tang.kite.sql.Column
 import com.tang.kite.wrapper.Wrapper
-import com.tang.kite.wrapper.statement.LogicalStatement
+import com.tang.kite.sql.statement.LogicalStatement
 import com.tang.kite.wrapper.where.AbstractWhereWrapper
 import kotlin.reflect.KMutableProperty1
 

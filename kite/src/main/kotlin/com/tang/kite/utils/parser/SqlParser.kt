@@ -1,7 +1,7 @@
 package com.tang.kite.utils.parser
 
 import com.tang.kite.annotation.Param
-import com.tang.kite.sql.SqlStatement
+import com.tang.kite.sql.statement.SqlStatement
 import com.tang.kite.utils.Reflects
 import com.tang.kite.utils.expression.ExpressionParser
 import java.lang.reflect.Parameter

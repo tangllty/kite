@@ -1,7 +1,7 @@
 package com.tang.kite.paginate
 
 import com.tang.kite.function.SFunction
-import com.tang.kite.wrapper.Column
+import com.tang.kite.sql.Column
 import kotlin.reflect.KMutableProperty1
 
 /**

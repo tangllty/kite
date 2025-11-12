@@ -1,4 +1,4 @@
-package com.tang.kite.wrapper.enumeration
+package com.tang.kite.sql.enumeration
 
 import com.tang.kite.constants.SqlString
 

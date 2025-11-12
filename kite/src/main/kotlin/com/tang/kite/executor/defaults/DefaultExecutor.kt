@@ -2,8 +2,8 @@ package com.tang.kite.executor.defaults
 
 import com.tang.kite.executor.Executor
 import com.tang.kite.session.Configuration
-import com.tang.kite.sql.BatchSqlStatement
-import com.tang.kite.sql.SqlStatement
+import com.tang.kite.sql.statement.BatchSqlStatement
+import com.tang.kite.sql.statement.SqlStatement
 import com.tang.kite.transaction.Transaction
 import com.tang.kite.utils.resultset.ResultSetHandlers
 import com.tang.kite.utils.Statements

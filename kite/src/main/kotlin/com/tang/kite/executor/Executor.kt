@@ -1,7 +1,7 @@
 package com.tang.kite.executor
 
-import com.tang.kite.sql.BatchSqlStatement
-import com.tang.kite.sql.SqlStatement
+import com.tang.kite.sql.statement.BatchSqlStatement
+import com.tang.kite.sql.statement.SqlStatement
 import java.sql.Connection
 
 /**

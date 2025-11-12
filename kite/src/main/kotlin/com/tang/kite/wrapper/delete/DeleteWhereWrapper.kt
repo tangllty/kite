@@ -1,6 +1,6 @@
 package com.tang.kite.wrapper.delete
 
-import com.tang.kite.wrapper.statement.LogicalStatement
+import com.tang.kite.sql.statement.LogicalStatement
 import com.tang.kite.wrapper.where.AbstractWhereWrapper
 
 /**

@@ -1,4 +1,4 @@
-package com.tang.kite.wrapper.statement
+package com.tang.kite.sql.statement
 
 import com.tang.kite.config.SqlConfig
 import com.tang.kite.constants.SqlString.AND
@@ -7,8 +7,8 @@ import com.tang.kite.constants.SqlString.LEFT_BRACKET
 import com.tang.kite.constants.SqlString.QUESTION_MARK
 import com.tang.kite.constants.SqlString.RIGHT_BRACKET
 import com.tang.kite.sql.function.FunctionColumn
-import com.tang.kite.wrapper.Column
-import com.tang.kite.wrapper.enumeration.ComparisonOperator
+import com.tang.kite.sql.Column
+import com.tang.kite.sql.enumeration.ComparisonOperator
 
 /**
  * Comparison statement

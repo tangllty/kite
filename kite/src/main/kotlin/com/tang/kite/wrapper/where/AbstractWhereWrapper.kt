@@ -2,10 +2,10 @@ package com.tang.kite.wrapper.where
 
 import com.tang.kite.config.SqlConfig
 import com.tang.kite.constants.SqlString.WHERE
-import com.tang.kite.sql.SqlStatement
+import com.tang.kite.sql.statement.SqlStatement
 import com.tang.kite.wrapper.Wrapper
-import com.tang.kite.wrapper.enumeration.LogicalOperator
-import com.tang.kite.wrapper.statement.LogicalStatement
+import com.tang.kite.sql.enumeration.LogicalOperator
+import com.tang.kite.sql.statement.LogicalStatement
 import java.util.function.Consumer
 
 /**

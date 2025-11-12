@@ -15,8 +15,8 @@ import com.tang.kite.paginate.Page
 import com.tang.kite.proxy.MapperProxyFactory
 import com.tang.kite.session.Configuration
 import com.tang.kite.session.SqlSession
-import com.tang.kite.sql.BatchSqlStatement
-import com.tang.kite.sql.SqlStatement
+import com.tang.kite.sql.statement.BatchSqlStatement
+import com.tang.kite.sql.statement.SqlStatement
 import com.tang.kite.sql.provider.SqlProvider
 import com.tang.kite.utils.Reflects
 import com.tang.kite.utils.Reflects.setValue
