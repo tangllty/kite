@@ -60,7 +60,7 @@ class QueryWhereWrapper<T : Any>(
         return multiTableQuery
     }
 
-    fun getJoinedClass() : List<Class<*>> {
+    fun getJoinedClass(): List<Class<*>> {
         return joinedClass
     }
 
@@ -70,7 +70,7 @@ class QueryWhereWrapper<T : Any>(
      * @param clazz class
      * @return JoinWrapper<T>
      */
-    fun leftJoin(clazz: Class<*>) : JoinWrapper<T> {
+    fun leftJoin(clazz: Class<*>): JoinWrapper<T> {
         multiTableQuery = true
         joinedClass.add(clazz)
         joinWrapper.joinTables.add(JoinTable(clazz, JoinType.LEFT))
@@ -83,7 +83,7 @@ class QueryWhereWrapper<T : Any>(
      * @param clazz class
      * @return JoinWrapper<T>
      */
-    fun leftJoin(clazz: KClass<*>) : JoinWrapper<T> {
+    fun leftJoin(clazz: KClass<*>): JoinWrapper<T> {
         return leftJoin(clazz.java)
     }
 
@@ -93,7 +93,7 @@ class QueryWhereWrapper<T : Any>(
      * @param clazz class
      * @return JoinWrapper<T>
      */
-    fun rightJoin(clazz: Class<*>) : JoinWrapper<T> {
+    fun rightJoin(clazz: Class<*>): JoinWrapper<T> {
         multiTableQuery = true
         joinedClass.add(clazz)
         joinWrapper.joinTables.add(JoinTable(clazz, JoinType.RIGHT))
@@ -106,7 +106,7 @@ class QueryWhereWrapper<T : Any>(
      * @param clazz class
      * @return JoinWrapper<T>
      */
-    fun rightJoin(clazz: KClass<*>) : JoinWrapper<T> {
+    fun rightJoin(clazz: KClass<*>): JoinWrapper<T> {
         return rightJoin(clazz.java)
     }
 
@@ -116,7 +116,7 @@ class QueryWhereWrapper<T : Any>(
      * @param clazz class
      * @return JoinWrapper<T>
      */
-    fun innerJoin(clazz: Class<*>) : JoinWrapper<T> {
+    fun innerJoin(clazz: Class<*>): JoinWrapper<T> {
         multiTableQuery = true
         joinedClass.add(clazz)
         joinWrapper.joinTables.add(JoinTable(clazz, JoinType.INNER))
@@ -129,8 +129,8 @@ class QueryWhereWrapper<T : Any>(
      * @param clazz class
      * @return JoinWrapper<T>
      */
-    fun innerJoin(clazz: KClass<*>) : JoinWrapper<T> {
-       return innerJoin(clazz.java)
+    fun innerJoin(clazz: KClass<*>): JoinWrapper<T> {
+        return innerJoin(clazz.java)
     }
 
     /**

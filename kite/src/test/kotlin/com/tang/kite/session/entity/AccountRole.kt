@@ -3,7 +3,7 @@ package com.tang.kite.session.entity
 /**
  * @author Tang
  */
-class AccountRole (
+class AccountRole(
     var accountId: Long? = null,
     var roleId: Long? = null
 ) {

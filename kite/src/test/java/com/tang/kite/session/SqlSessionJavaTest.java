@@ -6,6 +6,7 @@ import com.tang.kite.session.entity.Account;
 import com.tang.kite.session.mapper.AccountMapper;
 import com.tang.kite.wrapper.query.QueryWrapper;
 import com.tang.kite.wrapper.update.UpdateWrapper;
+
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;

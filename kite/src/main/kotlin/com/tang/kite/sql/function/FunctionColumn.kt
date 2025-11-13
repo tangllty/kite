@@ -5,7 +5,7 @@ import com.tang.kite.sql.Column
 /**
  * @author Tang
  */
-data class FunctionColumn (
+data class FunctionColumn(
 
     val function: String,
 

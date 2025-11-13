@@ -20,7 +20,7 @@ abstract class AbstractOrderByWrapper<R, T>(
 
     private val columns: MutableList<OrderItem<*>> = mutableListOf()
 
-): WrapperBuilder<T> {
+) : WrapperBuilder<T> {
 
     protected var orderByInstance: R? = null
 

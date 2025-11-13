@@ -18,7 +18,7 @@ abstract class AbstractGroupByWrapper<R, T>(
 
     private val columns: MutableList<Column> = mutableListOf()
 
-): WrapperBuilder<T> {
+) : WrapperBuilder<T> {
 
     protected var groupByInstance: R? = null
 

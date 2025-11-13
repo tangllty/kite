@@ -12,7 +12,7 @@ import java.time.LocalDateTime
  * @author Tang
  */
 @Table("account")
-class AccountOneToOne (
+class AccountOneToOne(
 
     @Id(type = IdType.AUTO)
     var id: Long? = null,

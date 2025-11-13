@@ -90,8 +90,7 @@ enum class CaseFormat {
             LOWER_HYPHEN -> joinToString("-").lowercase()
             LOWER_UNDERSCORE -> joinToString("_").lowercase()
             UPPER_UNDERSCORE -> joinToString("_").uppercase()
-            LOWER_CAMEL -> first().lowercase() +
-                drop(1).joinToString("") { it.capitalize() }
+            LOWER_CAMEL -> first().lowercase() + drop(1).joinToString("") { it.capitalize() }
             UPPER_CAMEL -> joinToString("") { it.capitalize() }
         }
     }

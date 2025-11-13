@@ -59,7 +59,7 @@ abstract class AbstractConditionWrapper<R, T>() : WrapperBuilder<T> {
      *
      * @return R
      */
-    fun where() : R {
+    fun where(): R {
         return getInstance()
     }
 

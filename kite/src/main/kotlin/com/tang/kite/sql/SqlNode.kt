@@ -21,7 +21,7 @@ sealed class SqlNode {
     ) : SqlNode()
 
     class Insert(
-        val table: TableReference? =  null,
+        val table: TableReference? = null,
         val columns: MutableList<Column> = mutableListOf(),
         val values: MutableList<Any?> = mutableListOf()
     ) : SqlNode()

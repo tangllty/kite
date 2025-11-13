@@ -12,7 +12,7 @@ import java.util.function.Consumer
 /**
  * @author Tang
  */
-abstract class AbstractHavingWrapper<R, T>(private val wrapper: Wrapper<T>, ): AbstractConditionWrapper<R, T>() {
+abstract class AbstractHavingWrapper<R, T>(private val wrapper: Wrapper<T>) : AbstractConditionWrapper<R, T>() {
 
     protected var havingInstance: R? = null
 

@@ -1,6 +1,7 @@
 package com.tang.kite.utils;
 
 import com.tang.kite.session.entity.JavaAccount;
+
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;

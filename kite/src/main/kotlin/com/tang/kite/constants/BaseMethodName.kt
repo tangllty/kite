@@ -192,7 +192,7 @@ object BaseMethodName {
         return method.name == SELECT_WITH_JOINS && isSelectParameter(method)
     }
 
-    private  const val SELECT_BY_ID_WITH_JOINS = "selectByIdWithJoins"
+    private const val SELECT_BY_ID_WITH_JOINS = "selectByIdWithJoins"
 
     fun isSelectByIdWithJoins(method: Method): Boolean {
         return method.name == SELECT_BY_ID_WITH_JOINS && method.countIsOne() && method.firstParameterIsSerializable()
@@ -201,7 +201,7 @@ object BaseMethodName {
     private const val COUNT = "count"
 
     fun isCount(method: Method): Boolean {
-        return method.name ==  COUNT && (method.countIsZero() || method.countIsOne() && method.firstParameterIsAny())
+        return method.name == COUNT && (method.countIsZero() || method.countIsOne() && method.firstParameterIsAny())
     }
 
     fun isPaginateParameter(method: Method): Boolean {

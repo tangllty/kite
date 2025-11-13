@@ -73,9 +73,9 @@ class Snowflake {
         }
         lastTimestamp = currentTimestamp
         return (currentTimestamp - EPOCH shl TIMESTAMP_LEFT.toInt()
-                or (dataCenterId shl DATA_CENTER_LEFT.toInt())
-                or (machineId shl MACHINE_LEFT.toInt())
-                or sequence)
+            or (dataCenterId shl DATA_CENTER_LEFT.toInt())
+            or (machineId shl MACHINE_LEFT.toInt())
+            or sequence)
     }
 
 }

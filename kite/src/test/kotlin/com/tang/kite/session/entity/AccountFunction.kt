@@ -11,7 +11,7 @@ import java.time.LocalDateTime
  * @author Tang
  */
 @Table("account")
-class AccountFunction (
+class AccountFunction(
 
     @Id(type = IdType.AUTO)
     var id: Long? = null,

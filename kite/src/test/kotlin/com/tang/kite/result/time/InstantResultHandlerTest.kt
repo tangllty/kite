@@ -55,7 +55,7 @@ class InstantResultHandlerTest {
         }
 
         assertNull(instance.nullField)
-        
+
         val expectedSqlDateInstant = localDate.atStartOfDay(ZoneId.systemDefault()).toInstant()
         val expectedTimeInstant = LocalDateTime.of(LocalDate.ofEpochDay(0), localTime).atZone(ZoneId.systemDefault()).toInstant()
         val expectedTimestampInstant = localDateTime.atZone(ZoneId.systemDefault()).toInstant()

@@ -127,7 +127,6 @@ class QuerySelectWrapper<T : Any>(
      * @param clazz entity class
      */
     fun from(clazz: Class<T>): QueryWhereWrapper<T> {
-        clazz.kotlin
         this.tableClass = clazz
         return from(Reflects.getTableName(clazz))
     }

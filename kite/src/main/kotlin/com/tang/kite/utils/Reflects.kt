@@ -313,8 +313,6 @@ object Reflects {
         }
     }
 
-
-
     @JvmStatic
     fun <T> setResultValue(field: Field, instance: T, value: Any?) {
         makeAccessible(field, instance)

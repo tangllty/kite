@@ -28,33 +28,33 @@ class JoinWrapper<T : Any>(
 
 ) : WrapperBuilder<T>, QueryBuilder<T> {
 
-    fun leftJoin(clazz: Class<*>) : JoinWrapper<T> {
+    fun leftJoin(clazz: Class<*>): JoinWrapper<T> {
         joinedClass.add(clazz)
         joinTables.add(JoinTable(clazz, JoinType.LEFT))
         return this
     }
 
-    fun leftJoin(clazz: KClass<*>) : JoinWrapper<T> {
+    fun leftJoin(clazz: KClass<*>): JoinWrapper<T> {
         return leftJoin(clazz.java)
     }
 
-    fun rightJoin(clazz: Class<*>) : JoinWrapper<T> {
+    fun rightJoin(clazz: Class<*>): JoinWrapper<T> {
         joinedClass.add(clazz)
         joinTables.add(JoinTable(clazz, JoinType.RIGHT))
         return this
     }
 
-    fun rightJoin(clazz: KClass<*>) : JoinWrapper<T> {
+    fun rightJoin(clazz: KClass<*>): JoinWrapper<T> {
         return rightJoin(clazz.java)
     }
 
-    fun innerJoin(clazz: Class<*>) : JoinWrapper<T> {
+    fun innerJoin(clazz: Class<*>): JoinWrapper<T> {
         joinedClass.add(clazz)
         joinTables.add(JoinTable(clazz, JoinType.INNER))
         return this
     }
 
-    fun innerJoin(clazz: KClass<*>) : JoinWrapper<T> {
+    fun innerJoin(clazz: KClass<*>): JoinWrapper<T> {
         return innerJoin(clazz.java)
     }
 
@@ -72,11 +72,11 @@ class JoinWrapper<T : Any>(
         return on(getColumnName(left, true), getColumnName(right, true))
     }
 
-    fun where() : QueryWhereWrapper<T> {
+    fun where(): QueryWhereWrapper<T> {
         return queryWhereWrapper
     }
 
-    override fun build() : QueryWrapper<T> {
+    override fun build(): QueryWrapper<T> {
         return queryWhereWrapper.build()
     }
 
