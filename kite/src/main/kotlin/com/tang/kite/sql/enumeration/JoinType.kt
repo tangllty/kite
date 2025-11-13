@@ -1,14 +1,20 @@
 package com.tang.kite.sql.enumeration
 
+import com.tang.kite.constants.SqlString
+
 /**
  * @author Tang
  */
-enum class JoinType {
+enum class JoinType(val sqlSymbol: String) {
 
-    LEFT,
+    LEFT(SqlString.LEFT_JOIN),
 
-    RIGHT,
+    RIGHT(SqlString.RIGHT_JOIN),
 
-    INNER
+    INNER(SqlString.INNER_JOIN),
+
+    FULL(SqlString.FULL_JOIN),
+
+    CROSS(SqlString.CROSS_JOIN)
 
 }

@@ -5,8 +5,8 @@ package com.tang.kite.sql
  */
 class LimitClause(
 
-    val limit: Int,
+    val pageNumber: Long,
 
-    val offset: Int
+    val pageSize: Long
 
 )

@@ -1,36 +1,20 @@
 package com.tang.kite.sql
 
-import com.tang.kite.constants.SqlString.AND
+import com.tang.kite.config.SqlConfig
 import com.tang.kite.constants.SqlString.ASC
 import com.tang.kite.constants.SqlString.COMMA_SPACE
-import com.tang.kite.constants.SqlString.DELETE_FROM
 import com.tang.kite.constants.SqlString.DESC
-import com.tang.kite.constants.SqlString.DOT
-import com.tang.kite.constants.SqlString.EQUAL
 import com.tang.kite.constants.SqlString.FROM
-import com.tang.kite.constants.SqlString.IN
-import com.tang.kite.constants.SqlString.INSERT_INTO
-import com.tang.kite.constants.SqlString.LEFT_BRACKET
-import com.tang.kite.constants.SqlString.LEFT_JOIN
-import com.tang.kite.constants.SqlString.LIMIT
-import com.tang.kite.constants.SqlString.OFFSET
-import com.tang.kite.constants.SqlString.ON
+import com.tang.kite.constants.SqlString.GROUP_BY
+import com.tang.kite.constants.SqlString.HAVING
 import com.tang.kite.constants.SqlString.ORDER_BY
-import com.tang.kite.constants.SqlString.QUESTION_MARK
-import com.tang.kite.constants.SqlString.RIGHT_BRACKET
 import com.tang.kite.constants.SqlString.SELECT
-import com.tang.kite.constants.SqlString.SELECT_COUNT_FROM
 import com.tang.kite.constants.SqlString.SELECT_DISTINCT
-import com.tang.kite.constants.SqlString.SET
-import com.tang.kite.constants.SqlString.SPACE
-import com.tang.kite.constants.SqlString.UPDATE
-import com.tang.kite.constants.SqlString.VALUES
 import com.tang.kite.constants.SqlString.WHERE
 import com.tang.kite.paginate.OrderItem
 import com.tang.kite.sql.dialect.SqlDialect
 import com.tang.kite.sql.statement.LogicalStatement
 import com.tang.kite.sql.statement.SqlStatement
-import com.tang.kite.utils.Reflects.getTableName
 
 /**
  * @author Tang
@@ -92,7 +76,50 @@ sealed class SqlNode {
 
         sql.append(FROM + (from?.toString(withAlias) ?: throw IllegalArgumentException("Table reference can not be null")))
 
-        TODO()
+        if (joins.isNotEmpty()) {
+            joins.forEach { sql.append(it.toString(withAlias)) }
+        }
+
+        if (where.isNotEmpty()) {
+            sql.append(WHERE)
+            if (where.last().nestedConditions.isEmpty()) {
+                where.last().logicalOperator = null
+            }
+            where.forEach {
+                it.appendSql(sql, parameters, withAlias)
+            }
+        }
+
+        if (groupBy.isNotEmpty()) {
+            sql.append(GROUP_BY)
+            val orderBys = groupBy.joinToString(COMMA_SPACE) { it.toString(withAlias) }
+            sql.append(orderBys)
+        }
+
+        if (having.isNotEmpty()) {
+            sql.append(HAVING)
+            if (having.last().nestedConditions.isEmpty()) {
+                having.last().logicalOperator = null
+            }
+            having.forEach {
+                it.appendSql(sql, parameters, withAlias)
+            }
+        }
+
+        if (orderBy.isNotEmpty()) {
+            sql.append(ORDER_BY)
+            orderBy.joinToString(COMMA_SPACE) {
+                it.column.toString(withAlias) + if (it.asc) ASC else DESC
+            }.let {
+                sql.append(it)
+            }
+        }
+
+        if (limit != null) {
+            dialect.applyLimitClause(sql, parameters, limit)
+        }
+
+        return SqlStatement(SqlConfig.getSql(sql), parameters)
     }
 
     private fun getInsertSqlStatement(dialect: SqlDialect, insert: Insert): SqlStatement {
