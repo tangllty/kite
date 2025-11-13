@@ -21,18 +21,18 @@ class LogicalStatement(
 
 ) {
 
-    fun appendSql(sql: StringBuilder, parameters: MutableList<Any?>, multiTableQuery: Boolean) {
+    fun appendSql(sql: StringBuilder, parameters: MutableList<Any?>, withAlias: Boolean) {
         if (nestedConditions.isNotEmpty() && nestedConditions.last().nestedConditions.isEmpty()) {
             nestedConditions.last().logicalOperator = null
         }
-        condition.appendSql(sql, parameters, multiTableQuery)
+        condition.appendSql(sql, parameters, withAlias)
         logicalOperator?.let { sql.append(it.value) }
         if (nestedConditions.isEmpty()) {
             return
         }
         sql.append(LEFT_BRACKET)
         nestedConditions.forEach {
-            it.appendSql(sql, parameters, multiTableQuery)
+            it.appendSql(sql, parameters, withAlias)
         }
         sql.append(RIGHT_BRACKET)
         nestedLogicalOperator?.let { sql.append(it.value) }
