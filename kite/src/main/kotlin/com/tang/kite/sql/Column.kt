@@ -1,5 +1,6 @@
 package com.tang.kite.sql
 
+import com.tang.kite.constants.SqlString
 import com.tang.kite.function.SFunction
 import com.tang.kite.utils.Reflects
 import java.lang.reflect.Field
@@ -30,7 +31,7 @@ open class Column(
         return if (tableAlias == null) {
             name
         } else {
-            "${tableAlias}.${name}"
+            "${tableAlias}${SqlString.DOT}${name}"
         }
     }
 

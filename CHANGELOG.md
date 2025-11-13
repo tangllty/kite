@@ -13,6 +13,7 @@
  * Add support for Kotlin class references in methods
  * Refactor SQL wrapper imports to unify package structure and improve clarity
  * Add SQL node classes and limit clause implementation
+ * Add `SqlDialect` interface and enhance `SqlNode` with SQL statement generation methods
 
 ## 1.0.13
 
