@@ -7,6 +7,9 @@ import com.tang.kite.sql.statement.BatchSqlStatement
 import com.tang.kite.sql.statement.SqlStatement
 import java.lang.reflect.Field
 
+/**
+ * @author Tang
+ */
 class SqlNodeProvider : SqlProvider {
 
     override fun providerType(): DatabaseType {

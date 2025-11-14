@@ -15,7 +15,7 @@ import com.tang.kite.paginate.Page
 import com.tang.kite.proxy.MapperProxyFactory
 import com.tang.kite.session.SqlSession
 import com.tang.kite.sql.dialect.SqlDialect
-import com.tang.kite.sql.provider.derby.DerbySqlProvider
+import com.tang.kite.sql.provider.DerbySqlProvider
 import com.tang.kite.sql.statement.BatchSqlStatement
 import com.tang.kite.sql.statement.SqlStatement
 import com.tang.kite.utils.Reflects

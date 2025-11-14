@@ -4,18 +4,12 @@ import com.tang.kite.annotation.fill.CreateTime
 import com.tang.kite.annotation.fill.UpdateTime
 import com.tang.kite.config.defaults.DefaultSelectiveStrategy
 import com.tang.kite.enumeration.SqlType
-import com.tang.kite.handler.fill.TimeFillHandler
 import com.tang.kite.handler.fill.FillHandler
 import com.tang.kite.handler.fill.FillKey
+import com.tang.kite.handler.fill.TimeFillHandler
 import com.tang.kite.sql.dialect.SqlDialect
-import com.tang.kite.sql.factory.defaults.DefaultSqlDialectFactory
 import com.tang.kite.sql.enumeration.DatabaseType
-import com.tang.kite.sql.provider.SqlProvider
-import com.tang.kite.sql.provider.derby.DerbySqlProvider
-import com.tang.kite.sql.provider.h2.H2SqlProvider
-import com.tang.kite.sql.provider.mysql.MysqlSqlProvider
-import com.tang.kite.sql.provider.postgresql.PostgresqlSqlProvider
-import com.tang.kite.sql.provider.sqlite.SqliteSqlProvider
+import com.tang.kite.sql.factory.defaults.DefaultSqlDialectFactory
 import java.util.function.Function
 
 /**
@@ -42,19 +36,6 @@ object KiteConfig {
      */
     @JvmStatic
     var batchSize = 1000
-
-    /**
-     * The strategy for selective query with a default value.
-     */
-    @Deprecated("Removed in feature versions")
-    @JvmStatic
-    var urlProviders: MutableMap<String, SqlProvider> = mutableMapOf(
-        "postgresql" to PostgresqlSqlProvider(),
-        "mysql" to MysqlSqlProvider(),
-        "sqlite" to SqliteSqlProvider(),
-        "derby" to DerbySqlProvider(),
-        "h2" to H2SqlProvider()
-    )
 
     /**
      * SQL dialects for different databases.

@@ -1,10 +1,6 @@
-package com.tang.kite.sql.provider.derby
+package com.tang.kite.sql.provider
 
-import com.tang.kite.constants.SqlString.OFFSET
-import com.tang.kite.constants.SqlString.QUESTION_MARK
-import com.tang.kite.constants.SqlString.ROWS_FETCH_NEXT
-import com.tang.kite.constants.SqlString.ROWS_ONLY
-import com.tang.kite.sql.provider.AbstractSqlProvider
+import com.tang.kite.constants.SqlString
 import com.tang.kite.sql.enumeration.DatabaseType
 
 /**
@@ -12,6 +8,7 @@ import com.tang.kite.sql.enumeration.DatabaseType
  *
  * @author Tang
  */
+@Deprecated("Remove in future versions")
 class DerbySqlProvider : AbstractSqlProvider() {
 
     override fun providerType(): DatabaseType {
@@ -21,7 +18,7 @@ class DerbySqlProvider : AbstractSqlProvider() {
     override fun getLimit(parameters: MutableList<Any?>, pageNumber: Long, pageSize: Long): String {
         parameters.add((pageNumber - 1) * pageSize)
         parameters.add(pageSize)
-        return "$OFFSET$QUESTION_MARK$ROWS_FETCH_NEXT$QUESTION_MARK$ROWS_ONLY"
+        return "${SqlString.OFFSET}${SqlString.QUESTION_MARK}${SqlString.ROWS_FETCH_NEXT}${SqlString.QUESTION_MARK}${SqlString.ROWS_ONLY}"
     }
 
 }
