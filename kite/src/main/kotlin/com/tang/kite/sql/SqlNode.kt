@@ -22,6 +22,7 @@ import com.tang.kite.constants.SqlString.VALUES
 import com.tang.kite.constants.SqlString.WHERE
 import com.tang.kite.paginate.OrderItem
 import com.tang.kite.sql.dialect.SqlDialect
+import com.tang.kite.sql.statement.BatchSqlStatement
 import com.tang.kite.sql.statement.LogicalStatement
 import com.tang.kite.sql.statement.SqlStatement
 
@@ -54,11 +55,13 @@ sealed class SqlNode {
 
     data class Insert(
 
-        val table: TableReference? = null,
+        var table: TableReference? = null,
 
         val columns: MutableList<Column> = mutableListOf(),
 
-        val values: MutableList<Any?> = mutableListOf()
+        val valuesList: MutableList<MutableList<Any?>> = mutableListOf(),
+
+        val columnsValuesList: MutableList<Pair<MutableList<Column>, MutableList<Any?>>> = mutableListOf()
 
     ) : SqlNode()
 
@@ -95,6 +98,20 @@ sealed class SqlNode {
             is Insert -> getInsertSqlStatement(this)
             is Update -> getUpdateSqlStatement(this)
             is Delete -> getDeleteSqlStatement(this)
+        }
+    }
+
+    fun getBatchSqlStatement(): BatchSqlStatement {
+        return when (this) {
+            is Insert -> getInsertBatchSqlStatement(this)
+            else -> throw IllegalArgumentException("only insert statement can be batch")
+        }
+    }
+
+    fun getInsertSqlStatementList(): List<SqlStatement> {
+        return when (this) {
+            is Insert -> getInsertSqlStatementList(this)
+            else -> throw IllegalArgumentException("only insert statement can be batch")
         }
     }
 
@@ -147,21 +164,52 @@ sealed class SqlNode {
         return SqlStatement(SqlConfig.getSql(sql), parameters)
     }
 
-    private fun getInsertSqlStatement(insert: Insert): SqlStatement {
-        val (table, columns, values) = insert
-        val sql = StringBuilder()
-        val parameters = mutableListOf<Any?>()
+    private fun appendInsertPrefix(sql: StringBuilder, table: TableReference?, columns: MutableList<Column>) {
         sql.append(INSERT_INTO)
         appendTable(sql, table)
         sql.append(SPACE + LEFT_BRACKET)
         sql.append(columns.joinToString(COMMA_SPACE) { it.toString() })
-        sql.append(RIGHT_BRACKET + VALUES + LEFT_BRACKET)
-        sql.append(values.joinToString(COMMA_SPACE) {
-            parameters.add(it)
-            QUESTION_MARK
-        })
-        sql.append(RIGHT_BRACKET)
+        sql.append(RIGHT_BRACKET + VALUES)
+    }
+
+    private fun getInsertSqlStatement(insert: Insert): SqlStatement {
+        val (table, columns, valuesList) = insert
+        val sql = StringBuilder()
+        val parameters = mutableListOf<Any?>()
+        appendInsertPrefix(sql, table, columns)
+        valuesList.joinToString("$RIGHT_BRACKET$COMMA_SPACE$LEFT_BRACKET", LEFT_BRACKET, RIGHT_BRACKET) { values ->
+            values.joinToString(COMMA_SPACE) {
+                parameters.add(it)
+                QUESTION_MARK
+            }
+        }.let { sql.append(it) }
         return SqlStatement(SqlConfig.getSql(sql), parameters)
+    }
+
+    private fun getInsertBatchSqlStatement(insert: Insert): BatchSqlStatement {
+        val (table, columns, valuesList) = insert
+        val sql = StringBuilder()
+        appendInsertPrefix(sql, table, columns)
+        sql.append(LEFT_BRACKET)
+        sql.append(valuesList.first().joinToString(COMMA_SPACE) { QUESTION_MARK })
+        sql.append(RIGHT_BRACKET)
+        return BatchSqlStatement(SqlConfig.getSql(sql), insert.valuesList)
+    }
+
+    private fun getInsertSqlStatementList(insert: Insert): List<SqlStatement> {
+        val (table, _, _, columnsValuesList) = insert
+        return columnsValuesList.map { (columns, values) ->
+            val sql = StringBuilder()
+            val parameters = mutableListOf<Any?>()
+            appendInsertPrefix(sql, table, columns)
+            sql.append(LEFT_BRACKET)
+            sql.append(values.joinToString(COMMA_SPACE) {
+                parameters.add(it)
+                QUESTION_MARK
+            })
+            sql.append(RIGHT_BRACKET)
+            SqlStatement(SqlConfig.getSql(sql), parameters)
+        }
     }
 
     private fun getUpdateSqlStatement(update: Update): SqlStatement {

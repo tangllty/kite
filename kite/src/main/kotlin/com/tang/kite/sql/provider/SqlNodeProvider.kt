@@ -1,23 +1,34 @@
 package com.tang.kite.sql.provider
 
 import com.tang.kite.annotation.Join
+import com.tang.kite.config.KiteConfig
+import com.tang.kite.enumeration.SqlType
 import com.tang.kite.paginate.OrderItem
+import com.tang.kite.sql.Column
+import com.tang.kite.sql.SqlNode
+import com.tang.kite.sql.TableReference
+import com.tang.kite.sql.dialect.SqlDialect
 import com.tang.kite.sql.enumeration.DatabaseType
 import com.tang.kite.sql.statement.BatchSqlStatement
 import com.tang.kite.sql.statement.SqlStatement
+import com.tang.kite.utils.Reflects
+import com.tang.kite.utils.Reflects.getIdField
+import com.tang.kite.utils.Reflects.getSqlFields
+import com.tang.kite.utils.Reflects.getValue
+import com.tang.kite.utils.Reflects.isAutoIncrementId
 import java.lang.reflect.Field
 
 /**
  * @author Tang
  */
-class SqlNodeProvider : SqlProvider {
+class SqlNodeProvider(private val dialect: SqlDialect) : SqlProvider {
 
     override fun providerType(): DatabaseType {
         TODO("Not yet implemented")
     }
 
     override fun selectiveStrategy(any: Any?): Boolean {
-        TODO("Not yet implemented")
+        return KiteConfig.selectiveStrategy.apply(any)
     }
 
     override fun getSql(sql: StringBuilder): String {
@@ -48,24 +59,71 @@ class SqlNodeProvider : SqlProvider {
         TODO("Not yet implemented")
     }
 
+    private fun insert(entities: Iterable<Any>, isSelective: Boolean = false): SqlNode.Insert {
+        val sqlNode = SqlNode.Insert()
+        val entity = entities.first()
+        val clazz = entity::class.java
+        sqlNode.table = TableReference(clazz)
+        val idField = getIdField(clazz)
+        val autoIncrementId = isAutoIncrementId(idField)
+        val fieldList = getSqlFields(clazz).filter { it != idField || autoIncrementId.not() }
+        val getValue = { field: Field, entity: Any ->
+            if (field == idField && autoIncrementId.not()) {
+                Reflects.getGeneratedId(idField)
+            } else {
+                getValue(field, entity, SqlType.INSERT)
+            }
+        }
+
+        if (isSelective) {
+            if (entities.count() == 1) {
+                val selectiveFieldList = fieldList.filter { selectiveStrategy(getValue(it, entity, SqlType.INSERT)) }
+                sqlNode.valuesList.add(mutableListOf())
+                selectiveFieldList.forEach {
+                        sqlNode.columns.add(Column(it))
+                        sqlNode.valuesList.first().add(getValue(it, entity))
+                    }
+                return sqlNode
+            }
+            entities.forEach { entity ->
+                sqlNode.columnsValuesList.add(Pair(mutableListOf(), mutableListOf()))
+                val selectiveFieldList = fieldList.filter { selectiveStrategy(getValue(it, entity, SqlType.INSERT)) }
+                selectiveFieldList.forEach {
+                    sqlNode.columnsValuesList.last().first.add(Column(it))
+                    sqlNode.columnsValuesList.last().second.add(getValue(it, entity))
+                }
+            }
+            return sqlNode
+        }
+
+        fieldList.forEach { sqlNode.columns.add(Column(it)) }
+        entities.forEach {
+            sqlNode.valuesList.add(mutableListOf())
+            fieldList.forEach { field ->
+                sqlNode.valuesList.last().add(getValue(field, it))
+            }
+        }
+        return sqlNode
+    }
+
     override fun insert(entity: Any): SqlStatement {
-        TODO("Not yet implemented")
+        return insert(listOf(entity)).getSqlStatement()
     }
 
     override fun insertSelective(entity: Any): SqlStatement {
-        TODO("Not yet implemented")
+        return insert(listOf(entity), true).getSqlStatement()
     }
 
     override fun insertValues(entities: Iterable<Any>): SqlStatement {
-        TODO("Not yet implemented")
+        return insert(entities).getSqlStatement()
     }
 
     override fun batchInsert(entities: Iterable<Any>): BatchSqlStatement {
-        TODO("Not yet implemented")
+        return insert(entities).getBatchSqlStatement()
     }
 
     override fun batchInsertSelective(entities: Iterable<Any>): List<SqlStatement> {
-        TODO("Not yet implemented")
+        return insert(entities, true).getInsertSqlStatementList()
     }
 
     override fun update(entity: Any): SqlStatement {

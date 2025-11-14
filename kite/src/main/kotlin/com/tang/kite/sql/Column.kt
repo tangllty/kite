@@ -14,11 +14,13 @@ open class Column(
 
     val name: String?,
 
-    val tableAlias: String? = null
+    val field: Field? = null,
+
+    var tableAlias: String? = null
 
 ) {
 
-    constructor(field: Field) : this(Reflects.getColumnName(field), Reflects.getTableAlias(field.declaringClass))
+    constructor(field: Field) : this(Reflects.getColumnName(field), field)
 
     constructor(column: KMutableProperty1<*, *>): this(column.javaField!!)
 
@@ -40,6 +42,10 @@ open class Column(
             throw IllegalArgumentException("Column name cannot be null")
         }
         return if (withAlias) {
+            if (field == null) {
+                throw IllegalArgumentException("Column field cannot be null")
+            }
+            tableAlias = Reflects.getTableAlias(field.declaringClass)
             toString()
         } else {
             name

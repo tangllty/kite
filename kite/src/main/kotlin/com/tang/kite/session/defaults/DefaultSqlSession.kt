@@ -16,6 +16,7 @@ import com.tang.kite.proxy.MapperProxyFactory
 import com.tang.kite.session.SqlSession
 import com.tang.kite.sql.dialect.SqlDialect
 import com.tang.kite.sql.provider.DerbySqlProvider
+import com.tang.kite.sql.provider.SqlNodeProvider
 import com.tang.kite.sql.statement.BatchSqlStatement
 import com.tang.kite.sql.statement.SqlStatement
 import com.tang.kite.utils.Reflects
@@ -38,9 +39,11 @@ class DefaultSqlSession(
 
     private val executor: Executor,
 
-    private val sqlDialect: SqlDialect
+    sqlDialect: SqlDialect
 
 ) : SqlSession {
+
+    private val provider = SqlNodeProvider(sqlDialect)
 
     @Deprecated("Remove in future versions")
     private val sqlProvider = DerbySqlProvider()
@@ -303,14 +306,14 @@ class DefaultSqlSession(
 
     override fun <T> insert(method: Method, mapperInterface: Class<T>, parameter: Any): Int {
         val start = nanoTime()
-        val insert = sqlProvider.insert(parameter)
+        val insert = provider.insert(parameter)
         val rows = executor.update(insert, parameter)
         return returnRows(method, mapperInterface, insert, rows, elapsedSince(start))
     }
 
     override fun <T> insertSelective(method: Method, mapperInterface: Class<T>, parameter: Any): Int {
         val start = nanoTime()
-        val insert = sqlProvider.insertSelective(parameter)
+        val insert = provider.insertSelective(parameter)
         val rows = executor.update(insert, parameter)
         return returnRows(method, mapperInterface, insert, rows, elapsedSince(start))
     }
@@ -324,7 +327,7 @@ class DefaultSqlSession(
     override fun <T> insertValues(method: Method, mapperInterface: Class<T>, parameter: Any, batchSize: Int): Int {
         val start = nanoTime()
         return processBatch(parameter, batchSize) {
-            val insertValues = sqlProvider.insertValues(it)
+            val insertValues = provider.insertValues(it)
             val rows = executor.update(insertValues, it)
             returnRows(method, mapperInterface, insertValues, rows, elapsedSince(start))
         }
@@ -333,7 +336,7 @@ class DefaultSqlSession(
     override fun <T> batchInsert(method: Method, mapperInterface: Class<T>, parameter: Any, batchSize: Int): Int {
         val start = nanoTime()
         return processBatch(parameter, batchSize) {
-            val batchInsert = sqlProvider.batchInsert(it)
+            val batchInsert = provider.batchInsert(it)
             val rows = executor.update(batchInsert, it)
             returnRows(method, mapperInterface, batchInsert, rows, elapsedSince(start))
         }
@@ -342,7 +345,7 @@ class DefaultSqlSession(
     override fun <T> batchInsertSelective(method: Method, mapperInterface: Class<T>, parameter: Any, batchSize: Int): Int {
         val start = nanoTime()
         return processBatch(parameter, batchSize) {
-            val batchInsertSelective = sqlProvider.batchInsertSelective(it)
+            val batchInsertSelective = provider.batchInsertSelective(it)
             val rows = executor.update(batchInsertSelective, it)
             returnRows(method, mapperInterface, batchInsertSelective, rows, elapsedSince(start))
         }

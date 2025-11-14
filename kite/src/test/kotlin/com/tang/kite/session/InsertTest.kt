@@ -130,7 +130,7 @@ class InsertTest : BaseDataTest() {
         val accountMapper = session.getMapper(AccountMapper::class)
         val accounts = listOf(
             Account(username = "tang1", password = "123456"),
-            Account(username = "tang2", password = "123456")
+            Account(username = "tang2", password = "123456", balance = BigDecimal(2000))
         )
         val rows = accountMapper.batchInsert(accounts)
         session.commit()
