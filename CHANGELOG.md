@@ -16,6 +16,7 @@
  * Add `SqlDialect` interface and enhance `SqlNode` with SQL statement generation methods
  * Add SQL dialect implementations for Derby, H2, MySQL, PostgreSQL, and SQLite
  * Enhance `JoinTable` and `SqlNode` with improved SQL generation and deprecate old constructors
+ * Refactor `SqlNode` to streamline SQL statement generation and add support for DELETE and UPDATE operations
 
 ## 1.0.13
 
