@@ -4,7 +4,7 @@ import com.tang.kite.constants.SqlString.LIMIT
 import com.tang.kite.constants.SqlString.OFFSET
 import com.tang.kite.constants.SqlString.QUESTION_MARK
 import com.tang.kite.sql.provider.AbstractSqlProvider
-import com.tang.kite.sql.provider.ProviderType
+import com.tang.kite.sql.enumeration.DatabaseType
 
 /**
  * SQLite SQL provider
@@ -13,8 +13,8 @@ import com.tang.kite.sql.provider.ProviderType
  */
 class SqliteSqlProvider : AbstractSqlProvider() {
 
-    override fun providerType(): ProviderType {
-        return ProviderType.SQLITE
+    override fun providerType(): DatabaseType {
+        return DatabaseType.SQLITE
     }
 
     override fun getLimit(parameters: MutableList<Any?>, pageNumber: Long, pageSize: Long): String {

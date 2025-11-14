@@ -1,7 +1,7 @@
 package com.tang.kite.sql.provider.postgresql
 
 import com.tang.kite.sql.provider.AbstractSqlProvider
-import com.tang.kite.sql.provider.ProviderType
+import com.tang.kite.sql.enumeration.DatabaseType
 
 /**
  * PostgreSQL SQL provider
@@ -10,8 +10,8 @@ import com.tang.kite.sql.provider.ProviderType
  */
 class PostgresqlSqlProvider : AbstractSqlProvider() {
 
-    override fun providerType(): ProviderType {
-        return ProviderType.POSTGRESQL
+    override fun providerType(): DatabaseType {
+        return DatabaseType.POSTGRESQL
     }
 
 }

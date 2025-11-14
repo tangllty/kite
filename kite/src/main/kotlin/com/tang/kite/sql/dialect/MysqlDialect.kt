@@ -4,7 +4,7 @@ import com.tang.kite.constants.SqlString.COMMA_SPACE
 import com.tang.kite.constants.SqlString.LIMIT
 import com.tang.kite.constants.SqlString.QUESTION_MARK
 import com.tang.kite.sql.LimitClause
-import com.tang.kite.sql.provider.ProviderType
+import com.tang.kite.sql.enumeration.DatabaseType
 
 /**
  * MySQL SQL provider
@@ -13,8 +13,8 @@ import com.tang.kite.sql.provider.ProviderType
  */
 class MysqlDialect : SqlDialect {
 
-    override fun getType(): ProviderType {
-        return ProviderType.MYSQL
+    override fun getType(): DatabaseType {
+        return DatabaseType.MYSQL
     }
 
     override fun applyLimitClause(sql: StringBuilder, parameters: MutableList<Any?>, limitClause: LimitClause) {

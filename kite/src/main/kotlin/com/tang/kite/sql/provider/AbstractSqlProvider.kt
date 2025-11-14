@@ -30,6 +30,7 @@ import com.tang.kite.constants.SqlString.VALUES
 import com.tang.kite.constants.SqlString.WHERE
 import com.tang.kite.enumeration.SqlType
 import com.tang.kite.paginate.OrderItem
+import com.tang.kite.sql.enumeration.DatabaseType
 import com.tang.kite.sql.statement.BatchSqlStatement
 import com.tang.kite.sql.statement.SqlStatement
 import com.tang.kite.utils.Reflects
@@ -50,7 +51,7 @@ import java.lang.reflect.Field
  */
 abstract class AbstractSqlProvider : SqlProvider {
 
-    abstract override fun providerType(): ProviderType
+    abstract override fun providerType(): DatabaseType
 
     override fun selectiveStrategy(any: Any?): Boolean {
         return KiteConfig.selectiveStrategy.apply(any)

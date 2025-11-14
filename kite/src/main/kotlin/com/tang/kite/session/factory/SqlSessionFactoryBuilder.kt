@@ -6,7 +6,7 @@ import com.tang.kite.datasource.pooled.PooledDataSourceFactory
 import com.tang.kite.io.Resources
 import com.tang.kite.session.Configuration
 import com.tang.kite.session.factory.defaults.DefaultSqlSessionFactory
-import com.tang.kite.sql.defaults.DefaultSqlProviderFactory
+import com.tang.kite.sql.factory.defaults.DefaultSqlDialectFactory
 import com.tang.kite.transaction.TransactionFactory
 import com.tang.kite.transaction.jdbc.JdbcTransactionFactory
 import java.io.InputStream
@@ -44,11 +44,11 @@ class SqlSessionFactoryBuilder {
         val connection = dataSource.connection
         val url = connection.metaData.url
         connection.close()
-        val sqlProvider = DefaultSqlProviderFactory().newSqlProvider(url)
+        val sqlDialect = DefaultSqlDialectFactory().newSqlDialect(url)
         if (::transactionFactory.isInitialized.not()) {
             transactionFactory = JdbcTransactionFactory()
         }
-        return DefaultSqlSessionFactory(Configuration(dataSource, sqlProvider, transactionFactory))
+        return DefaultSqlSessionFactory(Configuration(dataSource, sqlDialect, transactionFactory))
     }
 
     private fun printBanner() {

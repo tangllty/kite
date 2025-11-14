@@ -7,6 +7,9 @@ import com.tang.kite.enumeration.SqlType
 import com.tang.kite.handler.fill.TimeFillHandler
 import com.tang.kite.handler.fill.FillHandler
 import com.tang.kite.handler.fill.FillKey
+import com.tang.kite.sql.dialect.SqlDialect
+import com.tang.kite.sql.factory.defaults.DefaultSqlDialectFactory
+import com.tang.kite.sql.enumeration.DatabaseType
 import com.tang.kite.sql.provider.SqlProvider
 import com.tang.kite.sql.provider.derby.DerbySqlProvider
 import com.tang.kite.sql.provider.h2.H2SqlProvider
@@ -43,6 +46,7 @@ object KiteConfig {
     /**
      * The strategy for selective query with a default value.
      */
+    @Deprecated("Removed in feature versions")
     @JvmStatic
     var urlProviders: MutableMap<String, SqlProvider> = mutableMapOf(
         "postgresql" to PostgresqlSqlProvider(),
@@ -51,6 +55,12 @@ object KiteConfig {
         "derby" to DerbySqlProvider(),
         "h2" to H2SqlProvider()
     )
+
+    /**
+     * SQL dialects for different databases.
+     */
+    @JvmStatic
+    var dialects: MutableMap<DatabaseType, SqlDialect> = DefaultSqlDialectFactory().getDialects()
 
     /**
      * Fill handlers for handling fill annotations.

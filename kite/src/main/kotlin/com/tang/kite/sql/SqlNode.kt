@@ -84,16 +84,21 @@ sealed class SqlNode {
 
     ) : SqlNode()
 
-    fun getSqlStatement(dialect: SqlDialect): SqlStatement {
+    fun getSqlStatement(dialect: SqlDialect? = null): SqlStatement {
         return when (this) {
-            is Select -> getSelectSqlStatement(this, dialect)
+            is Select -> {
+                if (dialect == null) {
+                    throw IllegalArgumentException("distinct can not be null")
+                }
+                getSelectSqlStatement(this, dialect)
+            }
             is Insert -> getInsertSqlStatement(this)
             is Update -> getUpdateSqlStatement(this)
             is Delete -> getDeleteSqlStatement(this)
         }
     }
 
-    fun getSql(dialect: SqlDialect): String {
+    fun getSql(dialect: SqlDialect? = null): String {
         return getSqlStatement(dialect).getActualSql()
     }
 

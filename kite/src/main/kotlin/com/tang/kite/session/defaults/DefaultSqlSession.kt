@@ -13,11 +13,11 @@ import com.tang.kite.executor.Executor
 import com.tang.kite.paginate.OrderItem
 import com.tang.kite.paginate.Page
 import com.tang.kite.proxy.MapperProxyFactory
-import com.tang.kite.session.Configuration
 import com.tang.kite.session.SqlSession
+import com.tang.kite.sql.dialect.SqlDialect
+import com.tang.kite.sql.provider.derby.DerbySqlProvider
 import com.tang.kite.sql.statement.BatchSqlStatement
 import com.tang.kite.sql.statement.SqlStatement
-import com.tang.kite.sql.provider.SqlProvider
 import com.tang.kite.utils.Reflects
 import com.tang.kite.utils.Reflects.setValue
 import com.tang.kite.utils.parser.SqlParser
@@ -36,13 +36,14 @@ import kotlin.time.Duration.Companion.nanoseconds
  */
 class DefaultSqlSession(
 
-    private val configuration: Configuration,
-
     private val executor: Executor,
 
-    private val sqlProvider: SqlProvider
+    private val sqlDialect: SqlDialect
 
 ) : SqlSession {
+
+    @Deprecated("Remove in future versions")
+    private val sqlProvider = DerbySqlProvider()
 
     private var isDirty = false
 

@@ -1,6 +1,6 @@
 package com.tang.kite.session
 
-import com.tang.kite.sql.provider.SqlProvider
+import com.tang.kite.sql.dialect.SqlDialect
 import com.tang.kite.transaction.TransactionFactory
 import javax.sql.DataSource
 
@@ -13,7 +13,7 @@ class Configuration(
 
     val dataSource: DataSource,
 
-    val sqlProvider: SqlProvider,
+    val sqlDialect: SqlDialect,
 
     val transactionFactory: TransactionFactory
 

@@ -5,7 +5,7 @@ import com.tang.kite.constants.SqlString.QUESTION_MARK
 import com.tang.kite.constants.SqlString.ROWS_FETCH_NEXT
 import com.tang.kite.constants.SqlString.ROWS_ONLY
 import com.tang.kite.sql.provider.AbstractSqlProvider
-import com.tang.kite.sql.provider.ProviderType
+import com.tang.kite.sql.enumeration.DatabaseType
 
 /**
  * Derby SQL provider
@@ -14,8 +14,8 @@ import com.tang.kite.sql.provider.ProviderType
  */
 class DerbySqlProvider : AbstractSqlProvider() {
 
-    override fun providerType(): ProviderType {
-        return ProviderType.DERBY
+    override fun providerType(): DatabaseType {
+        return DatabaseType.DERBY
     }
 
     override fun getLimit(parameters: MutableList<Any?>, pageNumber: Long, pageSize: Long): String {

@@ -4,7 +4,7 @@ import com.tang.kite.constants.SqlString.LIMIT
 import com.tang.kite.constants.SqlString.OFFSET
 import com.tang.kite.constants.SqlString.QUESTION_MARK
 import com.tang.kite.sql.LimitClause
-import com.tang.kite.sql.provider.ProviderType
+import com.tang.kite.sql.enumeration.DatabaseType
 
 /**
  * PostgreSQL SQL provider
@@ -13,8 +13,8 @@ import com.tang.kite.sql.provider.ProviderType
  */
 class PostgresqlDialect : SqlDialect {
 
-    override fun getType(): ProviderType {
-        return ProviderType.POSTGRESQL
+    override fun getType(): DatabaseType {
+        return DatabaseType.POSTGRESQL
     }
 
     override fun applyLimitClause(sql: StringBuilder, parameters: MutableList<Any?>, limitClause: LimitClause) {

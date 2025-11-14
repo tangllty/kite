@@ -5,6 +5,8 @@ import com.tang.kite.config.PageConfig
 import com.tang.kite.config.SqlConfig
 import com.tang.kite.handler.fill.FillHandler
 import com.tang.kite.handler.fill.FillKey
+import com.tang.kite.sql.dialect.SqlDialect
+import com.tang.kite.sql.enumeration.DatabaseType
 import com.tang.kite.sql.provider.SqlProvider
 import org.springframework.boot.context.properties.ConfigurationProperties
 import java.util.function.Function
@@ -36,7 +38,13 @@ data class KiteProperties(
     /**
      * The strategy for selective query with a default value.
      */
+    @Deprecated("Removed in feature versions")
     val urlProviders: MutableMap<String, SqlProvider> = KiteConfig.urlProviders,
+
+    /**
+     * SQL dialects for different databases.
+     */
+    var dialects: MutableMap<DatabaseType, SqlDialect> = KiteConfig.dialects,
 
     /**
      * Fill handlers for handling fill annotations.
@@ -124,6 +132,7 @@ data class KiteProperties(
         KiteConfig.banner = banner
         KiteConfig.selectiveStrategy = selectiveStrategy
         KiteConfig.urlProviders = urlProviders
+        KiteConfig.dialects = dialects
         KiteConfig.fillHandlers = fillHandlers
 
         PageConfig.pageNumber = page.pageNumber

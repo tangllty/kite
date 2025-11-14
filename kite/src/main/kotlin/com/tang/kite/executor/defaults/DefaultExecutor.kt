@@ -1,12 +1,11 @@
 package com.tang.kite.executor.defaults
 
 import com.tang.kite.executor.Executor
-import com.tang.kite.session.Configuration
 import com.tang.kite.sql.statement.BatchSqlStatement
 import com.tang.kite.sql.statement.SqlStatement
 import com.tang.kite.transaction.Transaction
-import com.tang.kite.utils.resultset.ResultSetHandlers
 import com.tang.kite.utils.Statements
+import com.tang.kite.utils.resultset.ResultSetHandlers
 import org.slf4j.LoggerFactory
 import java.sql.Connection
 import java.sql.PreparedStatement
@@ -15,13 +14,7 @@ import java.sql.Statement
 /**
  * @author Tang
  */
-class DefaultExecutor(
-
-    private val configuration: Configuration,
-
-    private val transaction: Transaction
-
-) : Executor {
+class DefaultExecutor(private val transaction: Transaction) : Executor {
 
     private val logger = LoggerFactory.getLogger(DefaultExecutor::class.java)
 

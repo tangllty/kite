@@ -2,6 +2,7 @@ package com.tang.kite.sql.provider
 
 import com.tang.kite.annotation.Join
 import com.tang.kite.paginate.OrderItem
+import com.tang.kite.sql.enumeration.DatabaseType
 import com.tang.kite.sql.statement.BatchSqlStatement
 import com.tang.kite.sql.statement.SqlStatement
 import java.lang.reflect.Field
@@ -13,7 +14,7 @@ import java.lang.reflect.Field
  */
 interface SqlProvider {
 
-    fun providerType(): ProviderType
+    fun providerType(): DatabaseType
 
     fun selectiveStrategy(any: Any?): Boolean
 
