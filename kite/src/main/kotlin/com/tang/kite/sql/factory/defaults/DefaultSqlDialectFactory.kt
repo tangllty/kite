@@ -16,7 +16,8 @@ class DefaultSqlDialectFactory : SqlDialectFactory {
 
     override fun newSqlDialect(url: String): SqlDialect {
         val dialects = KiteConfig.dialects
-        val dialect = dialects[DatabaseType.of(url)]
+        val databaseType = dialects.keys.firstOrNull { url.contains(":${it.url}:") }
+        val dialect = dialects[databaseType]
         return dialect ?: throw IllegalArgumentException("Unsupported database url: $url")
     }
 

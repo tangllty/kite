@@ -18,6 +18,7 @@
  * Enhance `JoinTable` and `SqlNode` with improved SQL generation and deprecate old constructors
  * Refactor `SqlNode` to streamline SQL statement generation and add support for DELETE and UPDATE operations
  * Refactor SQL provider interfaces to use `DatabaseType` enumeration and implement `DefaultSqlDialectFactory` for improved SQL dialect management
+ * Refactor database type resolution in DefaultSqlDialectFactory to improve URL matching logic
 
 ## 1.0.13
 
