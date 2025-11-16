@@ -67,9 +67,9 @@ sealed class SqlNode {
 
     data class Update(
 
-        val table: TableReference? = null,
+        var table: TableReference? = null,
 
-        val sets: LinkedHashMap<String, Any?> = linkedMapOf(),
+        val sets: LinkedHashMap<Column, Any?> = linkedMapOf(),
 
         val joins: MutableList<JoinTable> = mutableListOf(),
 
@@ -216,14 +216,14 @@ sealed class SqlNode {
         val (table, sets, joins, where) = update
         val sql = StringBuilder()
         val parameters = mutableListOf<Any?>()
+        val withAlias = joins.isNotEmpty()
         sql.append(UPDATE)
         appendTable(sql, table)
-        sql.append(SPACE + SET)
+        sql.append(SET)
         sql.append(sets.entries.joinToString(COMMA_SPACE) {
             parameters.add(it.value)
-            "${it.key} = $QUESTION_MARK"
+            "${it.key.toString(withAlias)} = $QUESTION_MARK"
         })
-        val withAlias = joins.isNotEmpty()
         appendJoins(joins, sql, withAlias)
         appendWhere(sql, parameters, where, withAlias)
         return SqlStatement(SqlConfig.getSql(sql), parameters)

@@ -111,7 +111,7 @@ object BaseMethodName {
     }
 
     fun isUpdateSelectiveCondition(method: Method): Boolean {
-        return method.name == UPDATE && method.countIsTwo() && method.firstParameterIsAny() && method.secondParameterIsAny()
+        return method.name == UPDATE_SELECTIVE && method.countIsTwo() && method.firstParameterIsAny() && method.secondParameterIsAny()
     }
 
     private const val UPDATE_WRAPPER = "updateWrapper"

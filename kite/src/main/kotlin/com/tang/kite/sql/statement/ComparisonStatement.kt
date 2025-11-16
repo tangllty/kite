@@ -15,7 +15,7 @@ import com.tang.kite.sql.enumeration.ComparisonOperator
  *
  * @author Tang
  */
-class ComparisonStatement(val column: Column, val value: Any?, val comparisonOperator: ComparisonOperator) {
+class ComparisonStatement(val column: Column, val value: Any?, val comparisonOperator: ComparisonOperator = ComparisonOperator.EQUAL) {
 
     fun appendSql(sql: StringBuilder, parameters: MutableList<Any?>, withAlias: Boolean) {
         when (comparisonOperator) {

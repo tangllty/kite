@@ -30,7 +30,7 @@ class UpdateTest : BaseDataTest() {
     fun updateCondition() {
         val session = sqlSessionFactory.openSession()
         val accountMapper = session.getMapper(AccountMapper::class)
-        val account = Account(username = "tang", password = "654321")
+        val account = Account(id = 1, username = "tang", password = "654321")
         val condition = Account(id = 1)
         val rows = accountMapper.update(account, condition)
         session.rollback()
@@ -44,6 +44,18 @@ class UpdateTest : BaseDataTest() {
         val accountMapper = session.getMapper(AccountMapper::class)
         val account = Account(id = 1, username = "tang")
         val rows = accountMapper.updateSelective(account)
+        session.rollback()
+        session.close()
+        assertEquals(1, rows)
+    }
+
+    @Test
+    fun updateSelectiveCondition() {
+        val session = sqlSessionFactory.openSession()
+        val accountMapper = session.getMapper(AccountMapper::class)
+        val account = Account(id = 1, username = "tang")
+        val condition = Account(id = 1)
+        val rows = accountMapper.updateSelective(account, condition)
         session.rollback()
         session.close()
         assertEquals(1, rows)

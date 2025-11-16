@@ -354,28 +354,28 @@ class DefaultSqlSession(
 
     override fun <T> update(method: Method, mapperInterface: Class<T>, parameter: Any): Int {
         val start = nanoTime()
-        val update = sqlProvider.update(parameter)
+        val update = provider.update(parameter)
         val rows = executor.update(update, parameter)
         return returnRows(method, mapperInterface, update, rows, elapsedSince(start))
     }
 
     override fun <T> update(method: Method, mapperInterface: Class<T>, parameter: Any, condition: Any): Int {
         val start = nanoTime()
-        val update = sqlProvider.update(parameter, condition)
+        val update = provider.update(parameter, condition)
         val rows = executor.update(update, parameter)
         return returnRows(method, mapperInterface, update, rows, elapsedSince(start))
     }
 
     override fun <T> updateSelective(method: Method, mapperInterface: Class<T>, parameter: Any): Int {
         val start = nanoTime()
-        val update = sqlProvider.updateSelective(parameter)
+        val update = provider.updateSelective(parameter)
         val rows = executor.update(update, parameter)
         return returnRows(method, mapperInterface, update, rows, elapsedSince(start))
     }
 
     override fun <T> updateSelective(method: Method, mapperInterface: Class<T>, parameter: Any, condition: Any): Int {
         val start = nanoTime()
-        val updateWrapper = sqlProvider.updateSelective(parameter, condition)
+        val updateWrapper = provider.updateSelective(parameter, condition)
         val rows = executor.update(updateWrapper, parameter)
         return returnRows(method, mapperInterface, updateWrapper, rows, elapsedSince(start))
     }
