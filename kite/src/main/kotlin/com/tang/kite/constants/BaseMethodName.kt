@@ -110,6 +110,10 @@ object BaseMethodName {
         return method.name == UPDATE_SELECTIVE && method.countIsOne() && method.firstParameterIsAny()
     }
 
+    fun isUpdateSelectiveCondition(method: Method): Boolean {
+        return method.name == UPDATE && method.countIsTwo() && method.firstParameterIsAny() && method.secondParameterIsAny()
+    }
+
     private const val UPDATE_WRAPPER = "updateWrapper"
 
     fun isUpdateWrapper(method: Method): Boolean {
@@ -250,7 +254,7 @@ object BaseMethodName {
             BATCH_INSERT -> isBatchInsert(method)
             BATCH_INSERT_SELECTIVE -> isBatchInsertSelective(method)
             UPDATE -> isUpdate(method) || isUpdateCondition(method)
-            UPDATE_SELECTIVE -> isUpdateSelective(method)
+            UPDATE_SELECTIVE -> isUpdateSelective(method) || isUpdateSelectiveCondition(method)
             UPDATE_WRAPPER -> isUpdateWrapper(method)
             BATCH_UPDATE -> isBatchUpdate(method)
             BATCH_UPDATE_SELECTIVE -> isBatchUpdateSelective(method)

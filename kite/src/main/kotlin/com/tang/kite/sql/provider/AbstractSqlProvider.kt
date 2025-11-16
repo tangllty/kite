@@ -255,6 +255,10 @@ abstract class AbstractSqlProvider : SqlProvider {
         return update(entity) { selectiveStrategy(it) }
     }
 
+    override fun updateSelective(entity: Any, where: Any): SqlStatement {
+        return update(entity) { selectiveStrategy(it) }
+    }
+
     private fun update(entity: Any, strategy: (Any?) -> Boolean): SqlStatement {
         val clazz = entity::class.java
         val sql = StringBuilder()

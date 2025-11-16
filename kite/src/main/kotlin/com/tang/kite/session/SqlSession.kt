@@ -35,6 +35,8 @@ interface SqlSession : AutoCloseable {
 
     fun <T> updateSelective(method: Method, mapperInterface: Class<T>, parameter: Any): Int
 
+    fun <T> updateSelective(method: Method, mapperInterface: Class<T>, parameter: Any, condition: Any): Int
+
     fun <T> updateWrapper(method: Method, mapperInterface: Class<T>, type: Class<T>, parameter: Any): Int
 
     fun <T> batchUpdate(method: Method, mapperInterface: Class<T>, parameter: Any, batchSize: Int): Int

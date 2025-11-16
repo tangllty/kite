@@ -245,6 +245,7 @@ class DefaultSqlSession(
             BaseMethodName.isUpdate(method) -> update(method, mapperInterface, getFirstArg(args))
             BaseMethodName.isUpdateCondition(method) -> update(method, mapperInterface, getFirstArg(args), getSecondArg(args))
             BaseMethodName.isUpdateSelective(method) -> updateSelective(method, mapperInterface, getFirstArg(args))
+            BaseMethodName.isUpdateSelectiveCondition(method) -> updateSelective(method, mapperInterface, getFirstArg(args), getSecondArg(args))
             BaseMethodName.isUpdateWrapper(method) -> updateWrapper(method, mapperInterface, type, getFirstArg(args))
             BaseMethodName.isBatchUpdate(method) -> batchUpdate(method, mapperInterface, getFirstArg(args), asInt(getSecondArg(args)))
             BaseMethodName.isBatchUpdateSelective(method) -> batchUpdateSelective(method, mapperInterface, getFirstArg(args), asInt(getSecondArg(args)))
@@ -370,6 +371,13 @@ class DefaultSqlSession(
         val update = sqlProvider.updateSelective(parameter)
         val rows = executor.update(update, parameter)
         return returnRows(method, mapperInterface, update, rows, elapsedSince(start))
+    }
+
+    override fun <T> updateSelective(method: Method, mapperInterface: Class<T>, parameter: Any, condition: Any): Int {
+        val start = nanoTime()
+        val updateWrapper = sqlProvider.updateSelective(parameter, condition)
+        val rows = executor.update(updateWrapper, parameter)
+        return returnRows(method, mapperInterface, updateWrapper, rows, elapsedSince(start))
     }
 
     override fun <T> updateWrapper(method: Method, mapperInterface: Class<T>, type: Class<T>, parameter: Any): Int {

@@ -48,6 +48,8 @@ interface SqlProvider {
 
     fun updateSelective(entity: Any): SqlStatement
 
+    fun updateSelective(entity: Any, where: Any): SqlStatement
+
     fun batchUpdate(entities: Iterable<Any>): BatchSqlStatement
 
     fun batchUpdateSelective(entities: Iterable<Any>): List<SqlStatement>

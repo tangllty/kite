@@ -138,6 +138,10 @@ class SqlNodeProvider(private val dialect: SqlDialect) : SqlProvider {
         TODO("Not yet implemented")
     }
 
+    override fun updateSelective(entity: Any, where: Any): SqlStatement {
+        TODO("Not yet implemented")
+    }
+
     override fun batchUpdate(entities: Iterable<Any>): BatchSqlStatement {
         TODO("Not yet implemented")
     }
