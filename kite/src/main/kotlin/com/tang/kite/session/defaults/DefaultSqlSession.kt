@@ -394,7 +394,7 @@ class DefaultSqlSession(
     override fun <T> batchUpdate(method: Method, mapperInterface: Class<T>, parameter: Any, batchSize: Int): Int {
         val start = nanoTime()
         return processBatch(parameter, batchSize) {
-            val batchUpdate = sqlProvider.batchUpdate(it)
+            val batchUpdate = provider.batchUpdate(it)
             val rows = executor.update(batchUpdate, it)
             returnRows(method, mapperInterface, batchUpdate, rows, elapsedSince(start))
         }
@@ -403,7 +403,7 @@ class DefaultSqlSession(
     override fun <T> batchUpdateSelective(method: Method, mapperInterface: Class<T>, parameter: Any, batchSize: Int): Int {
         val start = nanoTime()
         return processBatch(parameter, batchSize) {
-            val batchUpdateSelective = sqlProvider.batchUpdateSelective(it)
+            val batchUpdateSelective = provider.batchUpdateSelective(it)
             val rows = executor.update(batchUpdateSelective, it)
             returnRows(method, mapperInterface, batchUpdateSelective, rows, elapsedSince(start))
         }

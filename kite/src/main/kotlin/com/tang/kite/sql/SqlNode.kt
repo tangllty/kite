@@ -71,9 +71,13 @@ sealed class SqlNode {
 
         val sets: LinkedHashMap<Column, Any?> = linkedMapOf(),
 
+        val valuesList: MutableList<MutableList<Any?>> = mutableListOf(),
+
         val joins: MutableList<JoinTable> = mutableListOf(),
 
-        val where: MutableList<LogicalStatement> = mutableListOf()
+        val where: MutableList<LogicalStatement> = mutableListOf(),
+
+        val setsList: MutableList<Pair<MutableList<Column>, MutableList<Any?>>> = mutableListOf()
 
     ) : SqlNode()
 
@@ -104,14 +108,16 @@ sealed class SqlNode {
     fun getBatchSqlStatement(): BatchSqlStatement {
         return when (this) {
             is Insert -> getInsertBatchSqlStatement(this)
-            else -> throw IllegalArgumentException("only insert statement can be batch")
+            is Update -> getUpdateBatchSqlStatement(this)
+            else -> throw IllegalArgumentException("only insert and update statement can be batch")
         }
     }
 
-    fun getInsertSqlStatementList(): List<SqlStatement> {
+    fun getSqlStatementList(): List<SqlStatement> {
         return when (this) {
             is Insert -> getInsertSqlStatementList(this)
-            else -> throw IllegalArgumentException("only insert statement can be batch")
+            is Update -> getUpdateSqlStatementList(this)
+            else -> throw IllegalArgumentException("only insert and update statement can be batch")
         }
     }
 
@@ -193,7 +199,7 @@ sealed class SqlNode {
         sql.append(LEFT_BRACKET)
         sql.append(valuesList.first().joinToString(COMMA_SPACE) { QUESTION_MARK })
         sql.append(RIGHT_BRACKET)
-        return BatchSqlStatement(SqlConfig.getSql(sql), insert.valuesList)
+        return BatchSqlStatement(SqlConfig.getSql(sql), valuesList)
     }
 
     private fun getInsertSqlStatementList(insert: Insert): List<SqlStatement> {
@@ -213,7 +219,7 @@ sealed class SqlNode {
     }
 
     private fun getUpdateSqlStatement(update: Update): SqlStatement {
-        val (table, sets, joins, where) = update
+        val (table, sets, _, joins, where) = update
         val sql = StringBuilder()
         val parameters = mutableListOf<Any?>()
         val withAlias = joins.isNotEmpty()
@@ -227,6 +233,38 @@ sealed class SqlNode {
         appendJoins(joins, sql, withAlias)
         appendWhere(sql, parameters, where, withAlias)
         return SqlStatement(SqlConfig.getSql(sql), parameters)
+    }
+
+    private fun getUpdateBatchSqlStatement(update: Update): BatchSqlStatement {
+        val (table, sets, valuesList, joins, where) = update
+        val sql = StringBuilder()
+        val withAlias = joins.isNotEmpty()
+        sql.append(UPDATE)
+        appendTable(sql, table)
+        sql.append(SET)
+        sql.append(sets.entries.joinToString(COMMA_SPACE) {
+            "${it.key.toString(withAlias)} = $QUESTION_MARK"
+        })
+        appendJoins(joins, sql, withAlias)
+        appendWhere(sql, mutableListOf(), where, withAlias)
+        return BatchSqlStatement(SqlConfig.getSql(sql), valuesList)
+    }
+
+    private fun getUpdateSqlStatementList(update: Update): List<SqlStatement> {
+        val (table, _, _, joins, where, setsList) = update
+        return setsList.map { sets ->
+            val sql = StringBuilder()
+            val withAlias = joins.isNotEmpty()
+            sql.append(UPDATE)
+            appendTable(sql, table)
+            sql.append(SET)
+            sql.append(sets.first.joinToString(COMMA_SPACE) {
+                "${it.toString(withAlias)} = $QUESTION_MARK"
+            })
+            appendJoins(joins, sql, withAlias)
+            appendWhere(sql, mutableListOf(), where, withAlias)
+            SqlStatement(SqlConfig.getSql(sql), sets.second)
+        }
     }
 
     private fun getDeleteSqlStatement(delete: Delete): SqlStatement {

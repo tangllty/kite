@@ -21,6 +21,7 @@
  * Refactor database type resolution in DefaultSqlDialectFactory to improve URL matching logic
  * Refactor `SqlNode` and `SqlNodeProvider` to enhance batch insert functionality and streamline SQL statement generation
  * Refactor `SqlNodeProvider` update and updateSelective methods for better SQL generation and condition handling
+ * Refactor `SqlNodeProvider` batchUpdate and batchUpdateSelective methods for better SQL generation and condition handling
 
 ## 1.0.13
 

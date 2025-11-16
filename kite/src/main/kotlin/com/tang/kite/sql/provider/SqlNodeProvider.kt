@@ -61,20 +61,18 @@ class SqlNodeProvider(private val dialect: SqlDialect) : SqlProvider {
         TODO("Not yet implemented")
     }
 
-    private fun <T> getInsertValue(field: Field, entity: T): Any? {
-        return getValue(field, entity, SqlType.INSERT)
-    }
-
-    private fun <T> getUpdateValue(field: Field, entity: T): Any? {
-        return getValue(field, entity, SqlType.UPDATE)
-    }
-
-    private fun <T> getDeleteValue(field: Field, entity: T): Any? {
-        return getValue(field, entity, SqlType.DELETE)
-    }
-
-    private fun <T> getSelectValue(field: Field, entity: T): Any? {
-        return getValue(field, entity, SqlType.SELECT)
+    private fun getSqlValues(fields: List<Field>, entity: Any, sqlType: SqlType? = null, idField: Field? = null, isAutoIncrementId: Boolean = true): Map<Field, Any?> {
+        return fields.associateWith {
+            if (it == idField && isAutoIncrementId.not()) {
+                Reflects.getGeneratedId(it)
+            } else {
+                if (sqlType != null) {
+                    getValue(it, entity, sqlType)
+                } else {
+                    getValue(it, entity)
+                }
+            }
+        }
     }
 
     private fun insert(entities: Iterable<Any>, isSelective: Boolean = false): SqlNode.Insert {
@@ -82,34 +80,27 @@ class SqlNodeProvider(private val dialect: SqlDialect) : SqlProvider {
         val entity = entities.first()
         val clazz = entity::class.java
         sqlNode.table = TableReference(clazz)
-        // TODO If the id field is not auto-increment, You mast set the id field value first.
         val idField = getIdField(clazz)
         val autoIncrementId = isAutoIncrementId(idField)
         val fieldList = getSqlFields(clazz).filter { it != idField || autoIncrementId.not() }
-        val getValue = { field: Field, entity: Any ->
-            if (field == idField && autoIncrementId.not()) {
-                Reflects.getGeneratedId(idField)
-            } else {
-                getInsertValue(field, entity)
-            }
-        }
+        val valueMap = getSqlValues(fieldList, entity, SqlType.INSERT, idField, autoIncrementId)
 
         if (isSelective) {
             if (entities.count() == 1) {
-                val selectiveFieldList = fieldList.filter { selectiveStrategy(getInsertValue(it, entity)) }
+                val selectiveFieldList = fieldList.filter { selectiveStrategy(valueMap[it]) }
                 sqlNode.valuesList.add(mutableListOf())
                 selectiveFieldList.forEach {
                         sqlNode.columns.add(Column(it))
-                        sqlNode.valuesList.first().add(getValue(it, entity))
+                        sqlNode.valuesList.first().add(valueMap[it])
                     }
                 return sqlNode
             }
-            entities.forEach { entity ->
+            entities.forEach {
                 sqlNode.columnsValuesList.add(Pair(mutableListOf(), mutableListOf()))
-                val selectiveFieldList = fieldList.filter { selectiveStrategy(getInsertValue(it, entity)) }
-                selectiveFieldList.forEach {
-                    sqlNode.columnsValuesList.last().first.add(Column(it))
-                    sqlNode.columnsValuesList.last().second.add(getValue(it, entity))
+                val selectiveFieldList = fieldList.filter { selectiveStrategy(valueMap[it]) }
+                selectiveFieldList.forEach { field ->
+                    sqlNode.columnsValuesList.last().first.add(Column(field))
+                    sqlNode.columnsValuesList.last().second.add(valueMap[field])
                 }
             }
             return sqlNode
@@ -118,8 +109,9 @@ class SqlNodeProvider(private val dialect: SqlDialect) : SqlProvider {
         fieldList.forEach { sqlNode.columns.add(Column(it)) }
         entities.forEach {
             sqlNode.valuesList.add(mutableListOf())
+            val valueMap = getSqlValues(fieldList, it, SqlType.INSERT, idField, autoIncrementId)
             fieldList.forEach { field ->
-                sqlNode.valuesList.last().add(getValue(field, it))
+                sqlNode.valuesList.last().add(valueMap[field])
             }
         }
         return sqlNode
@@ -142,7 +134,7 @@ class SqlNodeProvider(private val dialect: SqlDialect) : SqlProvider {
     }
 
     override fun batchInsertSelective(entities: Iterable<Any>): List<SqlStatement> {
-        return insert(entities, true).getInsertSqlStatementList()
+        return insert(entities, true).getSqlStatementList()
     }
 
     override fun update(entity: Any): SqlStatement {
@@ -151,9 +143,10 @@ class SqlNodeProvider(private val dialect: SqlDialect) : SqlProvider {
         val idField = getIdField(clazz)
         sqlNode.table = TableReference(clazz)
         val fieldList = getSqlFields(clazz)
-        fieldList.filter { it != idField }
-            .forEach { sqlNode.sets[Column(it)] = getUpdateValue(it, entity) }
-        sqlNode.where.add(LogicalStatement(ComparisonStatement(Column(idField), getUpdateValue(idField, entity))))
+        val valueMap = getSqlValues(fieldList, entity, SqlType.UPDATE)
+        val updateFieldList = fieldList.filter { it != idField }
+        updateFieldList.forEach { sqlNode.sets[Column(it)] = valueMap[it] }
+        sqlNode.where.add(LogicalStatement(ComparisonStatement(Column(idField), valueMap[idField])))
         return sqlNode.getSqlStatement()
     }
 
@@ -162,10 +155,12 @@ class SqlNodeProvider(private val dialect: SqlDialect) : SqlProvider {
         val clazz = entity::class.java
         sqlNode.table = TableReference(clazz)
         val fieldList = getSqlFields(clazz)
-        fieldList.forEach { sqlNode.sets[Column(it)] = getValue(it, entity, SqlType.UPDATE) }
+        val valueMap = getSqlValues(fieldList, entity, SqlType.UPDATE)
+        fieldList.forEach { sqlNode.sets[Column(it)] = valueMap[it] }
         val whereFieldList = getSqlFields(where::class.java)
+        val whereValueMap = getSqlValues(whereFieldList, where)
         whereFieldList.forEach {
-            val value = getValue(it, where)
+            val value = whereValueMap[it]
             if (value != null) {
                 sqlNode.where.add(LogicalStatement(ComparisonStatement(Column(it), value)))
             }
@@ -179,9 +174,10 @@ class SqlNodeProvider(private val dialect: SqlDialect) : SqlProvider {
         val idField = getIdField(clazz)
         sqlNode.table = TableReference(clazz)
         val fieldList = getSqlFields(clazz)
-        fieldList.filter { selectiveStrategy(getValue(it, entity, SqlType.UPDATE)) }
-            .forEach { sqlNode.sets[Column(it)] = getValue(it, entity, SqlType.UPDATE) }
-        sqlNode.where.add(LogicalStatement(ComparisonStatement(Column(idField), getValue(idField, entity, SqlType.UPDATE))))
+        val valueMap = getSqlValues(fieldList, entity, SqlType.UPDATE)
+        val updateFieldList =fieldList.filter { selectiveStrategy(valueMap[it]) }
+        updateFieldList.forEach { sqlNode.sets[Column(it)] = valueMap[it] }
+        sqlNode.where.add(LogicalStatement(ComparisonStatement(Column(idField), valueMap[idField])))
         return sqlNode.getSqlStatement()
     }
 
@@ -190,11 +186,13 @@ class SqlNodeProvider(private val dialect: SqlDialect) : SqlProvider {
         val clazz = entity::class.java
         sqlNode.table = TableReference(clazz)
         val fieldList = getSqlFields(clazz)
-        fieldList.filter { selectiveStrategy(getValue(it, entity, SqlType.UPDATE)) }
-            .forEach { sqlNode.sets[Column(it)] = getValue(it, entity, SqlType.UPDATE) }
+        val valueMap = getSqlValues(fieldList, entity, SqlType.UPDATE)
+        val updateFieldList = fieldList.filter { selectiveStrategy(valueMap[it]) }
+        updateFieldList.forEach { sqlNode.sets[Column(it)] = valueMap[it] }
         val whereFieldList = getSqlFields(where::class.java)
+        val whereValueMap = getSqlValues(whereFieldList, where)
         whereFieldList.forEach {
-            val value = getValue(it, where)
+            val value = whereValueMap[it]
             if (value != null) {
                 sqlNode.where.add(LogicalStatement(ComparisonStatement(Column(it), value)))
             }
@@ -203,11 +201,43 @@ class SqlNodeProvider(private val dialect: SqlDialect) : SqlProvider {
     }
 
     override fun batchUpdate(entities: Iterable<Any>): BatchSqlStatement {
-        TODO("Not yet implemented")
+        val sqlNode = SqlNode.Update()
+        val clazz = entities.first()::class.java
+        val idField = getIdField(clazz)
+        sqlNode.table = TableReference(clazz)
+        val fieldList = getSqlFields(clazz)
+        val insertFieldList = fieldList.filter { it != idField }
+        insertFieldList.forEach {
+            sqlNode.sets[Column(it)] = null
+        }
+        entities.forEach { entity ->
+            sqlNode.valuesList.add(mutableListOf())
+            val valueMap = getSqlValues(fieldList, entity, SqlType.UPDATE)
+            insertFieldList.forEach { sqlNode.valuesList.last().add(valueMap[it]) }
+            sqlNode.valuesList.last().add(valueMap[idField])
+        }
+        sqlNode.where.add(LogicalStatement(ComparisonStatement(Column(idField), null)))
+        return sqlNode.getBatchSqlStatement()
     }
 
     override fun batchUpdateSelective(entities: Iterable<Any>): List<SqlStatement> {
-        TODO("Not yet implemented")
+        val sqlNode = SqlNode.Update()
+        val clazz = entities.first()::class.java
+        val idField = getIdField(clazz)
+        sqlNode.table = TableReference(clazz)
+        val fieldList = getSqlFields(clazz)
+        entities.forEach { entity ->
+            sqlNode.setsList.add(Pair(mutableListOf(), mutableListOf()))
+            val valueMap = getSqlValues(fieldList, entity, SqlType.UPDATE)
+            val insertFieldList = fieldList.filter { it != idField && selectiveStrategy(valueMap[it]) }
+            insertFieldList.forEach {
+                sqlNode.setsList.last().first.add(Column(it))
+                sqlNode.setsList.last().second.add(valueMap[it])
+            }
+            sqlNode.setsList.last().second.add(valueMap[idField])
+        }
+        sqlNode.where.add(LogicalStatement(ComparisonStatement(Column(idField), null)))
+        return sqlNode.getSqlStatementList()
     }
 
     override fun <T> delete(clazz: Class<T>, entity: Any): SqlStatement {
