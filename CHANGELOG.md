@@ -20,8 +20,9 @@
  * Refactor SQL provider interfaces to use `DatabaseType` enumeration and implement `DefaultSqlDialectFactory` for improved SQL dialect management
  * Refactor database type resolution in DefaultSqlDialectFactory to improve URL matching logic
  * Refactor `SqlNode` and `SqlNodeProvider` to enhance batch insert functionality and streamline SQL statement generation
- * Refactor `SqlNodeProvider` update and updateSelective methods for better SQL generation and condition handling
- * Refactor `SqlNodeProvider` batchUpdate and batchUpdateSelective methods for better SQL generation and condition handling
+ * Refactor `SqlNodeProvider` `update` and `updateSelective` methods for better SQL generation and condition handling
+ * Refactor `SqlNodeProvider` `batchUpdate` and `batchUpdateSelective` methods for better SQL generation and condition handling
+ * Implement `getWhere`, `delete`, `deleteByIds`, `select` and `count` methods and enhance SQL generation for `update` operations
 
 ## 1.0.13
 

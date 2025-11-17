@@ -14,7 +14,9 @@ import com.tang.kite.constants.SqlString.ORDER_BY
 import com.tang.kite.constants.SqlString.QUESTION_MARK
 import com.tang.kite.constants.SqlString.RIGHT_BRACKET
 import com.tang.kite.constants.SqlString.SELECT
+import com.tang.kite.constants.SqlString.SELECT_COUNT_FROM
 import com.tang.kite.constants.SqlString.SELECT_DISTINCT
+import com.tang.kite.constants.SqlString.SELECT_DISTINCT_COUNT_FROM
 import com.tang.kite.constants.SqlString.SET
 import com.tang.kite.constants.SqlString.SPACE
 import com.tang.kite.constants.SqlString.UPDATE
@@ -36,6 +38,8 @@ sealed class SqlNode {
         val columns: MutableList<Column> = mutableListOf(),
 
         var distinct: Boolean = false,
+
+        var count: Boolean = false,
 
         var from: TableReference? = null,
 
@@ -83,7 +87,7 @@ sealed class SqlNode {
 
     data class Delete(
 
-        val table: TableReference? = null,
+        var table: TableReference? = null,
 
         val joins: MutableList<JoinTable> = mutableListOf(),
 
@@ -126,14 +130,19 @@ sealed class SqlNode {
     }
 
     private fun getSelectSqlStatement(select: Select, dialect: SqlDialect): SqlStatement {
-        val (columns, distinct, from, joins, where, groupBy, having, orderBy, limit) = select
+        val (columns, distinct, count, from, joins, where, groupBy, having, orderBy, limit) = select
         val sql = StringBuilder()
         val parameters = mutableListOf<Any?>()
         val withAlias = joins.isNotEmpty()
-        sql.append(if (distinct) SELECT_DISTINCT else SELECT)
 
-        sql.append(columns.joinToString(COMMA_SPACE) { it.toString(withAlias) })
-        sql.append(FROM)
+        if (count) {
+            sql.append(if (distinct) SELECT_DISTINCT_COUNT_FROM else SELECT_COUNT_FROM)
+        } else {
+            sql.append(if (distinct) SELECT_DISTINCT else SELECT)
+            sql.append(columns.joinToString(COMMA_SPACE) { it.toString(withAlias) })
+            sql.append(FROM)
+        }
+
         appendTable(sql, from, withAlias)
         appendJoins(joins, sql, withAlias)
         appendWhere(sql, parameters, where, withAlias)

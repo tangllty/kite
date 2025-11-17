@@ -411,7 +411,7 @@ class DefaultSqlSession(
 
     override fun <T> delete(method: Method, mapperInterface: Class<T>, type: Class<T>, parameter: Any): Int {
         val start = nanoTime()
-        val delete = sqlProvider.delete(type, parameter)
+        val delete = provider.delete(type, parameter)
         val rows = executor.update(delete, parameter)
         return returnRows(method, mapperInterface, delete, rows, elapsedSince(start))
     }
@@ -421,14 +421,14 @@ class DefaultSqlSession(
         val entity = type.getDeclaredConstructor().newInstance()
         val idField = Reflects.getIdField(type)
         setValue(idField, entity, parameter)
-        val delete = sqlProvider.delete(type, entity as Any)
+        val delete = provider.delete(type, entity as Any)
         val rows = executor.update(delete, parameter)
         return returnRows(method, mapperInterface, delete, rows, elapsedSince(start))
     }
 
     override fun <T> deleteByIds(method: Method, mapperInterface: Class<T>, type: Class<T>, ids: Iterable<Any>): Int {
         val start = nanoTime()
-        val delete = sqlProvider.deleteByIds(type, ids)
+        val delete = provider.deleteByIds(type, ids)
         val rows = executor.update(delete, ids)
         return returnRows(method, mapperInterface, delete, rows, elapsedSince(start))
     }
@@ -462,7 +462,7 @@ class DefaultSqlSession(
 
     override fun <T> selectList(method: Method, mapperInterface: Class<T>, type: Class<T>, parameter: Any?, orderBys: Array<OrderItem<T>>): List<T> {
         val start = nanoTime()
-        val select = sqlProvider.select(type, parameter, orderBys)
+        val select = provider.select(type, parameter, orderBys)
         val list = executor.query(select, type)
         log(method, mapperInterface, select, list.size, elapsedSince(start))
         return list
@@ -569,7 +569,7 @@ class DefaultSqlSession(
 
     override fun <T> count(method: Method, mapperInterface: Class<T>, type: Class<T>, parameter: Any?): Long {
         val start = nanoTime()
-        val count = sqlProvider.count(type, parameter)
+        val count = provider.count(type, parameter)
         val total = executor.count(count, Long::class.java)
         return returnRows(method, mapperInterface, count, total, elapsedSince(start))
     }

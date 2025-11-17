@@ -32,6 +32,7 @@ import com.tang.kite.enumeration.SqlType
 import com.tang.kite.paginate.OrderItem
 import com.tang.kite.sql.enumeration.DatabaseType
 import com.tang.kite.sql.statement.BatchSqlStatement
+import com.tang.kite.sql.statement.LogicalStatement
 import com.tang.kite.sql.statement.SqlStatement
 import com.tang.kite.utils.Reflects
 import com.tang.kite.utils.Reflects.getColumnName
@@ -342,6 +343,14 @@ abstract class AbstractSqlProvider : SqlProvider {
         }.let { sql.append(it) }
         sql.append(RIGHT_BRACKET)
         return SqlStatement(getSql(sql), parameters)
+    }
+
+    override fun getWhere(
+        fields: List<Field>,
+        entity: Any,
+        sqlType: SqlType?
+    ): List<LogicalStatement> {
+        TODO("Not yet implemented")
     }
 
     override fun <T> select(clazz: Class<T>, entity: Any?, orderBys: Array<OrderItem<T>>): SqlStatement {

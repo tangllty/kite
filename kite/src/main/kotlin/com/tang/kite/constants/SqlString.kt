@@ -81,5 +81,6 @@ object SqlString {
     // SQL statement
     const val SELECT_ALL_FROM = SELECT + ASTERISK + FROM
     const val SELECT_COUNT_FROM = SELECT + "count(*)" + FROM
+    const val SELECT_DISTINCT_COUNT_FROM = SELECT + DISTINCT + "count(*)" + FROM
 
 }
