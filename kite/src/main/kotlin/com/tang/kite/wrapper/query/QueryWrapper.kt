@@ -3,12 +3,17 @@ package com.tang.kite.wrapper.query
 import com.tang.kite.config.SqlConfig
 import com.tang.kite.constants.SqlString.SELECT
 import com.tang.kite.constants.SqlString.SELECT_DISTINCT
+import com.tang.kite.enumeration.SqlType
 import com.tang.kite.function.SFunction
 import com.tang.kite.mapper.BaseMapper
 import com.tang.kite.sql.statement.SqlStatement
 import com.tang.kite.sql.Column
+import com.tang.kite.sql.SqlNode
+import com.tang.kite.sql.TableReference
+import com.tang.kite.sql.dialect.SqlDialect
 import com.tang.kite.wrapper.Wrapper
 import com.tang.kite.sql.statement.LogicalStatement
+import com.tang.kite.utils.Reflects
 import com.tang.kite.wrapper.where.AbstractWhereWrapper
 import kotlin.reflect.KMutableProperty1
 
@@ -18,6 +23,8 @@ import kotlin.reflect.KMutableProperty1
  * @author Tang
  */
 class QueryWrapper<T : Any> : AbstractWhereWrapper<QueryWhereWrapper<T>, T>, Wrapper<T> {
+
+    private val sqlNode = SqlNode.Select()
 
     private var distinct: Boolean = false
 
@@ -34,8 +41,8 @@ class QueryWrapper<T : Any> : AbstractWhereWrapper<QueryWhereWrapper<T>, T>, Wra
     }
 
     override fun initialize(conditions: MutableList<LogicalStatement>) {
-        querySelectWrapper = QuerySelectWrapper(this, mutableListOf())
-        queryWhereWrapper = QueryWhereWrapper(this, conditions)
+        querySelectWrapper = QuerySelectWrapper(this, sqlNode)
+        queryWhereWrapper = QueryWhereWrapper(this, sqlNode.where)
         this.conditionInstance = queryWhereWrapper
     }
 
@@ -58,7 +65,8 @@ class QueryWrapper<T : Any> : AbstractWhereWrapper<QueryWhereWrapper<T>, T>, Wra
      * @return QuerySelectWrapper
      */
     fun select(vararg columns: Column): QuerySelectWrapper<T> {
-        this.querySelectWrapper = QuerySelectWrapper(this, columns.toMutableList())
+        sqlNode.columns.addAll(columns)
+        this.querySelectWrapper = QuerySelectWrapper(this, sqlNode)
         return querySelectWrapper
     }
 
@@ -109,6 +117,7 @@ class QueryWrapper<T : Any> : AbstractWhereWrapper<QueryWhereWrapper<T>, T>, Wra
      * @return QueryWrapper
      */
     fun distinct(): QueryWrapper<T> {
+        sqlNode.distinct = true
         this.distinct = true
         return this
     }
@@ -123,6 +132,22 @@ class QueryWrapper<T : Any> : AbstractWhereWrapper<QueryWhereWrapper<T>, T>, Wra
         querySelectWrapper.appendSql(sql, joinedClass, isMultiTableQuery)
         queryWhereWrapper.appendSql(sql, parameters, isMultiTableQuery)
         return SqlStatement(SqlConfig.getSql(sql), parameters)
+    }
+
+    fun setTableClassIfNotSet(clazz: Class<T>) {
+        if (sqlNode.from != null) {
+            return
+        }
+        sqlNode.from = TableReference(clazz)
+        Reflects.setTableFillFields(clazz, SqlType.SELECT) { column, value ->
+            queryWhereWrapper.eq(column, value)
+        }
+        appendSqlNode(sqlNode.where)
+    }
+
+    override fun getSqlStatement(dialect: SqlDialect?): SqlStatement {
+        queryWhereWrapper.appendSqlNode(sqlNode)
+        return sqlNode.getSqlStatement(dialect)
     }
 
     override fun checkValues() {

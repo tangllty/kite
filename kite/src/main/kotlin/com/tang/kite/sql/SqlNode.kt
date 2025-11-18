@@ -27,6 +27,7 @@ import com.tang.kite.sql.dialect.SqlDialect
 import com.tang.kite.sql.statement.BatchSqlStatement
 import com.tang.kite.sql.statement.LogicalStatement
 import com.tang.kite.sql.statement.SqlStatement
+import com.tang.kite.utils.Reflects
 
 /**
  * @author Tang
@@ -138,6 +139,7 @@ sealed class SqlNode {
         if (count) {
             sql.append(if (distinct) SELECT_DISTINCT_COUNT_FROM else SELECT_COUNT_FROM)
         } else {
+            appendColumns(columns, from, joins)
             sql.append(if (distinct) SELECT_DISTINCT else SELECT)
             sql.append(columns.joinToString(COMMA_SPACE) { it.toString(withAlias) })
             sql.append(FROM)
@@ -288,26 +290,45 @@ sealed class SqlNode {
         return SqlStatement(SqlConfig.getSql(sql), parameters)
     }
 
+    private fun appendColumns(columns: MutableList<Column>, from: TableReference?, joins: MutableList<JoinTable>) {
+        if (columns.isNotEmpty()) {
+            return
+        }
+        val joinedClasses = joins.map { it.table.clazz }.toSet()
+        if (from == null) {
+            throw IllegalArgumentException("Table reference can not be null")
+        }
+        listOf(from.clazz).plus(joinedClasses).forEach {
+            if (it == null) {
+                throw IllegalArgumentException("Table reference can not be null")
+            }
+            val fields = Reflects.getSqlFields(it)
+            fields.forEach { field ->
+                columns.add(Column(field))
+            }
+        }
+    }
+
     private fun appendTable(sql: StringBuilder, from: TableReference?, withAlias: Boolean = false) {
         sql.append(from?.toString(withAlias) ?: throw IllegalArgumentException("Table reference can not be null"))
     }
 
     private fun appendJoins(joins: MutableList<JoinTable>, sql: StringBuilder, withAlias: Boolean) {
-        if (joins.isNotEmpty()) {
-            joins.forEach { sql.append(it.toString(withAlias)) }
+        if (joins.isEmpty()) {
+            return
         }
+        joins.forEach { sql.append(it.toString(withAlias)) }
     }
 
     private fun appendWhere(sql: StringBuilder, parameters: MutableList<Any?>, where: MutableList<LogicalStatement>, withAlias: Boolean) {
-        if (where.isNotEmpty()) {
-            sql.append(WHERE)
-            if (where.last().nestedConditions.isEmpty()) {
-                where.last().logicalOperator = null
-            }
-            where.forEach {
-                it.appendSql(sql, parameters, withAlias)
-            }
+        if (where.isEmpty()) {
+            return
         }
+        sql.append(WHERE)
+        if (where.last().nestedConditions.isEmpty()) {
+            where.last().logicalOperator = null
+        }
+        where.forEach { it.appendSql(sql, parameters, withAlias) }
     }
 
 }

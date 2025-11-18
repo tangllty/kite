@@ -1,5 +1,6 @@
 package com.tang.kite.wrapper
 
+import com.tang.kite.sql.dialect.SqlDialect
 import com.tang.kite.sql.statement.SqlStatement
 
 /**
@@ -10,6 +11,8 @@ import com.tang.kite.sql.statement.SqlStatement
 interface Wrapper<T> {
 
     fun getSqlStatement(): SqlStatement
+
+    fun getSqlStatement(dialect: SqlDialect? = null): SqlStatement
 
     fun checkValues()
 

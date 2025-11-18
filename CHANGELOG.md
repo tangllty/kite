@@ -24,6 +24,7 @@
  * Refactor `SqlNodeProvider` `batchUpdate` and `batchUpdateSelective` methods for better SQL generation and condition handling
  * Implement `getWhere`, `delete`, `deleteByIds`, `select` and `count` methods and enhance SQL generation for `update` operations
  * Fix Derby dialect mapping and enhance pagination SQL generation with limit clause
+ * Enhance SQL generation by adding `appendSqlNode` methods to various wrappers and refactoring `QueryWrapper` to utilize `SqlNode`
 
 ## 1.0.13
 

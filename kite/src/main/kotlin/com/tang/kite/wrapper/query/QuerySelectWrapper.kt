@@ -6,6 +6,8 @@ import com.tang.kite.enumeration.SqlType
 import com.tang.kite.function.SFunction
 import com.tang.kite.utils.Reflects
 import com.tang.kite.sql.Column
+import com.tang.kite.sql.SqlNode
+import com.tang.kite.sql.TableReference
 import kotlin.reflect.KClass
 import kotlin.reflect.KMutableProperty1
 
@@ -18,7 +20,7 @@ class QuerySelectWrapper<T : Any>(
 
     private val queryWrapper: QueryWrapper<T>,
 
-    private val columns: MutableList<Column>
+    private val sqlNode: SqlNode.Select
 
 ) {
 
@@ -33,7 +35,7 @@ class QuerySelectWrapper<T : Any>(
      * @return QuerySelectWrapper
      */
     fun columns(vararg columns: Column): QuerySelectWrapper<T> {
-        this.columns.addAll(columns)
+        sqlNode.columns.addAll(columns)
         return this
     }
 
@@ -44,7 +46,7 @@ class QuerySelectWrapper<T : Any>(
      * @return QuerySelectWrapper
      */
     fun column(column: Column): QuerySelectWrapper<T> {
-        this.columns.add(column)
+        sqlNode.columns.add(column)
         return this
     }
 
@@ -110,15 +112,19 @@ class QuerySelectWrapper<T : Any>(
         return column(Column(column))
     }
 
+    fun from(tableReference: TableReference): QueryWhereWrapper<T> {
+        sqlNode.from = tableReference
+        this.queryWrapper.queryWhereWrapper = QueryWhereWrapper(queryWrapper, sqlNode.where)
+        return queryWrapper.queryWhereWrapper
+    }
+
     /**
      * Set the table name
      *
      * @param table table name
      */
     fun from(table: String): QueryWhereWrapper<T> {
-        this.table = table
-        this.queryWrapper.queryWhereWrapper = QueryWhereWrapper(queryWrapper, mutableListOf())
-        return queryWrapper.queryWhereWrapper
+        return from(TableReference(table))
     }
 
     /**
@@ -127,8 +133,7 @@ class QuerySelectWrapper<T : Any>(
      * @param clazz entity class
      */
     fun from(clazz: Class<T>): QueryWhereWrapper<T> {
-        this.tableClass = clazz
-        return from(Reflects.getTableName(clazz))
+        return from(TableReference(clazz))
     }
 
     /**
@@ -137,13 +142,14 @@ class QuerySelectWrapper<T : Any>(
      * @param clazz entity class
      */
     fun from(clazz: KClass<T>): QueryWhereWrapper<T> {
-        return from(clazz.java)
+        return from(TableReference(clazz))
     }
 
     fun setTableClassIfNotSet(clazz: Class<T>) {
         if (::tableClass.isInitialized) {
             return
         }
+        sqlNode.from = TableReference(clazz)
         this.tableClass = clazz
         this.table = Reflects.getTableName(clazz)
     }
@@ -161,15 +167,15 @@ class QuerySelectWrapper<T : Any>(
      */
     fun appendSql(sql: StringBuilder, joinedClass: List<Class<*>>, isMultiTableQuery: Boolean) {
         checkValues()
-        if (columns.isEmpty()) {
+        if (sqlNode.columns.isEmpty()) {
             listOf(tableClass).plus(joinedClass).forEach {
                 val fields = Reflects.getSqlFields(it)
                 fields.forEach { field ->
-                    columns.add(Column(field))
+                    sqlNode.columns.add(Column(field))
                 }
             }
         }
-        sql.append(columns.joinToString(COMMA_SPACE) { it.toString(isMultiTableQuery) })
+        sql.append(sqlNode.columns.joinToString(COMMA_SPACE) { it.toString(isMultiTableQuery) })
         sql.append(FROM + table)
         if (isMultiTableQuery) {
             val tableAlias = Reflects.getTableAlias(tableClass)

@@ -164,4 +164,8 @@ abstract class AbstractOrderByWrapper<R, T>(
         }
     }
 
+    fun appendSqlNode(orderBy: MutableList<OrderItem<*>>) {
+        orderBy.addAll(columns)
+    }
+
 }

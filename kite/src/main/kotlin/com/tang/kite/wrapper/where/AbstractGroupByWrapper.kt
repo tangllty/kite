@@ -87,4 +87,8 @@ abstract class AbstractGroupByWrapper<R, T>(
         sql.append(orderBys)
     }
 
+    fun appendSqlNode(orderBy: MutableList<Column>) {
+        orderBy.addAll(columns)
+    }
+
 }

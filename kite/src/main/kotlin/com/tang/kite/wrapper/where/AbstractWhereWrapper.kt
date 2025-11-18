@@ -2,10 +2,10 @@ package com.tang.kite.wrapper.where
 
 import com.tang.kite.config.SqlConfig
 import com.tang.kite.constants.SqlString.WHERE
-import com.tang.kite.sql.statement.SqlStatement
-import com.tang.kite.wrapper.Wrapper
 import com.tang.kite.sql.enumeration.LogicalOperator
 import com.tang.kite.sql.statement.LogicalStatement
+import com.tang.kite.sql.statement.SqlStatement
+import com.tang.kite.wrapper.Wrapper
 import java.util.function.Consumer
 
 /**
@@ -199,6 +199,10 @@ abstract class AbstractWhereWrapper<R, T>() : AbstractConditionWrapper<R, T>() {
                 it.appendSql(sql, parameters, multiTableQuery)
             }
         }
+    }
+
+    fun appendSqlNode(where: MutableList<LogicalStatement>) {
+        where.addAll(conditions)
     }
 
 }

@@ -11,9 +11,9 @@ class TableReference(
 
     val name: String,
 
-    val clazz: Class<*>,
+    val clazz: Class<*>? = null,
 
-    val alias: String,
+    val alias: String? = null,
 
     val schema: String? = null
 

@@ -39,7 +39,7 @@ class DefaultSqlSession(
 
     private val executor: Executor,
 
-    sqlDialect: SqlDialect
+    private val sqlDialect: SqlDialect
 
 ) : SqlSession {
 
@@ -472,9 +472,10 @@ class DefaultSqlSession(
         val start = nanoTime()
         @Suppress("UNCHECKED_CAST")
         val queryWrapper = parameter as QueryWrapper<T>
-        queryWrapper.querySelectWrapper.setTableClassIfNotSet(type)
-        queryWrapper.querySelectWrapper.setTableFillFields()
-        val sqlStatement = queryWrapper.getSqlStatement()
+//        queryWrapper.querySelectWrapper.setTableClassIfNotSet(type)
+//        queryWrapper.querySelectWrapper.setTableFillFields()
+        queryWrapper.setTableClassIfNotSet(type)
+        val sqlStatement = queryWrapper.getSqlStatement(sqlDialect)
         val list = executor.query(sqlStatement, type)
         log(method, mapperInterface, sqlStatement, list.size, elapsedSince(start))
         return list

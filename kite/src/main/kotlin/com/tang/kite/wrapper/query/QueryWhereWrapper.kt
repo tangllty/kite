@@ -1,10 +1,11 @@
 package com.tang.kite.wrapper.query
 
-import com.tang.kite.sql.JoinTable
-import com.tang.kite.sql.enumeration.JoinType
 import com.tang.kite.function.SFunction
 import com.tang.kite.paginate.OrderItem
 import com.tang.kite.sql.Column
+import com.tang.kite.sql.JoinTable
+import com.tang.kite.sql.SqlNode
+import com.tang.kite.sql.enumeration.JoinType
 import com.tang.kite.sql.statement.LogicalStatement
 import com.tang.kite.wrapper.where.AbstractWhereWrapper
 import kotlin.reflect.KClass
@@ -64,6 +65,13 @@ class QueryWhereWrapper<T : Any>(
         return joinedClass
     }
 
+    fun join(clazz: Class<*>, joinType: JoinType): JoinWrapper<T> {
+        multiTableQuery = true
+        joinedClass.add(clazz)
+        joinWrapper.joinTables.add(JoinTable(clazz, joinType))
+        return joinWrapper
+    }
+
     /**
      * Left join operation
      *
@@ -71,10 +79,7 @@ class QueryWhereWrapper<T : Any>(
      * @return JoinWrapper<T>
      */
     fun leftJoin(clazz: Class<*>): JoinWrapper<T> {
-        multiTableQuery = true
-        joinedClass.add(clazz)
-        joinWrapper.joinTables.add(JoinTable(clazz, JoinType.LEFT))
-        return joinWrapper
+        return join(clazz, JoinType.LEFT)
     }
 
     /**
@@ -94,10 +99,7 @@ class QueryWhereWrapper<T : Any>(
      * @return JoinWrapper<T>
      */
     fun rightJoin(clazz: Class<*>): JoinWrapper<T> {
-        multiTableQuery = true
-        joinedClass.add(clazz)
-        joinWrapper.joinTables.add(JoinTable(clazz, JoinType.RIGHT))
-        return joinWrapper
+        return join(clazz, JoinType.RIGHT)
     }
 
     /**
@@ -117,10 +119,7 @@ class QueryWhereWrapper<T : Any>(
      * @return JoinWrapper<T>
      */
     fun innerJoin(clazz: Class<*>): JoinWrapper<T> {
-        multiTableQuery = true
-        joinedClass.add(clazz)
-        joinWrapper.joinTables.add(JoinTable(clazz, JoinType.INNER))
-        return joinWrapper
+        return join(clazz, JoinType.INNER)
     }
 
     /**
@@ -322,6 +321,19 @@ class QueryWhereWrapper<T : Any>(
         }
         if (isOrderByInitialized()) {
             whereOrderByWrapper.appendSql(sql, multiTableQuery)
+        }
+    }
+
+    fun appendSqlNode(sqlNode: SqlNode.Select) {
+        sqlNode.joins.addAll(joinTables)
+        if (isGroupByInitialized()) {
+            whereGroupByWrapper.appendSqlNode(sqlNode.groupBy)
+        }
+        if (isOrderByInitialized()) {
+            whereOrderByWrapper.appendSqlNode(sqlNode.orderBy)
+        }
+        if (isHavingInitialized()) {
+            whereHavingWrapper.appendSqlNode(sqlNode.having)
         }
     }
 

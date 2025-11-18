@@ -195,4 +195,8 @@ abstract class AbstractHavingWrapper<R, T>(private val wrapper: Wrapper<T>) : Ab
         }
     }
 
+    fun appendSqlNode(orderBy: MutableList<LogicalStatement>) {
+        orderBy.addAll(conditions)
+    }
+
 }

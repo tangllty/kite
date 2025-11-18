@@ -4,6 +4,7 @@ import com.tang.kite.config.SqlConfig
 import com.tang.kite.constants.SqlString.DELETE_FROM
 import com.tang.kite.enumeration.SqlType
 import com.tang.kite.mapper.BaseMapper
+import com.tang.kite.sql.dialect.SqlDialect
 import com.tang.kite.sql.statement.SqlStatement
 import com.tang.kite.utils.Reflects
 import com.tang.kite.wrapper.Wrapper
@@ -100,6 +101,10 @@ class DeleteWrapper<T : Any> : AbstractWhereWrapper<DeleteWhereWrapper<T>, T>, W
         sql.append("$DELETE_FROM$table")
         deleteWhereWrapper.appendSql(sql, parameters)
         return SqlStatement(SqlConfig.getSql(sql), parameters)
+    }
+
+    override fun getSqlStatement(dialect: SqlDialect?): SqlStatement {
+        TODO("Not yet implemented")
     }
 
     /**
