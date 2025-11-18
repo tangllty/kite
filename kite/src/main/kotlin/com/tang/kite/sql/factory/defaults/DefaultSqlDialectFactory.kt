@@ -1,6 +1,7 @@
 package com.tang.kite.sql.factory.defaults
 
 import com.tang.kite.config.KiteConfig
+import com.tang.kite.sql.dialect.DerbyDialect
 import com.tang.kite.sql.dialect.MysqlDialect
 import com.tang.kite.sql.dialect.PostgresqlDialect
 import com.tang.kite.sql.dialect.SqlDialect
@@ -29,7 +30,7 @@ class DefaultSqlDialectFactory : SqlDialectFactory {
 
             DatabaseType.MYSQL to MysqlDialect(),
 
-            DatabaseType.DERBY to PostgresqlDialect(),
+            DatabaseType.DERBY to DerbyDialect(),
         )
         return dialects
     }

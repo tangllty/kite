@@ -23,6 +23,7 @@
  * Refactor `SqlNodeProvider` `update` and `updateSelective` methods for better SQL generation and condition handling
  * Refactor `SqlNodeProvider` `batchUpdate` and `batchUpdateSelective` methods for better SQL generation and condition handling
  * Implement `getWhere`, `delete`, `deleteByIds`, `select` and `count` methods and enhance SQL generation for `update` operations
+ * Fix Derby dialect mapping and enhance pagination SQL generation with limit clause
 
 ## 1.0.13
 

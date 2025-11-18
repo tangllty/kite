@@ -602,7 +602,7 @@ class DefaultSqlSession(
     override fun <T> paginate(method: Method, mapperInterface: Class<T>, type: Class<T>, pageNumber: Long, pageSize: Long, parameter: Any?, orderBys: Array<OrderItem<T>>): Page<T> {
         val start = nanoTime()
         val (reasonablePageNumber, total) = reasonable(method, mapperInterface, type, pageNumber, pageSize)
-        val paginate = sqlProvider.paginate(type, parameter, orderBys, reasonablePageNumber, pageSize)
+        val paginate = provider.paginate(type, parameter, orderBys, reasonablePageNumber, pageSize)
         val list = executor.query(paginate, type)
         log(method, mapperInterface, paginate, list.size, elapsedSince(start))
         return Page(list, total, reasonablePageNumber, pageSize)

@@ -53,7 +53,7 @@ sealed class SqlNode {
 
         val orderBy: MutableList<OrderItem<*>> = mutableListOf(),
 
-        val limit: LimitClause? = null
+        var limit: LimitClause? = null
 
     ) : SqlNode()
 

@@ -5,6 +5,7 @@ import com.tang.kite.config.KiteConfig
 import com.tang.kite.enumeration.SqlType
 import com.tang.kite.paginate.OrderItem
 import com.tang.kite.sql.Column
+import com.tang.kite.sql.LimitClause
 import com.tang.kite.sql.SqlNode
 import com.tang.kite.sql.TableReference
 import com.tang.kite.sql.dialect.SqlDialect
@@ -278,7 +279,20 @@ class SqlNodeProvider(private val dialect: SqlDialect) : SqlProvider {
     }
 
     override fun <T> paginate(clazz: Class<T>, entity: Any?, orderBys: Array<OrderItem<T>>, pageNumber: Long, pageSize: Long): SqlStatement {
-        TODO("Not yet implemented")
+        val sqlNode = SqlNode.Select()
+        sqlNode.from = TableReference(clazz)
+        val fieldList = getSqlFields(clazz)
+        fieldList.forEach { sqlNode.columns.add(Column(it)) }
+
+        if (entity != null) {
+            sqlNode.where.addAll(getWhere(fieldList, entity, SqlType.SELECT))
+        }
+
+        if (orderBys.isNotEmpty()) {
+            orderBys.forEach { sqlNode.orderBy.add(it) }
+        }
+        sqlNode.limit = LimitClause(pageNumber, pageSize)
+        return sqlNode.getSqlStatement(dialect)
     }
 
     override fun <T> paginateWithJoins(clazz: Class<T>, entity: Any?, orderBys: Array<OrderItem<T>>, pageNumber: Long, pageSize: Long, withAlias: Boolean): SqlStatement {
