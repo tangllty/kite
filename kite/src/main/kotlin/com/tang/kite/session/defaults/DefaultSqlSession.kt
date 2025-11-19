@@ -15,7 +15,6 @@ import com.tang.kite.paginate.Page
 import com.tang.kite.proxy.MapperProxyFactory
 import com.tang.kite.session.SqlSession
 import com.tang.kite.sql.dialect.SqlDialect
-import com.tang.kite.sql.provider.DerbySqlProvider
 import com.tang.kite.sql.provider.SqlNodeProvider
 import com.tang.kite.sql.statement.BatchSqlStatement
 import com.tang.kite.sql.statement.SqlStatement
@@ -44,9 +43,6 @@ class DefaultSqlSession(
 ) : SqlSession {
 
     private val provider = SqlNodeProvider(sqlDialect)
-
-    @Deprecated("Remove in future versions")
-    private val sqlProvider = DerbySqlProvider()
 
     private var isDirty = false
 
@@ -518,7 +514,7 @@ class DefaultSqlSession(
 
     override fun <T> selectListWithJoins(method: Method, mapperInterface: Class<T>, type: Class<T>, parameter: Any?, orderBys: Array<OrderItem<T>>): List<T> {
         val start = nanoTime()
-        val select = sqlProvider.selectWithJoins(type, parameter, orderBys)
+        val select = provider.selectWithJoins(type, parameter, orderBys)
         val list = executor.query(select, type)
         log(method, mapperInterface, select, list.size, elapsedSince(start))
         val joins = Reflects.getIterableJoins(type)
@@ -536,11 +532,11 @@ class DefaultSqlSession(
                 val selfField = Reflects.getField(type, joinAnnotation.selfField)
                 Reflects.makeAccessible(selfField!!, it as Any)
                 val selfFieldValue = Reflects.getValue(selfField, it)
-                var joinSelect = sqlProvider.selectWithJoins(joinType, null, emptyArray())
+                var joinSelect = provider.selectWithJoins(joinType, null, emptyArray())
                 val joinSqlStatement = if (joinTable.isNotEmpty() && joinSelfField.isNotEmpty() && joinTargetField.isNotEmpty()) {
-                    sqlProvider.getNestedSelect(joinSelect.sql, joinAnnotation.targetField, listOf(selfFieldValue), joinAnnotation)
+                    provider.getNestedSelect(joinSelect.sql, joinAnnotation.targetField, listOf(selfFieldValue), joinAnnotation)
                 } else {
-                    sqlProvider.getInCondition(joinSelect.sql, joinAnnotation.targetField, listOf(selfFieldValue))
+                    provider.getInCondition(joinSelect.sql, joinAnnotation.targetField, listOf(selfFieldValue))
                 }
                 val parameters = joinSelect.parameters.plus(joinSqlStatement.parameters).toMutableList()
                 joinSelect = SqlStatement(joinSqlStatement.sql, parameters)
@@ -629,7 +625,7 @@ class DefaultSqlSession(
     override fun <T> paginateWithJoins(method: Method, mapperInterface: Class<T>, type: Class<T>, pageNumber: Long, pageSize: Long, parameter: Any?, orderBys: Array<OrderItem<T>>): Page<T> {
         val start = nanoTime()
         val (reasonablePageNumber, total) = reasonable(method, mapperInterface, type, pageNumber, pageSize)
-        val paginate = sqlProvider.paginateWithJoins(type, parameter, orderBys, reasonablePageNumber, pageSize)
+        val paginate = provider.paginateWithJoins(type, parameter, orderBys, reasonablePageNumber, pageSize)
         val list = executor.query(paginate, type)
         log(method, mapperInterface, paginate, list.size, elapsedSince(start))
         val joins = Reflects.getIterableJoins(type)
@@ -647,11 +643,11 @@ class DefaultSqlSession(
                 val selfField = Reflects.getField(type, joinAnnotation.selfField)
                 Reflects.makeAccessible(selfField!!, it as Any)
                 val selfFieldValue = Reflects.getValue(selfField, it)
-                var joinSelect = sqlProvider.selectWithJoins(joinType, null, emptyArray())
+                var joinSelect = provider.selectWithJoins(joinType, null, emptyArray())
                 val joinSqlStatement = if (joinTable.isNotEmpty() && joinSelfField.isNotEmpty() && joinTargetField.isNotEmpty()) {
-                    sqlProvider.getNestedSelect(joinSelect.sql, joinAnnotation.targetField, listOf(selfFieldValue), joinAnnotation)
+                    provider.getNestedSelect(joinSelect.sql, joinAnnotation.targetField, listOf(selfFieldValue), joinAnnotation)
                 } else {
-                    sqlProvider.getInCondition(joinSelect.sql, joinAnnotation.targetField, listOf(selfFieldValue))
+                    provider.getInCondition(joinSelect.sql, joinAnnotation.targetField, listOf(selfFieldValue))
                 }
                 val parameters = joinSelect.parameters.plus(joinSqlStatement.parameters).toMutableList()
                 joinSelect = SqlStatement(joinSqlStatement.sql, parameters)

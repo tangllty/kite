@@ -26,6 +26,8 @@ open class Column(
 
     constructor(column: SFunction<*, *>): this(Reflects.getField(column))
 
+    constructor(name: String, tableAlias: String) : this(name, null, tableAlias)
+
     override fun toString(): String {
         if (name == null) {
             throw IllegalArgumentException("Column name cannot be null")

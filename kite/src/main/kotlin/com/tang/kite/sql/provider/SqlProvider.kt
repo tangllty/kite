@@ -3,7 +3,6 @@ package com.tang.kite.sql.provider
 import com.tang.kite.annotation.Join
 import com.tang.kite.enumeration.SqlType
 import com.tang.kite.paginate.OrderItem
-import com.tang.kite.sql.enumeration.DatabaseType
 import com.tang.kite.sql.statement.BatchSqlStatement
 import com.tang.kite.sql.statement.LogicalStatement
 import com.tang.kite.sql.statement.SqlStatement
@@ -16,25 +15,11 @@ import java.lang.reflect.Field
  */
 interface SqlProvider {
 
-    fun providerType(): DatabaseType
-
-    fun selectiveStrategy(any: Any?): Boolean
-
-    fun getSql(sql: StringBuilder): String
-
     fun getInCondition(sql: String, field: String, values: Iterable<Any?>, withAlias: Boolean = false): SqlStatement
 
     fun getNestedSelect(sql: String, field: String, value: Iterable<Any?>, join: Join): SqlStatement
 
-    fun getColumns(fieldList: List<Field>, withAlias: Boolean = false): String
-
-    fun <T> getWhere(parameters: MutableList<Any?>, clazz: Class<T>, entity: Any?, withAlias: Boolean = false): String
-
     fun getWhere(fields: List<Field>, entity: Any, sqlType: SqlType? = null): List<LogicalStatement>
-
-    fun <T> getOrderBy(orderBys: Array<OrderItem<T>>, withAlias: Boolean = false): String
-
-    fun getLimit(parameters: MutableList<Any?>, pageNumber: Long, pageSize: Long): String
 
     fun insert(entity: Any): SqlStatement
 

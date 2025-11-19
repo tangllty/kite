@@ -26,6 +26,7 @@
  * Fix Derby dialect mapping and enhance pagination SQL generation with limit clause
  * Enhance SQL generation by adding `appendSqlNode` methods to various wrappers and refactoring `QueryWrapper` to utilize `SqlNode`
  * Refactor SQL wrapper classes to improve SQL generation and streamline method implementations
+ * Add constructors to Column and `TableReference` classes; refactor `SqlNodeProvider` methods for improved SQL generation
 
 ## 1.0.13
 

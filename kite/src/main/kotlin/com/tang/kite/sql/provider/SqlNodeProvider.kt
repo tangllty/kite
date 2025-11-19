@@ -2,15 +2,29 @@ package com.tang.kite.sql.provider
 
 import com.tang.kite.annotation.Join
 import com.tang.kite.config.KiteConfig
+import com.tang.kite.config.SqlConfig
+import com.tang.kite.constants.SqlString.AND
+import com.tang.kite.constants.SqlString.COMMA_SPACE
+import com.tang.kite.constants.SqlString.DOT
+import com.tang.kite.constants.SqlString.EQUAL
+import com.tang.kite.constants.SqlString.FROM
+import com.tang.kite.constants.SqlString.IN
+import com.tang.kite.constants.SqlString.LEFT_BRACKET
+import com.tang.kite.constants.SqlString.QUESTION_MARK
+import com.tang.kite.constants.SqlString.RIGHT_BRACKET
+import com.tang.kite.constants.SqlString.SELECT
+import com.tang.kite.constants.SqlString.SPACE
+import com.tang.kite.constants.SqlString.WHERE
 import com.tang.kite.enumeration.SqlType
 import com.tang.kite.paginate.OrderItem
 import com.tang.kite.sql.Column
+import com.tang.kite.sql.JoinTable
 import com.tang.kite.sql.LimitClause
 import com.tang.kite.sql.SqlNode
 import com.tang.kite.sql.TableReference
 import com.tang.kite.sql.dialect.SqlDialect
 import com.tang.kite.sql.enumeration.ComparisonOperator
-import com.tang.kite.sql.enumeration.DatabaseType
+import com.tang.kite.sql.enumeration.JoinType
 import com.tang.kite.sql.statement.BatchSqlStatement
 import com.tang.kite.sql.statement.ComparisonStatement
 import com.tang.kite.sql.statement.LogicalStatement
@@ -18,6 +32,7 @@ import com.tang.kite.sql.statement.SqlStatement
 import com.tang.kite.utils.Reflects
 import com.tang.kite.utils.Reflects.getIdField
 import com.tang.kite.utils.Reflects.getSqlFields
+import com.tang.kite.utils.Reflects.getTableAlias
 import com.tang.kite.utils.Reflects.getValue
 import com.tang.kite.utils.Reflects.isAutoIncrementId
 import java.lang.reflect.Field
@@ -27,32 +42,37 @@ import java.lang.reflect.Field
  */
 class SqlNodeProvider(private val dialect: SqlDialect) : SqlProvider {
 
-    override fun providerType(): DatabaseType {
-        TODO("Not yet implemented")
-    }
-
-    override fun selectiveStrategy(any: Any?): Boolean {
+    private fun selectiveStrategy(any: Any?): Boolean {
         return KiteConfig.selectiveStrategy.apply(any)
     }
 
-    override fun getSql(sql: StringBuilder): String {
-        TODO("Not yet implemented")
-    }
-
     override fun getInCondition(sql: String, field: String, values: Iterable<Any?>, withAlias: Boolean): SqlStatement {
-        TODO("Not yet implemented")
+        val sqlBuilder = StringBuilder(sql)
+        if (sqlBuilder.contentEquals(WHERE)) {
+            sqlBuilder.append(AND)
+        } else {
+            sqlBuilder.append(WHERE)
+        }
+        sqlBuilder.append(field, IN, LEFT_BRACKET)
+        values.joinToString(COMMA_SPACE) {
+            QUESTION_MARK
+        }.let { sqlBuilder.append(it) }
+        sqlBuilder.append(RIGHT_BRACKET)
+        return SqlStatement(SqlConfig.getSql(sqlBuilder), values.toMutableList())
     }
 
     override fun getNestedSelect(sql: String, field: String, value: Iterable<Any?>, join: Join): SqlStatement {
-        TODO("Not yet implemented")
-    }
-
-    override fun getColumns(fieldList: List<Field>, withAlias: Boolean): String {
-        TODO("Not yet implemented")
-    }
-
-    override fun <T> getWhere(parameters: MutableList<Any?>, clazz: Class<T>, entity: Any?, withAlias: Boolean): String {
-        TODO("Not yet implemented")
+        val sqlBuilder = StringBuilder(sql)
+        if (sqlBuilder.contentEquals(WHERE)) {
+            sqlBuilder.append(AND)
+        } else {
+            sqlBuilder.append(WHERE)
+        }
+        sqlBuilder.append(field, IN, LEFT_BRACKET, SPACE)
+        sqlBuilder.append(SELECT, join.joinTargetColumn, FROM, join.joinTable)
+        sqlBuilder.append(WHERE, join.joinSelfColumn, EQUAL, QUESTION_MARK)
+        sqlBuilder.append(SPACE, RIGHT_BRACKET)
+        return SqlStatement(SqlConfig.getSql(sqlBuilder), value.toMutableList())
     }
 
     override fun getWhere(fields: List<Field>, entity: Any, sqlType: SqlType?): List<LogicalStatement> {
@@ -61,14 +81,6 @@ class SqlNodeProvider(private val dialect: SqlDialect) : SqlProvider {
             val value = valueMap[field]
             if (selectiveStrategy(value)) LogicalStatement(ComparisonStatement(Column(field), value)) else null
         }
-    }
-
-    override fun <T> getOrderBy(orderBys: Array<OrderItem<T>>, withAlias: Boolean): String {
-        TODO("Not yet implemented")
-    }
-
-    override fun getLimit(parameters: MutableList<Any?>, pageNumber: Long, pageSize: Long): String {
-        TODO("Not yet implemented")
     }
 
     private fun getSqlValues(fields: List<Field>, entity: Any, sqlType: SqlType? = null, idField: Field? = null, isAutoIncrementId: Boolean = true): Map<Field, Any?> {
@@ -246,7 +258,7 @@ class SqlNodeProvider(private val dialect: SqlDialect) : SqlProvider {
         return sqlNode.getSqlStatement()
     }
 
-    override fun <T> select(clazz: Class<T>, entity: Any?, orderBys: Array<OrderItem<T>>): SqlStatement {
+    private fun <T> selectOrPaginate(clazz: Class<T>, entity: Any?, orderBys: Array<OrderItem<T>>, limitClause: LimitClause? = null): SqlStatement {
         val sqlNode = SqlNode.Select()
         sqlNode.from = TableReference(clazz)
         val fieldList = getSqlFields(clazz)
@@ -257,13 +269,62 @@ class SqlNodeProvider(private val dialect: SqlDialect) : SqlProvider {
         }
 
         if (orderBys.isNotEmpty()) {
-            orderBys.forEach { sqlNode.orderBy.add(it) }
+            sqlNode.orderBy.addAll(orderBys)
         }
+        sqlNode.limit = limitClause
+        return sqlNode.getSqlStatement(dialect)
+    }
+
+    override fun <T> select(clazz: Class<T>, entity: Any?, orderBys: Array<OrderItem<T>>): SqlStatement {
+        return selectOrPaginate(clazz, entity, orderBys)
+    }
+
+    private fun <T> selectOrPaginateWithJoins(clazz: Class<T>, entity: Any?, orderBys: Array<OrderItem<T>>, limitClause: LimitClause? = null): SqlStatement {
+        val sqlNode = SqlNode.Select()
+        val joins = Reflects.getJoins(clazz)
+        val tableAlias = getTableAlias(clazz)
+        val sqlFields = mutableListOf<Field>().apply {
+            addAll(getSqlFields(clazz))
+            joins.forEach { addAll(getSqlFields(it.type)) }
+        }
+        sqlNode.columns.addAll(sqlFields.map { Column(it) })
+        sqlNode.from = TableReference(clazz)
+        joins.forEach {
+            val joinTableAlias = getTableAlias(it.type)
+            val join = it.getAnnotation(Join::class.java)!!
+            val selfField = join.selfField
+            val targetField = join.targetField
+            val joinTable = join.joinTable
+            val joinSelfField = join.joinSelfColumn
+            val joinTargetField = join.joinTargetColumn
+            if (joinTable.isNotEmpty() && joinSelfField.isNotEmpty() && joinTargetField.isNotEmpty()) {
+                val innerJoinTableAlias = joinTable.split("_").joinToString("") { split -> split.first().toString() }
+                val innerConditions = mutableListOf<LogicalStatement>()
+                innerConditions.add(LogicalStatement(ComparisonStatement(Column(joinSelfField, innerJoinTableAlias), tableAlias + DOT + selfField)))
+                sqlNode.joins.add(JoinTable(TableReference(joinTable, innerJoinTableAlias), JoinType.LEFT, innerConditions))
+
+                val conditions = mutableListOf<LogicalStatement>()
+                conditions.add(LogicalStatement(ComparisonStatement(Column(targetField, joinTableAlias), innerJoinTableAlias + DOT + joinTargetField)))
+                sqlNode.joins.add(JoinTable(TableReference(it.type), JoinType.LEFT, conditions))
+            } else {
+                val conditions = mutableListOf<LogicalStatement>()
+                conditions.add(LogicalStatement(ComparisonStatement(Column(selfField, tableAlias), Column(targetField, joinTableAlias))))
+                sqlNode.joins.add(JoinTable(TableReference(it.type), JoinType.LEFT, conditions))
+            }
+        }
+        if (entity != null) {
+            val whereSqlFields = getSqlFields(clazz).filter { selectiveStrategy(it) }
+            sqlNode.where.addAll(getWhere(whereSqlFields, entity, SqlType.SELECT))
+        }
+        if (orderBys.isNotEmpty()) {
+            sqlNode.orderBy.addAll(orderBys)
+        }
+        sqlNode.limit = limitClause
         return sqlNode.getSqlStatement(dialect)
     }
 
     override fun <T> selectWithJoins(clazz: Class<T>, entity: Any?, orderBys: Array<OrderItem<T>>, withAlias: Boolean): SqlStatement {
-        TODO("Not yet implemented")
+        return selectOrPaginateWithJoins(clazz, entity, orderBys)
     }
 
     override fun <T> count(clazz: Class<T>, entity: Any?): SqlStatement {
@@ -279,24 +340,11 @@ class SqlNodeProvider(private val dialect: SqlDialect) : SqlProvider {
     }
 
     override fun <T> paginate(clazz: Class<T>, entity: Any?, orderBys: Array<OrderItem<T>>, pageNumber: Long, pageSize: Long): SqlStatement {
-        val sqlNode = SqlNode.Select()
-        sqlNode.from = TableReference(clazz)
-        val fieldList = getSqlFields(clazz)
-        fieldList.forEach { sqlNode.columns.add(Column(it)) }
-
-        if (entity != null) {
-            sqlNode.where.addAll(getWhere(fieldList, entity, SqlType.SELECT))
-        }
-
-        if (orderBys.isNotEmpty()) {
-            orderBys.forEach { sqlNode.orderBy.add(it) }
-        }
-        sqlNode.limit = LimitClause(pageNumber, pageSize)
-        return sqlNode.getSqlStatement(dialect)
+        return selectOrPaginate(clazz, entity, orderBys, LimitClause(pageNumber, pageSize))
     }
 
     override fun <T> paginateWithJoins(clazz: Class<T>, entity: Any?, orderBys: Array<OrderItem<T>>, pageNumber: Long, pageSize: Long, withAlias: Boolean): SqlStatement {
-        TODO("Not yet implemented")
+        return selectOrPaginateWithJoins(clazz, entity, orderBys, LimitClause(pageNumber, pageSize))
     }
 
 }

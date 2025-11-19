@@ -23,6 +23,8 @@ class TableReference(
 
     constructor(clazz: KClass<*>) : this(clazz.java)
 
+    constructor(name: String, alias: String) : this(name, null, alias)
+
     fun toString(withAlias: Boolean): String {
         return if (withAlias) {
             name + SqlString.AS + alias

@@ -37,7 +37,7 @@ class JoinTable(
             conditionsSql.append("${condition.column}${condition.comparisonOperator.value}${condition.value}")
             logicalStatement.logicalOperator?.let { conditionsSql.append(it.value) }
         }
-        return "${joinType.sqlSymbol}${table.toString(withAlias)}${SqlString.ON} $conditionsSql"
+        return "${joinType.sqlSymbol}${table.toString(withAlias)}${SqlString.ON}$conditionsSql"
     }
 
 }
