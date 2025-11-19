@@ -1,12 +1,11 @@
 package com.tang.kite.wrapper.where
 
-import com.tang.kite.constants.SqlString.HAVING
 import com.tang.kite.sql.Column
-import com.tang.kite.wrapper.Wrapper
 import com.tang.kite.sql.enumeration.ComparisonOperator
 import com.tang.kite.sql.enumeration.LogicalOperator
 import com.tang.kite.sql.statement.ComparisonStatement
 import com.tang.kite.sql.statement.LogicalStatement
+import com.tang.kite.wrapper.Wrapper
 import java.util.function.Consumer
 
 /**
@@ -180,19 +179,6 @@ abstract class AbstractHavingWrapper<R, T>(private val wrapper: Wrapper<T>) : Ab
      */
     override fun build(): Wrapper<T> {
         return wrapper
-    }
-
-    fun appendSql(sql: StringBuilder, parameters: MutableList<Any?>, multiTableQuery: Boolean) {
-        if (conditions.isEmpty()) {
-            return
-        }
-        sql.append(HAVING)
-        if (conditions.last().nestedConditions.isEmpty()) {
-            conditions.last().logicalOperator = null
-        }
-        conditions.forEach {
-            it.appendSql(sql, parameters, multiTableQuery)
-        }
     }
 
     fun appendSqlNode(orderBy: MutableList<LogicalStatement>) {

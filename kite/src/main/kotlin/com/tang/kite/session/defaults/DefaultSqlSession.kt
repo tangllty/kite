@@ -386,7 +386,7 @@ class DefaultSqlSession(
         val updateWrapper = parameter as UpdateWrapper<T>
         updateWrapper.setTableClassIfNotSet(type)
         updateWrapper.setTableFillFields()
-        val sqlStatement = updateWrapper.getSqlStatement()
+        val sqlStatement = updateWrapper.getSqlStatement(sqlDialect)
         val rows = executor.update(sqlStatement, parameter)
         return returnRows(method, mapperInterface, sqlStatement, rows, elapsedSince(start))
     }
@@ -439,7 +439,7 @@ class DefaultSqlSession(
         val deleteWrapper = parameter as DeleteWrapper<T>
         deleteWrapper.setTableClassIfNotSet(type)
         deleteWrapper.setTableFillFields()
-        val sqlStatement = deleteWrapper.getSqlStatement()
+        val sqlStatement = deleteWrapper.getSqlStatement(sqlDialect)
         val rows = executor.update(sqlStatement, parameter)
         return returnRows(method, mapperInterface, sqlStatement, rows, elapsedSince(start))
     }
@@ -472,9 +472,8 @@ class DefaultSqlSession(
         val start = nanoTime()
         @Suppress("UNCHECKED_CAST")
         val queryWrapper = parameter as QueryWrapper<T>
-//        queryWrapper.querySelectWrapper.setTableClassIfNotSet(type)
-//        queryWrapper.querySelectWrapper.setTableFillFields()
         queryWrapper.setTableClassIfNotSet(type)
+        queryWrapper.setTableFillFields()
         val sqlStatement = queryWrapper.getSqlStatement(sqlDialect)
         val list = executor.query(sqlStatement, type)
         log(method, mapperInterface, sqlStatement, list.size, elapsedSince(start))

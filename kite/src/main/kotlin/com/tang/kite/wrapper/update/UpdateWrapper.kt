@@ -1,14 +1,14 @@
 package com.tang.kite.wrapper.update
 
-import com.tang.kite.config.SqlConfig
-import com.tang.kite.constants.SqlString.UPDATE
 import com.tang.kite.enumeration.SqlType
 import com.tang.kite.mapper.BaseMapper
+import com.tang.kite.sql.SqlNode
+import com.tang.kite.sql.TableReference
 import com.tang.kite.sql.dialect.SqlDialect
+import com.tang.kite.sql.statement.LogicalStatement
 import com.tang.kite.sql.statement.SqlStatement
 import com.tang.kite.utils.Reflects
 import com.tang.kite.wrapper.Wrapper
-import com.tang.kite.sql.statement.LogicalStatement
 import kotlin.reflect.KClass
 
 /**
@@ -18,9 +18,7 @@ import kotlin.reflect.KClass
  */
 class UpdateWrapper<T : Any> : UpdateSetWrapper<T>, Wrapper<T> {
 
-    private lateinit var tableClass: Class<T>
-
-    private lateinit var table: String
+    private val sqlNode = SqlNode.Update()
 
     lateinit var baseMapper: BaseMapper<T>
 
@@ -54,15 +52,24 @@ class UpdateWrapper<T : Any> : UpdateSetWrapper<T>, Wrapper<T> {
     }
 
     /**
+     * Set the table reference
+     *
+     * @param tableReference Table reference
+     */
+    fun from(tableReference: TableReference): UpdateSetWrapper<T> {
+        sqlNode.table = tableReference
+        this.updateSetWrapper = UpdateSetWrapper()
+        this.updateSetWrapper.updateWrapper = this
+        return updateSetWrapper
+    }
+
+    /**
      * Set the table name
      *
      * @param table table name
      */
     fun from(table: String): UpdateSetWrapper<T> {
-        this.table = table
-        this.updateSetWrapper = UpdateSetWrapper()
-        this.updateSetWrapper.updateWrapper = this
-        return updateSetWrapper
+        return from(TableReference(table))
     }
 
     /**
@@ -71,7 +78,7 @@ class UpdateWrapper<T : Any> : UpdateSetWrapper<T>, Wrapper<T> {
      * @param clazz entity class
      */
     fun from(clazz: Class<T>): UpdateSetWrapper<T> {
-        return from(Reflects.getTableName(clazz))
+        return from(TableReference(clazz))
     }
 
     /**
@@ -80,49 +87,31 @@ class UpdateWrapper<T : Any> : UpdateSetWrapper<T>, Wrapper<T> {
      * @param clazz entity class
      */
     fun from(clazz: KClass<T>): UpdateSetWrapper<T> {
-        return from(clazz.java)
+        return from(TableReference(clazz))
     }
 
-    fun setTableClassIfNotSet(clazz: Class<T>) {
-        if (::tableClass.isInitialized) {
+    override fun setTableClassIfNotSet(clazz: Class<T>) {
+        if (sqlNode.table != null) {
             return
         }
-        this.tableClass = clazz
-        this.table = Reflects.getTableName(clazz)
+        sqlNode.table = TableReference(clazz)
+        appendSqlNode(sqlNode.sets)
     }
 
-    fun setTableFillFields() {
-        Reflects.setTableFillFields(tableClass, SqlType.UPDATE) { column, value ->
+    override fun setTableFillFields() {
+        val tableRef = sqlNode.table
+        if (tableRef == null || tableRef.clazz == null) {
+            return
+        }
+        Reflects.setTableFillFields(tableRef.clazz, SqlType.UPDATE) { column, value ->
             updateSetWrapper.set(column, value)
         }
     }
 
-    /**
-     * Get the SQL statement
-     *
-     * @return SqlStatement
-     */
-    override fun getSqlStatement(): SqlStatement {
-        checkValues()
-        val sql: StringBuilder = StringBuilder()
-        val parameters: MutableList<Any?> = mutableListOf()
-        sql.append("$UPDATE$table")
-        updateSetWrapper.appendSql(sql, parameters)
-        updateWhereWrapper.appendSql(sql, parameters)
-        return SqlStatement(SqlConfig.getSql(sql), parameters)
-    }
-
     override fun getSqlStatement(dialect: SqlDialect?): SqlStatement {
-        TODO("Not yet implemented")
-    }
-
-    /**
-     * Check the values
-     */
-    override fun checkValues() {
-        if (!this::table.isInitialized) {
-            throw IllegalArgumentException("Table name is not set")
-        }
+        updateSetWrapper.appendSqlNode(sqlNode.sets)
+        updateWhereWrapper.appendSqlNode(sqlNode.where)
+        return sqlNode.getSqlStatement(dialect)
     }
 
 }

@@ -1,10 +1,10 @@
 package com.tang.kite.wrapper.where
 
 import com.tang.kite.function.SFunction
-import com.tang.kite.sql.function.FunctionColumn
 import com.tang.kite.sql.Column
 import com.tang.kite.sql.enumeration.ComparisonOperator
 import com.tang.kite.sql.enumeration.LogicalOperator
+import com.tang.kite.sql.function.FunctionColumn
 import com.tang.kite.sql.statement.ComparisonStatement
 import com.tang.kite.sql.statement.LogicalStatement
 import kotlin.reflect.KMutableProperty1

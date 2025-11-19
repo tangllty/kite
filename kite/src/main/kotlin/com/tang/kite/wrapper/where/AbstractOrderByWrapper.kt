@@ -1,9 +1,5 @@
 package com.tang.kite.wrapper.where
 
-import com.tang.kite.constants.SqlString.ASC
-import com.tang.kite.constants.SqlString.COMMA_SPACE
-import com.tang.kite.constants.SqlString.DESC
-import com.tang.kite.constants.SqlString.ORDER_BY
 import com.tang.kite.function.SFunction
 import com.tang.kite.paginate.OrderItem
 import com.tang.kite.wrapper.Wrapper
@@ -150,18 +146,6 @@ abstract class AbstractOrderByWrapper<R, T>(
      */
     override fun build(): Wrapper<T> {
         return wrapper
-    }
-
-    fun appendSql(sql: StringBuilder, multiTableQuery: Boolean) {
-        if (columns.isEmpty()) {
-            return
-        }
-        sql.append(ORDER_BY)
-        columns.joinToString(COMMA_SPACE) {
-            it.column.toString(multiTableQuery) + if (it.asc) ASC else DESC
-        }.let {
-            sql.append(it)
-        }
     }
 
     fun appendSqlNode(orderBy: MutableList<OrderItem<*>>) {

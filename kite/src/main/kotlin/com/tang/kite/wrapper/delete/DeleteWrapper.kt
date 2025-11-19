@@ -1,14 +1,14 @@
 package com.tang.kite.wrapper.delete
 
-import com.tang.kite.config.SqlConfig
-import com.tang.kite.constants.SqlString.DELETE_FROM
 import com.tang.kite.enumeration.SqlType
 import com.tang.kite.mapper.BaseMapper
+import com.tang.kite.sql.SqlNode
+import com.tang.kite.sql.TableReference
 import com.tang.kite.sql.dialect.SqlDialect
+import com.tang.kite.sql.statement.LogicalStatement
 import com.tang.kite.sql.statement.SqlStatement
 import com.tang.kite.utils.Reflects
 import com.tang.kite.wrapper.Wrapper
-import com.tang.kite.sql.statement.LogicalStatement
 import com.tang.kite.wrapper.where.AbstractWhereWrapper
 import kotlin.reflect.KClass
 
@@ -19,9 +19,7 @@ import kotlin.reflect.KClass
  */
 class DeleteWrapper<T : Any> : AbstractWhereWrapper<DeleteWhereWrapper<T>, T>, Wrapper<T> {
 
-    private lateinit var tableClass: Class<T>
-
-    private lateinit var table: String
+    private val sqlNode = SqlNode.Delete()
 
     lateinit var baseMapper: BaseMapper<T>
 
@@ -52,14 +50,23 @@ class DeleteWrapper<T : Any> : AbstractWhereWrapper<DeleteWhereWrapper<T>, T>, W
     }
 
     /**
+     * Set the table reference
+     *
+     * @param tableReference Table reference
+     */
+    fun from(tableReference: TableReference): DeleteWhereWrapper<T> {
+        sqlNode.table = tableReference
+        this.deleteWhereWrapper = DeleteWhereWrapper(this, sqlNode.where)
+        return deleteWhereWrapper
+    }
+
+    /**
      * Set the table name
      *
      * @param table table name
      */
     fun from(table: String): DeleteWhereWrapper<T> {
-        this.table = table
-        this.deleteWhereWrapper = DeleteWhereWrapper(this, mutableListOf())
-        return deleteWhereWrapper
+        return from(TableReference(table))
     }
 
     /**
@@ -68,7 +75,7 @@ class DeleteWrapper<T : Any> : AbstractWhereWrapper<DeleteWhereWrapper<T>, T>, W
      * @param clazz entity class
      */
     fun from(clazz: Class<T>): DeleteWhereWrapper<T> {
-        return from(Reflects.getTableName(clazz))
+        return from(TableReference(clazz))
     }
 
     /**
@@ -77,43 +84,29 @@ class DeleteWrapper<T : Any> : AbstractWhereWrapper<DeleteWhereWrapper<T>, T>, W
      * @param clazz entity class
      */
     fun from(clazz: KClass<T>): DeleteWhereWrapper<T> {
-        return from(clazz.java)
+        return from(TableReference(clazz))
     }
 
-    fun setTableClassIfNotSet(clazz: Class<T>) {
-        if (::tableClass.isInitialized) {
+    override fun setTableClassIfNotSet(clazz: Class<T>) {
+        if (sqlNode.table != null) {
             return
         }
-        this.tableClass = clazz
-        this.table = Reflects.getTableName(clazz)
+        sqlNode.table = TableReference(clazz)
+        appendSqlNode(sqlNode.where)
     }
 
-    fun setTableFillFields() {
-        Reflects.setTableFillFields(tableClass, SqlType.DELETE) { column, value ->
+    override fun setTableFillFields() {
+        val tableRef = sqlNode.table
+        if (tableRef == null || tableRef.clazz == null) {
+            return
+        }
+        Reflects.setTableFillFields(tableRef.clazz, SqlType.DELETE) { column, value ->
             deleteWhereWrapper.eq(column, value)
         }
     }
 
-    override fun getSqlStatement(): SqlStatement {
-        checkValues()
-        val sql: StringBuilder = StringBuilder()
-        val parameters: MutableList<Any?> = mutableListOf()
-        sql.append("$DELETE_FROM$table")
-        deleteWhereWrapper.appendSql(sql, parameters)
-        return SqlStatement(SqlConfig.getSql(sql), parameters)
-    }
-
     override fun getSqlStatement(dialect: SqlDialect?): SqlStatement {
-        TODO("Not yet implemented")
-    }
-
-    /**
-     * Check the values
-     */
-    override fun checkValues() {
-        if (!this::table.isInitialized) {
-            throw IllegalArgumentException("Table name is not set")
-        }
+        return sqlNode.getSqlStatement(dialect)
     }
 
 }

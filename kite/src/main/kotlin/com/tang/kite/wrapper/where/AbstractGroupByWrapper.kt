@@ -1,7 +1,5 @@
 package com.tang.kite.wrapper.where
 
-import com.tang.kite.constants.SqlString.COMMA_SPACE
-import com.tang.kite.constants.SqlString.GROUP_BY
 import com.tang.kite.function.SFunction
 import com.tang.kite.sql.Column
 import com.tang.kite.wrapper.Wrapper
@@ -76,15 +74,6 @@ abstract class AbstractGroupByWrapper<R, T>(
      */
     override fun build(): Wrapper<T> {
         return wrapper
-    }
-
-    fun appendSql(sql: StringBuilder, multiTableQuery: Boolean) {
-        if (columns.isEmpty()) {
-            return
-        }
-        sql.append(GROUP_BY)
-        val orderBys = columns.joinToString(COMMA_SPACE) { it.toString(multiTableQuery) }
-        sql.append(orderBys)
     }
 
     fun appendSqlNode(orderBy: MutableList<Column>) {

@@ -1,6 +1,8 @@
 package com.tang.kite.wrapper.query;
 
 import com.tang.kite.session.entity.Account;
+import com.tang.kite.sql.dialect.DerbyDialect;
+import com.tang.kite.sql.dialect.SqlDialect;
 
 import org.junit.jupiter.api.Test;
 
@@ -11,6 +13,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  */
 public class QueryWrapperJavaTest extends QueryWrapperConstants implements QueryWrapperTest {
 
+    private final SqlDialect sqlDialect = new DerbyDialect();
+
     @Test
     @Override
     public void selectAll() {
@@ -18,7 +22,7 @@ public class QueryWrapperJavaTest extends QueryWrapperConstants implements Query
             .select()
             .from(Account.class)
             .build()
-            .getSqlStatement();
+            .getSqlStatement(sqlDialect);
         assertEquals(getSelectFromAccount(), sqlStatement.getActualSql());
     }
 
@@ -29,7 +33,7 @@ public class QueryWrapperJavaTest extends QueryWrapperConstants implements Query
             .select(Account::getId, Account::getUsername, Account::getCreateTime)
             .from(Account.class)
             .build()
-            .getSqlStatement();
+            .getSqlStatement(sqlDialect);
         assertEquals("select id, username, create_time from account", sqlStatement.getActualSql());
     }
 
@@ -42,7 +46,7 @@ public class QueryWrapperJavaTest extends QueryWrapperConstants implements Query
             .where()
             .eq(Account::getId, 1)
             .build()
-            .getSqlStatement();
+            .getSqlStatement(sqlDialect);
         assertEquals(getSelectFromAccount() + " where id = ?", sqlStatement.getSql());
         assertEquals(getSelectFromAccount() + " where id = 1", sqlStatement.getActualSql());
     }
@@ -55,7 +59,7 @@ public class QueryWrapperJavaTest extends QueryWrapperConstants implements Query
             .from(Account.class)
             .groupBy(Account::getUsername)
             .build()
-            .getSqlStatement();
+            .getSqlStatement(sqlDialect);
         assertEquals(getSelectFromAccount() + " group by username", sqlStatement.getActualSql());
     }
 
@@ -69,7 +73,7 @@ public class QueryWrapperJavaTest extends QueryWrapperConstants implements Query
             .having()
             .eq(Account::getUsername, "Tang")
             .build()
-            .getSqlStatement();
+            .getSqlStatement(sqlDialect);
         assertEquals(getSelectFromAccount() + " group by username having username = ?", sqlStatement.getSql());
         assertEquals(getSelectFromAccount() + " group by username having username = 'Tang'", sqlStatement.getActualSql());
     }
@@ -82,7 +86,7 @@ public class QueryWrapperJavaTest extends QueryWrapperConstants implements Query
             .from(Account.class)
             .orderBy(Account::getId)
             .build()
-            .getSqlStatement();
+            .getSqlStatement(sqlDialect);
         assertEquals(getSelectFromAccount() + " order by id asc", sqlStatement.getActualSql());
     }
 

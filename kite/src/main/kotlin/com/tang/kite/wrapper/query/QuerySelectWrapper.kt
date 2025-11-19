@@ -1,10 +1,6 @@
 package com.tang.kite.wrapper.query
 
-import com.tang.kite.constants.SqlString.COMMA_SPACE
-import com.tang.kite.constants.SqlString.FROM
-import com.tang.kite.enumeration.SqlType
 import com.tang.kite.function.SFunction
-import com.tang.kite.utils.Reflects
 import com.tang.kite.sql.Column
 import com.tang.kite.sql.SqlNode
 import com.tang.kite.sql.TableReference
@@ -112,6 +108,11 @@ class QuerySelectWrapper<T : Any>(
         return column(Column(column))
     }
 
+    /**
+     * Set the table reference
+     *
+     * @param tableReference Table reference
+     */
     fun from(tableReference: TableReference): QueryWhereWrapper<T> {
         sqlNode.from = tableReference
         this.queryWrapper.queryWhereWrapper = QueryWhereWrapper(queryWrapper, sqlNode.where)
@@ -143,50 +144,6 @@ class QuerySelectWrapper<T : Any>(
      */
     fun from(clazz: KClass<T>): QueryWhereWrapper<T> {
         return from(TableReference(clazz))
-    }
-
-    fun setTableClassIfNotSet(clazz: Class<T>) {
-        if (::tableClass.isInitialized) {
-            return
-        }
-        sqlNode.from = TableReference(clazz)
-        this.tableClass = clazz
-        this.table = Reflects.getTableName(clazz)
-    }
-
-    fun setTableFillFields() {
-        Reflects.setTableFillFields(tableClass, SqlType.SELECT) { column, value ->
-            queryWrapper.queryWhereWrapper.eq(column, value)
-        }
-    }
-
-    /**
-     * Append the SQL
-     *
-     * @param sql SQL
-     */
-    fun appendSql(sql: StringBuilder, joinedClass: List<Class<*>>, isMultiTableQuery: Boolean) {
-        checkValues()
-        if (sqlNode.columns.isEmpty()) {
-            listOf(tableClass).plus(joinedClass).forEach {
-                val fields = Reflects.getSqlFields(it)
-                fields.forEach { field ->
-                    sqlNode.columns.add(Column(field))
-                }
-            }
-        }
-        sql.append(sqlNode.columns.joinToString(COMMA_SPACE) { it.toString(isMultiTableQuery) })
-        sql.append(FROM + table)
-        if (isMultiTableQuery) {
-            val tableAlias = Reflects.getTableAlias(tableClass)
-            sql.append(" $tableAlias")
-        }
-    }
-
-    /**
-     * Check the values
-     */
-    private fun checkValues() {
     }
 
 }

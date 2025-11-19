@@ -10,16 +10,22 @@ import kotlin.reflect.KClass
  */
 class JoinTable(
 
-    val joinType: JoinType,
-
     val table: TableReference,
 
-    val conditions: MutableList<LogicalStatement> = mutableListOf(),
+    val joinType: JoinType,
 
-    @Deprecated("Use table instead")
-    val clazz: Class<*>
+    val conditions: MutableList<LogicalStatement> = mutableListOf()
 
 ) {
+
+    constructor(clazz: Class<*>, joinType: JoinType, conditions: MutableList<LogicalStatement> = mutableListOf()) : this(
+        TableReference(clazz), joinType, conditions
+    )
+
+    constructor(clazz: KClass<*>, joinType: JoinType, conditions: MutableList<LogicalStatement> = mutableListOf()) : this(
+        TableReference(clazz), joinType, conditions
+    )
+
     fun toString(withAlias: Boolean): String {
         if (conditions.isEmpty()) {
             throw IllegalArgumentException("JoinTable must have conditions")
@@ -33,29 +39,5 @@ class JoinTable(
         }
         return "${joinType.sqlSymbol}${table.toString(withAlias)}${SqlString.ON} $conditionsSql"
     }
-
-    @Deprecated("Remove in future versions")
-    constructor(clazz: Class<*>, joinType: JoinType, conditions: MutableList<LogicalStatement> = mutableListOf()) : this(
-        joinType = joinType,
-        table = TableReference(clazz),
-        clazz = clazz,
-        conditions = conditions
-    )
-
-    @Deprecated("Remove in future versions")
-    constructor(joinType: JoinType, clazz: Class<*>, conditions: MutableList<LogicalStatement> = mutableListOf()) : this(
-        joinType = joinType,
-        table = TableReference(clazz),
-        clazz = clazz,
-        conditions = conditions.toMutableList()
-    )
-
-    @Deprecated("Remove in future versions")
-    constructor(joinType: JoinType, clazz: KClass<*>, conditions: MutableList<LogicalStatement> = mutableListOf()) : this(
-        joinType = joinType,
-        table = TableReference(clazz),
-        clazz = clazz.java,
-        conditions = conditions.toMutableList()
-    )
 
 }

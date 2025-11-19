@@ -1,6 +1,7 @@
 package com.tang.kite.wrapper.query
 
 import com.tang.kite.session.entity.Account
+import com.tang.kite.sql.dialect.DerbyDialect
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -9,13 +10,15 @@ import kotlin.test.assertEquals
  */
 class QueryWrapperKotlinTest : QueryWrapperTest, QueryWrapperConstants() {
 
+    private val sqlDialect = DerbyDialect()
+
     @Test
     override fun selectAll() {
         val sqlStatement = QueryWrapper<Account>()
             .select()
             .from(Account::class)
             .build()
-            .getSqlStatement()
+            .getSqlStatement(sqlDialect)
         assertEquals(selectFromAccount, sqlStatement.sql)
     }
 
@@ -25,7 +28,7 @@ class QueryWrapperKotlinTest : QueryWrapperTest, QueryWrapperConstants() {
             .select(Account::id, Account::username, Account::createTime)
             .from(Account::class)
             .build()
-            .getSqlStatement()
+            .getSqlStatement(sqlDialect)
         assertEquals("select id, username, create_time from account", sqlStatement.sql)
     }
 
@@ -38,7 +41,7 @@ class QueryWrapperKotlinTest : QueryWrapperTest, QueryWrapperConstants() {
             .eq(Account::id, 1)
             .eq(Account::username, "tang")
             .build()
-            .getSqlStatement()
+            .getSqlStatement(sqlDialect)
         assertEquals("$selectFromAccount where id = ? and username = ?", sqlStatement.sql)
         assertEquals("$selectFromAccount where id = 1 and username = 'tang'", sqlStatement.getActualSql())
     }
@@ -50,7 +53,7 @@ class QueryWrapperKotlinTest : QueryWrapperTest, QueryWrapperConstants() {
             .from(Account::class)
             .groupBy(Account::username)
             .build()
-            .getSqlStatement()
+            .getSqlStatement(sqlDialect)
         assertEquals("$selectFromAccount group by username", sqlStatement.sql)
     }
 
@@ -63,7 +66,7 @@ class QueryWrapperKotlinTest : QueryWrapperTest, QueryWrapperConstants() {
             .having()
             .eq(Account::username, "Tang")
             .build()
-            .getSqlStatement()
+            .getSqlStatement(sqlDialect)
         assertEquals("$selectFromAccount group by username having username = ?", sqlStatement.sql)
         assertEquals("$selectFromAccount group by username having username = 'Tang'", sqlStatement.getActualSql())
     }
@@ -75,7 +78,7 @@ class QueryWrapperKotlinTest : QueryWrapperTest, QueryWrapperConstants() {
             .from(Account::class)
             .orderBy(Account::id)
             .build()
-            .getSqlStatement()
+            .getSqlStatement(sqlDialect)
         assertEquals("$selectFromAccount order by id asc", sqlStatement.sql)
     }
 

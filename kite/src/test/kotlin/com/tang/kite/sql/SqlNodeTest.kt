@@ -28,7 +28,7 @@ class SqlNodeTest {
             ComparisonStatement(Column(Account::id), Column(Role::id), ComparisonOperator.EQUAL),
             LogicalOperator.AND
         )
-        val join = JoinTable(JoinType.LEFT, Role::class)
+        val join = JoinTable(Role::class, JoinType.LEFT)
         join.conditions.add(joinCondition)
         select.joins.add(join)
         val condition = ComparisonStatement(Column(Account::id), 1, ComparisonOperator.EQUAL)

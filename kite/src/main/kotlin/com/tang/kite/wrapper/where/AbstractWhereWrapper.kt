@@ -1,10 +1,7 @@
 package com.tang.kite.wrapper.where
 
-import com.tang.kite.config.SqlConfig
-import com.tang.kite.constants.SqlString.WHERE
 import com.tang.kite.sql.enumeration.LogicalOperator
 import com.tang.kite.sql.statement.LogicalStatement
-import com.tang.kite.sql.statement.SqlStatement
 import com.tang.kite.wrapper.Wrapper
 import java.util.function.Consumer
 
@@ -169,36 +166,12 @@ abstract class AbstractWhereWrapper<R, T>() : AbstractConditionWrapper<R, T>() {
     }
 
     /**
-     * Get the SQL statement
-     *
-     * @return SqlStatement
-     */
-    open fun getSqlStatement(): SqlStatement {
-        val sql: StringBuilder = StringBuilder()
-        val parameters: MutableList<Any?> = mutableListOf()
-        appendSql(sql, parameters)
-        return SqlStatement(SqlConfig.getSql(sql), parameters)
-    }
-
-    /**
      * Build the wrapper
      *
      * @return Wrapper instance
      */
     override fun build(): Wrapper<T> {
         return wrapper
-    }
-
-    open fun appendSql(sql: StringBuilder, parameters: MutableList<Any?>, multiTableQuery: Boolean = false) {
-        if (conditions.isNotEmpty()) {
-            sql.append(WHERE)
-            if (conditions.last().nestedConditions.isEmpty()) {
-                conditions.last().logicalOperator = null
-            }
-            conditions.forEach {
-                it.appendSql(sql, parameters, multiTableQuery)
-            }
-        }
     }
 
     fun appendSqlNode(where: MutableList<LogicalStatement>) {

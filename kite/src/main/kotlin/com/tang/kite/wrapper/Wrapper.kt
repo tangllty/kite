@@ -10,10 +10,10 @@ import com.tang.kite.sql.statement.SqlStatement
  */
 interface Wrapper<T> {
 
-    fun getSqlStatement(): SqlStatement
+    fun setTableClassIfNotSet(clazz: Class<T>)
+
+    fun setTableFillFields()
 
     fun getSqlStatement(dialect: SqlDialect? = null): SqlStatement
-
-    fun checkValues()
 
 }

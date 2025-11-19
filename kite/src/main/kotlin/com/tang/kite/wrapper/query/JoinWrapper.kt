@@ -1,16 +1,14 @@
 package com.tang.kite.wrapper.query
 
-import com.tang.kite.sql.JoinTable
-import com.tang.kite.sql.enumeration.JoinType
-import com.tang.kite.constants.SqlString
 import com.tang.kite.function.SFunction
-import com.tang.kite.utils.Reflects
-import com.tang.kite.utils.Reflects.getColumnName
 import com.tang.kite.sql.Column
+import com.tang.kite.sql.JoinTable
 import com.tang.kite.sql.enumeration.ComparisonOperator
+import com.tang.kite.sql.enumeration.JoinType
 import com.tang.kite.sql.enumeration.LogicalOperator
 import com.tang.kite.sql.statement.ComparisonStatement
 import com.tang.kite.sql.statement.LogicalStatement
+import com.tang.kite.utils.Reflects.getColumnName
 import com.tang.kite.wrapper.where.WrapperBuilder
 import kotlin.reflect.KClass
 import kotlin.reflect.KMutableProperty1
@@ -22,16 +20,17 @@ class JoinWrapper<T : Any>(
 
     private val queryWhereWrapper: QueryWhereWrapper<T>,
 
-    private val joinedClass: MutableList<Class<*>>,
-
     internal val joinTables: MutableList<JoinTable>
 
 ) : WrapperBuilder<T>, QueryBuilder<T> {
 
-    fun leftJoin(clazz: Class<*>): JoinWrapper<T> {
-        joinedClass.add(clazz)
-        joinTables.add(JoinTable(clazz, JoinType.LEFT))
+    fun join(clazz: Class<*>, joinType: JoinType): JoinWrapper<T> {
+        joinTables.add(JoinTable(clazz, joinType))
         return this
+    }
+
+    fun leftJoin(clazz: Class<*>): JoinWrapper<T> {
+        return join(clazz, JoinType.LEFT)
     }
 
     fun leftJoin(clazz: KClass<*>): JoinWrapper<T> {
@@ -39,9 +38,7 @@ class JoinWrapper<T : Any>(
     }
 
     fun rightJoin(clazz: Class<*>): JoinWrapper<T> {
-        joinedClass.add(clazz)
-        joinTables.add(JoinTable(clazz, JoinType.RIGHT))
-        return this
+        return join(clazz, JoinType.RIGHT)
     }
 
     fun rightJoin(clazz: KClass<*>): JoinWrapper<T> {
@@ -49,9 +46,7 @@ class JoinWrapper<T : Any>(
     }
 
     fun innerJoin(clazz: Class<*>): JoinWrapper<T> {
-        joinedClass.add(clazz)
-        joinTables.add(JoinTable(clazz, JoinType.INNER))
-        return this
+        return join(clazz, JoinType.INNER)
     }
 
     fun innerJoin(clazz: KClass<*>): JoinWrapper<T> {
@@ -82,21 +77,6 @@ class JoinWrapper<T : Any>(
 
     override fun list(): MutableList<T> {
         return queryWhereWrapper.list()
-    }
-
-    fun appendSql(sql: StringBuilder, parameters: MutableList<Any?>) {
-        joinTables.forEach { table ->
-            sql.append(" ${table.joinType.name}${SqlString.JOIN}")
-            val tableAlias = Reflects.getTableAlias(table.clazz)
-            sql.append("${Reflects.getTableName(table.clazz)} $tableAlias${SqlString.ON}")
-
-            table.conditions.last().logicalOperator = null
-            table.conditions.forEach { logicalStatement ->
-                val condition = logicalStatement.condition
-                sql.append("${condition.column}${condition.comparisonOperator.value}${condition.value}")
-                logicalStatement.logicalOperator?.let { sql.append(it.value) }
-            }
-        }
     }
 
 }

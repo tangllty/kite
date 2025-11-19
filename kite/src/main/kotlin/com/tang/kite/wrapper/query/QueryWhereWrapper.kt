@@ -24,13 +24,9 @@ class QueryWhereWrapper<T : Any>(
 
 ) : AbstractWhereWrapper<QueryWhereWrapper<T>, T>(), QueryBuilder<T> {
 
-    private val joinedClass = mutableListOf<Class<*>>()
-
     private val joinTables = mutableListOf<JoinTable>()
 
-    private val joinWrapper = JoinWrapper(this, joinedClass, joinTables)
-
-    private var multiTableQuery = false
+    private val joinWrapper = JoinWrapper(this, joinTables)
 
     private lateinit var whereGroupByWrapper: QueryGroupByWrapper<QueryWhereWrapper<T>, T>
 
@@ -57,17 +53,7 @@ class QueryWhereWrapper<T : Any>(
         return this::whereOrderByWrapper.isInitialized
     }
 
-    internal fun isMultiTableQuery(): Boolean {
-        return multiTableQuery
-    }
-
-    fun getJoinedClass(): List<Class<*>> {
-        return joinedClass
-    }
-
     fun join(clazz: Class<*>, joinType: JoinType): JoinWrapper<T> {
-        multiTableQuery = true
-        joinedClass.add(clazz)
         joinWrapper.joinTables.add(JoinTable(clazz, joinType))
         return joinWrapper
     }
@@ -308,20 +294,6 @@ class QueryWhereWrapper<T : Any>(
     override fun list(): MutableList<T> {
         val list = build().baseMapper.queryWrapper(queryWrapper)
         return list.toMutableList()
-    }
-
-    override fun appendSql(sql: StringBuilder, parameters: MutableList<Any?>, multiTableQuery: Boolean) {
-        joinWrapper.appendSql(sql, parameters)
-        super.appendSql(sql, parameters, multiTableQuery)
-        if (isGroupByInitialized()) {
-            whereGroupByWrapper.appendSql(sql, multiTableQuery)
-        }
-        if (isHavingInitialized()) {
-            whereHavingWrapper.appendSql(sql, parameters, multiTableQuery)
-        }
-        if (isOrderByInitialized()) {
-            whereOrderByWrapper.appendSql(sql, multiTableQuery)
-        }
     }
 
     fun appendSqlNode(sqlNode: SqlNode.Select) {

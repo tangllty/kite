@@ -25,6 +25,7 @@
  * Implement `getWhere`, `delete`, `deleteByIds`, `select` and `count` methods and enhance SQL generation for `update` operations
  * Fix Derby dialect mapping and enhance pagination SQL generation with limit clause
  * Enhance SQL generation by adding `appendSqlNode` methods to various wrappers and refactoring `QueryWrapper` to utilize `SqlNode`
+ * Refactor SQL wrapper classes to improve SQL generation and streamline method implementations
 
 ## 1.0.13
 
