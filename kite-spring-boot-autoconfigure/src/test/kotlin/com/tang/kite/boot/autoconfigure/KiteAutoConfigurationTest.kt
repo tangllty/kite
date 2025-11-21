@@ -5,7 +5,7 @@ import com.tang.kite.spring.constants.BeanNames
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Test
-import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
+import org.springframework.boot.jdbc.autoconfigure.DataSourceAutoConfiguration
 import org.springframework.boot.test.context.runner.ApplicationContextRunner
 
 /**
@@ -14,12 +14,12 @@ import org.springframework.boot.test.context.runner.ApplicationContextRunner
 class KiteAutoConfigurationTest {
 
     private val contextRunner = ApplicationContextRunner()
-            .withUserConfiguration(DataSourceAutoConfiguration::class.java, KiteAutoConfiguration::class.java)
-            .withPropertyValues(
-                "kite.banner=false",
-                "kite.page.page-number=2",
-                "kite.sql.sql-logging=false",
-            )
+        .withUserConfiguration(DataSourceAutoConfiguration::class.java, KiteAutoConfiguration::class.java)
+        .withPropertyValues(
+            "kite.banner=false",
+            "kite.page.page-number=2",
+            "kite.sql.sql-logging=false",
+        )
 
     @Test
     fun sqlSessionFactory() {

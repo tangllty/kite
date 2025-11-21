@@ -29,6 +29,7 @@
  * Enhance SQL generation by adding `appendSqlNode` methods to various wrappers and refactoring `QueryWrapper` to utilize `SqlNode`
  * Refactor SQL wrapper classes to improve SQL generation and streamline method implementations
  * Add constructors to Column and `TableReference` classes; refactor `SqlNodeProvider` methods for improved SQL generation
+ * Refactor imports in `KiteAutoConfiguration` and `KiteAutoConfigurationTest` for consistency
 
 ## 1.0.13
 
