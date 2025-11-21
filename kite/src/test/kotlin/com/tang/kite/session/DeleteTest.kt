@@ -4,8 +4,8 @@ import com.tang.kite.BaseDataTest
 import com.tang.kite.session.entity.Account
 import com.tang.kite.session.mapper.AccountMapper
 import com.tang.kite.wrapper.delete.DeleteWrapper
-import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Test
+import kotlin.test.Test
+import kotlin.test.assertEquals
 
 /**
  * @author Tang

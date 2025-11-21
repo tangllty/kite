@@ -2,8 +2,8 @@ package com.tang.kite.spring.beans.session
 
 import com.tang.kite.spring.ApplicationConfig
 import com.tang.kite.spring.constants.BeanNames
-import org.junit.jupiter.api.Test
 import org.springframework.context.annotation.AnnotationConfigApplicationContext
+import kotlin.test.Test
 
 /**
  * @author Tang

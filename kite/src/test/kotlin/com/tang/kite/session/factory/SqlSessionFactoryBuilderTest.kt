@@ -1,9 +1,8 @@
 package com.tang.kite.session.factory
 
 import com.tang.kite.io.Resources
-import org.junit.jupiter.api.Test
-
-import org.junit.jupiter.api.Assertions.*
+import kotlin.test.Test
+import kotlin.test.assertNotNull
 
 /**
  * @author Tang

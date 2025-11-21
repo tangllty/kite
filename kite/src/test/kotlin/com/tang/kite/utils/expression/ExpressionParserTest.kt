@@ -1,7 +1,7 @@
 package com.tang.kite.utils.expression
 
-import org.junit.jupiter.api.Assertions.assertTrue
 import kotlin.test.Test
+import kotlin.test.assertEquals
 
 /**
  * @author Tang
@@ -60,9 +60,7 @@ class ExpressionParserTest {
         )
         expressions.forEach {
             val value = ExpressionParser.evaluate(it.first, context)
-            assertTrue(value == it.second) {
-                "Expected '${it.first}' to evaluate to ${it.second}, but got $value"
-            }
+            assertEquals(value, it.second, "Expected '${it.first}' to evaluate to ${it.second}, but got $value")
         }
     }
 

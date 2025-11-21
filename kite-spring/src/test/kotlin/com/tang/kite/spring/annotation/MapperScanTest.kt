@@ -3,8 +3,8 @@ package com.tang.kite.spring.annotation
 import com.tang.kite.spring.ApplicationConfig
 import com.tang.kite.spring.mapper.AccountJavaMapper
 import com.tang.kite.spring.mapper.AccountMapper
-import org.junit.jupiter.api.Test
 import org.springframework.context.annotation.AnnotationConfigApplicationContext
+import kotlin.test.Test
 
 /**
  * @author Tang

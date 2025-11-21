@@ -6,6 +6,8 @@
 
 ### Features
 
+ * Refactor test imports to use Kotlin test assertions for consistency
+
 ## 1.0.14
 
 ### Bug Fixes

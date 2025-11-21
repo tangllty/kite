@@ -1,6 +1,6 @@
 package com.tang.kite.utils.parser
 
-import org.junit.jupiter.api.Test
+import kotlin.test.Test
 
 /**
  * @author Tang

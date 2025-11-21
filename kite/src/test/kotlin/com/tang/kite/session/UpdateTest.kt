@@ -4,11 +4,11 @@ import com.tang.kite.BaseDataTest
 import com.tang.kite.session.entity.Account
 import com.tang.kite.session.mapper.AccountMapper
 import com.tang.kite.wrapper.update.UpdateWrapper
-import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertNotNull
-import org.junit.jupiter.api.Test
 import java.math.BigDecimal
 import java.time.LocalDateTime
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
 
 /**
  * @author Tang

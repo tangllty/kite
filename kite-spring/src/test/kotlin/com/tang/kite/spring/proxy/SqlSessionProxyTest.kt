@@ -4,9 +4,9 @@ import com.tang.kite.spring.ApplicationConfig
 import com.tang.kite.spring.BaseDataTest
 import com.tang.kite.spring.mapper.AccountJavaMapper
 import com.tang.kite.spring.mapper.AccountMapper
-import org.junit.jupiter.api.Assertions.assertNotNull
-import org.junit.jupiter.api.Test
 import org.springframework.context.annotation.AnnotationConfigApplicationContext
+import kotlin.test.Test
+import kotlin.test.assertNotNull
 
 /**
  * @author Tang

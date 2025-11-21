@@ -2,8 +2,8 @@ package com.tang.kite.session
 
 import com.tang.kite.BaseDataTest
 import com.tang.kite.session.mapper.AccountMapper
-import org.junit.jupiter.api.Assertions.assertNotNull
-import org.junit.jupiter.api.Test
+import kotlin.test.Test
+import kotlin.test.assertNotNull
 
 /**
  * @author Tang

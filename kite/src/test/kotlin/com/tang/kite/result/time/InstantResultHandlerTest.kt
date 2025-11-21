@@ -1,7 +1,5 @@
 package com.tang.kite.result.time
 
-import org.junit.jupiter.api.Assertions.*
-import org.junit.jupiter.api.Test
 import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -10,6 +8,9 @@ import java.sql.Date
 import java.sql.Time
 import java.sql.Timestamp
 import java.time.ZoneId
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertNull
 
 /**
  * @author Tang

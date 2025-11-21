@@ -1,12 +1,12 @@
 package com.tang.kite.result.time
 
-import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertNull
-import org.junit.jupiter.api.Test
 import java.sql.Date
 import java.sql.Timestamp
 import java.time.LocalDateTime
 import java.time.ZoneId
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertNull
 
 /**
  * author Tang

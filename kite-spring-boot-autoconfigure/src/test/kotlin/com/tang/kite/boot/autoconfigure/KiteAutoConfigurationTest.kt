@@ -2,11 +2,11 @@ package com.tang.kite.boot.autoconfigure
 
 import com.tang.kite.config.KiteConfig
 import com.tang.kite.spring.constants.BeanNames
-import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertNotNull
-import org.junit.jupiter.api.Test
 import org.springframework.boot.jdbc.autoconfigure.DataSourceAutoConfiguration
 import org.springframework.boot.test.context.runner.ApplicationContextRunner
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
 
 /**
  * @author Tang

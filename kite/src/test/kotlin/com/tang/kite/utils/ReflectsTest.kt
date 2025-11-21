@@ -2,7 +2,7 @@ package com.tang.kite.utils
 
 import com.tang.kite.session.entity.Account
 import com.tang.kite.session.entity.Role
-import org.junit.jupiter.api.Test
+import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue

@@ -22,11 +22,11 @@ import com.tang.kite.sql.function.SqlAlias
 import com.tang.kite.sql.function.SqlFunction
 import com.tang.kite.sql.function.`as`
 import com.tang.kite.wrapper.query.QueryWrapper
-import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertNotNull
-import org.junit.jupiter.api.Test
 import java.math.BigDecimal
+import kotlin.test.Test
+import kotlin.test.assertEquals
 import kotlin.test.assertNotEquals
+import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
 /**
@@ -180,7 +180,7 @@ class SelectTest : BaseDataTest() {
         val account = accountMapper.selectByIdWithJoins(1)
         session.close()
         assertNotNull(account)
-        assertNotNull(account!!.id)
+        assertNotNull(account.id)
         assertNotNull(account.username)
         assertNotNull(account.role)
         assertNotNull(account.role!!.id)
@@ -209,7 +209,7 @@ class SelectTest : BaseDataTest() {
         val account = accountMapper.selectByIdWithJoins(1)
         session.close()
         assertNotNull(account)
-        assertNotNull(account!!.id)
+        assertNotNull(account.id)
         assertNotNull(account.username)
         assertNotNull(account.role)
         assertNotNull(account.role!!.id)
@@ -240,7 +240,7 @@ class SelectTest : BaseDataTest() {
         val account = accountMapper.selectByIdWithJoins(2)
         session.close()
         assertNotNull(account)
-        assertNotNull(account!!.id)
+        assertNotNull(account.id)
         assertNotNull(account.username)
         assertNotNull(account.roles)
         account.roles!!.forEach {
@@ -275,7 +275,7 @@ class SelectTest : BaseDataTest() {
         val account = accountMapper.selectByIdWithJoins(2)
         session.close()
         assertNotNull(account)
-        assertNotNull(account!!.id)
+        assertNotNull(account.id)
         assertNotNull(account.username)
         assertNotNull(account.roles)
         account.roles!!.forEach {
@@ -306,7 +306,7 @@ class SelectTest : BaseDataTest() {
     @Test
     fun paginateOneToOne() {
         val session = sqlSessionFactory.openSession()
-        val accountMapper = session.getMapper(AccountOneToOneMapper::class);
+        val accountMapper = session.getMapper(AccountOneToOneMapper::class)
         val page = accountMapper.paginateWithJoins(2, 5)
         session.close()
         assertNotNull(page)
