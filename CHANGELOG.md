@@ -6,6 +6,11 @@
 
 ### Dependencies
 
+ * Bump snakeyaml from 2.4 to 2.5
+ * Bump logback from 1.5.18 to 1.5.21
+ * Bump spring from 6.2.10 to 7.0.1
+ * Bump spring-boot from 3.5.5 to 4.0.0
+
 ### Features
 
  * Enhance join handling in `Reflects` and `ResultSetHandlers` for improved data retrieval and merging
