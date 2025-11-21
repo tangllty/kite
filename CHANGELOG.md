@@ -7,6 +7,7 @@
 ### Features
 
  * Refactor test imports to use Kotlin test assertions for consistency
+ * Enable Gradle configuration cache for improved build performance
 
 ## 1.0.14
 
