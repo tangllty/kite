@@ -30,6 +30,7 @@
  * Refactor SQL wrapper classes to improve SQL generation and streamline method implementations
  * Add constructors to Column and `TableReference` classes; refactor `SqlNodeProvider` methods for improved SQL generation
  * Refactor imports in `KiteAutoConfiguration` and `KiteAutoConfigurationTest` for consistency
+ * Refactor `SqlSessionProxy` to manage sessions more effectively and handle special cases for execute and close methods
 
 ## 1.0.13
 
