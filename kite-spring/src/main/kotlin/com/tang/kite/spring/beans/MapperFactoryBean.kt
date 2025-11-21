@@ -7,7 +7,7 @@ import org.springframework.beans.factory.FactoryBean
 /**
  * @author Tang
  */
-class MapperFactoryBean<T>(
+class MapperFactoryBean<T : Any>(
 
     private val mapperInterface: Class<T>,
 

@@ -2,6 +2,8 @@
 
 ### Bug Fixes
 
+ * Fix type argument is not within its bounds: must be subtype of 'Any'.
+
 ### Dependencies
 
 ### Features
