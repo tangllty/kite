@@ -8,6 +8,7 @@
 
  * Refactor test imports to use Kotlin test assertions for consistency
  * Enable Gradle configuration cache for improved build performance
+ * Add support for multiple database dialects and update `DatabaseType` enumeration
 
 ## 1.0.14
 
