@@ -38,9 +38,15 @@ object Reflects {
 
     private val fieldsCache: ConcurrentMap<Class<*>, List<Field>> = ConcurrentHashMap()
 
+    private val sqlFieldsCache: ConcurrentMap<Class<*>, List<Field>> = ConcurrentHashMap()
+
     private val joinFieldsCache: ConcurrentMap<Class<*>, List<Field>> = ConcurrentHashMap()
 
+    private val allJoinsCache: ConcurrentMap<Class<*>, List<Field>> = ConcurrentHashMap()
+
     private val idFieldCache: ConcurrentMap<Class<*>, Field> = ConcurrentHashMap()
+
+    private val isAutoIncrementIdCache: ConcurrentMap<Field, Boolean> = ConcurrentHashMap()
 
     private val fieldCache: ConcurrentMap<Pair<Class<*>, String>, Field> = ConcurrentHashMap()
 
@@ -107,9 +113,11 @@ object Reflects {
      */
     @JvmStatic
     fun getSqlFields(clazz: Class<*>): List<Field> {
-        return getFields(clazz)
-            .filter { it.isAnnotationPresent(Join::class.java).not() }
-            .filter { it.isAnnotationPresent(Column::class.java).not() || it.getAnnotation(Column::class.java).ignore.not() }
+        return sqlFieldsCache.computeIfAbsent(clazz) {
+            getFields(clazz)
+                .filter { it.isAnnotationPresent(Join::class.java).not() }
+                .filter { it.isAnnotationPresent(Column::class.java).not() || it.getAnnotation(Column::class.java).ignore.not() }
+        }
     }
 
     /**
@@ -152,9 +160,11 @@ object Reflects {
             .filter { it.isAnnotationPresent(Column::class.java).not() || it.getAnnotation(Column::class.java).ignore.not() }
     }
 
+    @JvmStatic
     fun getAllJoins(clazz: Class<*>): List<Field> {
-        return getFields(clazz)
-            .filter { Iterable::class.java.isAssignableFrom(it.type) || it.type.isArray || it.type.classLoader != null }
+        return allJoinsCache.computeIfAbsent(clazz) {
+            getFields(clazz).filter { Iterable::class.java.isAssignableFrom(it.type) || it.type.isArray || it.type.classLoader != null }
+        }
     }
 
     @JvmStatic
@@ -179,7 +189,9 @@ object Reflects {
 
     @JvmStatic
     fun isAutoIncrementId(idField: Field): Boolean {
-        return idField.getAnnotation(Id::class.java).type == IdType.AUTO
+        return isAutoIncrementIdCache.computeIfAbsent(idField) {
+            idField.getAnnotation(Id::class.java).type == IdType.AUTO
+        }
     }
 
     @JvmStatic
