@@ -19,10 +19,7 @@ import java.lang.reflect.Field
 import java.util.Locale
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.ConcurrentMap
-import kotlin.collections.containsKey
-import kotlin.collections.get
 import kotlin.reflect.KMutableProperty1
-import kotlin.reflect.KProperty1
 import kotlin.reflect.jvm.javaField
 
 /**
@@ -250,7 +247,7 @@ object Reflects {
     }
 
     @JvmStatic
-    fun <T> getFieldName(property: KProperty1<T, *>): String {
+    fun <T> getFieldName(property: KMutableProperty1<T, *>): String {
         return property.name
     }
 
@@ -264,7 +261,7 @@ object Reflects {
     }
 
     @JvmStatic
-    fun <T> getField(property: KProperty1<T, *>): Field {
+    fun <T> getField(property: KMutableProperty1<T, *>): Field {
         val fieldName = getFieldName(property)
         return property.javaField ?: throw NoSuchFieldException("Field not found: $fieldName")
     }
@@ -388,7 +385,7 @@ object Reflects {
     /**
      * Get the value of a field from an object or a map.
      *
-     * @param any The object or map from which to retrpieve the value.
+     * @param any The object or map from which to retrieve the value.
      * @param param The field name or a dot-separated ath to the field.
      * @return The value of the field, or null if not found.
      */

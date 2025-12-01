@@ -25,6 +25,12 @@ class ReflectsTest {
     }
 
     @Test
+    fun getGeneratedIdByClass() {
+        val generatedId = Reflects.getGeneratedId(Account::class.java)
+        assertNotNull(generatedId)
+    }
+
+    @Test
     fun getTableName() {
         val tableName = Reflects.getTableName(Account::class.java)
         assertEquals("account", tableName)
