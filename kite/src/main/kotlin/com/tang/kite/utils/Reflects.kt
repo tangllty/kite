@@ -59,11 +59,8 @@ object Reflects {
     private val columnNameCache: ConcurrentMap<Field, String> = ConcurrentHashMap()
 
     @JvmStatic
-    fun <T> makeAccessible(accessibleObject: AccessibleObject, instance: T) {
-        if (accessibleObject.canAccess(instance)) {
-            return
-        }
-        accessibleObject.trySetAccessible()
+    fun <T> makeAccessible(accessibleObject: AccessibleObject, instance: T): Boolean {
+        return accessibleObject.canAccess(instance) || accessibleObject.trySetAccessible()
     }
 
     @JvmStatic

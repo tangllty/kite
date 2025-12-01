@@ -12,6 +12,7 @@
  * Enable Gradle configuration cache for improved build performance
  * Add support for multiple database dialects and update `DatabaseType` enumeration
  * Add caching for SQL fields, joins, and auto-increment ID checks
+ * Change return type to `Boolean` and simplify `makeAccessible` method in `Reflects`
 
 ## 1.0.14
 
