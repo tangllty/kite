@@ -4,6 +4,8 @@
 
 ### Dependencies
 
+ * Replace derby with h2 2.4.240 because derby retired
+
 ### Features
 
  * Refactor test imports to use Kotlin test assertions for consistency

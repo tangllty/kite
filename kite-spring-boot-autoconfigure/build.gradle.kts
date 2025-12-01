@@ -12,8 +12,7 @@ dependencies {
     implementation(libs.springBootAutoconfigure)
     annotationProcessor(libs.springBootAutoconfigureProcessor)
     annotationProcessor(libs.springBootConfigurationProcessor)
-    testImplementation(libs.derby)
-    testImplementation(libs.derbytools)
+    testImplementation(libs.h2)
     testImplementation(libs.springBootStarterTest)
 }
 

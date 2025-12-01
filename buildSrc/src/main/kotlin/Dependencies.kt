@@ -6,8 +6,8 @@
 class Versions {
     // https://mvnrepository.com/artifact/org.yaml/snakeyaml
     val snakeyaml = "2.5"
-    // https://mvnrepository.com/artifact/org.apache.derby/derby
-    val derby = "10.16.1.1"
+    // https://mvnrepository.com/artifact/com.h2database/h2
+    val h2 = "2.4.240"
     // https://mvnrepository.com/artifact/org.slf4j/slf4j-api
     val slf4j = "2.0.17"
     // https://mvnrepository.com/artifact/ch.qos.logback/logback-classic
@@ -22,8 +22,7 @@ class Versions {
 
 class Libraries {
     val snakeyaml = "org.yaml:snakeyaml:${versions.snakeyaml}"
-    val derby = "org.apache.derby:derby:${versions.derby}"
-    val derbytools = "org.apache.derby:derbytools:${versions.derby}"
+    val h2 = "com.h2database:h2:${versions.h2}"
     val slf4j = "org.slf4j:slf4j-api:${versions.slf4j}"
     val logback = "ch.qos.logback:logback-classic:${versions.logback}"
     val servlet = "jakarta.servlet:jakarta.servlet-api:${versions.servlet}"
