@@ -21,9 +21,9 @@ class DeleteWrapper<T : Any> : AbstractWhereWrapper<DeleteWhereWrapper<T>, T>, W
 
     private val sqlNode = SqlNode.Delete()
 
-    lateinit var baseMapper: BaseMapper<T>
+    internal lateinit var baseMapper: BaseMapper<T>
 
-    lateinit var deleteWhereWrapper: DeleteWhereWrapper<T>
+    internal lateinit var deleteWhereWrapper: DeleteWhereWrapper<T>
 
     constructor()
 

@@ -20,11 +20,11 @@ class UpdateWrapper<T : Any> : UpdateSetWrapper<T>, Wrapper<T> {
 
     private val sqlNode = SqlNode.Update()
 
-    lateinit var baseMapper: BaseMapper<T>
+    internal lateinit var baseMapper: BaseMapper<T>
 
-    lateinit var updateSetWrapper: UpdateSetWrapper<T>
+    internal lateinit var updateSetWrapper: UpdateSetWrapper<T>
 
-    lateinit var updateWhereWrapper: UpdateWhereWrapper<T>
+    internal lateinit var updateWhereWrapper: UpdateWhereWrapper<T>
 
     constructor()
 

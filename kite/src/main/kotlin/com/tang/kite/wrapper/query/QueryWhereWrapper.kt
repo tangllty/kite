@@ -30,9 +30,9 @@ class QueryWhereWrapper<T : Any>(
 
     private lateinit var whereGroupByWrapper: QueryGroupByWrapper<QueryWhereWrapper<T>, T>
 
-    lateinit var whereHavingWrapper: QueryHavingWrapper<QueryWhereWrapper<T>, T>
+    internal lateinit var whereHavingWrapper: QueryHavingWrapper<QueryWhereWrapper<T>, T>
 
-    lateinit var whereOrderByWrapper: QueryOrderByWrapper<QueryWhereWrapper<T>, T>
+    internal lateinit var whereOrderByWrapper: QueryOrderByWrapper<QueryWhereWrapper<T>, T>
 
     init {
         this.whereInstance = this

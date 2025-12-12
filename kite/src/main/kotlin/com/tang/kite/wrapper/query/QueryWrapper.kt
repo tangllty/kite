@@ -23,11 +23,11 @@ class QueryWrapper<T : Any> : AbstractWhereWrapper<QueryWhereWrapper<T>, T>, Wra
 
     private val sqlNode = SqlNode.Select()
 
-    lateinit var baseMapper: BaseMapper<T>
+    internal lateinit var baseMapper: BaseMapper<T>
 
-    lateinit var querySelectWrapper: QuerySelectWrapper<T>
+    private lateinit var querySelectWrapper: QuerySelectWrapper<T>
 
-    lateinit var queryWhereWrapper: QueryWhereWrapper<T>
+    internal lateinit var queryWhereWrapper: QueryWhereWrapper<T>
 
     constructor()
 

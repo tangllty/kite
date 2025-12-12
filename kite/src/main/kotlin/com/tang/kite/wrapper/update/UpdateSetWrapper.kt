@@ -11,9 +11,9 @@ import kotlin.reflect.KMutableProperty1
  *
  * @author Tang
  */
-open class UpdateSetWrapper<T : Any>() : AbstractWhereWrapper<UpdateWhereWrapper<T>, T>() {
+open class UpdateSetWrapper<T : Any> : AbstractWhereWrapper<UpdateWhereWrapper<T>, T>() {
 
-    lateinit var updateWrapper: UpdateWrapper<T>
+    internal lateinit var updateWrapper: UpdateWrapper<T>
 
     private val sets: LinkedHashMap<Column, Any?> = linkedMapOf()
 

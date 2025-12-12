@@ -14,6 +14,7 @@
  * Add caching for SQL fields, joins, and auto-increment ID checks
  * Change return type to `Boolean` and simplify `makeAccessible` method in `Reflects`
  * Restrict reflect property types to mutable properties
+ * Hide internal wrapper properties
 
 ## 1.0.14
 
