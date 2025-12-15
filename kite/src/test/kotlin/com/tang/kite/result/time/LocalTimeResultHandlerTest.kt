@@ -36,7 +36,7 @@ class LocalTimeResultHandlerTest {
         for (field in fields) {
             field.isAccessible = true
             when (field.name) {
-                "nullField" -> handler.setNullValue(field, instance, null)
+                "nullField" -> handler.setNullValue(field, instance)
                 "localTimeField" -> handler.setValue(field, instance, expectedTime)
                 "sqlDateField" -> handler.setValue(field, instance, sqlDate)
                 "timeField" -> handler.setValue(field, instance, time)

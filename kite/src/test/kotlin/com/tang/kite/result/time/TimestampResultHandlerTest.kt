@@ -34,7 +34,7 @@ class TimestampResultHandlerTest {
         for (field in fields) {
             field.isAccessible = true
             when (field.name) {
-                "nullField" -> handler.setNullValue(field, instance, null)
+                "nullField" -> handler.setNullValue(field, instance)
                 "timestampField" -> handler.setValue(field, instance, expectedTimestamp)
                 "dateField" -> handler.setValue(field, instance, date)
                 "localDateTimeField" -> handler.setValue(field, instance, localDateTime)

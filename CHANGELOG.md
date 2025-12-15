@@ -15,6 +15,7 @@
  * Change return type to `Boolean` and simplify `makeAccessible` method in `Reflects`
  * Restrict reflect property types to mutable properties
  * Hide internal wrapper properties
+ * Refactor `setNullValue` method to remove unnecessary parameter in result handler tests
 
 ## 1.0.14
 

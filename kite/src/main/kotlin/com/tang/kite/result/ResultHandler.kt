@@ -15,13 +15,9 @@ interface ResultHandler {
      *
      * @param field The field to set.
      * @param instance The instance whose field is to be set.
-     * @param value The value to set in the field, can be null.
      */
-    fun <T> setNullValue(field: Field, instance: T, value: Any?) {
-        if (value == null) {
-            field.set(instance, null)
-            return
-        }
+    fun <T> setNullValue(field: Field, instance: T) {
+        field.set(instance, null)
     }
 
     /**

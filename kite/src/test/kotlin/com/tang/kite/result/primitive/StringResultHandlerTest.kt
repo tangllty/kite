@@ -28,7 +28,7 @@ class StringResultHandlerTest {
         for (field in fields) {
             field.isAccessible = true
             when (field.name) {
-                "nullField" -> handler.setNullValue(field, instance, null)
+                "nullField" -> handler.setNullValue(field, instance)
                 "stringField" -> handler.setValue(field, instance, "test")
                 "intField" -> handler.setValue(field, instance, 123)
                 "booleanField" -> handler.setValue(field, instance, true)

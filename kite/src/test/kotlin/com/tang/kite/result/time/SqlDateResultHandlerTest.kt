@@ -43,7 +43,7 @@ class SqlDateResultHandlerTest {
         for (field in fields) {
             field.isAccessible = true
             when (field.name) {
-                "nullField" -> handler.setNullValue(field, instance, null)
+                "nullField" -> handler.setNullValue(field, instance)
                 "sqlDateField" -> handler.setValue(field, instance, expectedDate)
                 "timeField" -> handler.setValue(field, instance, time)
                 "timestampField" -> handler.setValue(field, instance, timestamp)

@@ -36,7 +36,7 @@ class CalendarResultHandlerTest {
         for (field in fields) {
             field.isAccessible = true
             when (field.name) {
-                "nullField" -> handler.setNullValue(field, instance, null)
+                "nullField" -> handler.setNullValue(field, instance)
                 "dateField" -> {
                     val date = Date.valueOf("2024-06-01")
                     handler.setValue(field, instance, date)

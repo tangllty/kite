@@ -324,7 +324,7 @@ object Reflects {
         makeAccessible(field, instance)
         val resultHandler = ResultHandlerFactory().newResultHandler(field)
         if (value == null) {
-            resultHandler.setNullValue(field, instance, value)
+            resultHandler.setNullValue(field, instance)
         } else {
             resultHandler.setValue(field, instance, value)
         }

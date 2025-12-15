@@ -37,7 +37,7 @@ class DateResultHandlerTest {
         for (field in fields) {
             field.isAccessible = true
             when (field.name) {
-                "nullField" -> handler.setNullValue(field, instance, null)
+                "nullField" -> handler.setNullValue(field, instance)
                 "dateField" -> {
                     val date = SqlDate(1717200000000L) // 2024-06-01 12:00:00 GMT
                     handler.setValue(field, instance, date)

@@ -28,7 +28,7 @@ class EnumResultHandlerTest {
         for (field in fields) {
             field.isAccessible = true
             when (field.name) {
-                "nullField" -> handler.setNullValue(field, instance, null)
+                "nullField" -> handler.setNullValue(field, instance)
                 "enumField" -> handler.setValue(field, instance, expectedEnum)
                 "nameField" -> handler.setValue(field, instance, nameValue)
                 "ordinalField" -> handler.setValue(field, instance, ordinalValue)
