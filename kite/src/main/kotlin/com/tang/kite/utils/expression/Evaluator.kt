@@ -2,6 +2,7 @@ package com.tang.kite.utils.expression
 
 import com.tang.kite.utils.Reflects
 import kotlin.math.pow
+import kotlin.reflect.jvm.isAccessible
 
 /**
  * Evaluator: Evaluates the AST.
@@ -67,16 +68,18 @@ class Evaluator(private val context: Map<String, Any?>) {
         val args = expr.arguments.map { evaluate(it) }
         return when (expr.name) {
             "contains" -> when (target) {
-                is String -> args.getOrNull(0)?.let { target.contains(it.toString()) } ?: false
-                is Collection<*> -> args.getOrNull(0)?.let { target.contains(it) } ?: false
+                is String -> args.firstOrNull()?.let { target.contains(it.toString()) } ?: false
+                is Iterable<*> -> args.firstOrNull()?.let { target.contains(it) } ?: false
+                is Array<*> -> args.firstOrNull()?.let { target.contains(it) } ?: false
+                is Map<*, *> -> args.firstOrNull()?.let { target.contains(it) } ?: false
                 else -> throw IllegalArgumentException("Unsupported target for 'contains'")
             }
             "startsWith" -> when (target) {
-                is String -> args.getOrNull(0)?.let { target.startsWith(it.toString()) } ?: false
+                is String -> args.firstOrNull()?.let { target.startsWith(it.toString()) } ?: false
                 else -> throw IllegalArgumentException("Unsupported target for 'startsWith'")
             }
             "endsWith" -> when (target) {
-                is String -> args.getOrNull(0)?.let { target.endsWith(it.toString()) } ?: false
+                is String -> args.firstOrNull()?.let { target.endsWith(it.toString()) } ?: false
                 else -> throw IllegalArgumentException("Unsupported target for 'endsWith'")
             }
             "length", "size" -> getLengthOrSize(target)
@@ -84,6 +87,7 @@ class Evaluator(private val context: Map<String, Any?>) {
                 val kClass = target?.let { it::class }
                 val method = kClass?.members?.firstOrNull { it.name == expr.name && it.parameters.size == args.size + 1 }
                 if (method != null) {
+                    Reflects.makeAccessible(method)
                     return method.call(target, *args.toTypedArray())
                 }
                 throw IllegalArgumentException("Unknown method: ${expr.name}")
@@ -98,6 +102,7 @@ class Evaluator(private val context: Map<String, Any?>) {
         return when (target) {
             is String -> target.length
             is Collection<*> -> target.size
+            is Iterable<*> -> target.toList().size
             is Map<*, *> -> target.size
             is Array<*> -> target.size
             else -> throw IllegalArgumentException("Cannot get length()/size() of ${target?.let { it::class.simpleName } ?: "null"}")

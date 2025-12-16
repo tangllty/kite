@@ -44,8 +44,7 @@ object ExpressionParser {
      * Throws exception if the result is not an Int.
      */
     fun evaluateInt(expression: String, context: Map<String, Any?>): Int {
-        val result = evaluate(expression, context)
-        return when (result) {
+        return when (val result = evaluate(expression, context)) {
             is Int -> result
             is Number -> result.toInt()
             else -> throw IllegalArgumentException("Expression result is not an Int: $result")
@@ -57,8 +56,7 @@ object ExpressionParser {
      * Throws exception if the result is not a Double.
      */
     fun evaluateDouble(expression: String, context: Map<String, Any?>): Double {
-        val result = evaluate(expression, context)
-        return when (result) {
+        return when (val result = evaluate(expression, context)) {
             is Double -> result
             is Number -> result.toDouble()
             else -> throw IllegalArgumentException("Expression result is not a Double: $result")

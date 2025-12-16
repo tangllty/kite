@@ -1,5 +1,3 @@
-@file:OptIn(ExperimentalEncodingApi::class)
-
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.TaskAction
@@ -11,7 +9,6 @@ import java.net.http.HttpResponse.BodyHandlers
 import java.util.zip.ZipEntry
 import java.util.zip.ZipOutputStream
 import kotlin.io.encoding.Base64
-import kotlin.io.encoding.ExperimentalEncodingApi
 
 /**
  * @author Tang
@@ -57,7 +54,7 @@ abstract class SonatypeCentralPublishTask : DefaultTask() {
             }
         }
 
-        val token = Base64.Default.encode("$username:$password".toByteArray())
+        val token = Base64.encode("$username:$password".toByteArray())
         val boundary = "----WebKitFormBoundary" + System.currentTimeMillis()
         val fileBytes = rootPath.resolve(fileName).readBytes()
         val newLine = "\r\n"

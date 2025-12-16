@@ -37,7 +37,7 @@ class UnpooledDataSource(private val properties: UnpooledProperties) : DataSourc
         return Logger.getLogger(Logger.GLOBAL_LOGGER_NAME)
     }
 
-    override fun <T : Any?> unwrap(iface: Class<T>?): T {
+    override fun <T> unwrap(iface: Class<T>?): T {
         throw SQLException(javaClass.name + " is not a wrapper.")
     }
 

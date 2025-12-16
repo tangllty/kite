@@ -2,6 +2,7 @@ package com.tang.kite.boot.autoconfigure
 
 import com.tang.kite.config.KiteConfig
 import com.tang.kite.spring.constants.BeanNames
+import org.springframework.beans.factory.getBean
 import org.springframework.boot.jdbc.autoconfigure.DataSourceAutoConfiguration
 import org.springframework.boot.test.context.runner.ApplicationContextRunner
 import kotlin.test.Test
@@ -40,8 +41,8 @@ class KiteAutoConfigurationTest {
     @Test
     fun properties() {
         contextRunner.run { context ->
-            val kiteProperties = context.getBean(KiteProperties::class.java)
-            assertNotNull(context.getBean(KiteProperties::class.java))
+            val kiteProperties = context.getBean<KiteProperties>()
+            assertNotNull(kiteProperties)
             assertEquals(kiteProperties.banner, KiteConfig.banner)
             assertEquals(kiteProperties.page.pageNumber, KiteConfig.page.pageNumber)
             assertEquals(kiteProperties.page.pageSize, KiteConfig.page.pageSize)

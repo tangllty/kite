@@ -109,8 +109,7 @@ class Lexer(private val input: String) {
     private fun handleIdentifier() {
         val start = pos
         while (pos < input.length && (input[pos].isLetterOrDigit() || input[pos] == '_')) pos++
-        val value = input.substring(start, pos)
-        when (value) {
+        when (val value = input.substring(start, pos)) {
             "true" -> tokens.add(Token(TokenType.BOOLEAN, true))
             "false" -> tokens.add(Token(TokenType.BOOLEAN, false))
             "null" -> tokens.add(Token(TokenType.NULL, null))

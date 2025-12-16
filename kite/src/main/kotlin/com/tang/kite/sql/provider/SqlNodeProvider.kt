@@ -43,7 +43,7 @@ import java.lang.reflect.Field
 class SqlNodeProvider(private val dialect: SqlDialect) : SqlProvider {
 
     private fun selectiveStrategy(any: Any?): Boolean {
-        return KiteConfig.selectiveStrategy.apply(any)
+        return KiteConfig.selectiveStrategy.invoke(any)
     }
 
     override fun getInCondition(sql: String, field: String, values: Iterable<Any?>, withAlias: Boolean): SqlStatement {

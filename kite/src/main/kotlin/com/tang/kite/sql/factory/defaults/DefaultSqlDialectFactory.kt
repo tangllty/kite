@@ -1,8 +1,6 @@
 package com.tang.kite.sql.factory.defaults
 
-import com.tang.kite.config.KiteConfig
 import com.tang.kite.sql.dialect.Db2Dialect
-import com.tang.kite.sql.dialect.DerbyDialect
 import com.tang.kite.sql.dialect.MysqlDialect
 import com.tang.kite.sql.dialect.OracleDialect
 import com.tang.kite.sql.dialect.PostgresqlDialect

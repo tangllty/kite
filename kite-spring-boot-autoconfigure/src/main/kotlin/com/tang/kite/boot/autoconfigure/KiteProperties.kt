@@ -8,7 +8,6 @@ import com.tang.kite.handler.fill.FillKey
 import com.tang.kite.sql.dialect.SqlDialect
 import com.tang.kite.sql.enumeration.DatabaseType
 import org.springframework.boot.context.properties.ConfigurationProperties
-import java.util.function.Function
 import kotlin.time.DurationUnit
 
 /**
@@ -27,7 +26,7 @@ data class KiteProperties(
     /**
      * The strategy for selective query
      */
-    val selectiveStrategy: Function<Any?, Boolean> = KiteConfig.selectiveStrategy,
+    val selectiveStrategy: (Any?) -> Boolean = KiteConfig.selectiveStrategy,
 
     /**
      * The batch size for operations like inserts or updates.

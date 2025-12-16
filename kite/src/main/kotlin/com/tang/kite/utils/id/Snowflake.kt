@@ -17,7 +17,6 @@ class Snowflake {
 
         private const val EPOCH = 1480166465631L
 
-
         private const val START_TIMESTAMP = 1480166465631L
 
         private const val SEQUENCE_BIT = 12L
@@ -41,8 +40,8 @@ class Snowflake {
     }
 
     constructor(dataCenterId: Long, machineId: Long) {
-        require(!(dataCenterId > MAX_DATA_CENTER_NUM || dataCenterId < 0)) { "dataCenterId must range from 0 to $MAX_DATA_CENTER_NUM" }
-        require(!(machineId > MAX_MACHINE_NUM || machineId < 0)) { "machineId must range from 0 to $MAX_MACHINE_NUM" }
+        require(dataCenterId in 0..MAX_DATA_CENTER_NUM) { "dataCenterId must range from 0 to $MAX_DATA_CENTER_NUM" }
+        require(machineId in 0..MAX_MACHINE_NUM) { "machineId must range from 0 to $MAX_MACHINE_NUM" }
         this.dataCenterId = dataCenterId
         this.machineId = machineId
     }

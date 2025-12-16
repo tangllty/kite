@@ -10,7 +10,7 @@ import java.util.function.Consumer
  *
  * @author Tang
  */
-abstract class AbstractWhereWrapper<R, T>() : AbstractConditionWrapper<R, T>() {
+abstract class AbstractWhereWrapper<R, T> : AbstractConditionWrapper<R, T>() {
 
     protected lateinit var wrapper: Wrapper<T>
 

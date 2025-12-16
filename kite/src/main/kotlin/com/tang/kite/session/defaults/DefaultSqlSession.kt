@@ -441,7 +441,7 @@ class DefaultSqlSession(
     }
 
     private fun <T> processSelect(method: Method, mapperInterface: Class<T>, type: Class<T>, args: Array<out Any>?): List<T> {
-        if (args == null || args.isEmpty()) {
+        if (args.isNullOrEmpty()) {
             return selectList(method, mapperInterface, type, null, emptyArray())
         }
         if (args.size == 1) {
@@ -497,7 +497,7 @@ class DefaultSqlSession(
     }
 
     private fun <T> processSelectWithJoins(method: Method, mapperInterface: Class<T>, type: Class<T>, args: Array<out Any>?): List<T> {
-        if (args == null || args.isEmpty()) {
+        if (args.isNullOrEmpty()) {
             return selectListWithJoins(method, mapperInterface, type, null, emptyArray())
         }
         if (args.size == 1) {
@@ -571,7 +571,7 @@ class DefaultSqlSession(
     }
 
     private fun <T> processPaginate(method: Method, mapperInterface: Class<T>, type: Class<T>, args: Array<out Any>?): Page<T> {
-        if (args == null || args.isEmpty()) {
+        if (args.isNullOrEmpty()) {
             return paginate(method, mapperInterface, type, PageConfig.pageNumber, PageConfig.pageSize, null, emptyArray())
         }
         val pageNumber = args[0] as Long
@@ -605,7 +605,7 @@ class DefaultSqlSession(
     }
 
     private fun <T> processPaginateWithJoins(method: Method, mapperInterface: Class<T>, type: Class<T>, args: Array<out Any>?): Page<T> {
-        if (args == null || args.isEmpty()) {
+        if (args.isNullOrEmpty()) {
             return paginateWithJoins(method, mapperInterface, type, PageConfig.pageNumber, PageConfig.pageSize, null, emptyArray())
         }
         val pageNumber = args[0] as Long

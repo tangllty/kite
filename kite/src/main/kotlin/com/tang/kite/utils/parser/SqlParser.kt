@@ -33,7 +33,7 @@ object SqlParser {
      * Supports [Param] annotation and paramN format parameter names.
      */
     fun buildParamValueMap(parameters: Array<Parameter>, args: Array<out Any>?): Map<String, Any?> {
-        if (args == null || args.isEmpty()) {
+        if (args.isNullOrEmpty()) {
             return emptyMap()
         }
         val map = mutableMapOf<String, Any?>()
@@ -83,19 +83,19 @@ object SqlParser {
                 i = endIdx
                 continue
             }
-            when {
-                c == '(' -> {
+            when (c) {
+                '(' -> {
                     parenCount++
                     sqlBuffer.append(c)
                 }
-                c == ')' -> {
+                ')' -> {
                     parenCount--
                     if (parenCount < 0) {
                         throw IllegalArgumentException("SQL syntax error: Unmatched ')' at position $i")
                     }
                     sqlBuffer.append(c)
                 }
-                c == '#' && i + 1 < sql.length && sql[i + 1] == '{' -> {
+                '#' if i + 1 < sql.length && sql[i + 1] == '{' -> {
                     val (paramName, end) = extractPlaceholder(sql, i)
                     sqlBuffer.append("?")
                     paramList.add(resolveParam(paramName, params, i))

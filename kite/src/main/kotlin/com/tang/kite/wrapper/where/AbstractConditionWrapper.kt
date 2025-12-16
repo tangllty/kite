@@ -12,7 +12,7 @@ import kotlin.reflect.KMutableProperty1
 /**
  * @author Tang
  */
-abstract class AbstractConditionWrapper<R, T>() : WrapperBuilder<T> {
+abstract class AbstractConditionWrapper<R, T> : WrapperBuilder<T> {
 
     protected var conditions: MutableList<LogicalStatement> = mutableListOf()
 

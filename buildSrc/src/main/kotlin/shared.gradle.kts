@@ -68,7 +68,7 @@ publishing {
                 scm {
                     connection.set("scm:git:git://github.com/tangllty/kite.git")
                     developerConnection.set("scm:git:ssh://github.com/tangllty/kite.git")
-                    url.set("http://github.com/tangllty/kite")
+                    url.set("https://github.com/tangllty/kite")
                 }
             }
         }

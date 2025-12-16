@@ -6,4 +6,4 @@ package com.tang.kite.annotation.fill
 @Retention(AnnotationRetention.RUNTIME)
 @Target(AnnotationTarget.FIELD)
 @MustBeDocumented
-annotation class UpdateTime()
+annotation class UpdateTime

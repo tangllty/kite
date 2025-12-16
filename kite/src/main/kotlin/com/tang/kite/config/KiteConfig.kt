@@ -10,7 +10,6 @@ import com.tang.kite.handler.fill.TimeFillHandler
 import com.tang.kite.sql.dialect.SqlDialect
 import com.tang.kite.sql.enumeration.DatabaseType
 import com.tang.kite.sql.factory.defaults.DefaultSqlDialectFactory
-import java.util.function.Function
 
 /**
  * Kite properties class includes core properties for Kite framework.
@@ -26,10 +25,10 @@ object KiteConfig {
     var banner = true
 
     /**
-     * The strategy for selective query
+     * The strategy for selective methods.
      */
     @JvmStatic
-    var selectiveStrategy = (Function<Any?, Boolean> { DefaultSelectiveStrategy.isSelective(it) })
+    var selectiveStrategy: (Any?) -> Boolean = DefaultSelectiveStrategy::isSelective
 
     /**
      * The batch size for operations like inserts or updates.

@@ -6,5 +6,4 @@ import com.tang.kite.session.entity.AccountAs
 /**
  * @author Tang
  */
-interface AccountAsMapper : BaseMapper<AccountAs> {
-}
+interface AccountAsMapper : BaseMapper<AccountAs>

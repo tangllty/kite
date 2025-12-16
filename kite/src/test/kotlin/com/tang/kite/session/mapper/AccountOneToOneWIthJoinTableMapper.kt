@@ -6,5 +6,4 @@ import com.tang.kite.session.entity.AccountOneToOneWIthJoinTable
 /**
  * @author Tang
  */
-interface AccountOneToOneWIthJoinTableMapper : BaseMapper<AccountOneToOneWIthJoinTable> {
-}
+interface AccountOneToOneWIthJoinTableMapper : BaseMapper<AccountOneToOneWIthJoinTable>

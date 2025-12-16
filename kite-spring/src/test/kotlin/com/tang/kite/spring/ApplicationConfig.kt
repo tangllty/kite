@@ -50,7 +50,7 @@ open class ApplicationConfig {
 
     @Bean
     open fun transactionTemplate(transactionManager: PlatformTransactionManager): TransactionTemplate {
-        return TransactionTemplate(transactionManager);
+        return TransactionTemplate(transactionManager)
     }
 
 }

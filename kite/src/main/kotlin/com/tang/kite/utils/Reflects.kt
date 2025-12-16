@@ -19,7 +19,9 @@ import java.lang.reflect.Field
 import java.util.Locale
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.ConcurrentMap
+import kotlin.reflect.KCallable
 import kotlin.reflect.KMutableProperty1
+import kotlin.reflect.jvm.isAccessible
 import kotlin.reflect.jvm.javaField
 
 /**
@@ -58,6 +60,10 @@ object Reflects {
     @JvmStatic
     fun <T> makeAccessible(accessibleObject: AccessibleObject, instance: T): Boolean {
         return accessibleObject.canAccess(instance) || accessibleObject.trySetAccessible()
+    }
+
+    fun makeAccessible(callable: KCallable<*>) {
+        callable.isAccessible = true
     }
 
     @JvmStatic

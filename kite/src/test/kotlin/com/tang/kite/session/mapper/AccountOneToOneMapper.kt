@@ -6,5 +6,4 @@ import com.tang.kite.session.entity.AccountOneToOne
 /**
  * @author Tang
  */
-interface AccountOneToOneMapper : BaseMapper<AccountOneToOne> {
-}
+interface AccountOneToOneMapper : BaseMapper<AccountOneToOne>

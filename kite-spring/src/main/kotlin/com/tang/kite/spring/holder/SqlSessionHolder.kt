@@ -8,5 +8,4 @@ import org.springframework.transaction.support.ResourceHolderSupport
  *
  * @author Tang
  */
-class SqlSessionHolder(internal val sqlSession: SqlSession) : ResourceHolderSupport() {
-}
+class SqlSessionHolder(internal val sqlSession: SqlSession) : ResourceHolderSupport()
