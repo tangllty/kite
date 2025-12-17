@@ -1,3 +1,15 @@
+## 1.0.16
+
+### Bug Fixes
+
+### Dependencies
+
+ * Bump actions/upload-artifact from 5 to 6
+
+### Features
+
+ * Update README files to include links for kite and `kite-spring-boot3-starter`
+
 ## 1.0.15
 
 ### Bug Fixes

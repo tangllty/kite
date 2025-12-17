@@ -8,9 +8,17 @@ Kite 是一个高效的轻量级 ORM 框架，基于 Kotlin 编写，开箱即�
 
 ## 使用
 
- > Maven 中心: [kite-spring-boot-starter](https://central.sonatype.com/artifact/io.github.tangllty/kite-spring-boot-starter)
+### Maven 中心
+
+ * [kite](https://central.sonatype.com/artifact/io.github.tangllty/kite)
+ * [kite-spring-boot-starter](https://central.sonatype.com/artifact/io.github.tangllty/kite-spring-boot-starter)
+ * [kite-spring-boot3-starter](https://central.sonatype.com/artifact/io.github.tangllty/kite-spring-boot3-starter)
+
+### 文档
 
  * [快速开始](https://tangllty.eu.org/zh/guide/getting-started/)
+ * [Spring Boot](https://tangllty.eu.org/zh/guide/spring-boot-integration)
+ * [Spring Boot 3](https://tangllty.eu.org/zh/guide/spring-boot3-integration)
 
 ## 贡献
 
