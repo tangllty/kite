@@ -16,6 +16,7 @@
  * Restrict reflect property types to mutable properties
  * Hide internal wrapper properties
  * Refactor `setNullValue` method to remove unnecessary parameter in result handler tests
+ * Enhance `SqlParser` with detailed documentation and improved error handling
 
 ## 1.0.14
 
