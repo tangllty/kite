@@ -17,6 +17,7 @@
  * Hide internal wrapper properties
  * Refactor `setNullValue` method to remove unnecessary parameter in result handler tests
  * Enhance `SqlParser` with detailed documentation and improved error handling
+ * Keep supporting `SpringBoot3`
 
 ## 1.0.14
 

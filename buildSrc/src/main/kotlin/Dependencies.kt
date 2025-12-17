@@ -15,7 +15,11 @@ class Versions {
     // https://mvnrepository.com/artifact/jakarta.servlet/jakarta.servlet-api
     val servlet = "6.1.0"
     // https://mvnrepository.com/artifact/org.springframework/spring-core
+    val spring6 = "6.2.15"
+    // https://mvnrepository.com/artifact/org.springframework/spring-core
     val spring = "7.0.1"
+    // https://mvnrepository.com/artifact/org.springframework.boot/spring-boot
+    val springBoot3 = "3.5.8"
     // https://mvnrepository.com/artifact/org.springframework.boot/spring-boot
     val springBoot = "4.0.0"
 }
@@ -26,8 +30,16 @@ class Libraries {
     val slf4j = "org.slf4j:slf4j-api:${versions.slf4j}"
     val logback = "ch.qos.logback:logback-classic:${versions.logback}"
     val servlet = "jakarta.servlet:jakarta.servlet-api:${versions.servlet}"
+    val springContext6 = "org.springframework:spring-context:${versions.spring6}"
+    val springJdbc6 = "org.springframework:spring-jdbc:${versions.spring6}"
     val springContext = "org.springframework:spring-context:${versions.spring}"
     val springJdbc = "org.springframework:spring-jdbc:${versions.spring}"
+    val springBootStarter3 = "org.springframework.boot:spring-boot-starter:${versions.springBoot3}"
+    val springBootStarterJdbc3 = "org.springframework.boot:spring-boot-starter-jdbc:${versions.springBoot3}"
+    val springBootAutoconfigure3 = "org.springframework.boot:spring-boot-autoconfigure:${versions.springBoot3}"
+    val springBootAutoconfigureProcessor3 = "org.springframework.boot:spring-boot-autoconfigure-processor:${versions.springBoot3}"
+    val springBootConfigurationProcessor3 = "org.springframework.boot:spring-boot-configuration-processor:${versions.springBoot3}"
+    val springBootStarterTest3 = "org.springframework.boot:spring-boot-starter-test:${versions.springBoot3}"
     val springBootStarter = "org.springframework.boot:spring-boot-starter:${versions.springBoot}"
     val springBootStarterJdbc = "org.springframework.boot:spring-boot-starter-jdbc:${versions.springBoot}"
     val springBootAutoconfigure = "org.springframework.boot:spring-boot-autoconfigure:${versions.springBoot}"
