@@ -11,13 +11,13 @@ class Versions {
     // https://mvnrepository.com/artifact/org.slf4j/slf4j-api
     val slf4j = "2.0.17"
     // https://mvnrepository.com/artifact/ch.qos.logback/logback-classic
-    val logback = "1.5.21"
+    val logback = "1.5.22"
     // https://mvnrepository.com/artifact/jakarta.servlet/jakarta.servlet-api
     val servlet = "6.1.0"
     // https://mvnrepository.com/artifact/org.springframework/spring-core
     val spring6 = "6.2.15"
     // https://mvnrepository.com/artifact/org.springframework/spring-core
-    val spring = "7.0.1"
+    val spring = "7.0.2"
     // https://mvnrepository.com/artifact/org.springframework.boot/spring-boot
     val springBoot3 = "3.5.8"
     // https://mvnrepository.com/artifact/org.springframework.boot/spring-boot

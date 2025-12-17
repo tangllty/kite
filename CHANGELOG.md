@@ -5,6 +5,8 @@
 ### Dependencies
 
  * Replace derby with h2 2.4.240 because derby retired
+ * Bump logback from 1.5.21 to 1.5.22
+ * Bump spring from 7.0.1 to 7.0.2
 
 ### Features
 
