@@ -83,7 +83,7 @@ object SqlParser {
 
         // Special handling for single argument
         if (args.size == 1) {
-            when (val singleArg = args[0]) {
+            when (val singleArg = args.first()) {
                 is Map<*, *> -> {
                     // Merge all String-keyed map entries
                     singleArg.forEach { (key, value) ->
@@ -92,12 +92,15 @@ object SqlParser {
                         }
                     }
                 }
-                else -> {
-                    // Extract all fields from the object via reflection
-                    val fields = Reflects.getFields(singleArg.javaClass)
-                    fields.forEach { field ->
-                        Reflects.makeAccessible(field, singleArg)
-                        map[field.name] = Reflects.getValue(singleArg, field.name)
+                is Any -> {
+                    // Handle entity objects: extract all fields via reflection
+                    if (Reflects.isEntity(singleArg)) {
+                        val clazz = singleArg.javaClass
+                        val fields = Reflects.getFields(clazz)
+                        fields.forEach { field ->
+                            Reflects.makeAccessible(field, singleArg)
+                            map[field.name] = Reflects.getValue(singleArg, field.name)
+                        }
                     }
                 }
             }

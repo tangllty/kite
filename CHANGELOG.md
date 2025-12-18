@@ -9,6 +9,7 @@
 ### Features
 
  * Update README files to include links for kite and `kite-spring-boot3-starter`
+ * Enhance reflection utilities with entity detection and improve argument handling in `SqlParser`
 
 ## 1.0.15
 

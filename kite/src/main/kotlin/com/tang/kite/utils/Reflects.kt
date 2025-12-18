@@ -16,6 +16,8 @@ import com.tang.kite.result.ResultHandlerFactory
 import java.lang.invoke.SerializedLambda
 import java.lang.reflect.AccessibleObject
 import java.lang.reflect.Field
+import java.lang.reflect.Modifier
+import java.lang.reflect.Proxy
 import java.util.Locale
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.ConcurrentMap
@@ -318,7 +320,7 @@ object Reflects {
     @JvmStatic
     fun <T> setValue(field: Field, target: T, value: Any?) {
         makeAccessible(field, target)
-        if (value != null && field.type == java.lang.Long::class.java && value is Int) {
+        if (value != null && field.type == Long::class.java && value is Int) {
             field.set(target, value.toLong())
         } else {
             field.set(target, value)
@@ -419,6 +421,44 @@ object Reflects {
             if (current == null) break
         }
         return current
+    }
+
+    /**
+     * Determines whether the given object is an entity.
+     *
+     * @param any The object to check.
+     * @return `true` if the object is an entity, `false` otherwise.
+     */
+    @JvmStatic
+    fun isEntity(any: Any): Boolean {
+        val clazz = any.javaClass
+        val kClazz = any::class
+
+        val isNonEntity = when {
+            clazz.isPrimitive || clazz in listOf(
+                Boolean::class.java, Byte::class.java, Short::class.java, Int::class.java,
+                Long::class.java, Float::class.java, Double::class.java, Char::class.java,
+                Boolean::class.javaObjectType, Byte::class.javaObjectType, Short::class.javaObjectType,
+                Int::class.javaObjectType, Long::class.javaObjectType, Float::class.javaObjectType,
+                Double::class.javaObjectType, Char::class.javaObjectType,
+                Void::class.java, Void.TYPE
+            ) -> true
+
+            clazz == String::class.java -> true
+            clazz.isArray -> true
+            clazz.isEnum -> true
+            clazz.isInterface || clazz.isAnnotation -> true
+            Proxy.isProxyClass(clazz) -> true
+            clazz.isAnonymousClass -> true
+            clazz.isMemberClass && !Modifier.isStatic(clazz.modifiers) -> true
+            else -> false
+        }
+        if (isNonEntity) return false
+        return when {
+            kClazz.isData -> true
+            clazz.isRecord -> true
+            else -> true
+        }
     }
 
 }
