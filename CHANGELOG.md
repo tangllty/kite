@@ -10,6 +10,7 @@
 
  * Update README files to include links for kite and `kite-spring-boot3-starter`
  * Enhance reflection utilities with entity detection and improve argument handling in `SqlParser`
+ * Refactor `selectiveStrategy` type from function type to `Function1` for consistency
 
 ## 1.0.15
 

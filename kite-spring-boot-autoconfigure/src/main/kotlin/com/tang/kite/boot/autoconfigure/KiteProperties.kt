@@ -26,7 +26,7 @@ data class KiteProperties(
     /**
      * The strategy for selective query
      */
-    val selectiveStrategy: (Any?) -> Boolean = KiteConfig.selectiveStrategy,
+    val selectiveStrategy: Function1<Any?, Boolean> = KiteConfig.selectiveStrategy,
 
     /**
      * The batch size for operations like inserts or updates.
