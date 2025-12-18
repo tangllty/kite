@@ -78,8 +78,8 @@ class SqlParserTest {
         try {
             SqlParser.parse(sql, params)
             assert(false)
-        } catch (e: IllegalArgumentException) {
-            assert(e.message?.contains("parameter 'age' not found") == true)
+        } catch (e: Exception) {
+            assert(e.message?.contains("Key not found: age in map") == true)
         }
     }
 
@@ -379,6 +379,67 @@ class SqlParserTest {
         val parsed = SqlParser.parse(sql, params)
         assert(parsed.sql == "select * from user where age > ? and name like concat('%', ?, '%') and date_format(created_at, '%Y-%m-%d') = ?")
         assert(parsed.parameters == listOf(18, "Tang", "2023-10-01"))
+    }
+
+    @Test
+    fun withArrayElementAccess() {
+        val sql = "select * from user where id = #{ids[0]}"
+        val params = mapOf("ids" to listOf(1, 2, 3))
+        val parsed = SqlParser.parse(sql, params)
+        assert(parsed.sql == "select * from user where id = ?")
+        assert(parsed.parameters == listOf(1))
+    }
+
+    @Test
+    fun withArrayElementAccessMultiple() {
+        val sql = "select * from user where id = #{ids[0]} and age = #{ages[1]}"
+        val params = mapOf("ids" to listOf(1, 2, 3), "ages" to listOf(18, 25, 30))
+        val parsed = SqlParser.parse(sql, params)
+        assert(parsed.sql == "select * from user where id = ? and age = ?")
+        assert(parsed.parameters == listOf(1, 25))
+    }
+
+    @Test
+    fun withStringArrayElementAccess() {
+        val sql = "select * from user where name = #{names[0]}"
+        val params = mapOf("names" to listOf("Alice", "Bob", "Charlie"))
+        val parsed = SqlParser.parse(sql, params)
+        assert(parsed.sql == "select * from user where name = ?")
+        assert(parsed.parameters == listOf("Alice"))
+    }
+
+    @Test
+    fun withArrayElementInIfCondition() {
+        val sql = """
+            select * from user
+            if (ids != null && ids[0] != null) {
+                and id = #{ids[0]}
+            }
+        """.trimIndent()
+        val params = mapOf("ids" to listOf(1, 2, 3))
+        val parsed = SqlParser.parse(sql, params)
+        assert(parsed.sql == "select * from user where id = ?")
+        assert(parsed.parameters == listOf(1))
+    }
+
+    @Test
+    fun withArrayElementOutOfBounds() {
+        val sql = "select * from user where id = #{ids[5]}"
+        val params = mapOf("ids" to listOf(1, 2, 3))
+        try {
+            SqlParser.parse(sql, params)
+        } catch (e: Exception) {
+            assert(e.message?.contains("Index 5 out of bounds for length 3") == true)
+        }
+    }
+
+    @Test
+    fun withNestedArrayElementAccess() {
+        val sql = "select * from user where id = #{users[0].id}"
+        val params = mapOf("users" to listOf(mapOf("id" to 1), mapOf("id" to 2)))
+        val parsed = SqlParser.parse(sql, params)
+        assert(parsed.sql == "select * from user where id = ?")
+        assert(parsed.parameters == listOf(1))
     }
 
 }

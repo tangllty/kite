@@ -382,26 +382,20 @@ object SqlParser {
      *   "name" → params["name"]
      *   "user.name" → params["user"].name (via reflection)
      *   "order.items[0].price" → params["order"].items[0].price (via reflection)
+     *   "ids[0]" → params["ids"][0] (array element access)
+     *   "users[1].name" → params["users"][1].name (array element with property access)
      *
-     * @param paramName Parameter name, possibly with dot notation
+     * @param paramName Parameter name, possibly with dot notation or array indexing
      * @param params Parameter values map
      * @param pos Position in SQL for error reporting
      * @return Resolved parameter value
      * @throws IllegalArgumentException if parameter not found
      */
     private fun resolveParam(paramName: String, params: Map<String, Any?>, pos: Int): Any? {
-        val rootKey = paramName.substringBefore('.')
-
-        require(params.containsKey(rootKey)) {
-            "SQL parameter error: parameter '$rootKey' not found at position $pos"
-        }
-
-        val rootObj = params[rootKey]
-        return if (paramName.contains('.') && rootObj != null) {
-            val nestedPath = paramName.removePrefix("$rootKey.")
-            Reflects.getValue(rootObj, nestedPath)
-        } else {
-            rootObj
+        return try {
+            ExpressionParser.evaluate(paramName, params)
+        } catch (e: Exception) {
+            throw IllegalArgumentException("Failed to resolve parameter '$paramName' at position $pos: ${e.message}", e)
         }
     }
 

@@ -320,7 +320,8 @@ object Reflects {
     @JvmStatic
     fun <T> setValue(field: Field, target: T, value: Any?) {
         makeAccessible(field, target)
-        if (value != null && field.type == Long::class.java && value is Int) {
+        val fieldIsLong = field.type == Long::class.java || field.type == Long::class.javaObjectType
+        if (value != null && fieldIsLong && value is Int) {
             field.set(target, value.toLong())
         } else {
             field.set(target, value)

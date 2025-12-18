@@ -2,7 +2,6 @@ package com.tang.kite.utils.expression
 
 import com.tang.kite.utils.Reflects
 import kotlin.math.pow
-import kotlin.reflect.jvm.isAccessible
 
 /**
  * Evaluator: Evaluates the AST.
@@ -211,10 +210,11 @@ class Evaluator(private val context: Map<String, Any?>) {
         val target = evaluate(expr.target)
         val index = evaluate(expr.index)
         return when (target) {
-            is List<*> -> (index as? Int)?.let { target.getOrNull(it) }
-            is Array<*> -> (index as? Int)?.let { target.getOrNull(it) }
+            is List<*> -> (index as? Int)?.let { target[it] }
+            is Iterable<*> -> (index as? Int)?.let { target.toList()[it] }
+            is Array<*> -> (index as? Int)?.let { target[it] }
             is Map<*, *> -> target[index]
-            is String -> (index as? Int)?.let { target.getOrNull(it) }
+            is String -> (index as? Int)?.let { target[it] }
             else -> throw IllegalArgumentException("Cannot index type: ${target?.let { it::class.simpleName } ?: "null"}")
         }
     }
