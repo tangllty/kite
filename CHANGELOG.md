@@ -12,6 +12,7 @@
  * Enhance reflection utilities with entity detection and improve argument handling in `SqlParser`
  * Refactor `selectiveStrategy` type from function type to `Function1` for consistency
  * Enhance SQL parameter resolution to support array element access and improve error handling
+ * Remove selective batch insert and update methods from mapper interfaces and implementations
 
 ## 1.0.15
 

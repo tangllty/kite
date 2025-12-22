@@ -237,14 +237,12 @@ class DefaultSqlSession(
             BaseMethodName.isInsertSelective(method) -> insertSelective(method, mapperInterface, getFirstArg(args))
             BaseMethodName.isInsertValues(method) -> insertValues(method, mapperInterface, getFirstArg(args), asInt(getSecondArg(args)))
             BaseMethodName.isBatchInsert(method) -> batchInsert(method, mapperInterface, getFirstArg(args), asInt(getSecondArg(args)))
-            BaseMethodName.isBatchInsertSelective(method) -> batchInsertSelective(method, mapperInterface, getFirstArg(args), asInt(getSecondArg(args)))
             BaseMethodName.isUpdate(method) -> update(method, mapperInterface, getFirstArg(args))
             BaseMethodName.isUpdateCondition(method) -> update(method, mapperInterface, getFirstArg(args), getSecondArg(args))
             BaseMethodName.isUpdateSelective(method) -> updateSelective(method, mapperInterface, getFirstArg(args))
             BaseMethodName.isUpdateSelectiveCondition(method) -> updateSelective(method, mapperInterface, getFirstArg(args), getSecondArg(args))
             BaseMethodName.isUpdateWrapper(method) -> updateWrapper(method, mapperInterface, type, getFirstArg(args))
             BaseMethodName.isBatchUpdate(method) -> batchUpdate(method, mapperInterface, getFirstArg(args), asInt(getSecondArg(args)))
-            BaseMethodName.isBatchUpdateSelective(method) -> batchUpdateSelective(method, mapperInterface, getFirstArg(args), asInt(getSecondArg(args)))
             BaseMethodName.isDelete(method) -> delete(method, mapperInterface, type, getFirstArg(args))
             BaseMethodName.isDeleteById(method) -> deleteById(method, mapperInterface, type, getFirstArg(args))
             BaseMethodName.isDeleteByIds(method) -> deleteByIds(method, mapperInterface, type, asIterable(getFirstArg(args)))
@@ -339,15 +337,6 @@ class DefaultSqlSession(
         }
     }
 
-    override fun <T> batchInsertSelective(method: Method, mapperInterface: Class<T>, parameter: Any, batchSize: Int): Int {
-        val start = nanoTime()
-        return processBatch(parameter, batchSize) {
-            val batchInsertSelective = provider.batchInsertSelective(it)
-            val rows = executor.update(batchInsertSelective, it)
-            returnRows(method, mapperInterface, batchInsertSelective, rows, elapsedSince(start))
-        }
-    }
-
     override fun <T> update(method: Method, mapperInterface: Class<T>, parameter: Any): Int {
         val start = nanoTime()
         val update = provider.update(parameter)
@@ -393,15 +382,6 @@ class DefaultSqlSession(
             val batchUpdate = provider.batchUpdate(it)
             val rows = executor.update(batchUpdate, it)
             returnRows(method, mapperInterface, batchUpdate, rows, elapsedSince(start))
-        }
-    }
-
-    override fun <T> batchUpdateSelective(method: Method, mapperInterface: Class<T>, parameter: Any, batchSize: Int): Int {
-        val start = nanoTime()
-        return processBatch(parameter, batchSize) {
-            val batchUpdateSelective = provider.batchUpdateSelective(it)
-            val rows = executor.update(batchUpdateSelective, it)
-            returnRows(method, mapperInterface, batchUpdateSelective, rows, elapsedSince(start))
         }
     }
 

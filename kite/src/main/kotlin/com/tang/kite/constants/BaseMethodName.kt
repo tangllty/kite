@@ -88,12 +88,6 @@ object BaseMethodName {
         return method.name == BATCH_INSERT && method.countIsTwo() && method.firstParameterIsIterable() && method.secondParameterIsInt()
     }
 
-    private const val BATCH_INSERT_SELECTIVE = "batchInsertSelective"
-
-    fun isBatchInsertSelective(method: Method): Boolean {
-        return method.name == BATCH_INSERT_SELECTIVE && method.countIsTwo() && method.firstParameterIsIterable() && method.secondParameterIsInt()
-    }
-
     private const val UPDATE = "update"
 
     fun isUpdate(method: Method): Boolean {
@@ -124,12 +118,6 @@ object BaseMethodName {
 
     fun isBatchUpdate(method: Method): Boolean {
         return method.name == BATCH_UPDATE && method.countIsTwo() && method.firstParameterIsIterable() && method.secondParameterIsInt()
-    }
-
-    private const val BATCH_UPDATE_SELECTIVE = "batchUpdateSelective"
-
-    fun isBatchUpdateSelective(method: Method): Boolean {
-        return method.name == BATCH_UPDATE_SELECTIVE && method.countIsTwo() && method.firstParameterIsIterable() && method.secondParameterIsInt()
     }
 
     private const val DELETE = "delete"
@@ -236,8 +224,8 @@ object BaseMethodName {
     fun isBaseMethod(method: Method): Boolean {
         val methodName = method.name
         val isBaseMethodName = when (methodName) {
-            INSERT, INSERT_SELECTIVE, INSERT_VALUES, BATCH_INSERT, BATCH_INSERT_SELECTIVE,
-            UPDATE, UPDATE_SELECTIVE, UPDATE_WRAPPER, BATCH_UPDATE, BATCH_UPDATE_SELECTIVE,
+            INSERT, INSERT_SELECTIVE, INSERT_VALUES, BATCH_INSERT,
+            UPDATE, UPDATE_SELECTIVE, UPDATE_WRAPPER, BATCH_UPDATE,
             DELETE, DELETE_BY_ID, DELETE_BY_IDS, DELETE_WRAPPER,
             SELECT, SELECT_BY_ID,
             QUERY_WRAPPER, SELECT_ONE_WRAPPER,
@@ -252,12 +240,10 @@ object BaseMethodName {
             INSERT_SELECTIVE -> isInsertSelective(method)
             INSERT_VALUES -> isInsertValues(method)
             BATCH_INSERT -> isBatchInsert(method)
-            BATCH_INSERT_SELECTIVE -> isBatchInsertSelective(method)
             UPDATE -> isUpdate(method) || isUpdateCondition(method)
             UPDATE_SELECTIVE -> isUpdateSelective(method) || isUpdateSelectiveCondition(method)
             UPDATE_WRAPPER -> isUpdateWrapper(method)
             BATCH_UPDATE -> isBatchUpdate(method)
-            BATCH_UPDATE_SELECTIVE -> isBatchUpdateSelective(method)
             DELETE -> isDelete(method)
             DELETE_BY_ID -> isDeleteById(method)
             DELETE_BY_IDS -> isDeleteByIds(method)

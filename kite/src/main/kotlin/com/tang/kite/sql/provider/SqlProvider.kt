@@ -29,8 +29,6 @@ interface SqlProvider {
 
     fun batchInsert(entities: Iterable<Any>): BatchSqlStatement
 
-    fun batchInsertSelective(entities: Iterable<Any>): List<SqlStatement>
-
     fun update(entity: Any): SqlStatement
 
     fun update(entity: Any, where: Any): SqlStatement
@@ -40,8 +38,6 @@ interface SqlProvider {
     fun updateSelective(entity: Any, where: Any): SqlStatement
 
     fun batchUpdate(entities: Iterable<Any>): BatchSqlStatement
-
-    fun batchUpdateSelective(entities: Iterable<Any>): List<SqlStatement>
 
     fun <T> delete(clazz: Class<T>, entity: Any): SqlStatement
 

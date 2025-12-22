@@ -117,16 +117,7 @@ class SqlNodeProvider(private val dialect: SqlDialect) : SqlProvider {
                 }
                 return sqlNode
             }
-            entities.forEach { entity ->
-                val valueMap = getSqlValues(fieldList, entity, SqlType.INSERT, idField, autoIncrementId)
-                sqlNode.columnsValuesList.add(Pair(mutableListOf(), mutableListOf()))
-                val selectiveFieldList = fieldList.filter { selectiveStrategy(valueMap[it]) }
-                selectiveFieldList.forEach { field ->
-                    sqlNode.columnsValuesList.last().first.add(Column(field))
-                    sqlNode.columnsValuesList.last().second.add(valueMap[field])
-                }
-            }
-            return sqlNode
+            throw IllegalArgumentException("Only one entity can be selective inserted")
         }
 
         fieldList.forEach { sqlNode.columns.add(Column(it)) }
@@ -154,10 +145,6 @@ class SqlNodeProvider(private val dialect: SqlDialect) : SqlProvider {
 
     override fun batchInsert(entities: Iterable<Any>): BatchSqlStatement {
         return insert(entities).getBatchSqlStatement()
-    }
-
-    override fun batchInsertSelective(entities: Iterable<Any>): List<SqlStatement> {
-        return insert(entities, true).getSqlStatementList()
     }
 
     private fun updateById(entity: Any, isSelective: Boolean = false): SqlStatement {
@@ -220,26 +207,6 @@ class SqlNodeProvider(private val dialect: SqlDialect) : SqlProvider {
         }
         sqlNode.where.add(LogicalStatement(ComparisonStatement(Column(idField), null)))
         return sqlNode.getBatchSqlStatement()
-    }
-
-    override fun batchUpdateSelective(entities: Iterable<Any>): List<SqlStatement> {
-        val sqlNode = SqlNode.Update()
-        val clazz = entities.first()::class.java
-        val idField = getIdField(clazz)
-        sqlNode.table = TableReference(clazz)
-        val fieldList = getSqlFields(clazz)
-        entities.forEach { entity ->
-            sqlNode.setsList.add(Pair(mutableListOf(), mutableListOf()))
-            val valueMap = getSqlValues(fieldList, entity, SqlType.UPDATE)
-            val insertFieldList = fieldList.filter { it != idField && selectiveStrategy(valueMap[it]) }
-            insertFieldList.forEach {
-                sqlNode.setsList.last().first.add(Column(it))
-                sqlNode.setsList.last().second.add(valueMap[it])
-            }
-            sqlNode.setsList.last().second.add(valueMap[idField])
-        }
-        sqlNode.where.add(LogicalStatement(ComparisonStatement(Column(idField), null)))
-        return sqlNode.getSqlStatementList()
     }
 
     override fun <T> delete(clazz: Class<T>, entity: Any): SqlStatement {

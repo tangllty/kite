@@ -154,18 +154,4 @@ class UpdateTest : BaseDataTest() {
         assertEquals(2, rows)
     }
 
-    @Test
-    fun batchUpdateSelective() {
-        val session = sqlSessionFactory.openSession()
-        val accountMapper = session.getMapper(AccountMapper::class)
-        val accounts = arrayOf(
-            Account(id = 1, username = "admin"),
-            Account(id = 4, username = "tang")
-        )
-        val rows = accountMapper.batchUpdateSelective(accounts)
-        session.rollback()
-        session.close()
-        assertEquals(2, rows)
-    }
-
 }
