@@ -38,14 +38,6 @@ class SqlSessionProxy(private val sqlSessionFactory: SqlSessionFactory) : Invoca
             return method.invoke(this, *(args ?: emptyArray()))
         }
 
-        // Provide Mapper instances that use this proxy as the SqlSession
-        if (method.name == "getMapper") {
-            val mapperClass = args?.get(0) as Class<*>
-            val factory = MapperProxyFactory(mapperClass)
-            @Suppress("UNCHECKED_CAST")
-            return factory.newInstance(proxy as SqlSession)
-        }
-
         // For other SqlSession methods (commit, rollback, etc.) delegate to a real session
         val sqlSession = SqlSessions.openSession(sqlSessionFactory)
         try {

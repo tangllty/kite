@@ -15,6 +15,7 @@
  * Refactor `selectiveStrategy` type from function type to `Function1` for consistency
  * Enhance SQL parameter resolution to support array element access and improve error handling
  * Remove selective batch insert and update methods from mapper interfaces and implementations
+ * Refactor mapper interface methods to enforce `BaseMapper` type constraints for improved type safety
 
 ## 1.0.15
 

@@ -10,6 +10,7 @@ import com.tang.kite.config.SqlConfig
 import com.tang.kite.constants.BaseMethodName
 import com.tang.kite.enumeration.MethodType
 import com.tang.kite.executor.Executor
+import com.tang.kite.mapper.BaseMapper
 import com.tang.kite.paginate.OrderItem
 import com.tang.kite.paginate.Page
 import com.tang.kite.proxy.MapperProxyFactory
@@ -46,12 +47,12 @@ class DefaultSqlSession(
 
     private var isDirty = false
 
-    override fun <T> getMapper(clazz: Class<T>): T {
+    override fun <M : BaseMapper<T>, T : Any> getMapper(clazz: Class<M>): M {
         val mapperProxyFactory = MapperProxyFactory(clazz)
         return mapperProxyFactory.newInstance(this)
     }
 
-    override fun <T : Any> getMapper(clazz: KClass<T>): T {
+    override fun <M : BaseMapper<T>, T : Any> getMapper(clazz: KClass<M>): M {
         return getMapper(clazz.java)
     }
 
@@ -223,14 +224,14 @@ class DefaultSqlSession(
         return rows
     }
 
-    override fun <T> execute(type: MethodType, method: Method, args: Array<out Any>?, mapperInterface: Class<T>): Any? {
+    override fun <M : BaseMapper<T>, T : Any> execute(type: MethodType, method: Method, args: Array<out Any>?, mapperInterface: Class<M>): Any? {
         return when (type) {
             MethodType.BASE -> baseExecutor(method, args, mapperInterface)
             MethodType.ANNOTATED -> annotatedMethodsInvoker(method, args, mapperInterface)
         }
     }
 
-    private fun <T> baseExecutor(method: Method, args: Array<out Any>?, mapperInterface: Class<T>): Any? {
+    private fun <M : BaseMapper<T>, T : Any> baseExecutor(method: Method, args: Array<out Any>?, mapperInterface: Class<M>): Any? {
         val type: Class<T> = getGenericType(mapperInterface)
         return when {
             BaseMethodName.isInsert(method) -> insert(method, mapperInterface, getFirstArg(args))
@@ -260,7 +261,7 @@ class DefaultSqlSession(
         }
     }
 
-    private fun <T> annotatedMethodsInvoker(method: Method, args: Array<out Any>?, mapperInterface: Class<T>): Any {
+    private fun <M : BaseMapper<T>, T : Any> annotatedMethodsInvoker(method: Method, args: Array<out Any>?, mapperInterface: Class<M>): Any {
         val start = nanoTime()
         val select = method.getAnnotation(Select::class.java)
         val insert = method.getAnnotation(Insert::class.java)
@@ -286,7 +287,7 @@ class DefaultSqlSession(
         return SqlParser.parse(sql, paramValueMap)
     }
 
-    private fun <M, T> getGenericType(mapperInterface: Class<M>): Class<T> {
+    private fun <M : BaseMapper<T>, T : Any> getGenericType(mapperInterface: Class<M>): Class<T> {
         val baseMapper = mapperInterface.genericInterfaces[0]
         val type = (baseMapper as ParameterizedType).actualTypeArguments[0]
         @Suppress("UNCHECKED_CAST")
@@ -299,14 +300,14 @@ class DefaultSqlSession(
         return "$methodName($parameterTypes)"
     }
 
-    override fun <T> insert(method: Method, mapperInterface: Class<T>, parameter: Any): Int {
+    override fun <M : BaseMapper<T>, T : Any> insert(method: Method, mapperInterface: Class<M>, parameter: Any): Int {
         val start = nanoTime()
         val insert = provider.insert(parameter)
         val rows = executor.update(insert, parameter)
         return returnRows(method, mapperInterface, insert, rows, elapsedSince(start))
     }
 
-    override fun <T> insertSelective(method: Method, mapperInterface: Class<T>, parameter: Any): Int {
+    override fun <M : BaseMapper<T>, T : Any> insertSelective(method: Method, mapperInterface: Class<M>, parameter: Any): Int {
         val start = nanoTime()
         val insert = provider.insertSelective(parameter)
         val rows = executor.update(insert, parameter)
@@ -319,7 +320,7 @@ class DefaultSqlSession(
         return chunks.sumOf { action(it) }
     }
 
-    override fun <T> insertValues(method: Method, mapperInterface: Class<T>, parameter: Any, batchSize: Int): Int {
+    override fun <M : BaseMapper<T>, T : Any> insertValues(method: Method, mapperInterface: Class<M>, parameter: Any, batchSize: Int): Int {
         val start = nanoTime()
         return processBatch(parameter, batchSize) {
             val insertValues = provider.insertValues(it)
@@ -328,7 +329,7 @@ class DefaultSqlSession(
         }
     }
 
-    override fun <T> batchInsert(method: Method, mapperInterface: Class<T>, parameter: Any, batchSize: Int): Int {
+    override fun <M : BaseMapper<T>, T : Any> batchInsert(method: Method, mapperInterface: Class<M>, parameter: Any, batchSize: Int): Int {
         val start = nanoTime()
         return processBatch(parameter, batchSize) {
             val batchInsert = provider.batchInsert(it)
@@ -337,35 +338,35 @@ class DefaultSqlSession(
         }
     }
 
-    override fun <T> update(method: Method, mapperInterface: Class<T>, parameter: Any): Int {
+    override fun <M : BaseMapper<T>, T : Any> update(method: Method, mapperInterface: Class<M>, parameter: Any): Int {
         val start = nanoTime()
         val update = provider.update(parameter)
         val rows = executor.update(update, parameter)
         return returnRows(method, mapperInterface, update, rows, elapsedSince(start))
     }
 
-    override fun <T> update(method: Method, mapperInterface: Class<T>, parameter: Any, condition: Any): Int {
+    override fun <M : BaseMapper<T>, T : Any> update(method: Method, mapperInterface: Class<M>, parameter: Any, condition: Any): Int {
         val start = nanoTime()
         val update = provider.update(parameter, condition)
         val rows = executor.update(update, parameter)
         return returnRows(method, mapperInterface, update, rows, elapsedSince(start))
     }
 
-    override fun <T> updateSelective(method: Method, mapperInterface: Class<T>, parameter: Any): Int {
+    override fun <M : BaseMapper<T>, T : Any> updateSelective(method: Method, mapperInterface: Class<M>, parameter: Any): Int {
         val start = nanoTime()
         val update = provider.updateSelective(parameter)
         val rows = executor.update(update, parameter)
         return returnRows(method, mapperInterface, update, rows, elapsedSince(start))
     }
 
-    override fun <T> updateSelective(method: Method, mapperInterface: Class<T>, parameter: Any, condition: Any): Int {
+    override fun <M : BaseMapper<T>, T : Any> updateSelective(method: Method, mapperInterface: Class<M>, parameter: Any, condition: Any): Int {
         val start = nanoTime()
         val updateWrapper = provider.updateSelective(parameter, condition)
         val rows = executor.update(updateWrapper, parameter)
         return returnRows(method, mapperInterface, updateWrapper, rows, elapsedSince(start))
     }
 
-    override fun <T> updateWrapper(method: Method, mapperInterface: Class<T>, type: Class<T>, parameter: Any): Int {
+    override fun <M : BaseMapper<T>, T : Any> updateWrapper(method: Method, mapperInterface: Class<M>, type: Class<T>, parameter: Any): Int {
         val start = nanoTime()
         @Suppress("UNCHECKED_CAST")
         val updateWrapper = parameter as UpdateWrapper<*>
@@ -376,7 +377,7 @@ class DefaultSqlSession(
         return returnRows(method, mapperInterface, sqlStatement, rows, elapsedSince(start))
     }
 
-    override fun <T> batchUpdate(method: Method, mapperInterface: Class<T>, parameter: Any, batchSize: Int): Int {
+    override fun <M : BaseMapper<T>, T : Any> batchUpdate(method: Method, mapperInterface: Class<M>, parameter: Any, batchSize: Int): Int {
         val start = nanoTime()
         return processBatch(parameter, batchSize) {
             val batchUpdate = provider.batchUpdate(it)
@@ -385,14 +386,14 @@ class DefaultSqlSession(
         }
     }
 
-    override fun <T> delete(method: Method, mapperInterface: Class<T>, type: Class<T>, parameter: Any): Int {
+    override fun <M : BaseMapper<T>, T : Any> delete(method: Method, mapperInterface: Class<M>, type: Class<T>, parameter: Any): Int {
         val start = nanoTime()
         val delete = provider.delete(type, parameter)
         val rows = executor.update(delete, parameter)
         return returnRows(method, mapperInterface, delete, rows, elapsedSince(start))
     }
 
-    override fun <T> deleteById(method: Method, mapperInterface: Class<T>, type: Class<T>, parameter: Any): Int {
+    override fun <M : BaseMapper<T>, T : Any> deleteById(method: Method, mapperInterface: Class<M>, type: Class<T>, parameter: Any): Int {
         val start = nanoTime()
         val entity = type.getDeclaredConstructor().newInstance()
         val idField = Reflects.getIdField(type)
@@ -402,14 +403,14 @@ class DefaultSqlSession(
         return returnRows(method, mapperInterface, delete, rows, elapsedSince(start))
     }
 
-    override fun <T> deleteByIds(method: Method, mapperInterface: Class<T>, type: Class<T>, ids: Iterable<Any>): Int {
+    override fun <M : BaseMapper<T>, T : Any> deleteByIds(method: Method, mapperInterface: Class<M>, type: Class<T>, ids: Iterable<Any>): Int {
         val start = nanoTime()
         val delete = provider.deleteByIds(type, ids)
         val rows = executor.update(delete, ids)
         return returnRows(method, mapperInterface, delete, rows, elapsedSince(start))
     }
 
-    override fun <T> deleteWrapper(method: Method, mapperInterface: Class<T>, type: Class<T>, parameter: Any): Int {
+    override fun <M : BaseMapper<T>, T : Any> deleteWrapper(method: Method, mapperInterface: Class<M>, type: Class<T>, parameter: Any): Int {
         val start = nanoTime()
         @Suppress("UNCHECKED_CAST")
         val deleteWrapper = parameter as DeleteWrapper<*>
@@ -420,7 +421,7 @@ class DefaultSqlSession(
         return returnRows(method, mapperInterface, sqlStatement, rows, elapsedSince(start))
     }
 
-    private fun <T> processSelect(method: Method, mapperInterface: Class<T>, type: Class<T>, args: Array<out Any>?): List<T> {
+    private fun <M : BaseMapper<T>, T : Any> processSelect(method: Method, mapperInterface: Class<M>, type: Class<T>, args: Array<out Any>?): List<T> {
         if (args.isNullOrEmpty()) {
             return selectList(method, mapperInterface, type, null, emptyArray())
         }
@@ -436,7 +437,7 @@ class DefaultSqlSession(
         return selectList(method, mapperInterface, type, null, emptyArray())
     }
 
-    override fun <T> selectList(method: Method, mapperInterface: Class<T>, type: Class<T>, parameter: Any?, orderBys: Array<OrderItem<T>>): List<T> {
+    override fun <M : BaseMapper<T>, T : Any> selectList(method: Method, mapperInterface: Class<M>, type: Class<T>, parameter: Any?, orderBys: Array<OrderItem<T>>): List<T> {
         val start = nanoTime()
         val select = provider.select(type, parameter, orderBys)
         val list = executor.query(select, type)
@@ -444,7 +445,7 @@ class DefaultSqlSession(
         return list
     }
 
-    override fun <T> queryWrapper(method: Method, mapperInterface: Class<T>, type: Class<T>, parameter: Any): List<T> {
+    override fun <M : BaseMapper<T>, T : Any> queryWrapper(method: Method, mapperInterface: Class<M>, type: Class<T>, parameter: Any): List<T> {
         val start = nanoTime()
         @Suppress("UNCHECKED_CAST")
         val queryWrapper = parameter as QueryWrapper<*>
@@ -456,7 +457,7 @@ class DefaultSqlSession(
         return list
     }
 
-    override fun <T> selectById(method: Method, mapperInterface: Class<T>, type: Class<T>, parameter: Any): T? {
+    override fun <M : BaseMapper<T>, T : Any> selectById(method: Method, mapperInterface: Class<M>, type: Class<T>, parameter: Any): T? {
         val entity = type.getDeclaredConstructor().newInstance()
         val idField = Reflects.getIdField(type)
         setValue(idField, entity, parameter)
@@ -464,7 +465,7 @@ class DefaultSqlSession(
         return getOneFromList(list)
     }
 
-    override fun <T> selectOneWrapper(method: Method, mapperInterface: Class<T>, type: Class<T>, parameter: Any): T? {
+    override fun <M : BaseMapper<T>, T : Any> selectOneWrapper(method: Method, mapperInterface: Class<M>, type: Class<T>, parameter: Any): T? {
         val list = queryWrapper(method, mapperInterface, type, parameter)
         return getOneFromList(list)
     }
@@ -476,7 +477,7 @@ class DefaultSqlSession(
         return list.firstOrNull()
     }
 
-    private fun <T> processSelectWithJoins(method: Method, mapperInterface: Class<T>, type: Class<T>, args: Array<out Any>?): List<T> {
+    private fun <M : BaseMapper<T>, T : Any> processSelectWithJoins(method: Method, mapperInterface: Class<M>, type: Class<T>, args: Array<out Any>?): List<T> {
         if (args.isNullOrEmpty()) {
             return selectListWithJoins(method, mapperInterface, type, null, emptyArray())
         }
@@ -492,7 +493,7 @@ class DefaultSqlSession(
         return selectListWithJoins(method, mapperInterface, type, null, emptyArray())
     }
 
-    override fun <T> selectListWithJoins(method: Method, mapperInterface: Class<T>, type: Class<T>, parameter: Any?, orderBys: Array<OrderItem<T>>): List<T> {
+    override fun <M : BaseMapper<T>, T : Any> selectListWithJoins(method: Method, mapperInterface: Class<M>, type: Class<T>, parameter: Any?, orderBys: Array<OrderItem<T>>): List<T> {
         val start = nanoTime()
         val select = provider.selectWithJoins(type, parameter, orderBys)
         val list = executor.query(select, type)
@@ -529,7 +530,7 @@ class DefaultSqlSession(
         return list
     }
 
-    override fun <T> selectByIdWithJoins(method: Method, mapperInterface: Class<T>, type: Class<T>, parameter: Any): T? {
+    override fun <M : BaseMapper<T>, T : Any> selectByIdWithJoins(method: Method, mapperInterface: Class<M>, type: Class<T>, parameter: Any): T? {
         val entity = type.getDeclaredConstructor().newInstance()
         val idField = Reflects.getIdField(type)
         setValue(idField, entity, parameter)
@@ -543,14 +544,14 @@ class DefaultSqlSession(
         return list.first()
     }
 
-    override fun <T> count(method: Method, mapperInterface: Class<T>, type: Class<T>, parameter: Any?): Long {
+    override fun <M : BaseMapper<T>, T : Any> count(method: Method, mapperInterface: Class<M>, type: Class<T>, parameter: Any?): Long {
         val start = nanoTime()
         val count = provider.count(type, parameter)
         val total = executor.count(count, Long::class.java)
         return returnRows(method, mapperInterface, count, total, elapsedSince(start))
     }
 
-    private fun <T> processPaginate(method: Method, mapperInterface: Class<T>, type: Class<T>, args: Array<out Any>?): Page<T> {
+    private fun <M : BaseMapper<T>, T : Any> processPaginate(method: Method, mapperInterface: Class<M>, type: Class<T>, args: Array<out Any>?): Page<T> {
         if (args.isNullOrEmpty()) {
             return paginate(method, mapperInterface, type, PageConfig.pageNumber, PageConfig.pageSize, null, emptyArray())
         }
@@ -568,14 +569,14 @@ class DefaultSqlSession(
         return paginate(method, mapperInterface, type, pageNumber, pageSize, parameter, orderBys)
     }
 
-    private fun <T> reasonable(method: Method, mapperInterface: Class<T>, type: Class<T>, pageNumber: Long, pageSize: Long): Pair<Long, Long> {
+    private fun <M : BaseMapper<T>, T : Any> reasonable(method: Method, mapperInterface: Class<M>, type: Class<T>, pageNumber: Long, pageSize: Long): Pair<Long, Long> {
         val count = count(method, mapperInterface, type, null)
         val totalPage = (count / pageSize).toInt() + if (count % pageSize == 0L) 0 else 1
         val reasonablePageNumber = if (pageNumber > totalPage) totalPage else if (pageNumber < 1) PageConfig.pageNumber else pageNumber
         return Pair(reasonablePageNumber.toLong(), count)
     }
 
-    override fun <T> paginate(method: Method, mapperInterface: Class<T>, type: Class<T>, pageNumber: Long, pageSize: Long, parameter: Any?, orderBys: Array<OrderItem<T>>): Page<T> {
+    override fun <M : BaseMapper<T>, T : Any> paginate(method: Method, mapperInterface: Class<M>, type: Class<T>, pageNumber: Long, pageSize: Long, parameter: Any?, orderBys: Array<OrderItem<T>>): Page<T> {
         val start = nanoTime()
         val (reasonablePageNumber, total) = reasonable(method, mapperInterface, type, pageNumber, pageSize)
         val paginate = provider.paginate(type, parameter, orderBys, reasonablePageNumber, pageSize)
@@ -584,7 +585,7 @@ class DefaultSqlSession(
         return Page(list, total, reasonablePageNumber, pageSize)
     }
 
-    private fun <T> processPaginateWithJoins(method: Method, mapperInterface: Class<T>, type: Class<T>, args: Array<out Any>?): Page<T> {
+    private fun <M : BaseMapper<T>, T : Any> processPaginateWithJoins(method: Method, mapperInterface: Class<M>, type: Class<T>, args: Array<out Any>?): Page<T> {
         if (args.isNullOrEmpty()) {
             return paginateWithJoins(method, mapperInterface, type, PageConfig.pageNumber, PageConfig.pageSize, null, emptyArray())
         }
@@ -602,7 +603,7 @@ class DefaultSqlSession(
         return paginateWithJoins(method, mapperInterface, type, pageNumber, pageSize, parameter, orderBys)
     }
 
-    override fun <T> paginateWithJoins(method: Method, mapperInterface: Class<T>, type: Class<T>, pageNumber: Long, pageSize: Long, parameter: Any?, orderBys: Array<OrderItem<T>>): Page<T> {
+    override fun <M : BaseMapper<T>, T : Any> paginateWithJoins(method: Method, mapperInterface: Class<M>, type: Class<T>, pageNumber: Long, pageSize: Long, parameter: Any?, orderBys: Array<OrderItem<T>>): Page<T> {
         val start = nanoTime()
         val (reasonablePageNumber, total) = reasonable(method, mapperInterface, type, pageNumber, pageSize)
         val paginate = provider.paginateWithJoins(type, parameter, orderBys, reasonablePageNumber, pageSize)

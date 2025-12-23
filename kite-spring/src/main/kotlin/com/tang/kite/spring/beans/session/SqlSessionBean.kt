@@ -1,5 +1,6 @@
 package com.tang.kite.spring.beans.session
 
+import com.tang.kite.mapper.BaseMapper
 import com.tang.kite.proxy.MapperProxyFactory
 import com.tang.kite.session.SqlSession
 import com.tang.kite.session.factory.SqlSessionFactory
@@ -21,7 +22,7 @@ class SqlSessionBean(sqlSessionFactory: SqlSessionFactory) {
         sqlSession = Proxy.newProxyInstance(classLoader, classes, SqlSessionProxy(sqlSessionFactory)) as SqlSession
     }
 
-    fun <T> getMapper(clazz: Class<T>): T {
+    fun <M : BaseMapper<T>, T : Any> getMapper(clazz: Class<M>): M {
         val mapperProxyFactory = MapperProxyFactory(clazz)
         return mapperProxyFactory.newInstance(sqlSession)
     }

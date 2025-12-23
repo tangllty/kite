@@ -1,5 +1,6 @@
 package com.tang.kite.spring.beans
 
+import com.tang.kite.mapper.BaseMapper
 import com.tang.kite.session.factory.SqlSessionFactory
 import com.tang.kite.spring.beans.session.SqlSessionBean
 import org.springframework.beans.factory.FactoryBean
@@ -7,15 +8,15 @@ import org.springframework.beans.factory.FactoryBean
 /**
  * @author Tang
  */
-class MapperFactoryBean<T : Any>(
+class MapperFactoryBean<M : BaseMapper<T>, T : Any>(
 
-    private val mapperInterface: Class<T>,
+    private val mapperInterface: Class<M>,
 
     private val sqlSessionFactory: SqlSessionFactory
 
-) : FactoryBean<T> {
+) : FactoryBean<M> {
 
-    override fun getObject(): T {
+    override fun getObject(): M {
         return SqlSessionBean(sqlSessionFactory).getMapper(mapperInterface)
     }
 

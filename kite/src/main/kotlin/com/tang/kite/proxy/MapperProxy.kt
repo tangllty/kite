@@ -6,6 +6,7 @@ import com.tang.kite.annotation.Select
 import com.tang.kite.annotation.Update
 import com.tang.kite.constants.BaseMethodName
 import com.tang.kite.enumeration.MethodType
+import com.tang.kite.mapper.BaseMapper
 import com.tang.kite.session.SqlSession
 import com.tang.kite.utils.Reflects
 import java.lang.invoke.MethodHandle
@@ -22,11 +23,11 @@ import kotlin.jvm.java
  *
  * @author Tang
  */
-class MapperProxy<T>(
+class MapperProxy<M : BaseMapper<T>, T : Any>(
 
     private val sqlSession: SqlSession,
 
-    private val mapperInterface: Class<T>
+    private val mapperInterface: Class<M>
 
 ) : InvocationHandler {
 
