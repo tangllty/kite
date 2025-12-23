@@ -116,7 +116,7 @@ class QueryWrapper<T : Any> : AbstractWhereWrapper<QueryWhereWrapper<T>, T>, Wra
         return this
     }
 
-    override fun setTableClassIfNotSet(clazz: Class<T>) {
+    override fun setTableClassIfNotSet(clazz: Class<*>) {
         if (sqlNode.from != null) {
             return
         }

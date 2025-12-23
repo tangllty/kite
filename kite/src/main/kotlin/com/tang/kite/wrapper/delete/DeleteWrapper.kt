@@ -87,7 +87,7 @@ class DeleteWrapper<T : Any> : AbstractWhereWrapper<DeleteWhereWrapper<T>, T>, W
         return from(TableReference(clazz))
     }
 
-    override fun setTableClassIfNotSet(clazz: Class<T>) {
+    override fun setTableClassIfNotSet(clazz: Class<*>) {
         if (sqlNode.table != null) {
             return
         }

@@ -368,7 +368,7 @@ class DefaultSqlSession(
     override fun <T> updateWrapper(method: Method, mapperInterface: Class<T>, type: Class<T>, parameter: Any): Int {
         val start = nanoTime()
         @Suppress("UNCHECKED_CAST")
-        val updateWrapper = parameter as UpdateWrapper<T>
+        val updateWrapper = parameter as UpdateWrapper<*>
         updateWrapper.setTableClassIfNotSet(type)
         updateWrapper.setTableFillFields()
         val sqlStatement = updateWrapper.getSqlStatement(sqlDialect)
@@ -412,7 +412,7 @@ class DefaultSqlSession(
     override fun <T> deleteWrapper(method: Method, mapperInterface: Class<T>, type: Class<T>, parameter: Any): Int {
         val start = nanoTime()
         @Suppress("UNCHECKED_CAST")
-        val deleteWrapper = parameter as DeleteWrapper<T>
+        val deleteWrapper = parameter as DeleteWrapper<*>
         deleteWrapper.setTableClassIfNotSet(type)
         deleteWrapper.setTableFillFields()
         val sqlStatement = deleteWrapper.getSqlStatement(sqlDialect)
@@ -447,7 +447,7 @@ class DefaultSqlSession(
     override fun <T> queryWrapper(method: Method, mapperInterface: Class<T>, type: Class<T>, parameter: Any): List<T> {
         val start = nanoTime()
         @Suppress("UNCHECKED_CAST")
-        val queryWrapper = parameter as QueryWrapper<T>
+        val queryWrapper = parameter as QueryWrapper<*>
         queryWrapper.setTableClassIfNotSet(type)
         queryWrapper.setTableFillFields()
         val sqlStatement = queryWrapper.getSqlStatement(sqlDialect)

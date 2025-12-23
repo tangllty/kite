@@ -10,7 +10,7 @@ import com.tang.kite.sql.statement.SqlStatement
  */
 interface Wrapper<T> {
 
-    fun setTableClassIfNotSet(clazz: Class<T>)
+    fun setTableClassIfNotSet(clazz: Class<*>)
 
     fun setTableFillFields()
 

@@ -90,7 +90,7 @@ class UpdateWrapper<T : Any> : UpdateSetWrapper<T>, Wrapper<T> {
         return from(TableReference(clazz))
     }
 
-    override fun setTableClassIfNotSet(clazz: Class<T>) {
+    override fun setTableClassIfNotSet(clazz: Class<*>) {
         if (sqlNode.table != null) {
             return
         }

@@ -2,6 +2,8 @@
 
 ### Bug Fixes
 
+ * Fix type argument is not within its bounds. See https://youtrack.jetbrains.com/issue/KTLC-358.
+
 ### Dependencies
 
  * Bump actions/upload-artifact from 5 to 6
