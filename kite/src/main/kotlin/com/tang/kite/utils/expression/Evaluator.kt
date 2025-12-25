@@ -66,22 +66,42 @@ class Evaluator(private val context: Map<String, Any?>) {
         val target = evaluate(expr.target)
         val args = expr.arguments.map { evaluate(it) }
         return when (expr.name) {
-            "contains" -> when (target) {
-                is String -> args.firstOrNull()?.let { target.contains(it.toString()) } ?: false
-                is Iterable<*> -> args.firstOrNull()?.let { target.contains(it) } ?: false
-                is Array<*> -> args.firstOrNull()?.let { target.contains(it) } ?: false
-                is Map<*, *> -> args.firstOrNull()?.let { target.contains(it) } ?: false
-                else -> throw IllegalArgumentException("Unsupported target for 'contains'")
+            "length", "size" -> getLengthOrSize(target)
+            "isEmpty" -> getIsEmpty(target)
+            "isNotEmpty" -> getIsNotEmpty(target)
+            "contains" -> getContains(target, args)
+            "containsIgnoreCase" -> when (target) {
+                is CharSequence -> args.firstOrNull()?.let { target.contains(it.toString(), ignoreCase = true) } ?: false
+                else -> throw IllegalArgumentException("Unsupported target for 'containsIgnoreCase'")
+            }
+            "isBlank" -> when (target) {
+                is CharSequence -> target.isBlank()
+                else -> throw IllegalArgumentException("Unsupported target for 'isBlank'")
+            }
+            "isNotBlank" -> when(target) {
+                is CharSequence -> target.isNotBlank()
+                else -> throw IllegalArgumentException("Unsupported target for 'isNotBlank'")
+            }
+            "toUpperCase" -> when (target) {
+                is CharSequence -> target.toString().uppercase()
+                else -> throw IllegalArgumentException("Unsupported target for 'toUpperCase'")
+            }
+            "toLowerCase" -> when (target) {
+                is CharSequence -> target.toString().lowercase()
+                else -> throw IllegalArgumentException("Unsupported target for 'toLowerCase'")
             }
             "startsWith" -> when (target) {
-                is String -> args.firstOrNull()?.let { target.startsWith(it.toString()) } ?: false
+                is CharSequence -> args.firstOrNull()?.let { target.startsWith(it.toString()) } ?: false
                 else -> throw IllegalArgumentException("Unsupported target for 'startsWith'")
             }
             "endsWith" -> when (target) {
-                is String -> args.firstOrNull()?.let { target.endsWith(it.toString()) } ?: false
+                is CharSequence -> args.firstOrNull()?.let { target.endsWith(it.toString()) } ?: false
                 else -> throw IllegalArgumentException("Unsupported target for 'endsWith'")
             }
-            "length", "size" -> getLengthOrSize(target)
+            "trim" -> when (target) {
+                is CharSequence -> target.trim()
+                else -> throw IllegalArgumentException("Unsupported target for 'trim'")
+            }
             else -> {
                 val kClass = target?.let { it::class }
                 val method = kClass?.members?.firstOrNull { it.name == expr.name && it.parameters.size == args.size + 1 }
@@ -99,12 +119,44 @@ class Evaluator(private val context: Map<String, Any?>) {
      */
     private fun getLengthOrSize(target: Any?): Int {
         return when (target) {
-            is String -> target.length
+            is CharSequence -> target.length
             is Collection<*> -> target.size
             is Iterable<*> -> target.toList().size
             is Map<*, *> -> target.size
             is Array<*> -> target.size
             else -> throw IllegalArgumentException("Cannot get length()/size() of ${target?.let { it::class.simpleName } ?: "null"}")
+        }
+    }
+
+    private fun getIsEmpty(target: Any?): Boolean {
+        return when (target) {
+            is CharSequence -> target.isEmpty()
+            is Collection<*> -> target.isEmpty()
+            is Iterable<*> -> target.toList().isEmpty()
+            is Map<*, *> -> target.isEmpty()
+            is Array<*> -> target.isEmpty()
+            else -> throw IllegalArgumentException("Unsupported target for 'isEmpty'")
+        }
+    }
+
+    private fun getIsNotEmpty(target: Any?): Boolean {
+        return when (target) {
+            is CharSequence -> target.isNotEmpty()
+            is Collection<*> -> target.isNotEmpty()
+            is Iterable<*> -> target.toList().isNotEmpty()
+            is Map<*, *> -> target.isNotEmpty()
+            is Array<*> -> target.isNotEmpty()
+            else -> throw IllegalArgumentException("Unsupported target for 'isNotEmpty'")
+        }
+    }
+
+    private fun getContains(target: Any?, args: List<Any?>): Boolean {
+        return when (target) {
+            is CharSequence -> args.firstOrNull()?.let { target.contains(it.toString()) } ?: false
+            is Iterable<*> -> args.firstOrNull()?.let { target.contains(it) } ?: false
+            is Array<*> -> args.firstOrNull()?.let { target.contains(it) } ?: false
+            is Map<*, *> -> args.firstOrNull()?.let { target.contains(it) } ?: false
+            else -> throw IllegalArgumentException("Unsupported target for 'contains'")
         }
     }
 

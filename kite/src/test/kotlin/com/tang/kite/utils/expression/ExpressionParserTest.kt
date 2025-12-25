@@ -27,6 +27,7 @@ class ExpressionParserTest {
     fun testExpressionParsing() {
         val expressions = listOf(
             Pair("age > 20", true),
+            Pair("name != null", true),
             Pair("name == \"Alice\" && age >= 25", true),
             Pair("hobbies.contains(\"swimming\")", true),
             Pair("name.startsWith(\"Ali\")", true),
