@@ -17,6 +17,7 @@
  * Remove selective batch insert and update methods from mapper interfaces and implementations
  * Refactor mapper interface methods to enforce `BaseMapper` type constraints for improved type safety
  * Refactor evaluation methods to enhance support for various target types and improve readability
+ * Enhance `BaseMapper` interface documentation for clarity and consistency
 
 ## 1.0.15
 

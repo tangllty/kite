@@ -11,735 +11,751 @@ import jakarta.servlet.http.HttpServletRequest
 import java.io.Serializable
 
 /**
- * Base mapper
+ * Generic base mapper interface for data access layer, encapsulates core database operations
+ * including single-table/join query, CRUD, pagination, sorting, selective field update/insert and batch operations.
  *
- * @param T Entity type
- *
+ * @param T The type of the database entity mapped to the table
  * @author Tang
  */
 interface BaseMapper<T : Any> {
 
     /**
-     * Insert entity
+     * Insert a single entity
      *
-     * @param entity Entity
-     * @return Inserted count
+     * @param entity The entity to be inserted
+     * @return Number of affected rows
      */
     fun insert(entity: T): Int
 
     /**
-     * Insert entity selective, ignore [KiteConfig.selectiveStrategy] value
+     * Insert a single entity selectively (only non-null fields are inserted, ignoring [KiteConfig.selectiveStrategy])
      *
-     * @param entity Entity
-     * @return Inserted count
+     * @param entity The entity to be inserted
+     * @return Number of affected rows
      */
     fun insertSelective(entity: T): Int
 
     /**
-     * Insert entity values, ignore [KiteConfig.selectiveStrategy] value
+     * Batch insert entities with VALUES syntax
      *
-     * @param entities Entity list
-     * @param batchSize Batch size
-     * @return Inserted count
+     * @param entities The collection of entities to be inserted
+     * @param batchSize Number of inserts per batch
+     * @return Total number of successfully inserted rows
      */
     fun insertValues(entities: Iterable<T>, batchSize: Int): Int
 
     /**
-     * Insert entity values, ignore [KiteConfig.selectiveStrategy] value
+     * Batch insert entities with VALUES syntax
      *
-     * @param entities Entity array
-     * @param batchSize Batch size
-     * @return Inserted count
+     * @param entities The array of entities to be inserted
+     * @param batchSize Number of inserts per batch
+     * @return Total number of successfully inserted rows
      */
     fun insertValues(entities: Array<T>, batchSize: Int): Int {
         return insertValues(entities.toList(), batchSize)
     }
 
     /**
-     * Insert entity values, ignore [KiteConfig.selectiveStrategy] value
+     * Batch insert entities with VALUES syntax (uses [KiteConfig.batchSize] as default batch size)
      *
-     * @param entities Entity list
-     * @return Inserted count
+     * @param entities The collection of entities to be inserted
+     * @return Total number of successfully inserted rows
      */
     fun insertValues(entities: Iterable<T>): Int {
         return insertValues(entities, KiteConfig.batchSize)
     }
 
     /**
-     * Insert entity values, ignore [KiteConfig.selectiveStrategy] value
+     * Batch insert entities with VALUES syntax (uses [KiteConfig.batchSize] as default batch size)
      *
-     * @param entities Entity array
-     * @return Inserted count
+     * @param entities The array of entities to be inserted
+     * @return Total number of successfully inserted rows
      */
     fun insertValues(entities: Array<T>): Int {
         return insertValues(entities.toList())
     }
 
     /**
-     * Batch insert entity
+     * Batch insert entities with single INSERT syntax
      *
-     * @param list Entity list
-     * @param batchSize Batch size
-     * @return Inserted count
+     * @param list The collection of entities to be inserted
+     * @param batchSize Number of inserts per batch
+     * @return Total number of successfully inserted rows
      */
     fun batchInsert(list: Iterable<T>, batchSize: Int): Int
 
     /**
-     * Batch insert entity
+     * Batch insert entities with single INSERT syntax
      *
-     * @param entities Entity array
-     * @param batchSize Batch size
-     * @return Inserted count
+     * @param entities The array of entities to be inserted
+     * @param batchSize Number of inserts per batch
+     * @return Total number of successfully inserted rows
      */
     fun batchInsert(entities: Array<T>, batchSize: Int): Int {
         return batchInsert(entities.toList(), batchSize)
     }
 
     /**
-     * Batch insert entity
+     * Batch insert entities with single INSERT syntax (uses [KiteConfig.batchSize] as default batch size)
      *
-     * @param entities Entity list
-     * @return Inserted count
+     * @param entities The collection of entities to be inserted
+     * @return Total number of successfully inserted rows
      */
     fun batchInsert(entities: Iterable<T>): Int {
         return batchInsert(entities, KiteConfig.batchSize)
     }
 
     /**
-     * Batch insert entity
+     * Batch insert entities with single INSERT syntax (uses [KiteConfig.batchSize] as default batch size)
      *
-     * @param entities Entity array
-     * @return Inserted count
+     * @param entities The array of entities to be inserted
+     * @return Total number of successfully inserted rows
      */
     fun batchInsert(entities: Array<T>): Int {
         return batchInsert(entities.toList())
     }
 
     /**
-     * Update entity by primary key
+     * Update an entity by primary key
      *
-     * @param entity Entity
-     * @return Updated count
+     * @param entity The entity to be updated
+     * @return Number of affected rows
      */
     fun update(entity: T): Int
 
     /**
-     * Update entity by where entity condition, ignore [KiteConfig.selectiveStrategy] value
+     * Update entity by condition entity (full-field update, all fields of condition entity are used as query conditions)
+     * (only non-null fields are updated, ignoring [KiteConfig.selectiveStrategy])
      *
-     * The primary key will also be updated, if set in the value entity
+     * The primary key will also be updated if set in the value entity
      *
-     * @param entity Value entity
-     * @param conditionEntity Condition entity
-     * @return Updated count
+     * @param entity The entity to be updated
+     * @param conditionEntity The condition entity for update
+     * @return Number of affected rows
      */
     fun update(entity: T, conditionEntity: T): Int
 
     /**
-     * Update entity selective by primary key, ignore [KiteConfig.selectiveStrategy] value
+     * Update an entity selectively by primary key (only non-null fields are updated, ignoring [KiteConfig.selectiveStrategy])
      *
-     * @param entity Entity
-     * @return Updated count
+     * @param entity The entity to be updated
+     * @return Number of affected rows
      */
     fun updateSelective(entity: T): Int
 
     /**
-     * Update entity selective by where entity condition, ignore [KiteConfig.selectiveStrategy] value
+     * Update entity by condition entity (selective update, all fields of condition entity are used as query conditions)
+     * (only non-null fields are updated, ignoring [KiteConfig.selectiveStrategy])
      *
-     * The primary key will also be updated, if set in the value entity
+     * The primary key will also be updated if set in the value entity
      *
-     * @param entity Value entity
-     * @param conditionEntity Condition entity
-     * @return Updated count
+     * @param entity The entity to be updated
+     * @param conditionEntity The condition entity for update
+     * @return Number of affected rows
      */
     fun updateSelective(entity: T, conditionEntity: T): Int
 
     /**
-     * Update entity by update wrapper
+     * Update entity by [UpdateWrapper]
+     *
+     * @param updateWrapper The [UpdateWrapper]
+     * @return Number of affected rows
      */
     fun updateWrapper(updateWrapper: UpdateWrapper<T>): Int
 
     /**
-     * Update entity by update wrapper
+     * Create an instance of [UpdateWrapper]
+     *
+     * @return An [UpdateWrapper] instance
      */
     fun updateWrapper(): UpdateWrapper<T> {
         return UpdateWrapper(this)
     }
 
     /**
-     * Batch update entity by primary key
+     * Batch update entities by primary key
      *
-     * @param entities Entity list
-     * @param batchSize Batch size
-     * @return Updated count
+     * @param entities The collection of entities to be updated
+     * @param batchSize Number of updates per batch
+     * @return Total number of successfully updated rows
      */
     fun batchUpdate(entities: Iterable<T>, batchSize: Int): Int
 
     /**
-     * Batch update entity by primary key
+     * Batch update entities by primary key
      *
-     * @param entities Entity array
-     * @param batchSize Batch size
-     * @return Updated count
+     * @param entities The array of entities to be updated
+     * @param batchSize Number of updates per batch
+     * @return Total number of successfully updated rows
      */
     fun batchUpdate(entities: Array<T>, batchSize: Int): Int {
         return batchUpdate(entities.toList(), batchSize)
     }
 
     /**
-     * Batch update entity by primary key
+     * Batch update entities by primary key (uses [KiteConfig.batchSize] as default batch size)
      *
-     * @param entities Entity list
-     * @return Updated count
+     * @param entities The collection of entities to be updated
+     * @return Total number of successfully updated rows
      */
     fun batchUpdate(entities: Iterable<T>): Int {
         return batchUpdate(entities, KiteConfig.batchSize)
     }
 
     /**
-     * Batch update entity by primary key
+     * Batch update entities by primary key (uses [KiteConfig.batchSize] as default batch size)
      *
-     * @param entities Entity array
-     * @return Updated count
+     * @param entities The array of entities to be updated
+     * @return Total number of successfully updated rows
      */
     fun batchUpdate(entities: Array<T>): Int {
         return batchUpdate(entities.toList())
     }
 
     /**
-     * Delete entity by condition, all fields are used as condition, ignore [KiteConfig.selectiveStrategy] value
+     * Delete entities by entity conditions (all fields are used as query conditions, ignoring [KiteConfig.selectiveStrategy])
+     * If all fields of the entity are null, all table data will be deleted
      *
-     * @param entity Entity
-     * @return Deleted count
+     * @param entity The condition entity for deletion
+     * @return Number of affected rows
      */
     fun delete(entity: T): Int
 
     /**
-     * Delete entity by primary key
+     * Delete an entity by primary key
      *
-     * @param id Entity id
-     * @return Deleted count
+     * @param id The primary key value of the entity
+     * @return Number of affected rows
      */
     fun deleteById(id: Serializable): Int
 
     /**
-     * Delete entity by primary keys
+     * Delete entities by primary keys
      *
-     * @param ids Entity ids
-     * @return Deleted count
+     * @param ids The collection of primary key values
+     * @return Number of affected rows
      */
     fun deleteByIds(ids: Iterable<Serializable>): Int
 
     /**
-     * Delete entity by primary keys
+     * Delete entities by primary keys
      *
-     * @param ids Entity ids
-     * @return Deleted count
+     * @param ids The array of primary key values
+     * @return Number of affected rows
      */
     fun deleteByIds(ids: Array<Serializable>): Int {
         return deleteByIds(ids.toList())
     }
 
     /**
-     * Delete entity by delete wrapper
+     * Delete entities by [DeleteWrapper]
+     *
+     * @param deleteWrapper The [DeleteWrapper]
+     * @return Number of affected rows
      */
     fun deleteWrapper(deleteWrapper: DeleteWrapper<T>): Int
 
     /**
-     * Delete entity by delete wrapper
+     * Create an instance of [DeleteWrapper]
+     *
+     * @return An [DeleteWrapper] instance
      */
     fun deleteWrapper(): DeleteWrapper<T> {
         return DeleteWrapper(this)
     }
 
     /**
-     * Select all
+     * Query all table data
      *
-     * @return Entity list
+     * @return The collection of entities
      */
     fun select(): List<T>
 
     /**
-     * Select all by order by
+     * Query all table data and sort by the specified field
      *
-     * @param orderBy Order by
-     * @return Entity list
+     * @param orderBy Sort condition
+     * @return The collection of entities
      */
     fun select(orderBy: OrderItem<T>): List<T> {
         return select(arrayOf(orderBy))
     }
 
     /**
-     * Select all by order by
+     * Query all table data and sort by multiple fields
      *
-     * @param orderBys Order by
-     * @return Entity list
+     * @param orderBys Array of sort conditions
+     * @return The collection of entities
      */
     fun select(orderBys: Array<OrderItem<T>>): List<T>
 
     /**
-     * Select all by order by
+     * Query all table data and sort by multiple fields
      *
-     * @param orderBys Order by list
-     * @return Entity list
+     * @param orderBys List of sort conditions
+     * @return The collection of entities
      */
     fun select(orderBys: List<OrderItem<T>>): List<T> {
         return select(orderBys.toTypedArray())
     }
 
     /**
-     * Select by condition, ignore [KiteConfig.selectiveStrategy] value
+     * Query data by entity conditions (all fields are used as query conditions, ignoring [KiteConfig.selectiveStrategy])
      *
-     * @param entity Entity
-     * @return Entity list
+     * @param entity The condition entity for query
+     * @return The collection of entities
      */
     fun select(entity: T): List<T>
 
     /**
-     * Select by condition and order by
+     * Query data by entity conditions and sort by the specified field
      *
-     * @param entity Entity
-     * @param orderBy Order by
-     * @return Entity list
+     * @param entity The condition entity for query
+     * @param orderBy The sort condition
+     * @return The collection of entities
      */
     fun select(entity: T, orderBy: OrderItem<T>): List<T> {
         return select(entity, arrayOf(orderBy))
     }
 
     /**
-     * Select by condition and order by
+     * Query data by entity conditions and sort by multiple fields
      *
-     * @param entity Entity
-     * @param orderBys Order by array
-     * @return Entity list
+     * @param entity The condition entity for query
+     * @param orderBys Array of sort conditions
+     * @return The collection of entities
      */
     fun select(entity: T, orderBys: Array<OrderItem<T>>): List<T>
 
     /**
-     * Select by condition and order by
+     * Query data by entity conditions and sort by multiple fields
      *
-     * @param entity Entity
-     * @param orderBys Order by list
-     * @return Entity list
+     * @param entity The condition entity for query
+     * @param orderBys List of sort conditions
+     * @return The collection of entities
      */
     fun select(entity: T, orderBys: List<OrderItem<T>>): List<T> {
         return select(entity, orderBys.toTypedArray())
     }
 
     /**
-     * Select by query wrapper
+     * Query data by [QueryWrapper]
      *
-     * @param queryWrapper QueryWrapper
-     * @return Entity list
+     * @param queryWrapper The [QueryWrapper] instance
+     * @return The collection of entities
      */
     fun queryWrapper(queryWrapper: QueryWrapper<T>): List<T>
 
     /**
-     * Select by primary key
+     * Query an entity by primary key
      *
-     * @param id Entity id
-     * @return Entity
+     * @param id The primary key value
+     * @return The matched entity
      */
     fun selectById(id: Serializable): T?
 
     /**
-     * Select one by query wrapper
+     * Query a single entity by [QueryWrapper]
      *
-     * @param queryWrapper QueryWrapper
-     * @return Entity
+     * @param queryWrapper The [QueryWrapper] instance
+     * @return The matched entity
      */
     fun selectOneWrapper(queryWrapper: QueryWrapper<T>): T?
 
     /**
-     * Select all with joins
+     * Query all table data with associated tables
      *
-     * @return Entity list
+     * @return The collection of entities
      */
     fun selectWithJoins(): List<T>
 
     /**
-     * Select all by order by with joins
+     * Query all table data with associated tables and sort by the specified field
      *
-     * @param orderBy Order by
-     * @return Entity list
+     * @param orderBy The sort condition
+     * @return The collection of entities
      */
     fun selectWithJoins(orderBy: OrderItem<T>): List<T> {
         return select(arrayOf(orderBy))
     }
 
     /**
-     * Select all by order by with joins
+     * Query all table data with associated tables and sort by multiple fields
      *
-     * @param orderBys Order by
-     * @return Entity list
+     * @param orderBys Array of sort conditions
+     * @return The collection of entities with join data
      */
     fun selectWithJoins(orderBys: Array<OrderItem<T>>): List<T>
 
     /**
-     * Select all by order by with joins
+     * Query all table data with associated tables and sort by multiple fields
      *
-     * @param orderBys Order by list
-     * @return Entity list
+     * @param orderBys List of sort conditions
+     * @return The collection of entities with join data
      */
     fun selectWithJoins(orderBys: List<OrderItem<T>>): List<T> {
         return select(orderBys.toTypedArray())
     }
 
     /**
-     * Select by condition with joins, ignore [KiteConfig.selectiveStrategy] value
+     * Query data by entity conditions with associated tables (all fields are used as query conditions, ignoring [KiteConfig.selectiveStrategy])
      *
-     * @param entity Entity
-     * @return Entity list
+     * @param entity The condition entity for query
+     * @return The collection of entities with join data
      */
     fun selectWithJoins(entity: T): List<T>
 
     /**
-     * Select by condition and order by with joins
+     * Query data by entity conditions with associated tables and sort by the specified field
      *
-     * @param entity Entity
-     * @param orderBy Order by
-     * @return Entity list
+     * @param entity The condition entity for query
+     * @param orderBy The sort condition
+     * @return The collection of entities with join data
      */
     fun selectWithJoins(entity: T, orderBy: OrderItem<T>): List<T> {
         return select(entity, arrayOf(orderBy))
     }
 
     /**
-     * Select by condition and order by with joins
+     * Query data by entity conditions with associated tables and sort by multiple fields
      *
-     * @param entity Entity
-     * @param orderBys Order by array
-     * @return Entity list
+     * @param entity The condition entity for query
+     * @param orderBys Array of sort conditions
+     * @return The collection of entities with join data
      */
     fun selectWithJoins(entity: T, orderBys: Array<OrderItem<T>>): List<T>
 
     /**
-     * Select by condition and order by with joins
+     * Query data by entity conditions with associated tables and sort by multiple fields
      *
-     * @param entity Entity
-     * @param orderBys Order by list
-     * @return Entity list
+     * @param entity The condition entity for query
+     * @param orderBys List of sort conditions
+     * @return The collection of entities with join data
      */
     fun selectWithJoins(entity: T, orderBys: List<OrderItem<T>>): List<T> {
         return select(entity, orderBys.toTypedArray())
     }
 
     /**
-     * Select by primary key with joins
+     * Query an entity by primary key with associated tables
      *
-     * @param id Entity id
-     * @return Entity
+     * @param id The primary key value
+     * @return The matched entity with join data
      */
     fun selectByIdWithJoins(id: Serializable): T?
 
     /**
-     * Select by query wrapper
+     * Create an instance of [QueryWrapper] for chained query condition construction
      *
-     * @return QueryWrapper
+     * @return A [QueryWrapper] instance
      */
     fun queryWrapper(): QueryWrapper<T> {
         return QueryWrapper(this)
     }
 
     /**
-     * Count all
+     * Count the total number of table rows
      *
-     * @return Count
+     * @return Total number of rows
      */
     fun count(): Long
 
     /**
-     * Count by condition, ignore [KiteConfig.selectiveStrategy] value
+     * Count the number of rows by entity conditions (all fields are used as query conditions, ignoring [KiteConfig.selectiveStrategy])
      *
-     * @param entity Entity
-     * @return Count
+     * @param entity The condition entity for counting
+     * @return Number of matched rows
      */
     fun count(entity: T): Long
 
     /**
-     * Paginate by page number and page size
+     * Pagination query for all table data
      *
-     * @param pageNumber Page number
-     * @param pageSize Page size
-     * @return Page
+     * @param pageNumber Page number (starts from 1)
+     * @param pageSize Number of rows per page
+     * @return Pagination result object
      */
     fun paginate(pageNumber: Long, pageSize: Long): Page<T>
 
     /**
-     * Paginate by page number, page size and condition, ignore [KiteConfig.selectiveStrategy] value
+     * Pagination query for data matching the entity conditions (all fields are used as query conditions, ignoring [KiteConfig.selectiveStrategy])
      *
-     * @param pageNumber Page number
-     * @param pageSize Page size
-     * @param entity Entity
-     * @return Page
+     * @param pageNumber Page number (starts from 1)
+     * @param pageSize Number of rows per page
+     * @param entity The condition entity for query
+     * @return Pagination result object
      */
     fun paginate(pageNumber: Long, pageSize: Long, entity: T): Page<T>
 
     /**
-     * Paginate by page number, page size and order by
+     * Pagination query for all table data and sort by the specified field
      *
-     * @param pageNumber Page number
-     * @param pageSize Page size
-     * @param orderBy Order by
-     * @return Page
+     * @param pageNumber Page number (starts from 1)
+     * @param pageSize Number of rows per page
+     * @param orderBy The sort condition
+     * @return Pagination result object
      */
     fun paginate(pageNumber: Long, pageSize: Long, orderBy: OrderItem<T>): Page<T> {
         return paginate(pageNumber, pageSize, arrayOf(orderBy))
     }
 
     /**
-     * Paginate by page number, page size and order by
+     * Pagination query for all table data and sort by multiple fields
      *
-     * @param pageNumber Page number
-     * @param pageSize Page size
-     * @param orderBys Order by array
-     * @return Page
+     * @param pageNumber Page number (starts from 1)
+     * @param pageSize Number of rows per page
+     * @param orderBys Array of sort conditions
+     * @return Pagination result object
      */
     fun paginate(pageNumber: Long, pageSize: Long, orderBys: Array<OrderItem<T>>): Page<T>
 
     /**
-     * Paginate by page number, page size and order by
+     * Pagination query for all table data and sort by multiple fields
      *
-     * @param pageNumber Page number
-     * @param pageSize Page size
-     * @param orderBys Order by list
-     * @return Page
+     * @param pageNumber Page number (starts from 1)
+     * @param pageSize Number of rows per page
+     * @param orderBys List of sort conditions
+     * @return Pagination result object
      */
     fun paginate(pageNumber: Long, pageSize: Long, orderBys: List<OrderItem<T>>): Page<T> {
         return paginate(pageNumber, pageSize, orderBys.toTypedArray())
     }
 
     /**
-     * Paginate by page number, page size, order by and condition, ignore [KiteConfig.selectiveStrategy] value
+     * Pagination query for data matching the entity conditions and sort by the specified field
      *
-     * @param pageNumber Page number
-     * @param pageSize Page size
-     * @param entity Entity
-     * @param orderBy Order by
-     * @return Page
+     * @param pageNumber Page number (starts from 1)
+     * @param pageSize Number of rows per page
+     * @param entity The condition entity for query
+     * @param orderBy Sort condition
+     * @return Pagination result object
      */
     fun paginate(pageNumber: Long, pageSize: Long, entity: T, orderBy: OrderItem<T>): Page<T> {
         return paginate(pageNumber, pageSize, entity, arrayOf(orderBy))
     }
 
     /**
-     * Paginate by page number, page size, order by and condition, ignore [KiteConfig.selectiveStrategy] value
+     * Pagination query for data matching the entity conditions and sort by multiple fields
      *
-     * @param pageNumber Page number
-     * @param pageSize Page size
-     * @param entity Entity
-     * @param orderBys Order by array
-     * @return Page
+     * @param pageNumber Page number (starts from 1)
+     * @param pageSize Number of rows per page
+     * @param entity The condition entity for query
+     * @param orderBys Array of sort conditions
+     * @return Pagination result object
      */
     fun paginate(pageNumber: Long, pageSize: Long, entity: T, orderBys: Array<OrderItem<T>>): Page<T>
 
     /**
-     * Paginate by page number, page size, order by and condition, ignore [KiteConfig.selectiveStrategy] value
+     * Pagination query for data matching the entity conditions and sort by multiple fields (list overload version)
      *
-     * @param pageNumber Page number
-     * @param pageSize Page size
-     * @param entity Entity
-     * @param orderBys Order by list
-     * @return Page
+     * @param pageNumber Page number (starts from 1)
+     * @param pageSize Number of rows per page
+     * @param entity The condition entity for query
+     * @param orderBys List of sort conditions
+     * @return Pagination result object
      */
     fun paginate(pageNumber: Long, pageSize: Long, entity: T, orderBys: List<OrderItem<T>>): Page<T> {
         return paginate(pageNumber, pageSize, entity, orderBys.toTypedArray())
     }
 
     /**
-     * Paginate by request
+     * Parse pagination parameters from Http request and execute pagination query
+     * Default pagination parameter keys: pageNumber, pageSize, see [PageConfig] for configuration
      *
-     * @param request HttpServletRequest
-     * @return Page
+     * @param request Http request object (uses default values if parameters are missing)
+     * @return Pagination result object
      */
     fun paginate(request: HttpServletRequest): Page<T> {
         return paginate(getPageNumber(request), getPageSize(request))
     }
 
     /**
-     * Paginate by request and condition, ignore [KiteConfig.selectiveStrategy] value
+     * Parse pagination parameters from Http request and query data matching the entity conditions
      *
-     * @param request HttpServletRequest
-     * @param entity Entity
-     * @return Page
+     * @param request Http request object
+     * @param entity The condition entity for query
+     * @return Pagination result object
      */
     fun paginate(request: HttpServletRequest, entity: T): Page<T> {
         return paginate(getPageNumber(request), getPageSize(request), entity)
     }
 
     /**
-     * Paginate by request and order by
+     * Parse pagination parameters from Http request, query all table data and sort by the specified field
      *
-     * @param request HttpServletRequest
-     * @param orderBy Order by
-     * @return Page
+     * @param request Http request object
+     * @param orderBy The sort condition
+     * @return Pagination result object
      */
     fun paginate(request: HttpServletRequest, orderBy: OrderItem<T>): Page<T> {
         return paginate(request, arrayOf(orderBy))
     }
 
     /**
-     * Paginate by request and order by
+     * Parse pagination parameters from Http request, query all table data and sort by multiple fields
      *
-     * @param request HttpServletRequest
-     * @param orderBys Order by array
-     * @return Page
+     * @param request Http request object
+     * @param orderBys Array of sort conditions
+     * @return Pagination result object
      */
     fun paginate(request: HttpServletRequest, orderBys: Array<OrderItem<T>>): Page<T> {
         return paginate(getPageNumber(request), getPageSize(request), orderBys)
     }
 
     /**
-     * Paginate by request and order by
+     * Parse pagination parameters from Http request, query all table data and sort by multiple fields (list overload version)
      *
-     * @param request HttpServletRequest
-     * @param orderBys Order by list
-     * @return Page
+     * @param request Http request object
+     * @param orderBys List of sort conditions
+     * @return Pagination result object
      */
     fun paginate(request: HttpServletRequest, orderBys: List<OrderItem<T>>): Page<T> {
         return paginate(request, orderBys.toTypedArray())
     }
 
     /**
-     * Paginate by request, order by and condition, ignore [KiteConfig.selectiveStrategy] value
+     * Parse pagination parameters from Http request, query data matching the entity conditions and sort by the specified field
      *
-     * @param request HttpServletRequest
-     * @param entity Entity
-     * @param orderBy Order by
-     * @return Page
+     * @param request Http request object
+     * @param entity The condition entity for query
+     * @param orderBy The sort condition
+     * @return Pagination result object
      */
     fun paginate(request: HttpServletRequest, entity: T, orderBy: OrderItem<T>): Page<T> {
         return paginate(request, entity, arrayOf(orderBy))
     }
 
     /**
-     * Paginate by request, order by and condition, ignore [KiteConfig.selectiveStrategy] value
+     * Parse pagination parameters from Http request, query data matching the entity conditions and sort by multiple fields
      *
-     * @param request HttpServletRequest
-     * @param entity Entity
-     * @param orderBys Order by array
-     * @return Page
+     * @param request Http request object
+     * @param entity The condition entity for query
+     * @param orderBys Array of sort conditions
+     * @return Pagination result object
      */
     fun paginate(request: HttpServletRequest, entity: T, orderBys: Array<OrderItem<T>>): Page<T> {
         return paginate(getPageNumber(request), getPageSize(request), entity, orderBys)
     }
 
     /**
-     * Paginate by request, order by and condition, ignore [KiteConfig.selectiveStrategy] value
+     * Parse pagination parameters from Http request, query data matching the entity conditions and sort by multiple fields (list overload version)
      *
-     * @param request HttpServletRequest
-     * @param entity Entity
-     * @param orderBys Order by list
-     * @return Page
+     * @param request Http request object
+     * @param entity The condition entity for query
+     * @param orderBys List of sort conditions
+     * @return Pagination result object
      */
     fun paginate(request: HttpServletRequest, entity: T, orderBys: List<OrderItem<T>>): Page<T> {
         return paginate(request, entity, orderBys.toTypedArray())
     }
 
     /**
-     * Paginate with joins by page number and page size
+     * Pagination query for all table data with associated tables
      *
-     * @param pageNumber Page number
-     * @param pageSize Page size
-     * @return Page
+     * @param pageNumber Page number (starts from 1)
+     * @param pageSize Number of rows per page
+     * @return Pagination result object with associated data
      */
     fun paginateWithJoins(pageNumber: Long, pageSize: Long): Page<T>
 
     /**
-     * Paginate with joins by page number, page size and condition, ignore [KiteConfig.selectiveStrategy] value
+     * Pagination query for data matching the entity conditions with associated tables (all fields are used as query conditions, ignoring [KiteConfig.selectiveStrategy])
      *
-     * @param pageNumber Page number
-     * @param pageSize Page size
-     * @param entity Entity
-     * @return Page
+     * @param pageNumber Page number (starts from 1)
+     * @param pageSize Number of rows per page
+     * @param entity The condition entity for query
+     * @return Pagination result object with associated data
      */
     fun paginateWithJoins(pageNumber: Long, pageSize: Long, entity: T): Page<T>
 
     /**
-     * Paginate with joins by page number, page size and order by
+     * Pagination query for all table data with associated tables and sort by the specified field
      *
-     * @param pageNumber Page number
-     * @param pageSize Page size
-     * @param orderBy Order by
-     * @return Page
+     * @param pageNumber Page number (starts from 1)
+     * @param pageSize Number of rows per page
+     * @param orderBy The sort condition
+     * @return Pagination result object with associated data
      */
     fun paginateWithJoins(pageNumber: Long, pageSize: Long, orderBy: OrderItem<T>): Page<T> {
         return paginateWithJoins(pageNumber, pageSize, arrayOf(orderBy))
     }
 
     /**
-     * Paginate with joins by page number, page size and order by
+     * Pagination query for all table data with associated tables and sort by multiple fields
      *
-     * @param pageNumber Page number
-     * @param pageSize Page size
-     * @param orderBys Order by array
-     * @return Page
+     * @param pageNumber Page number (starts from 1)
+     * @param pageSize Number of rows per page
+     * @param orderBys Array of sort conditions
+     * @return Pagination result object with associated data
      */
     fun paginateWithJoins(pageNumber: Long, pageSize: Long, orderBys: Array<OrderItem<T>>): Page<T>
 
     /**
-     * Paginate with joins by page number, page size and order by
+     * Pagination query for all table data with associated tables and sort by multiple fields
      *
-     * @param pageNumber Page number
-     * @param pageSize Page size
-     * @param orderBys Order by list
-     * @return Page
+     * @param pageNumber Page number (starts from 1)
+     * @param pageSize Number of rows per page
+     * @param orderBys List of sort conditions
+     * @return Pagination result object with associated data
      */
     fun paginateWithJoins(pageNumber: Long, pageSize: Long, orderBys: List<OrderItem<T>>): Page<T> {
         return paginateWithJoins(pageNumber, pageSize, orderBys.toTypedArray())
     }
 
     /**
-     * Paginate with joins by page number, page size, order by and condition, ignore [KiteConfig.selectiveStrategy] value
+     * Pagination query for data matching the entity conditions with associated tables and sort by the specified field (all fields are used as query conditions, ignoring [KiteConfig.selectiveStrategy])
      *
-     * @param pageNumber Page number
-     * @param pageSize Page size
-     * @param entity Entity
-     * @param orderBy Order by
-     * @return Page
+     * @param pageNumber Page number (starts from 1)
+     * @param pageSize Number of rows per page
+     * @param entity The condition entity for query
+     * @param orderBy The sort condition
+     * @return Pagination result object with associated data
      */
     fun paginateWithJoins(pageNumber: Long, pageSize: Long, entity: T, orderBy: OrderItem<T>): Page<T> {
         return paginateWithJoins(pageNumber, pageSize, entity, arrayOf(orderBy))
     }
 
     /**
-     * Paginate with joins by page number, page size, order by and condition, ignore [KiteConfig.selectiveStrategy] value
+     * Pagination query for data matching the entity conditions with associated tables and sort by multiple fields (all fields are used as query conditions, ignoring [KiteConfig.selectiveStrategy])
      *
-     * @param pageNumber Page number
-     * @param pageSize Page size
-     * @param entity Entity
-     * @param orderBys Order by array
-     * @return Page
+     * @param pageNumber Page number (starts from 1)
+     * @param pageSize Number of rows per page
+     * @param entity The condition entity for query
+     * @param orderBys Array of sort conditions
+     * @return Pagination result object with associated data
      */
     fun paginateWithJoins(pageNumber: Long, pageSize: Long, entity: T, orderBys: Array<OrderItem<T>>): Page<T>
 
     /**
-     * Paginate with joins by page number, page size, order by and condition, ignore [KiteConfig.selectiveStrategy] value
+     * Pagination query for data matching the entity conditions with associated tables and sort by multiple fields (all fields are used as query conditions, ignoring [KiteConfig.selectiveStrategy])
      *
-     * @param pageNumber Page number
-     * @param pageSize Page size
-     * @param entity Entity
-     * @param orderBys Order by list
-     * @return Page
+     * @param pageNumber Page number (starts from 1)
+     * @param pageSize Number of rows per page
+     * @param entity The condition entity for query
+     * @param orderBys List of sort conditions
+     * @return Pagination result object with associated data
      */
     fun paginateWithJoins(pageNumber: Long, pageSize: Long, entity: T, orderBys: List<OrderItem<T>>): Page<T> {
         return paginateWithJoins(pageNumber, pageSize, entity, orderBys.toTypedArray())
     }
 
     /**
-     * Get page number from request
+     * Parse page number parameter from Http request
+     * Prioritizes [PageConfig.pageNumberParameter] in request, uses [PageConfig.pageNumber] as default if missing
      *
-     * @param request HttpServletRequest
-     * @return Page number
+     * @param request Http request object
+     * @return Parsed page number (Long type, default value is 1)
      */
     fun getPageNumber(request: HttpServletRequest): Long {
         return request.getParameter(PageConfig.pageNumberParameter)?.toLong() ?: PageConfig.pageNumber
     }
 
     /**
-     * Get page size from request
+     * Parse page size parameter from Http request
+     * Prioritizes [PageConfig.pageSizeParameter] in request, uses [PageConfig.pageSize] as default if missing
      *
-     * @param request HttpServletRequest
-     * @return Page size
+     * @param request Http request object
+     * @return Parsed page size (Long type, default value is 10)
      */
     fun getPageSize(request: HttpServletRequest): Long {
         return request.getParameter(PageConfig.pageSizeParameter)?.toLong() ?: PageConfig.pageSize
