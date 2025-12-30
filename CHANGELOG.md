@@ -7,6 +7,7 @@
 ### Dependencies
 
  * Bump actions/upload-artifact from 5 to 6
+ * Bump foojay-resolver from 0.5.0 to 1.0.0
 
 ### Features
 
