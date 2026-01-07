@@ -20,6 +20,7 @@
  * Refactor evaluation methods to enhance support for various target types and improve readability
  * Enhance `BaseMapper` interface documentation for clarity and consistency
  * Add `BaseService` interface and `ServiceImpl` class for enhanced service layer functionality
+ * Add code generator and related configurations for entity, service, and controller generation
 
 ## 1.0.15
 
