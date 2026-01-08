@@ -22,6 +22,7 @@
  * Add `BaseService` interface and `ServiceImpl` class for enhanced service layer functionality
  * Add code generator and related configurations for entity, service, and controller generation
  * Enhance documentation for entity, service, controller, and mapper templates
+ * Add comments for entity fields in templates for better clarity
 
 ## 1.0.15
 

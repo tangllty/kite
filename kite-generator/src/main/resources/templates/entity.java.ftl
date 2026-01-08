@@ -1,7 +1,5 @@
 package ${config.packageName}.${entity.packagePath};
 
-import com.tang.kite.annotation.Table;
-import com.tang.kite.annotation.Column;
 import com.tang.kite.annotation.id.Id;
 import com.tang.kite.annotation.id.IdType;
 import java.io.Serializable;
@@ -19,7 +17,6 @@ import ${import};
  * @author ${config.author}
 </#if>
  */
-@Table("${table.tableName}")
 public class ${table.className} implements Serializable {
 
 <#if entity.withSerialVersionUID>
@@ -28,10 +25,14 @@ public class ${table.className} implements Serializable {
 </#if>
 
 <#list table.columns as column>
-<#if column.primaryKey>
+    <#if column.comment?? && column.comment != "">
+    /**
+     * ${column.comment}
+     */
+    </#if>
+    <#if column.primaryKey>
     @Id(type = IdType.AUTO)
-</#if>
-    @Column("${column.columnName}")
+    </#if>
     private ${column.targetType.className}<#if column.nullable || !column.defaultValue??> ${column.propertyName};</#if><#if !column.nullable && column.defaultValue??> ${column.propertyName} = ${column.defaultValue};</#if>
 
 </#list>
