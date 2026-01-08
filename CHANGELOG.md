@@ -21,6 +21,7 @@
  * Enhance `BaseMapper` interface documentation for clarity and consistency
  * Add `BaseService` interface and `ServiceImpl` class for enhanced service layer functionality
  * Add code generator and related configurations for entity, service, and controller generation
+ * Enhance documentation for entity, service, controller, and mapper templates
 
 ## 1.0.15
 

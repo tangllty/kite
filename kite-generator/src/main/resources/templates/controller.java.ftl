@@ -16,13 +16,12 @@ import ${config.packageName}.${entity.packagePath}.${table.className};
 import ${config.packageName}.${service.packagePath}.${table.className}Service;
 
 /**
+ * REST API controller for ${table.className} entity operations
 <#if table.comment?? && table.comment != "">
- * ${table.comment} entity
-</#if>
-<#if table.comment?? && table.comment != "" && config.author??>
- *
+ * ${table.comment}
 </#if>
 <#if config.author??>
+ *
  * @author ${config.author}
 </#if>
  */

@@ -10,13 +10,12 @@ import ${import}
 </#list>
 
 /**
+ * Entity corresponding to database table ${table.tableName}
 <#if table.comment?? && table.comment != "">
- * ${table.comment} entity
-</#if>
-<#if table.comment?? && table.comment != "" && config.author??>
- *
+ * ${table.comment}
 </#if>
 <#if config.author??>
+ *
  * @author ${config.author}
 </#if>
  */

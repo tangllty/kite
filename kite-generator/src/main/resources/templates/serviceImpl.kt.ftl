@@ -7,13 +7,12 @@ import ${config.packageName}.${mapper.packagePath}.${table.className}Mapper
 import ${config.packageName}.${service.packagePath}.${table.className}Service
 
 /**
+ * Implementation of business service for ${table.className} entity
 <#if table.comment?? && table.comment != "">
- * ${table.comment} entity
-</#if>
-<#if table.comment?? && table.comment != "" && config.author??>
- *
+ * ${table.comment}
 </#if>
 <#if config.author??>
+ *
  * @author ${config.author}
 </#if>
  */

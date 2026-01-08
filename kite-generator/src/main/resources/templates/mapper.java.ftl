@@ -4,13 +4,12 @@ import com.tang.kite.mapper.BaseMapper;
 import ${config.packageName}.${entity.packagePath}.${table.className};
 
 /**
+ * Mapper interface for database table ${table.tableName}
 <#if table.comment?? && table.comment != "">
- * ${table.comment} entity
-</#if>
-<#if table.comment?? && table.comment != "" && config.author??>
- *
+ * ${table.comment}
 </#if>
 <#if config.author??>
+ *
  * @author ${config.author}
 </#if>
  */
