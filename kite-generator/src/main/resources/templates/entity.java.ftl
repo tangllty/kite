@@ -1,5 +1,11 @@
 package ${config.packageName}.${entity.packagePath};
 
+<#if entity.withTableAnnotation>
+import com.tang.kite.annotation.Table;
+</#if>
+<#if entity.withColumnAnnotation>
+import com.tang.kite.annotation.Column;
+</#if>
 import com.tang.kite.annotation.id.Id;
 import com.tang.kite.annotation.id.IdType;
 import java.io.Serializable;
@@ -17,6 +23,9 @@ import ${import};
  * @author ${config.author}
 </#if>
  */
+<#if entity.withTableAnnotation>
+@Table("${table.tableName}")
+</#if>
 public class ${table.className} implements Serializable {
 
 <#if entity.withSerialVersionUID>
@@ -32,6 +41,9 @@ public class ${table.className} implements Serializable {
     </#if>
     <#if column.primaryKey>
     @Id(type = IdType.AUTO)
+    </#if>
+    <#if entity.withColumnAnnotation>
+    @Column("${column.columnName}")
     </#if>
     private ${column.targetType.className}<#if column.nullable || !column.defaultValue??> ${column.propertyName};</#if><#if !column.nullable && column.defaultValue??> ${column.propertyName} = ${column.defaultValue};</#if>
 

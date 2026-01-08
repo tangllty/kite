@@ -13,6 +13,10 @@ data class EntityConfig(
 
     var superClass: String? = null,
 
-    var withSerialVersionUID: Boolean = true
+    var withSerialVersionUID: Boolean = true,
+
+    var withTableAnnotation: Boolean = false,
+
+    var withColumnAnnotation: Boolean = false
 
 )
