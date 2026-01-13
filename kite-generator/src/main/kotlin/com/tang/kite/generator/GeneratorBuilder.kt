@@ -6,6 +6,7 @@ import com.tang.kite.generator.config.GeneratorConfig
 import com.tang.kite.generator.config.Language
 import com.tang.kite.generator.config.MapperConfig
 import com.tang.kite.generator.config.ServiceConfig
+import java.util.function.Consumer
 
 /**
  * Code generator builder
@@ -44,12 +45,24 @@ class GeneratorBuilder {
         config.entityConfig = EntityConfig().apply(block)
     }
 
+    fun entityConfig(block: Consumer<EntityConfig>) = apply {
+        config.entityConfig = EntityConfig().apply {
+            block.accept(this)
+        }
+    }
+
     fun mapperConfig(config: MapperConfig) = apply {
         this.config.mapperConfig = config
     }
 
     fun mapperConfig(block: MapperConfig.() -> Unit) = apply {
         config.mapperConfig = MapperConfig().apply(block)
+    }
+
+    fun mapperConfig(block: Consumer<MapperConfig>) = apply {
+        config.mapperConfig = MapperConfig().apply {
+            block.accept(this)
+        }
     }
 
     fun serviceConfig(config: ServiceConfig) = apply {
@@ -60,12 +73,24 @@ class GeneratorBuilder {
         config.serviceConfig = ServiceConfig().apply(block)
     }
 
+    fun serviceConfig(block: Consumer<ServiceConfig>) = apply {
+        config.serviceConfig = ServiceConfig().apply {
+            block.accept(this)
+        }
+    }
+
     fun controllerConfig(config: ControllerConfig) = apply {
         this.config.controllerConfig = config
     }
 
     fun controllerConfig(block: ControllerConfig.() -> Unit) = apply {
         config.controllerConfig = ControllerConfig().apply(block)
+    }
+
+    fun controllerConfig(block: Consumer<ControllerConfig>) = apply {
+        config.controllerConfig = ControllerConfig().apply {
+            block.accept(this)
+        }
     }
 
     fun build(): GeneratorConfig {

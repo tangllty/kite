@@ -24,6 +24,7 @@
  * Enhance documentation for entity, service, controller, and mapper templates
  * Add comments for entity fields in templates for better clarity
  * Add support for `@Table` and `@Column` annotations in entity templates
+ * Add block configuration methods for entity, mapper, service, and controller in `GeneratorBuilder`
 
 ## 1.0.15
 
