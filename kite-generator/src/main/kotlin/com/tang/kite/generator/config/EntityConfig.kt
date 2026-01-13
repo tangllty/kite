@@ -1,5 +1,7 @@
 package com.tang.kite.generator.config
 
+import kotlin.reflect.KClass
+
 /**
  * Entity configuration
  *
@@ -11,7 +13,7 @@ data class EntityConfig(
 
     var packagePath: String = "entity",
 
-    var superClass: String? = null,
+    var superClass: KClass<*>? = null,
 
     var withSerialVersionUID: Boolean = true,
 
@@ -19,4 +21,10 @@ data class EntityConfig(
 
     var withColumnAnnotation: Boolean = false
 
-)
+) {
+
+    fun setSuperClass(superClass: Class<*>?) {
+        this.superClass = superClass?.kotlin
+    }
+
+}

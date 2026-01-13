@@ -1,5 +1,7 @@
 package com.tang.kite.generator.config
 
+import kotlin.reflect.KClass
+
 /**
  * Mapper configuration
  *
@@ -11,6 +13,12 @@ data class MapperConfig(
 
     var packagePath: String = "mapper",
 
-    var superClass: String? = null
+    var superClass: KClass<*>? = null
 
-)
+) {
+
+    fun setSuperClass(superClass: Class<*>?) {
+        this.superClass = superClass?.kotlin
+    }
+
+}

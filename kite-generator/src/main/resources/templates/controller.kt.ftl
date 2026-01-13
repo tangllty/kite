@@ -13,6 +13,9 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import ${config.packageName}.${entity.packagePath}.${table.className}
 import ${config.packageName}.${service.packagePath}.${table.className}Service
+<#if controller.superClass??>
+import ${controller.superClass.qualifiedName}
+</#if>
 
 /**
  * REST API controller for ${table.className} entity operations
@@ -26,7 +29,7 @@ import ${config.packageName}.${service.packagePath}.${table.className}Service
  */
 @RestController
 @RequestMapping("/${table.mappingName}")
-class ${table.className}Controller(private val ${table.variableName}Service: ${table.className}Service) {
+class ${table.className}Controller(private val ${table.variableName}Service: ${table.className}Service)<#if controller.superClass??> : ${controller.superClass.simpleName}()</#if> {
 
     @GetMapping("/list")
     fun list(${table.variableName}: ${table.className}): ResponseEntity<List<${table.className}>> {

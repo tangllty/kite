@@ -12,6 +12,9 @@ import java.io.Serializable;
 <#list table.getImportList() as import>
 import ${import};
 </#list>
+<#if entity.superClass??>
+import ${entity.superClass.qualifiedName};
+</#if>
 
 /**
  * Entity corresponding to database table ${table.tableName}
@@ -26,7 +29,7 @@ import ${import};
 <#if entity.withTableAnnotation>
 @Table("${table.tableName}")
 </#if>
-public class ${table.className} implements Serializable {
+public class ${table.className}<#if entity.superClass??> extends ${entity.superClass.simpleName}</#if> implements Serializable {
 
 <#if entity.withSerialVersionUID>
     @java.io.Serial

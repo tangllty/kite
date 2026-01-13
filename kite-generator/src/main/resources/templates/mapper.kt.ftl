@@ -1,7 +1,12 @@
 package ${config.packageName}.${mapper.packagePath}
 
+<#if !mapper.superClass??>
 import com.tang.kite.mapper.BaseMapper
+</#if>
 import ${config.packageName}.${entity.packagePath}.${table.className}
+<#if mapper.superClass??>
+import ${mapper.superClass.qualifiedName}
+</#if>
 
 /**
  * Mapper interface for database table ${table.tableName}
@@ -13,5 +18,5 @@ import ${config.packageName}.${entity.packagePath}.${table.className}
  * @author ${config.author}
 </#if>
  */
-interface ${table.className}Mapper : BaseMapper<${table.className}> {
+interface ${table.className}Mapper : <#if mapper.superClass??>${mapper.superClass.simpleName}<#else>BaseMapper</#if><${table.className}> {
 }

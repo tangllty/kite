@@ -14,6 +14,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ${config.packageName}.${entity.packagePath}.${table.className};
 import ${config.packageName}.${service.packagePath}.${table.className}Service;
+<#if controller.superClass??>
+import ${controller.superClass.qualifiedName};
+</#if>
 
 /**
  * REST API controller for ${table.className} entity operations
@@ -27,7 +30,7 @@ import ${config.packageName}.${service.packagePath}.${table.className}Service;
  */
 @RestController
 @RequestMapping("/${table.mappingName}")
-public class ${table.className}Controller {
+public class ${table.className}Controller<#if controller.superClass??> extends ${controller.superClass.simpleName}</#if> {
 
     private final ${table.className}Service ${table.variableName}Service;
 

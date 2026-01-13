@@ -1,5 +1,7 @@
 package com.tang.kite.generator.config
 
+import kotlin.reflect.KClass
+
 /**
  * Service configuration
  *
@@ -11,8 +13,20 @@ data class ServiceConfig(
 
     var packagePath: String = "service",
 
-    var superClass: String? = null,
+    var superClass: KClass<*>? = null,
 
-    var withImpl: Boolean = true
+    var withImpl: Boolean = true,
 
-)
+    var implSuperClass: KClass<*>? = null
+
+) {
+
+    fun setSuperClass(superClass: Class<*>?) {
+        this.superClass = superClass?.kotlin
+    }
+
+    fun setImplSuperClass(implSuperClass: Class<*>?) {
+        this.implSuperClass = implSuperClass?.kotlin
+    }
+
+}

@@ -25,6 +25,7 @@
  * Add comments for entity fields in templates for better clarity
  * Add support for `@Table` and `@Column` annotations in entity templates
  * Add block configuration methods for entity, mapper, service, and controller in `GeneratorBuilder`
+ * Add `superClass` configuration support for enhanced inheritance handling
 
 ## 1.0.15
 
