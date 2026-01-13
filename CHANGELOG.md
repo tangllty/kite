@@ -8,6 +8,9 @@
 
  * Bump actions/upload-artifact from 5 to 6
  * Bump foojay-resolver from 0.5.0 to 1.0.0
+ * Bump logback from 1.5.22 to 1.5.24
+ * Bump spring-boot3 from 3.5.8 to 3.5.9
+ * Bump spring-boot from 4.0.0 to 4.0.1
 
 ### Features
 
