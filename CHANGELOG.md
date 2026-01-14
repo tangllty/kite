@@ -1,3 +1,13 @@
+## 1.0.17
+
+### Bug Fixes
+
+### Dependencies
+
+### Features
+
+ * Remove `clean` task in `publishToSonatypeCentral`
+
 ## 1.0.16
 
 ### Bug Fixes

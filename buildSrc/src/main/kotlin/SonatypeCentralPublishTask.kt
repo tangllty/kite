@@ -18,10 +18,7 @@ abstract class SonatypeCentralPublishTask : DefaultTask() {
     init {
         group = "publishing"
         description = "Publishes the project to Sonatype Central Repository"
-        dependsOn(
-            "clean",
-            "publishMavenJavaPublicationToProjectRepository"
-        )
+        dependsOn("publish")
     }
 
     @get:Input
