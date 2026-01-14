@@ -7,6 +7,7 @@
 ### Features
 
  * Remove `clean` task in `publishToSonatypeCentral`
+ * Disable Gradle configuration cache
 
 ## 1.0.16
 
