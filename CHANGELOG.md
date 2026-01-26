@@ -13,6 +13,7 @@
 
  * Remove `clean` task in `publishToSonatypeCentral`
  * Disable Gradle configuration cache
+ * Add `countWrapper` methods for enhanced row counting functionality
 
 ## 1.0.16
 

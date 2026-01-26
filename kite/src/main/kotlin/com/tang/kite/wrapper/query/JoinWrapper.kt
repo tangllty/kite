@@ -75,8 +75,22 @@ class JoinWrapper<T : Any>(
         return queryWhereWrapper.build()
     }
 
+    /**
+     * Execute the query wrapper and return a list of results
+     *
+     * @return List of results
+     */
     override fun list(): MutableList<T> {
         return queryWhereWrapper.list()
+    }
+
+    /**
+     * Execute the count wrapper and return the count of results
+     *
+     * @return Count of results
+     */
+    override fun count(): Long {
+        return queryWhereWrapper.count()
     }
 
 }

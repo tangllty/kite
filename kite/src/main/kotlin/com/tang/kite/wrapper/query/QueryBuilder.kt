@@ -46,4 +46,11 @@ interface QueryBuilder<T : Any> {
         return list().lastOrNull()
     }
 
+    /**
+     * Execute the count wrapper and return the count of results
+     *
+     * @return Count of results
+     */
+    fun count(): Long
+
 }

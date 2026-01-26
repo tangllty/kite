@@ -744,4 +744,27 @@ class SelectTest : BaseDataTest() {
         assertTrue(list.isNotEmpty())
     }
 
+    @Test
+    fun countWrapper() {
+        val session = sqlSessionFactory.openSession()
+        val accountMapper = session.getMapper(AccountMapper::class)
+        val countWrapper = QueryWrapper.create<Account>()
+            .eq(Account::username, "admin")
+            .build()
+        val count = accountMapper.countWrapper(countWrapper)
+        session.close()
+        assertNotEquals(0, count)
+    }
+
+    @Test
+    fun countWrapperPost() {
+        val session = sqlSessionFactory.openSession()
+        val accountMapper = session.getMapper(AccountMapper::class)
+        val count = accountMapper.countWrapper()
+            .eq(Account::username, "admin")
+            .count()
+        session.close()
+        assertNotEquals(0, count)
+    }
+
 }

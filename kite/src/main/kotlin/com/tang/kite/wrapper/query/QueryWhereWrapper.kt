@@ -296,6 +296,15 @@ class QueryWhereWrapper<T : Any>(
         return list.toMutableList()
     }
 
+    /**
+     * Execute the count wrapper and return the count of results
+     *
+     * @return Count of results
+     */
+    override fun count(): Long {
+        return build().baseMapper.countWrapper(queryWrapper)
+    }
+
     fun appendSqlNode(sqlNode: SqlNode.Select) {
         sqlNode.joins.addAll(joinTables)
         if (isGroupByInitialized()) {

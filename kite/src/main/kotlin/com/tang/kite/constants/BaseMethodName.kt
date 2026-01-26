@@ -196,6 +196,12 @@ object BaseMethodName {
         return method.name == COUNT && (method.countIsZero() || method.countIsOne() && method.firstParameterIsAny())
     }
 
+    private const val COUNT_WRAPPER = "countWrapper"
+
+    fun isCountWrapper(method: Method): Boolean {
+        return method.name == COUNT_WRAPPER && method.countIsOne() && method.parameterTypes[0].kotlin == QueryWrapper::class
+    }
+
     fun isPaginateParameter(method: Method): Boolean {
         if (method.parameterCount < 2) return false
         if (method.firstParameterIsLong().not() || method.secondParameterIsLong().not()) return false
@@ -230,7 +236,7 @@ object BaseMethodName {
             SELECT, SELECT_BY_ID,
             QUERY_WRAPPER, SELECT_ONE_WRAPPER,
             SELECT_WITH_JOINS, SELECT_BY_ID_WITH_JOINS,
-            COUNT,
+            COUNT, COUNT_WRAPPER,
             PAGINATE, PAGINATE_WITH_JOINS -> true
             else -> false
         }
@@ -255,6 +261,7 @@ object BaseMethodName {
             SELECT_WITH_JOINS -> isSelectWithJoins(method)
             SELECT_BY_ID_WITH_JOINS -> isSelectByIdWithJoins(method)
             COUNT -> isCount(method)
+            COUNT_WRAPPER -> isCountWrapper(method)
             PAGINATE -> isPaginate(method)
             PAGINATE_WITH_JOINS -> isPaginateWithJoins(method)
             else -> false

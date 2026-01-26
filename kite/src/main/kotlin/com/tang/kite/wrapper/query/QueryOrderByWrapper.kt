@@ -27,7 +27,16 @@ class QueryOrderByWrapper<R, T : Any>(
      * @return List of results
      */
     override fun list(): MutableList<T> {
-        return whereWrapper.build().baseMapper.queryWrapper(wrapper as QueryWrapper<T>).toMutableList()
+        return whereWrapper.list()
+    }
+
+    /**
+     * Execute the count wrapper and return the count of results
+     *
+     * @return Count of results
+     */
+    override fun count(): Long {
+        return whereWrapper.count()
     }
 
 }

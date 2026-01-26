@@ -255,6 +255,7 @@ class DefaultSqlSession(
             BaseMethodName.isSelectWithJoins(method) -> processSelectWithJoins(method, mapperInterface, type, args)
             BaseMethodName.isSelectByIdWithJoins(method) -> selectByIdWithJoins(method, mapperInterface, type, getFirstArg(args))
             BaseMethodName.isCount(method) -> count(method, mapperInterface, type, args?.first())
+            BaseMethodName.isCountWrapper(method) -> countWrapper(method, mapperInterface, type, getFirstArg(args))
             BaseMethodName.isPaginate(method) -> processPaginate(method, mapperInterface, type, args)
             BaseMethodName.isPaginateWithJoins(method) -> processPaginateWithJoins(method, mapperInterface, type, args)
             else -> throw IllegalArgumentException("Unknown method: ${getMethodSignature(method)}")
@@ -549,6 +550,17 @@ class DefaultSqlSession(
         val count = provider.count(type, parameter)
         val total = executor.count(count, Long::class.java)
         return returnRows(method, mapperInterface, count, total, elapsedSince(start))
+    }
+
+    override fun <M : BaseMapper<T>, T : Any> countWrapper(method: Method, mapperInterface: Class<M>, type: Class<T>, parameter: Any): Long {
+        val start = nanoTime()
+        @Suppress("UNCHECKED_CAST")
+        val countWrapper = parameter as QueryWrapper<*>
+        countWrapper.setTableClassIfNotSet(type)
+        countWrapper.setTableFillFields()
+        val sqlStatement = countWrapper.getSqlStatement(sqlDialect)
+        val count = executor.count(sqlStatement, type)
+        return returnRows(method, mapperInterface, sqlStatement, count, elapsedSince(start))
     }
 
     private fun <M : BaseMapper<T>, T : Any> processPaginate(method: Method, mapperInterface: Class<M>, type: Class<T>, args: Array<out Any>?): Page<T> {

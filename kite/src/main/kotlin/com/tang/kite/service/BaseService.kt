@@ -310,6 +310,16 @@ interface BaseService<T : Any> : BaseMapper<T> {
     }
 
     /**
+     * Count the number of rows by [QueryWrapper]
+     *
+     * @param countWrapper The [QueryWrapper] instance
+     * @return Number of matched rows
+     */
+    override fun countWrapper(countWrapper: QueryWrapper<T>): Long {
+        return getMapper().countWrapper(countWrapper)
+    }
+
+    /**
      * Pagination query for all table data
      *
      * @param pageNumber Page number (starts from 1)

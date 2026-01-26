@@ -62,6 +62,8 @@ interface SqlSession : AutoCloseable {
 
     fun <M : BaseMapper<T>, T : Any> count(method: Method, mapperInterface: Class<M>, type: Class<T>, parameter: Any?): Long
 
+    fun <M : BaseMapper<T>, T : Any> countWrapper(method: Method, mapperInterface: Class<M>, type: Class<T>, parameter: Any): Long
+
     fun <M : BaseMapper<T>, T : Any> paginate(method: Method, mapperInterface: Class<M>, type: Class<T>, pageNumber: Long, pageSize: Long, parameter: Any?, orderBys: Array<OrderItem<T>>): Page<T>
 
     fun <M : BaseMapper<T>, T : Any> paginateWithJoins(method: Method, mapperInterface: Class<M>, type: Class<T>, pageNumber: Long, pageSize: Long, parameter: Any?, orderBys: Array<OrderItem<T>>): Page<T>

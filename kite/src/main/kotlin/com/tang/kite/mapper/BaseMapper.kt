@@ -469,6 +469,23 @@ interface BaseMapper<T : Any> {
     fun count(entity: T): Long
 
     /**
+     * Count the number of rows by [QueryWrapper]
+     *
+     * @param countWrapper The [QueryWrapper] instance
+     * @return Number of matched rows
+     */
+    fun countWrapper(countWrapper: QueryWrapper<T>): Long
+
+    /**
+     * Create an instance of [QueryWrapper] for chained query condition construction
+     *
+     * @return A [QueryWrapper] instance
+     */
+    fun countWrapper(): QueryWrapper<T> {
+        return QueryWrapper(this)
+    }
+
+    /**
      * Pagination query for all table data
      *
      * @param pageNumber Page number (starts from 1)
