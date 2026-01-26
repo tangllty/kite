@@ -4,6 +4,11 @@
 
 ### Dependencies
 
+ * Bump logback from 1.5.24 to 1.5.26
+ * Bump spring from 7.0.2 to 7.0.3
+ * Bump spring-boot3 from 3.5.9 to 3.5.10
+ * Bump spring-boot from 4.0.1 to 4.0.2
+
 ### Features
 
  * Remove `clean` task in `publishToSonatypeCentral`
