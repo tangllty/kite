@@ -46,14 +46,6 @@ abstract class AbstractConditionWrapper<R, T> : WrapperBuilder<T> {
         }
     }
 
-    @Deprecated("May cannot be used in this class")
-    @Suppress("UNCHECKED_CAST")
-    private fun createNestedWrapper(): R {
-        val wrapper = WrapperBuilder::class.java.getMethod("build").invoke(conditionInstance)
-        val firstConstructor = this.javaClass.constructors.first()
-        return firstConstructor.newInstance(wrapper) as R
-    }
-
     /**
      * The where operation
      *

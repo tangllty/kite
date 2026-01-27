@@ -1,3 +1,13 @@
+## 1.0.18
+
+### Bug Fixes
+
+### Dependencies
+
+### Features
+
+ * Remove deprecated `createNestedWrapper` method from `AbstractConditionWrapper`
+
 ## 1.0.17
 
 ### Bug Fixes
