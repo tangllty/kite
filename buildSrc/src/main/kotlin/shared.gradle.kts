@@ -51,17 +51,18 @@ publishing {
             pom {
                 name.set(project.name)
                 description.set("Kite is a lightweight ORM framework for Kotlin and Java.")
-                url.set("https://github.com/tangllty/kite")
+                url.set("https://tangllty.eu.org/")
                 licenses {
                     license {
                         name.set("MIT License")
                         url.set("https://opensource.org/licenses/MIT")
+                        distribution.set("repo")
                     }
                 }
                 developers {
                     developer {
-                        id.set("tang")
-                        name.set("tang")
+                        id.set("tangllty")
+                        name.set("Tang")
                         email.set("tanglly@163.com")
                     }
                 }
@@ -69,6 +70,14 @@ publishing {
                     connection.set("scm:git:git://github.com/tangllty/kite.git")
                     developerConnection.set("scm:git:ssh://github.com/tangllty/kite.git")
                     url.set("https://github.com/tangllty/kite")
+                }
+                issueManagement {
+                    system.set("GitHub")
+                    url.set("https://github.com/tangllty/kite/issues")
+                }
+                ciManagement {
+                    system.set("GitHub")
+                    url.set("https://github.com/tangllty/kite/actions")
                 }
             }
         }
