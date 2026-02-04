@@ -4,9 +4,13 @@
 
 ### Dependencies
 
+ * Bump gradle/actions from 5.0.0 to 5.0.1
+
 ### Features
 
  * Remove deprecated `createNestedWrapper` method from `AbstractConditionWrapper`
+ * Remove unused properties from `QuerySelectWrapper` to streamline the class
+ * Remove unused `compare` method from `AbstractHavingWrapper` to simplify the class
 
 ## 1.0.17
 
