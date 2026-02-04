@@ -5,6 +5,8 @@ import com.tang.kite.wrapper.Wrapper
 import com.tang.kite.wrapper.where.AbstractOrderByWrapper
 
 /**
+ * Query order by wrapper for building ORDER BY clauses
+ *
  * @author Tang
  */
 class QueryOrderByWrapper<R, T : Any>(

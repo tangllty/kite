@@ -7,6 +7,8 @@ import com.tang.kite.wrapper.where.AbstractHavingWrapper
 import kotlin.reflect.KMutableProperty1
 
 /**
+ * Query having wrapper for building HAVING clauses
+ *
  * @author Tang
  */
 class QueryHavingWrapper<R, T : Any>(

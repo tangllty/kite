@@ -9,6 +9,8 @@ import java.util.function.Consumer
 import kotlin.reflect.KMutableProperty1
 
 /**
+ * Query group by wrapper for building GROUP BY clauses
+ *
  * @author Tang
  */
 class QueryGroupByWrapper<R, T : Any>(

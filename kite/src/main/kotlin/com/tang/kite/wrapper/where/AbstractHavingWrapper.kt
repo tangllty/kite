@@ -6,6 +6,8 @@ import com.tang.kite.wrapper.Wrapper
 import java.util.function.Consumer
 
 /**
+ * Abstract having wrapper for building HAVING clauses
+ *
  * @author Tang
  */
 abstract class AbstractHavingWrapper<R, T>(private val wrapper: Wrapper<T>) : AbstractConditionWrapper<R, T>() {

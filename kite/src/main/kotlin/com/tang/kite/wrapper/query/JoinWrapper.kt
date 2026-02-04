@@ -14,6 +14,8 @@ import kotlin.reflect.KClass
 import kotlin.reflect.KMutableProperty1
 
 /**
+ * Join wrapper for building JOIN clauses in SELECT statements
+ *
  * @author Tang
  */
 class JoinWrapper<T : Any>(
@@ -71,6 +73,11 @@ class JoinWrapper<T : Any>(
         return queryWhereWrapper
     }
 
+    /**
+     * Build the wrapper
+     *
+     * @return Wrapper instance
+     */
     override fun build(): QueryWrapper<T> {
         return queryWhereWrapper.build()
     }

@@ -53,6 +53,13 @@ class QueryWhereWrapper<T : Any>(
         return this::whereOrderByWrapper.isInitialized
     }
 
+    /**
+     * Generic join operation
+     *
+     * @param clazz the entity class to join
+     * @param joinType the type of join to perform
+     * @return JoinWrapper<T> for chaining operations
+     */
     fun join(clazz: Class<*>, joinType: JoinType): JoinWrapper<T> {
         joinWrapper.joinTables.add(JoinTable(clazz, joinType))
         return joinWrapper
@@ -61,18 +68,18 @@ class QueryWhereWrapper<T : Any>(
     /**
      * Left join operation
      *
-     * @param clazz class
-     * @return JoinWrapper<T>
+     * @param clazz the entity class to left join
+     * @return JoinWrapper<T> for chaining operations
      */
     fun leftJoin(clazz: Class<*>): JoinWrapper<T> {
         return join(clazz, JoinType.LEFT)
     }
 
     /**
-     * Left join operation
+     * Left join operation using Kotlin class
      *
-     * @param clazz class
-     * @return JoinWrapper<T>
+     * @param clazz the entity class to left join
+     * @return JoinWrapper<T> for chaining operations
      */
     fun leftJoin(clazz: KClass<*>): JoinWrapper<T> {
         return leftJoin(clazz.java)
@@ -81,18 +88,18 @@ class QueryWhereWrapper<T : Any>(
     /**
      * Right join operation
      *
-     * @param clazz class
-     * @return JoinWrapper<T>
+     * @param clazz the entity class to right join
+     * @return JoinWrapper<T> for chaining operations
      */
     fun rightJoin(clazz: Class<*>): JoinWrapper<T> {
         return join(clazz, JoinType.RIGHT)
     }
 
     /**
-     * Right join operation
+     * Right join operation using Kotlin class
      *
-     * @param clazz class
-     * @return JoinWrapper<T>
+     * @param clazz the entity class to right join
+     * @return JoinWrapper<T> for chaining operations
      */
     fun rightJoin(clazz: KClass<*>): JoinWrapper<T> {
         return rightJoin(clazz.java)
@@ -101,18 +108,18 @@ class QueryWhereWrapper<T : Any>(
     /**
      * Inner join operation
      *
-     * @param clazz class
-     * @return JoinWrapper<T>
+     * @param clazz the entity class to inner join
+     * @return JoinWrapper<T> for chaining operations
      */
     fun innerJoin(clazz: Class<*>): JoinWrapper<T> {
         return join(clazz, JoinType.INNER)
     }
 
     /**
-     * Inner join operation
+     * Inner join operation using Kotlin class
      *
-     * @param clazz class
-     * @return JoinWrapper<T>
+     * @param clazz the entity class to inner join
+     * @return JoinWrapper<T> for chaining operations
      */
     fun innerJoin(clazz: KClass<*>): JoinWrapper<T> {
         return innerJoin(clazz.java)

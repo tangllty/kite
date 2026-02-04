@@ -3,7 +3,7 @@ package com.tang.kite.wrapper.where
 import com.tang.kite.wrapper.Wrapper
 
 /**
- * Where wrapper builder
+ * Interface for building wrapper instances, providing a common build method
  *
  * @author Tang
  */

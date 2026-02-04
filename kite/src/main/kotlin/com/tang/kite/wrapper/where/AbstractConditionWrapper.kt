@@ -10,6 +10,8 @@ import com.tang.kite.sql.statement.LogicalStatement
 import kotlin.reflect.KMutableProperty1
 
 /**
+ * Abstract condition wrapper providing common conditional operations
+ *
  * @author Tang
  */
 abstract class AbstractConditionWrapper<R, T> : WrapperBuilder<T> {
