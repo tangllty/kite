@@ -20,10 +20,6 @@ class QuerySelectWrapper<T : Any>(
 
 ) {
 
-    private lateinit var tableClass: Class<T>
-
-    private lateinit var table: String
-
     /**
      * Set the columns
      *
