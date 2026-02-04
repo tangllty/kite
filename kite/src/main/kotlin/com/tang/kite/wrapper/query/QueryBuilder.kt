@@ -29,9 +29,9 @@ interface QueryBuilder<T : Any> {
     }
 
     /**
-     * Execute the query wrapper and return a single result
+     * Execute the query wrapper and return the first result
      *
-     * @return Single result or null if not found
+     * @return First result or null if not found
      */
     fun first(): T? {
         return list().firstOrNull()
