@@ -1,9 +1,6 @@
 package com.tang.kite.wrapper.where
 
-import com.tang.kite.sql.Column
-import com.tang.kite.sql.enumeration.ComparisonOperator
 import com.tang.kite.sql.enumeration.LogicalOperator
-import com.tang.kite.sql.statement.ComparisonStatement
 import com.tang.kite.sql.statement.LogicalStatement
 import com.tang.kite.wrapper.Wrapper
 import java.util.function.Consumer
@@ -162,14 +159,6 @@ abstract class AbstractHavingWrapper<R, T>(private val wrapper: Wrapper<T>) : Ab
         val wrapper = WrapperBuilder::class.java.getMethod("build").invoke(this)
         val firstConstructor = this.javaClass.constructors.first()
         return firstConstructor.newInstance(wrapper) as AbstractHavingWrapper<R, T>
-    }
-
-    private fun compare(column: String, value: Any, comparisonOperator: ComparisonOperator, effective: Boolean): R {
-        if (effective) {
-            val condition = ComparisonStatement(Column(column), value, comparisonOperator)
-            conditions.add(LogicalStatement(condition, LogicalOperator.AND))
-        }
-        return getInstance()
     }
 
     /**
