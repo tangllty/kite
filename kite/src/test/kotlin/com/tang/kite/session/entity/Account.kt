@@ -5,6 +5,7 @@ import com.tang.kite.annotation.fill.CreateTime
 import com.tang.kite.annotation.fill.UpdateTime
 import com.tang.kite.annotation.id.Id
 import com.tang.kite.annotation.id.IdType
+import com.tang.kite.enumeration.ColumnOperator
 import java.math.BigDecimal
 import java.time.LocalDateTime
 
@@ -15,6 +16,7 @@ class Account(
 
     @Id(type = IdType.AUTO)
     var id: Long? = null,
+    @Column(operator = ColumnOperator.LIKE)
     var username: String? = null,
     var password: String? = null,
     @CreateTime

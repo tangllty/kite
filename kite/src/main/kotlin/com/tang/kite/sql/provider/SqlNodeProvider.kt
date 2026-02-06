@@ -15,6 +15,7 @@ import com.tang.kite.constants.SqlString.RIGHT_BRACKET
 import com.tang.kite.constants.SqlString.SELECT
 import com.tang.kite.constants.SqlString.SPACE
 import com.tang.kite.constants.SqlString.WHERE
+import com.tang.kite.enumeration.ColumnOperator
 import com.tang.kite.enumeration.SqlType
 import com.tang.kite.paginate.OrderItem
 import com.tang.kite.sql.Column
@@ -79,7 +80,20 @@ class SqlNodeProvider(private val dialect: SqlDialect) : SqlProvider {
         val valueMap = getSqlValues(fields, entity, sqlType)
         return fields.mapNotNull { field ->
             val value = valueMap[field]
-            if (selectiveStrategy(value)) LogicalStatement(ComparisonStatement(Column(field), value)) else null
+            if (selectiveStrategy(value)) {
+                val column = field.getAnnotation(com.tang.kite.annotation.Column::class.java)
+                val operator = column?.operator
+                val comparisonOperator = operator?.comparisonOperator ?: return@mapNotNull LogicalStatement(
+                    ComparisonStatement(Column(field), value)
+                )
+                val processedValue = when (operator) {
+                    ColumnOperator.LIKE, ColumnOperator.NOT_LIKE -> "%$value%"
+                    ColumnOperator.LEFT_LIKE, ColumnOperator.NOT_LEFT_LIKE -> "%$value"
+                    ColumnOperator.RIGHT_LIKE, ColumnOperator.NOT_RIGHT_LIKE -> "$value%"
+                    else -> value
+                }
+                LogicalStatement(ComparisonStatement(Column(field), processedValue, comparisonOperator))
+            } else null
         }
     }
 

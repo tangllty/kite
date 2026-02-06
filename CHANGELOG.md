@@ -11,6 +11,7 @@
  * Remove deprecated `createNestedWrapper` method from `AbstractConditionWrapper`
  * Remove unused properties from `QuerySelectWrapper` to streamline the class
  * Remove unused `compare` method from `AbstractHavingWrapper` to simplify the class
+ * Add `ColumnOperator` enumeration and update `Account` and `Column` classes to support new operators
 
 ## 1.0.17
 

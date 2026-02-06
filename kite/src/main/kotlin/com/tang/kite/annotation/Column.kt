@@ -1,5 +1,6 @@
 package com.tang.kite.annotation
 
+import com.tang.kite.enumeration.ColumnOperator
 import com.tang.kite.result.ResultHandler
 import kotlin.reflect.KClass
 
@@ -28,6 +29,13 @@ annotation class Column(
      *
      * @see ResultHandler
      */
-    val resultHandler: KClass<out ResultHandler> = ResultHandler::class
+    val resultHandler: KClass<out ResultHandler> = ResultHandler::class,
+
+    /**
+     * Column operator
+     *
+     * @see ColumnOperator
+     */
+    val operator: ColumnOperator = ColumnOperator.EQUAL
 
 )
