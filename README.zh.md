@@ -32,4 +32,4 @@ Kite 使用 MIT 许可证。更多详情请查阅 [LICENSE](https://gitee.com/ta
 
 - QQ
 
-    - ![QQ](https://github.com/tangllty/tang-docs/raw/master/docs/public/qq.png)
+    - ![QQ](https://gitee.com/tangllty/tang-docs/raw/master/docs/public/qq.png)
