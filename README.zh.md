@@ -30,4 +30,6 @@ Kite 使用 MIT 许可证。更多详情请查阅 [LICENSE](https://gitee.com/ta
 
 ## 交流群
 
-通知：交流群目前已关闭，项目达到一定规模后将重新开放。
+- QQ
+
+    - ![QQ](https://github.com/tangllty/tang-docs/raw/master/docs/public/qq.png)

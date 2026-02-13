@@ -30,4 +30,6 @@ Kite uses the MIT license. For more details, please refer to [LICENSE](https://g
 
 ## Discussion Group
 
-Notice: The discussion group is currently closed, and the group will be reopened when the project reaches a certain scale.
+- QQ
+
+    - ![QQ](https://github.com/tangllty/tang-docs/raw/master/docs/public/qq.png)
