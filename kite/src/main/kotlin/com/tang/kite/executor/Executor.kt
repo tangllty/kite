@@ -19,8 +19,6 @@ interface Executor : AutoCloseable {
 
     fun update(batchSqlStatement: BatchSqlStatement, parameters: List<Any>): Int
 
-    fun update(statements: List<SqlStatement>, parameters: List<Any>): Int
-
     fun commit()
 
     fun rollback()
