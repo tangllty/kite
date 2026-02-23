@@ -1,5 +1,7 @@
 package com.tang.kite.utils
 
+import com.tang.kite.config.table.DynamicTableProcessor
+import com.tang.kite.config.table.TableConfig
 import com.tang.kite.session.entity.Account
 import com.tang.kite.session.entity.Role
 import kotlin.test.Test
@@ -101,6 +103,20 @@ class ReflectsTest {
         assertEquals(30, age)
         val hobby2 = Reflects.getValue(map, "details.hobbies.hobby2")
         assertEquals("gaming", hobby2)
+    }
+
+    @Test
+    fun getDynamicTableName() {
+        TableConfig.dynamicTableName = object : DynamicTableProcessor {
+
+            override fun process(tableName: String): String {
+                return "${tableName}_dynamic"
+            }
+
+        }
+
+        val tableName = Reflects.getTableName(Account::class.java)
+        assertEquals("account_dynamic", tableName)
     }
 
 }

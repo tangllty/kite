@@ -1,5 +1,8 @@
 package com.tang.kite.annotation
 
+import com.tang.kite.config.table.DynamicTableProcessor
+import kotlin.reflect.KClass
+
 /**
  * Table annotation
  *
@@ -13,11 +16,16 @@ annotation class Table(
     /**
      * Table name
      */
-    val value: String,
+    val value: String = "",
 
     /**
      * Table alias
      */
-    val alias: String = ""
+    val alias: String = "",
+
+    /**
+     * Dynamic table name processor
+     */
+    val dynamicTableName: KClass<out DynamicTableProcessor> = DynamicTableProcessor::class
 
 )

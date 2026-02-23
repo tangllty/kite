@@ -13,6 +13,7 @@
 - Remove unused `compare` method from `AbstractHavingWrapper` to simplify the class
 - Add `ColumnOperator` enumeration and update `Account` and `Column` classes to support new operators
 - Remove deprecated update method from `DefaultExecutor` and `Executor` interfaces
+- Add dynamic table name processing support with new `TableConfig` and `DynamicTableProcessor` interface
 
 ## 1.0.17
 

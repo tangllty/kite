@@ -6,6 +6,8 @@ import com.tang.kite.annotation.Table
 import com.tang.kite.annotation.id.Id
 import com.tang.kite.annotation.id.IdType
 import com.tang.kite.config.KiteConfig
+import com.tang.kite.config.table.DynamicTableProcessor
+import com.tang.kite.config.table.TableConfig
 import com.tang.kite.constants.SqlString.DOT
 import com.tang.kite.enumeration.SqlType
 import com.tang.kite.function.SFunction
@@ -21,8 +23,10 @@ import java.lang.reflect.Proxy
 import java.util.Locale
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.ConcurrentMap
+import kotlin.jvm.java
 import kotlin.reflect.KCallable
 import kotlin.reflect.KMutableProperty1
+import kotlin.reflect.full.createInstance
 import kotlin.reflect.jvm.isAccessible
 import kotlin.reflect.jvm.javaField
 
@@ -70,13 +74,20 @@ object Reflects {
 
     @JvmStatic
     fun getTableName(clazz: Class<*>): String {
-        return tableNameCache.computeIfAbsent(clazz) {
+        val tableName = tableNameCache.computeIfAbsent(clazz) {
             if (clazz.isAnnotationPresent(Table::class.java) && clazz.getAnnotation(Table::class.java).value.isNotBlank()) {
                 clazz.getAnnotation(Table::class.java).value
             } else {
                 CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, clazz.simpleName)
             }
         }
+        if (clazz.isAnnotationPresent(Table::class.java) && clazz.getAnnotation(Table::class.java).dynamicTableName != DynamicTableProcessor::class) {
+            return clazz.getAnnotation(Table::class.java).dynamicTableName.createInstance().process(tableName)
+        }
+        if (TableConfig.dynamicTableName == null) {
+            return tableName
+        }
+        return TableConfig.dynamicTableName!!.process(tableName)
     }
 
     /**

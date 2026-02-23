@@ -3,6 +3,8 @@ package com.tang.kite.boot.autoconfigure
 import com.tang.kite.config.KiteConfig
 import com.tang.kite.config.PageConfig
 import com.tang.kite.config.SqlConfig
+import com.tang.kite.config.table.DynamicTableProcessor
+import com.tang.kite.config.table.TableConfig
 import com.tang.kite.handler.fill.FillHandler
 import com.tang.kite.handler.fill.FillKey
 import com.tang.kite.sql.dialect.SqlDialect
@@ -51,7 +53,12 @@ data class KiteProperties(
     /**
      * SQL properties for SQL configuration.
      */
-    val sql: SqlProperties = SqlProperties()
+    val sql: SqlProperties = SqlProperties(),
+
+    /**
+     * Table properties for table configuration.
+     */
+    val table: TableProperties = TableProperties()
 
 ) {
 
@@ -114,6 +121,18 @@ data class KiteProperties(
 
     )
 
+    /**
+     * Table properties for table configuration.
+     */
+    data class TableProperties (
+
+        /**
+         * Dynamic table name processor.
+         */
+        var dynamicTableName: DynamicTableProcessor? = null
+
+    )
+
     companion object {
 
         const val KITE_PREFIX = "kite"
@@ -136,6 +155,8 @@ data class KiteProperties(
         SqlConfig.sqlDurationLogging = sql.sqlDurationLogging
         SqlConfig.durationUnit = sql.durationUnit
         SqlConfig.durationDecimals = sql.durationDecimals
+
+        TableConfig.dynamicTableName = table.dynamicTableName
     }
 
 }

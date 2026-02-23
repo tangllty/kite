@@ -3,6 +3,7 @@ package com.tang.kite.config
 import com.tang.kite.annotation.fill.CreateTime
 import com.tang.kite.annotation.fill.UpdateTime
 import com.tang.kite.config.defaults.DefaultSelectiveStrategy
+import com.tang.kite.config.table.TableConfig
 import com.tang.kite.enumeration.SqlType
 import com.tang.kite.handler.fill.FillHandler
 import com.tang.kite.handler.fill.FillKey
@@ -62,5 +63,11 @@ object KiteConfig {
      */
     @JvmStatic
     val sql = SqlConfig
+
+    /**
+     * Table properties for table configuration.
+     */
+    @JvmStatic
+    val table = TableConfig
 
 }
