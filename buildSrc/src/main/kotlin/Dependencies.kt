@@ -11,19 +11,19 @@ class Versions {
     // https://mvnrepository.com/artifact/org.slf4j/slf4j-api
     val slf4j = "2.0.17"
     // https://mvnrepository.com/artifact/ch.qos.logback/logback-classic
-    val logback = "1.5.26"
+    val logback = "1.5.32"
     // https://mvnrepository.com/artifact/jakarta.servlet/jakarta.servlet-api
     val servlet = "6.1.0"
     // https://mvnrepository.com/artifact/org.freemarker/freemarker
     val freemarker = "2.3.34"
     // https://mvnrepository.com/artifact/org.springframework/spring-core
-    val spring6 = "6.2.15"
+    val spring6 = "6.2.16"
     // https://mvnrepository.com/artifact/org.springframework/spring-core
     val spring = "7.0.3"
     // https://mvnrepository.com/artifact/org.springframework.boot/spring-boot
-    val springBoot3 = "3.5.10"
+    val springBoot3 = "3.5.11"
     // https://mvnrepository.com/artifact/org.springframework.boot/spring-boot
-    val springBoot = "4.0.2"
+    val springBoot = "4.0.3"
 }
 
 class Libraries {

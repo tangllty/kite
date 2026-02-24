@@ -5,6 +5,11 @@
 ### Dependencies
 
 - Bump gradle/actions from 5.0.0 to 5.0.1
+- Bump logback from 1.5.26 to 1.5.32
+- Bump spring6 from 6.2.15 to 6.2.16
+- Bump spring from 7.0.3 to 7.0.5
+- Bump spring-boot3 from 3.5.10 to 3.5.11
+- Bump spring-boot from 4.0.2 to 4.0.3
 
 ### Features
 
