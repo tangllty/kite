@@ -116,6 +116,7 @@ class ReflectsTest {
         }
 
         val tableName = Reflects.getTableName(Account::class.java)
+        TableConfig.dynamicTableName = null
         assertEquals("account_dynamic", tableName)
     }
 
