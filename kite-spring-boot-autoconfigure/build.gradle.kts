@@ -21,7 +21,6 @@ kapt {
     showProcessorStats = true
 }
 
-
 tasks.named("compileJava") {
     inputs.files(tasks.named("processResources"))
 }

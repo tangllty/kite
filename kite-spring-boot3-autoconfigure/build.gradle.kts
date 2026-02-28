@@ -8,7 +8,6 @@ dependencies {
     api(project(":kite-spring6"))
     kapt(libs.springBootConfigurationProcessor3)
     implementation(libs.springBootStarter3)
-    implementation(libs.springBootStarter3)
     implementation(libs.springBootStarterJdbc3)
     implementation(libs.springBootAutoconfigure3)
     annotationProcessor(libs.springBootAutoconfigureProcessor3)
