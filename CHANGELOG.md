@@ -7,6 +7,7 @@
 ### Features
 
 - Refactor batch processing methods to measure execution time
+- Refactor `SqlAlias` methods to use 'alias' instead of 'as' for clarity
 
 ## 1.0.18
 

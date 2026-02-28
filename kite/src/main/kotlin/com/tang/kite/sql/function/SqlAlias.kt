@@ -13,30 +13,60 @@ class SqlAlias internal constructor(private val column: String) {
 
     constructor(column: SFunction<*, *>) : this(getColumnName(column))
 
-    fun `as`(alias: String): String = "$column as $alias"
+    fun alias(alias: String): String {
+        return "$column as $alias"
+    }
+
+    fun <T> alias(column: KMutableProperty1<T, *>): String {
+        return alias(getColumnName(column))
+    }
+
+    fun <T> alias(column: SFunction<T, *>): String {
+        return alias(getColumnName(column))
+    }
+
+    fun `as`(alias: String): String {
+        return alias(alias)
+    }
 
     fun <T> `as`(column: KMutableProperty1<T, *>): String {
-        return `as`(getColumnName(column))
+        return alias(column)
     }
 
     fun <T> `as`(column: SFunction<T, *>): String {
-        return `as`(getColumnName(column))
+        return alias(column)
     }
 
 }
 
+infix fun <T> KMutableProperty1<T, *>.alias(alias: String): String {
+    return SqlAlias(this).alias(alias)
+}
+
+infix fun <T> KMutableProperty1<T, *>.alias(alias: KMutableProperty1<T, *>): String {
+    return SqlAlias(this).alias(alias)
+}
+
+infix fun <T> SFunction<T, *>.alias(alias: String): String {
+    return SqlAlias(this).alias(alias)
+}
+
+infix fun <T> SFunction<T, *>.alias(alias: SFunction<T, *>): String {
+    return SqlAlias(this).alias(alias)
+}
+
 infix fun <T> KMutableProperty1<T, *>.`as`(alias: String): String {
-    return SqlAlias(this).`as`(alias)
+    return alias(alias)
 }
 
 infix fun <T> KMutableProperty1<T, *>.`as`(alias: KMutableProperty1<T, *>): String {
-    return SqlAlias(this).`as`(alias)
+    return alias(alias)
 }
 
 infix fun <T> SFunction<T, *>.`as`(alias: String): String {
-    return SqlAlias(this).`as`(alias)
+    return alias(alias)
 }
 
 infix fun <T> SFunction<T, *>.`as`(alias: SFunction<T, *>): String {
-    return SqlAlias(this).`as`(alias)
+    return alias(alias)
 }

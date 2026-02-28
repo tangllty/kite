@@ -20,7 +20,7 @@ import com.tang.kite.session.mapper.AccountOneToOneMapper
 import com.tang.kite.session.mapper.AccountOneToOneWIthJoinTableMapper
 import com.tang.kite.sql.function.SqlAlias
 import com.tang.kite.sql.function.SqlFunction
-import com.tang.kite.sql.function.`as`
+import com.tang.kite.sql.function.alias
 import com.tang.kite.wrapper.query.QueryWrapper
 import java.math.BigDecimal
 import kotlin.test.Test
@@ -675,7 +675,7 @@ class SelectTest : BaseDataTest() {
         val queryWrapper = QueryWrapper.create<AccountAs>()
             .select(AccountAs::id, AccountAs::username, AccountAs::password)
             .column(SqlAlias(AccountAs::username).`as`(AccountAs::usernameAs))
-            .column(AccountAs::password `as` AccountAs::passwordAs)
+            .column(AccountAs::password alias AccountAs::passwordAs)
             .from(AccountAs::class)
             .build()
         val accounts = accountMapper.queryWrapper(queryWrapper)
