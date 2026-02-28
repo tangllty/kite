@@ -322,8 +322,8 @@ class DefaultSqlSession(
     }
 
     override fun <M : BaseMapper<T>, T : Any> insertValues(method: Method, mapperInterface: Class<M>, parameter: Any, batchSize: Int): Int {
-        val start = nanoTime()
         return processBatch(parameter, batchSize) {
+            val start = nanoTime()
             val insertValues = provider.insertValues(it)
             val rows = executor.update(insertValues, it)
             returnRows(method, mapperInterface, insertValues, rows, elapsedSince(start))
@@ -331,8 +331,8 @@ class DefaultSqlSession(
     }
 
     override fun <M : BaseMapper<T>, T : Any> batchInsert(method: Method, mapperInterface: Class<M>, parameter: Any, batchSize: Int): Int {
-        val start = nanoTime()
         return processBatch(parameter, batchSize) {
+            val start = nanoTime()
             val batchInsert = provider.batchInsert(it)
             val rows = executor.update(batchInsert, it)
             returnRows(method, mapperInterface, batchInsert, rows, elapsedSince(start))
@@ -379,8 +379,8 @@ class DefaultSqlSession(
     }
 
     override fun <M : BaseMapper<T>, T : Any> batchUpdate(method: Method, mapperInterface: Class<M>, parameter: Any, batchSize: Int): Int {
-        val start = nanoTime()
         return processBatch(parameter, batchSize) {
+            val start = nanoTime()
             val batchUpdate = provider.batchUpdate(it)
             val rows = executor.update(batchUpdate, it)
             returnRows(method, mapperInterface, batchUpdate, rows, elapsedSince(start))

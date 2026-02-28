@@ -1,3 +1,13 @@
+## 1.0.19
+
+### Bug Fixes
+
+### Dependencies
+
+### Features
+
+- Refactor batch processing methods to measure execution time
+
 ## 1.0.18
 
 ### Bug Fixes
