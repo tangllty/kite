@@ -5,4 +5,5 @@ package com.tang.kite.annotation
  */
 @Target(AnnotationTarget.FUNCTION)
 @Retention(AnnotationRetention.RUNTIME)
+@MustBeDocumented
 annotation class Insert(val value: String)

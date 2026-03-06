@@ -5,4 +5,5 @@ package com.tang.kite.annotation
  */
 @Target(AnnotationTarget.FUNCTION)
 @Retention(AnnotationRetention.RUNTIME)
+@MustBeDocumented
 annotation class Update(val value: String)

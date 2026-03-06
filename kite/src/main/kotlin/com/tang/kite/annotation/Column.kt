@@ -9,8 +9,8 @@ import kotlin.reflect.KClass
  *
  * @author Tang
  */
-@Retention(AnnotationRetention.RUNTIME)
 @Target(AnnotationTarget.FIELD)
+@Retention(AnnotationRetention.RUNTIME)
 @MustBeDocumented
 annotation class Column(
 

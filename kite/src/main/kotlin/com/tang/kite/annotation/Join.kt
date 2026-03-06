@@ -5,8 +5,8 @@ package com.tang.kite.annotation
  *
  * @author Tang
  */
-@Retention(AnnotationRetention.RUNTIME)
 @Target(AnnotationTarget.FIELD)
+@Retention(AnnotationRetention.RUNTIME)
 @MustBeDocumented
 annotation class Join(
 

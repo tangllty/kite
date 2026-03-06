@@ -8,8 +8,8 @@ import kotlin.reflect.KClass
  *
  * @author Tang
  */
-@Retention(AnnotationRetention.RUNTIME)
 @Target(AnnotationTarget.CLASS)
+@Retention(AnnotationRetention.RUNTIME)
 @MustBeDocumented
 annotation class Table(
 

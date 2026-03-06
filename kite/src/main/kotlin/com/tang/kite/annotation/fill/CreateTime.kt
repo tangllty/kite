@@ -3,7 +3,7 @@ package com.tang.kite.annotation.fill
 /**
  * @author Tang
  */
-@Retention(AnnotationRetention.RUNTIME)
 @Target(AnnotationTarget.FIELD)
+@Retention(AnnotationRetention.RUNTIME)
 @MustBeDocumented
 annotation class CreateTime
