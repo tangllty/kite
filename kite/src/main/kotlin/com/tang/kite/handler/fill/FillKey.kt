@@ -12,4 +12,8 @@ data class FillKey(
 
     val sqlType: SqlType
 
-)
+) {
+
+    constructor(annotationClass:Class<out Annotation>, sqlType: SqlType) : this(annotationClass.kotlin, sqlType)
+
+}
