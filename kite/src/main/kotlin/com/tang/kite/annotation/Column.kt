@@ -1,7 +1,7 @@
 package com.tang.kite.annotation
 
 import com.tang.kite.enumeration.ColumnOperator
-import com.tang.kite.result.ResultHandler
+import com.tang.kite.handler.result.ResultHandler
 import kotlin.reflect.KClass
 
 /**
