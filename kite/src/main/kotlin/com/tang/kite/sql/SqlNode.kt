@@ -1,6 +1,7 @@
 package com.tang.kite.sql
 
 import com.tang.kite.config.SqlConfig
+import com.tang.kite.config.logical.LogicalDeleteConfig
 import com.tang.kite.constants.SqlString.ASC
 import com.tang.kite.constants.SqlString.COMMA_SPACE
 import com.tang.kite.constants.SqlString.DELETE_FROM
@@ -22,9 +23,12 @@ import com.tang.kite.constants.SqlString.SPACE
 import com.tang.kite.constants.SqlString.UPDATE
 import com.tang.kite.constants.SqlString.VALUES
 import com.tang.kite.constants.SqlString.WHERE
+import com.tang.kite.logical.delete.LogicalDeleteContext
 import com.tang.kite.paginate.OrderItem
 import com.tang.kite.sql.dialect.SqlDialect
+import com.tang.kite.sql.enumeration.LogicalOperator
 import com.tang.kite.sql.statement.BatchSqlStatement
+import com.tang.kite.sql.statement.ComparisonStatement
 import com.tang.kite.sql.statement.LogicalStatement
 import com.tang.kite.sql.statement.SqlStatement
 import com.tang.kite.utils.Reflects
@@ -135,7 +139,7 @@ sealed class SqlNode {
 
         appendTable(sql, from, withAlias)
         appendJoins(joins, sql, withAlias)
-        appendWhere(sql, parameters, where, withAlias)
+        appendWhere(sql, from, parameters, where, withAlias)
 
         if (groupBy.isNotEmpty()) {
             sql.append(GROUP_BY)
@@ -177,10 +181,27 @@ sealed class SqlNode {
         sql.append(RIGHT_BRACKET + VALUES)
     }
 
+    private fun appendInsertLogicalColumn(insert: Insert) {
+        val (table, columns, valuesList) = insert
+        if (LogicalDeleteContext.shouldLogicalDelete()) {
+            val logicalField = Reflects.getLogicalField(table?.clazz!!)
+            val logicalColumn = columns.find { it.name == logicalField.name }
+            if (logicalColumn != null) {
+                val logicalIndex = columns.indexOf(logicalColumn)
+                columns.removeAt(logicalIndex)
+                valuesList.forEach { it.removeAt(logicalIndex) }
+            }
+            columns.add(Column(logicalField))
+            val logicalValue = LogicalDeleteConfig.logicalDeleteProcessor.process(logicalField)
+            valuesList.forEach { it.add(logicalValue.normalValue) }
+        }
+    }
+
     private fun getInsertSqlStatement(insert: Insert): SqlStatement {
         val (table, columns, valuesList) = insert
         val sql = StringBuilder()
         val parameters = mutableListOf<Any?>()
+        appendInsertLogicalColumn(insert)
         appendInsertPrefix(sql, table, columns)
         valuesList.joinToString("$RIGHT_BRACKET$COMMA_SPACE$LEFT_BRACKET", LEFT_BRACKET, RIGHT_BRACKET) { values ->
             values.joinToString(COMMA_SPACE) {
@@ -194,6 +215,7 @@ sealed class SqlNode {
     private fun getInsertBatchSqlStatement(insert: Insert): BatchSqlStatement {
         val (table, columns, valuesList) = insert
         val sql = StringBuilder()
+        appendInsertLogicalColumn(insert)
         appendInsertPrefix(sql, table, columns)
         sql.append(LEFT_BRACKET)
         sql.append(valuesList.first().joinToString(COMMA_SPACE) { QUESTION_MARK })
@@ -214,7 +236,7 @@ sealed class SqlNode {
             "${it.key.toString(withAlias)} = $QUESTION_MARK"
         })
         appendJoins(joins, sql, withAlias)
-        appendWhere(sql, parameters, where, withAlias)
+        appendWhere(sql, table, parameters, where, withAlias)
         return SqlStatement(SqlConfig.getSql(sql), parameters)
     }
 
@@ -229,7 +251,12 @@ sealed class SqlNode {
             "${it.key.toString(withAlias)} = $QUESTION_MARK"
         })
         appendJoins(joins, sql, withAlias)
-        appendWhere(sql, mutableListOf(), where, withAlias)
+        if (LogicalDeleteContext.shouldLogicalDelete()) {
+            val logicalField = Reflects.getLogicalField(table?.clazz!!)
+            val logicalValue = LogicalDeleteConfig.logicalDeleteProcessor.process(logicalField)
+            valuesList.forEach { it.add(logicalValue.normalValue) }
+        }
+        appendWhere(sql, table, mutableListOf(), where, withAlias)
         return BatchSqlStatement(SqlConfig.getSql(sql), valuesList)
     }
 
@@ -237,6 +264,15 @@ sealed class SqlNode {
         val (table, joins, where) = delete
         val sql = StringBuilder()
         val parameters = mutableListOf<Any?>()
+        if (LogicalDeleteContext.shouldLogicalDelete()) {
+            val update = Update()
+            update.table = table
+            val logicalField = Reflects.getLogicalField(table?.clazz!!)
+            val logicalValue = LogicalDeleteConfig.logicalDeleteProcessor.process(logicalField)
+            update.sets[Column(logicalField)] = logicalValue.deletedValue
+            update.where.addAll(where)
+            return getUpdateSqlStatement(update)
+        }
         sql.append(DELETE_FROM)
         appendTable(sql, table)
         val withAlias = joins.isNotEmpty()
@@ -284,6 +320,18 @@ sealed class SqlNode {
             where.last().logicalOperator = null
         }
         where.forEach { it.appendSql(sql, parameters, withAlias) }
+    }
+
+    private fun appendWhere(sql: StringBuilder, table: TableReference?, parameters: MutableList<Any?>, where: MutableList<LogicalStatement>, withAlias: Boolean) {
+        if (table == null) {
+            throw IllegalArgumentException("Table reference can not be null")
+        }
+        if (LogicalDeleteContext.shouldLogicalDelete()) {
+            val logicalField = Reflects.getLogicalField(table.clazz!!)
+            val logicalValue = LogicalDeleteConfig.logicalDeleteProcessor.process(logicalField)
+            where.add(LogicalStatement(ComparisonStatement(Column(logicalField), logicalValue.normalValue), LogicalOperator.AND))
+        }
+        appendWhere(sql, parameters, where, withAlias)
     }
 
 }

@@ -26,6 +26,7 @@ import com.tang.kite.sql.TableReference
 import com.tang.kite.sql.dialect.SqlDialect
 import com.tang.kite.sql.enumeration.ComparisonOperator
 import com.tang.kite.sql.enumeration.JoinType
+import com.tang.kite.sql.enumeration.LogicalOperator
 import com.tang.kite.sql.statement.BatchSqlStatement
 import com.tang.kite.sql.statement.ComparisonStatement
 import com.tang.kite.sql.statement.LogicalStatement
@@ -84,7 +85,7 @@ class SqlNodeProvider(private val dialect: SqlDialect) : SqlProvider {
                 val column = field.getAnnotation(com.tang.kite.annotation.Column::class.java)
                 val operator = column?.operator
                 val comparisonOperator = operator?.comparisonOperator ?: return@mapNotNull LogicalStatement(
-                    ComparisonStatement(Column(field), value)
+                    ComparisonStatement(Column(field), value), LogicalOperator.AND
                 )
                 val processedValue = when (operator) {
                     ColumnOperator.LIKE, ColumnOperator.NOT_LIKE -> "%$value%"
@@ -92,7 +93,7 @@ class SqlNodeProvider(private val dialect: SqlDialect) : SqlProvider {
                     ColumnOperator.RIGHT_LIKE, ColumnOperator.NOT_RIGHT_LIKE -> "$value%"
                     else -> value
                 }
-                LogicalStatement(ComparisonStatement(Column(field), processedValue, comparisonOperator))
+                LogicalStatement(ComparisonStatement(Column(field), processedValue, comparisonOperator), LogicalOperator.AND)
             } else null
         }
     }
@@ -170,7 +171,7 @@ class SqlNodeProvider(private val dialect: SqlDialect) : SqlProvider {
         val valueMap = getSqlValues(fieldList, entity, SqlType.UPDATE)
         val updateFieldList = fieldList.filter { it != idField && (isSelective.not() || selectiveStrategy(valueMap[it])) }
         updateFieldList.forEach { sqlNode.sets[Column(it)] = valueMap[it] }
-        sqlNode.where.add(LogicalStatement(ComparisonStatement(Column(idField), valueMap[idField])))
+        sqlNode.where.add(LogicalStatement(ComparisonStatement(Column(idField), valueMap[idField]), LogicalOperator.AND))
         return sqlNode.getSqlStatement()
     }
 
@@ -219,7 +220,7 @@ class SqlNodeProvider(private val dialect: SqlDialect) : SqlProvider {
             insertFieldList.forEach { sqlNode.valuesList.last().add(valueMap[it]) }
             sqlNode.valuesList.last().add(valueMap[idField])
         }
-        sqlNode.where.add(LogicalStatement(ComparisonStatement(Column(idField), null)))
+        sqlNode.where.add(LogicalStatement(ComparisonStatement(Column(idField), null), LogicalOperator.AND))
         return sqlNode.getBatchSqlStatement()
     }
 
@@ -235,7 +236,7 @@ class SqlNodeProvider(private val dialect: SqlDialect) : SqlProvider {
         val sqlNode = SqlNode.Delete()
         sqlNode.table = TableReference(clazz)
         val idField = getIdField(clazz)
-        sqlNode.where.add(LogicalStatement(ComparisonStatement(Column(idField), ids, ComparisonOperator.IN)))
+        sqlNode.where.add(LogicalStatement(ComparisonStatement(Column(idField), ids, ComparisonOperator.IN), LogicalOperator.AND))
         return sqlNode.getSqlStatement()
     }
 
@@ -281,15 +282,18 @@ class SqlNodeProvider(private val dialect: SqlDialect) : SqlProvider {
             if (joinTable.isNotEmpty() && joinSelfField.isNotEmpty() && joinTargetField.isNotEmpty()) {
                 val innerJoinTableAlias = joinTable.split("_").joinToString("") { split -> split.first().toString() }
                 val innerConditions = mutableListOf<LogicalStatement>()
-                innerConditions.add(LogicalStatement(ComparisonStatement(Column(joinSelfField, innerJoinTableAlias), tableAlias + DOT + selfField)))
+                val innerCondition = ComparisonStatement(Column(joinSelfField, innerJoinTableAlias), tableAlias + DOT + selfField)
+                innerConditions.add(LogicalStatement(innerCondition, LogicalOperator.AND))
                 sqlNode.joins.add(JoinTable(TableReference(joinTable, innerJoinTableAlias), JoinType.LEFT, innerConditions))
 
                 val conditions = mutableListOf<LogicalStatement>()
-                conditions.add(LogicalStatement(ComparisonStatement(Column(targetField, joinTableAlias), innerJoinTableAlias + DOT + joinTargetField)))
+                val condition = ComparisonStatement(Column(targetField, joinTableAlias), innerJoinTableAlias + DOT + joinTargetField)
+                conditions.add(LogicalStatement(condition, LogicalOperator.AND))
                 sqlNode.joins.add(JoinTable(TableReference(it.type), JoinType.LEFT, conditions))
             } else {
                 val conditions = mutableListOf<LogicalStatement>()
-                conditions.add(LogicalStatement(ComparisonStatement(Column(selfField, tableAlias), Column(targetField, joinTableAlias))))
+                val condition = ComparisonStatement(Column(selfField, tableAlias), Column(targetField, joinTableAlias))
+                conditions.add(LogicalStatement(condition, LogicalOperator.AND))
                 sqlNode.joins.add(JoinTable(TableReference(it.type), JoinType.LEFT, conditions))
             }
         }

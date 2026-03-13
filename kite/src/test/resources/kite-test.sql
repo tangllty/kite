@@ -8,7 +8,8 @@ create table account (
     password varchar(32) default '',
     create_time timestamp default null,
     update_time timestamp default null,
-    balance decimal(10, 2) default 0.00
+    balance decimal(10, 2) default 0.00,
+    deleted boolean default false
 );
 
 insert into account (username, password, create_time, balance) values

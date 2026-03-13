@@ -5,7 +5,9 @@ import com.tang.kite.annotation.Join
 import com.tang.kite.annotation.Table
 import com.tang.kite.annotation.id.Id
 import com.tang.kite.annotation.id.IdType
+import com.tang.kite.annotation.logical.LogicalDelete
 import com.tang.kite.config.KiteConfig
+import com.tang.kite.config.logical.LogicalDeleteConfig
 import com.tang.kite.config.table.DynamicTableProcessor
 import com.tang.kite.config.table.TableConfig
 import com.tang.kite.constants.SqlString.DOT
@@ -62,6 +64,8 @@ object Reflects {
     private val functionFieldCache: ConcurrentMap<SFunction<*, *>, Field> = ConcurrentHashMap()
 
     private val columnNameCache: ConcurrentMap<Field, String> = ConcurrentHashMap()
+
+    private val logicalDeleteFieldCache: ConcurrentMap<Class<*>, Field> = ConcurrentHashMap()
 
     @JvmStatic
     fun <T> makeAccessible(accessibleObject: AccessibleObject, instance: T): Boolean {
@@ -319,6 +323,26 @@ object Reflects {
     fun <T> getColumnName(column: SFunction<T, *>, withAlias: Boolean = false): String {
         val field = getField(column)
         return getColumnName(field, withAlias)
+    }
+
+    @JvmStatic
+    fun getLogicalField(clazz: Class<*>): Field {
+        return logicalDeleteFieldCache.computeIfAbsent(clazz) {
+            if (LogicalDeleteConfig.enabled) {
+                val logicalField = getSqlFields(clazz).firstOrNull { it.isAnnotationPresent(LogicalDelete::class.java) }
+                if (logicalField != null) {
+                    return@computeIfAbsent logicalField
+                }
+
+                val logicalDeleteFieldName = LogicalDeleteConfig.fieldName
+                val configLogicalField = getSqlFields(clazz).firstOrNull { it.name == logicalDeleteFieldName }
+                if (configLogicalField != null) {
+                    return@computeIfAbsent configLogicalField
+                }
+                throw NoSuchFieldException("No logical delete field found in ${clazz.simpleName}")
+            }
+            throw IllegalStateException("Logical delete is not enabled")
+        }
     }
 
     /**

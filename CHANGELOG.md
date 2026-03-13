@@ -8,6 +8,7 @@
 
 - Refactor batch processing methods to measure execution time
 - Refactor `SqlAlias` methods to use 'alias' instead of 'as' for clarity
+- Add logical delete support with new `LogicalDeleteConfig` and `LogicalDeleteProcessor` interfaces
 
 ## 1.0.18
 
@@ -29,7 +30,7 @@
 - Remove unused `compare` method from `AbstractHavingWrapper` to simplify the class
 - Add `ColumnOperator` enumeration and update `Account` and `Column` classes to support new operators
 - Remove deprecated update method from `DefaultExecutor` and `Executor` interfaces
-- Add dynamic table name processing support with new `TableConfig` and `DynamicTableProcessor` interface
+- Add dynamic table name processing support with new `TableConfig` and `DynamicTableProcessor` interfaces
 
 ## 1.0.17
 

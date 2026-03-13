@@ -3,6 +3,8 @@ package com.tang.kite.boot.autoconfigure
 import com.tang.kite.config.KiteConfig
 import com.tang.kite.config.PageConfig
 import com.tang.kite.config.SqlConfig
+import com.tang.kite.config.logical.LogicalDeleteConfig
+import com.tang.kite.config.logical.LogicalDeleteProcessor
 import com.tang.kite.config.table.DynamicTableProcessor
 import com.tang.kite.config.table.TableConfig
 import com.tang.kite.handler.fill.FillHandler
@@ -58,7 +60,12 @@ data class KiteProperties(
     /**
      * Table properties for table configuration.
      */
-    val table: TableProperties = TableProperties()
+    val table: TableProperties = TableProperties(),
+
+    /**
+     * Logical delete properties for logical delete configuration.
+     */
+    val logicalDelete: LogicalDeleteProperties = LogicalDeleteProperties()
 
 ) {
 
@@ -129,7 +136,26 @@ data class KiteProperties(
         /**
          * Dynamic table name processor.
          */
-        var dynamicTableName: DynamicTableProcessor? = null
+        var dynamicTableName: DynamicTableProcessor? = TableConfig.dynamicTableName
+
+    )
+
+    data class LogicalDeleteProperties (
+
+        /**
+         * Whether logical delete is enabled
+         */
+        val enabled: Boolean = LogicalDeleteConfig.enabled,
+
+        /**
+         * Logical delete field name
+         */
+        val fieldName: String = LogicalDeleteConfig.fieldName,
+
+        /**
+         * Static processor for logical delete operations
+         */
+        var logicalDeleteProcessor: LogicalDeleteProcessor = LogicalDeleteConfig.logicalDeleteProcessor
 
     )
 
@@ -157,6 +183,10 @@ data class KiteProperties(
         SqlConfig.durationDecimals = sql.durationDecimals
 
         TableConfig.dynamicTableName = table.dynamicTableName
+
+        LogicalDeleteConfig.enabled = logicalDelete.enabled
+        LogicalDeleteConfig.fieldName = logicalDelete.fieldName
+        LogicalDeleteConfig.logicalDeleteProcessor = logicalDelete.logicalDeleteProcessor
     }
 
 }
