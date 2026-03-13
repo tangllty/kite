@@ -3,7 +3,7 @@ package com.tang.kite.config.logical
 /**
  * @author Tang
  */
-data class LogicalDeleteValue(
+data class LogicalDeletionValue(
 
     val normalValue: Any,
 

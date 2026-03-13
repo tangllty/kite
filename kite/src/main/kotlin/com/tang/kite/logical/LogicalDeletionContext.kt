@@ -1,11 +1,11 @@
-package com.tang.kite.logical.delete
+package com.tang.kite.logical
 
-import com.tang.kite.config.logical.LogicalDeleteConfig
+import com.tang.kite.config.logical.LogicalDeletionConfig
 
 /**
  * @author Tang
  */
-object LogicalDeleteContext {
+object LogicalDeletionContext {
 
     private val skipFlag = ThreadLocal.withInitial { false }
 
@@ -16,11 +16,11 @@ object LogicalDeleteContext {
 
     @JvmStatic
     fun isEnabled(): Boolean {
-        return LogicalDeleteConfig.enabled
+        return LogicalDeletionConfig.enabled
     }
 
     @JvmStatic
-    fun shouldLogicalDelete(): Boolean {
+    fun shouldLogicalDeletion(): Boolean {
         return isEnabled() && isSkip().not()
     }
 

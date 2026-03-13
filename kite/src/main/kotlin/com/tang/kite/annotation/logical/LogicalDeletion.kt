@@ -6,4 +6,4 @@ package com.tang.kite.annotation.logical
 @Target(AnnotationTarget.FIELD)
 @Retention(AnnotationRetention.RUNTIME)
 @MustBeDocumented
-annotation class LogicalDelete()
+annotation class LogicalDeletion

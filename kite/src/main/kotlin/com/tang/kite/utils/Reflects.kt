@@ -5,9 +5,9 @@ import com.tang.kite.annotation.Join
 import com.tang.kite.annotation.Table
 import com.tang.kite.annotation.id.Id
 import com.tang.kite.annotation.id.IdType
-import com.tang.kite.annotation.logical.LogicalDelete
+import com.tang.kite.annotation.logical.LogicalDeletion
 import com.tang.kite.config.KiteConfig
-import com.tang.kite.config.logical.LogicalDeleteConfig
+import com.tang.kite.config.logical.LogicalDeletionConfig
 import com.tang.kite.config.table.DynamicTableProcessor
 import com.tang.kite.config.table.TableConfig
 import com.tang.kite.constants.SqlString.DOT
@@ -328,20 +328,20 @@ object Reflects {
     @JvmStatic
     fun getLogicalField(clazz: Class<*>): Field {
         return logicalDeleteFieldCache.computeIfAbsent(clazz) {
-            if (LogicalDeleteConfig.enabled) {
-                val logicalField = getSqlFields(clazz).firstOrNull { it.isAnnotationPresent(LogicalDelete::class.java) }
+            if (LogicalDeletionConfig.enabled) {
+                val logicalField = getSqlFields(clazz).firstOrNull { it.isAnnotationPresent(LogicalDeletion::class.java) }
                 if (logicalField != null) {
                     return@computeIfAbsent logicalField
                 }
 
-                val logicalDeleteFieldName = LogicalDeleteConfig.fieldName
+                val logicalDeleteFieldName = LogicalDeletionConfig.fieldName
                 val configLogicalField = getSqlFields(clazz).firstOrNull { it.name == logicalDeleteFieldName }
                 if (configLogicalField != null) {
                     return@computeIfAbsent configLogicalField
                 }
-                throw NoSuchFieldException("No logical delete field found in ${clazz.simpleName}")
+                throw NoSuchFieldException("No logical deletion field found in ${clazz.simpleName}")
             }
-            throw IllegalStateException("Logical delete is not enabled")
+            throw IllegalStateException("Logical deletion is not enabled")
         }
     }
 

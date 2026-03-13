@@ -8,7 +8,7 @@
 
 - Refactor batch processing methods to measure execution time
 - Refactor `SqlAlias` methods to use 'alias' instead of 'as' for clarity
-- Add logical delete support with new `LogicalDeleteConfig` and `LogicalDeleteProcessor` interfaces
+- Add logical deletion support with new `LogicalDeletionConfig` and `LogicalDeletionProcessor` interfaces
 
 ## 1.0.18
 

@@ -6,7 +6,7 @@ import com.tang.kite.annotation.fill.CreateTime
 import com.tang.kite.annotation.fill.UpdateTime
 import com.tang.kite.annotation.id.Id
 import com.tang.kite.annotation.id.IdType
-import com.tang.kite.annotation.logical.LogicalDelete
+import com.tang.kite.annotation.logical.LogicalDeletion
 import com.tang.kite.enumeration.ColumnOperator
 import java.math.BigDecimal
 import java.time.LocalDateTime
@@ -27,7 +27,7 @@ class LogicalAccount(
     @UpdateTime
     var updateTime: LocalDateTime? = null,
     var balance: BigDecimal? = null,
-    @LogicalDelete
+    @LogicalDeletion
     var deleted: Boolean? = null
 
 ) {

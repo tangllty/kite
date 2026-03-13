@@ -1,34 +1,34 @@
-package com.tang.kite.logical.delete
+package com.tang.kite.logical
 
-import com.tang.kite.config.logical.LogicalDeleteConfig
+import com.tang.kite.config.logical.LogicalDeletionConfig
 import java.util.function.Supplier
 
 /**
  * @author Tang
  */
-object LogicalDeleteManager {
+object LogicalDeletionManager {
 
     private fun <T> executeWithLogical(block: () -> T): T {
-        if (LogicalDeleteConfig.enabled) {
+        if (LogicalDeletionConfig.enabled) {
             return block()
         }
-        LogicalDeleteConfig.enabled = true
+        LogicalDeletionConfig.enabled = true
         return try {
             block()
         } finally {
-            LogicalDeleteConfig.enabled = false
+            LogicalDeletionConfig.enabled = false
         }
     }
 
     private fun <T> executeWithSkip(block: () -> T): T {
-        if (LogicalDeleteConfig.enabled.not()) {
+        if (LogicalDeletionConfig.enabled.not()) {
             return block()
         }
-        LogicalDeleteContext.enableSkip()
+        LogicalDeletionContext.enableSkip()
         return try {
             block()
         } finally {
-            LogicalDeleteContext.disableSkip()
+            LogicalDeletionContext.disableSkip()
         }
     }
 

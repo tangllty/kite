@@ -1,8 +1,7 @@
 package com.tang.kite.session
 
 import com.tang.kite.BaseDataTest
-import com.tang.kite.config.logical.LogicalDeleteConfig
-import com.tang.kite.logical.delete.LogicalDeleteManager
+import com.tang.kite.logical.LogicalDeletionManager
 import com.tang.kite.session.entity.LogicalAccount
 import com.tang.kite.session.mapper.LogicalAccountMapper
 import kotlin.test.Test
@@ -11,14 +10,14 @@ import kotlin.test.assertNotNull
 /**
  * @author Tang
  */
-class LogicalDeleteTest : BaseDataTest() {
+class LogicalDeletionTest : BaseDataTest() {
 
     @Test
     fun insert() {
         val session = sqlSessionFactory.openSession()
         val accountMapper = session.getMapper(LogicalAccountMapper::class)
-        LogicalDeleteManager.withLogical {
-            accountMapper.insert(LogicalAccount(username = "logical-delete1", password = "password"))
+        LogicalDeletionManager.withLogical {
+            accountMapper.insert(LogicalAccount(username = "logical-deletion1", password = "password"))
         }
         session.rollback()
         session.close()
@@ -29,10 +28,10 @@ class LogicalDeleteTest : BaseDataTest() {
     fun batchInsert() {
         val session = sqlSessionFactory.openSession()
         val accountMapper = session.getMapper(LogicalAccountMapper::class)
-        LogicalDeleteManager.withLogical {
+        LogicalDeletionManager.withLogical {
             accountMapper.batchInsert(listOf(
-                LogicalAccount(username = "logical-delete1", password = "password"),
-                LogicalAccount(username = "logical-delete2", password = "password")
+                LogicalAccount(username = "logical-deletion1", password = "password"),
+                LogicalAccount(username = "logical-deletion2", password = "password")
             ))
         }
         session.rollback()
@@ -44,7 +43,7 @@ class LogicalDeleteTest : BaseDataTest() {
     fun update() {
         val session = sqlSessionFactory.openSession()
         val accountMapper = session.getMapper(LogicalAccountMapper::class)
-        LogicalDeleteManager.withLogical {
+        LogicalDeletionManager.withLogical {
             val account = accountMapper.queryWrapper().eq(LogicalAccount::username, "user").one()
             accountMapper.updateSelective(LogicalAccount(id = account?.id, username = "user", password = "modified"))
         }
@@ -57,7 +56,7 @@ class LogicalDeleteTest : BaseDataTest() {
     fun delete() {
         val session = sqlSessionFactory.openSession()
         val accountMapper = session.getMapper(LogicalAccountMapper::class)
-        LogicalDeleteManager.withLogical {
+        LogicalDeletionManager.withLogical {
             val beforeSize = accountMapper.count()
             val account = accountMapper.queryWrapper().eq(LogicalAccount::username, "user").one()
             accountMapper.deleteById(account?.id!!)

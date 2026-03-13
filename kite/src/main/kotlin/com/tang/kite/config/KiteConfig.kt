@@ -3,7 +3,7 @@ package com.tang.kite.config
 import com.tang.kite.annotation.fill.CreateTime
 import com.tang.kite.annotation.fill.UpdateTime
 import com.tang.kite.config.defaults.DefaultSelectiveStrategy
-import com.tang.kite.config.logical.LogicalDeleteConfig
+import com.tang.kite.config.logical.LogicalDeletionConfig
 import com.tang.kite.config.table.TableConfig
 import com.tang.kite.enumeration.SqlType
 import com.tang.kite.handler.fill.FillHandler
@@ -72,9 +72,9 @@ object KiteConfig {
     val table = TableConfig
 
     /**
-     * Logical delete properties for logical delete configuration.
+     * Logical deletion properties for logical deletion configuration.
      */
     @JvmStatic
-    val logicalDelete = LogicalDeleteConfig
+    val logicalDelete = LogicalDeletionConfig
 
 }

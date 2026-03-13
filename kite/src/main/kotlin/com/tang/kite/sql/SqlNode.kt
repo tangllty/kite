@@ -1,7 +1,7 @@
 package com.tang.kite.sql
 
 import com.tang.kite.config.SqlConfig
-import com.tang.kite.config.logical.LogicalDeleteConfig
+import com.tang.kite.config.logical.LogicalDeletionConfig
 import com.tang.kite.constants.SqlString.ASC
 import com.tang.kite.constants.SqlString.COMMA_SPACE
 import com.tang.kite.constants.SqlString.DELETE_FROM
@@ -23,7 +23,7 @@ import com.tang.kite.constants.SqlString.SPACE
 import com.tang.kite.constants.SqlString.UPDATE
 import com.tang.kite.constants.SqlString.VALUES
 import com.tang.kite.constants.SqlString.WHERE
-import com.tang.kite.logical.delete.LogicalDeleteContext
+import com.tang.kite.logical.LogicalDeletionContext
 import com.tang.kite.paginate.OrderItem
 import com.tang.kite.sql.dialect.SqlDialect
 import com.tang.kite.sql.enumeration.LogicalOperator
@@ -183,7 +183,7 @@ sealed class SqlNode {
 
     private fun appendInsertLogicalColumn(insert: Insert) {
         val (table, columns, valuesList) = insert
-        if (LogicalDeleteContext.shouldLogicalDelete()) {
+        if (LogicalDeletionContext.shouldLogicalDeletion()) {
             val logicalField = Reflects.getLogicalField(table?.clazz!!)
             val logicalColumn = columns.find { it.name == logicalField.name }
             if (logicalColumn != null) {
@@ -192,7 +192,7 @@ sealed class SqlNode {
                 valuesList.forEach { it.removeAt(logicalIndex) }
             }
             columns.add(Column(logicalField))
-            val logicalValue = LogicalDeleteConfig.logicalDeleteProcessor.process(logicalField)
+            val logicalValue = LogicalDeletionConfig.logicalDeletionProcessor.process(logicalField)
             valuesList.forEach { it.add(logicalValue.normalValue) }
         }
     }
@@ -251,9 +251,9 @@ sealed class SqlNode {
             "${it.key.toString(withAlias)} = $QUESTION_MARK"
         })
         appendJoins(joins, sql, withAlias)
-        if (LogicalDeleteContext.shouldLogicalDelete()) {
+        if (LogicalDeletionContext.shouldLogicalDeletion()) {
             val logicalField = Reflects.getLogicalField(table?.clazz!!)
-            val logicalValue = LogicalDeleteConfig.logicalDeleteProcessor.process(logicalField)
+            val logicalValue = LogicalDeletionConfig.logicalDeletionProcessor.process(logicalField)
             valuesList.forEach { it.add(logicalValue.normalValue) }
         }
         appendWhere(sql, table, mutableListOf(), where, withAlias)
@@ -264,11 +264,11 @@ sealed class SqlNode {
         val (table, joins, where) = delete
         val sql = StringBuilder()
         val parameters = mutableListOf<Any?>()
-        if (LogicalDeleteContext.shouldLogicalDelete()) {
+        if (LogicalDeletionContext.shouldLogicalDeletion()) {
             val update = Update()
             update.table = table
             val logicalField = Reflects.getLogicalField(table?.clazz!!)
-            val logicalValue = LogicalDeleteConfig.logicalDeleteProcessor.process(logicalField)
+            val logicalValue = LogicalDeletionConfig.logicalDeletionProcessor.process(logicalField)
             update.sets[Column(logicalField)] = logicalValue.deletedValue
             update.where.addAll(where)
             return getUpdateSqlStatement(update)
@@ -326,9 +326,9 @@ sealed class SqlNode {
         if (table == null) {
             throw IllegalArgumentException("Table reference can not be null")
         }
-        if (LogicalDeleteContext.shouldLogicalDelete()) {
+        if (LogicalDeletionContext.shouldLogicalDeletion()) {
             val logicalField = Reflects.getLogicalField(table.clazz!!)
-            val logicalValue = LogicalDeleteConfig.logicalDeleteProcessor.process(logicalField)
+            val logicalValue = LogicalDeletionConfig.logicalDeletionProcessor.process(logicalField)
             where.add(LogicalStatement(ComparisonStatement(Column(logicalField), logicalValue.normalValue), LogicalOperator.AND))
         }
         appendWhere(sql, parameters, where, withAlias)
