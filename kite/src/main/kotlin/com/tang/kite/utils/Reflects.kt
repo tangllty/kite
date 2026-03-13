@@ -88,10 +88,10 @@ object Reflects {
         if (clazz.isAnnotationPresent(Table::class.java) && clazz.getAnnotation(Table::class.java).dynamicTableName != DynamicTableProcessor::class) {
             return clazz.getAnnotation(Table::class.java).dynamicTableName.createInstance().process(tableName)
         }
-        if (TableConfig.dynamicTableName == null) {
+        if (TableConfig.dynamicTableProcessor == null) {
             return tableName
         }
-        return TableConfig.dynamicTableName!!.process(tableName)
+        return TableConfig.dynamicTableProcessor!!.process(tableName)
     }
 
     /**

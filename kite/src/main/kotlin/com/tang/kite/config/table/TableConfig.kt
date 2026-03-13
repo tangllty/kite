@@ -11,6 +11,6 @@ object TableConfig {
      * Dynamic table name processor.
      */
     @JvmStatic
-    var dynamicTableName: DynamicTableProcessor? = null
+    var dynamicTableProcessor: DynamicTableProcessor? = null
 
 }

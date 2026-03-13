@@ -136,7 +136,7 @@ data class KiteProperties(
         /**
          * Dynamic table name processor.
          */
-        var dynamicTableName: DynamicTableProcessor? = TableConfig.dynamicTableName
+        var dynamicTableProcessor: DynamicTableProcessor? = TableConfig.dynamicTableProcessor
 
     )
 
@@ -182,7 +182,7 @@ data class KiteProperties(
         SqlConfig.durationUnit = sql.durationUnit
         SqlConfig.durationDecimals = sql.durationDecimals
 
-        TableConfig.dynamicTableName = table.dynamicTableName
+        TableConfig.dynamicTableProcessor = table.dynamicTableProcessor
 
         LogicalDeleteConfig.enabled = logicalDelete.enabled
         LogicalDeleteConfig.fieldName = logicalDelete.fieldName
