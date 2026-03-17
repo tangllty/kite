@@ -9,6 +9,7 @@
 - Refactor batch processing methods to measure execution time
 - Refactor `SqlAlias` methods to use 'alias' instead of 'as' for clarity
 - Add logical deletion support with new `LogicalDeletionConfig` and `LogicalDeletionProcessor` interfaces
+- Add table class `inclusion/exclusion` judgment mechanism
 
 ## 1.0.18
 

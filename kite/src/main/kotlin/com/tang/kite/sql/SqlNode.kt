@@ -118,10 +118,6 @@ sealed class SqlNode {
         }
     }
 
-    fun getSql(dialect: SqlDialect? = null): String {
-        return getSqlStatement(dialect).getActualSql()
-    }
-
     private fun getSelectSqlStatement(select: Select, dialect: SqlDialect): SqlStatement {
         val (columns, distinct, count, from, joins, where, groupBy, having, orderBy, limit) = select
         val sql = StringBuilder()
@@ -183,7 +179,7 @@ sealed class SqlNode {
 
     private fun appendInsertLogicalColumn(insert: Insert) {
         val (table, columns, valuesList) = insert
-        if (LogicalDeletionContext.shouldLogicalDeletion()) {
+        if (shouldProcessLogicalDeletion(table)) {
             val logicalField = Reflects.getLogicalField(table?.clazz!!)
             val logicalColumn = columns.find { it.name == logicalField.name }
             if (logicalColumn != null) {
@@ -251,7 +247,7 @@ sealed class SqlNode {
             "${it.key.toString(withAlias)} = $QUESTION_MARK"
         })
         appendJoins(joins, sql, withAlias)
-        if (LogicalDeletionContext.shouldLogicalDeletion()) {
+        if (shouldProcessLogicalDeletion(table)) {
             val logicalField = Reflects.getLogicalField(table?.clazz!!)
             val logicalValue = LogicalDeletionConfig.logicalDeletionProcessor.process(logicalField)
             valuesList.forEach { it.add(logicalValue.normalValue) }
@@ -264,7 +260,7 @@ sealed class SqlNode {
         val (table, joins, where) = delete
         val sql = StringBuilder()
         val parameters = mutableListOf<Any?>()
-        if (LogicalDeletionContext.shouldLogicalDeletion()) {
+        if (shouldProcessLogicalDeletion(table)) {
             val update = Update()
             update.table = table
             val logicalField = Reflects.getLogicalField(table?.clazz!!)
@@ -326,12 +322,16 @@ sealed class SqlNode {
         if (table == null) {
             throw IllegalArgumentException("Table reference can not be null")
         }
-        if (LogicalDeletionContext.shouldLogicalDeletion()) {
+        if (shouldProcessLogicalDeletion(table)) {
             val logicalField = Reflects.getLogicalField(table.clazz!!)
             val logicalValue = LogicalDeletionConfig.logicalDeletionProcessor.process(logicalField)
             where.add(LogicalStatement(ComparisonStatement(Column(logicalField), logicalValue.normalValue), LogicalOperator.AND))
         }
         appendWhere(sql, parameters, where, withAlias)
+    }
+
+    private fun shouldProcessLogicalDeletion(table: TableReference?): Boolean {
+        return LogicalDeletionContext.shouldLogicalDeletion() && LogicalDeletionConfig.logicalDeletionProcessor.isTableNeedProcessing(table?.clazz!!)
     }
 
 }
