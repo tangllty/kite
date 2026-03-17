@@ -12,11 +12,13 @@ object LogicalDeletionConfig {
     /**
      * Whether logical deletion is enabled
      */
+    @JvmStatic
     var enabled: Boolean = false
 
     /**
      * Logical deletion field name
      */
+    @JvmStatic
     var fieldName: String = "deleted"
 
     /**
