@@ -38,7 +38,5 @@ bin/
 ### Mac OS ###
 .DS_Store
 
-### Derby ###
-kite/kite-derby/
-kite-spring/kite-spring-derby/
-derby.log
+### Kite Generator ###
+kite-generator-test/
