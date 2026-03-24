@@ -10,6 +10,7 @@
 - Refactor `SqlAlias` methods to use 'alias' instead of 'as' for clarity
 - Add logical deletion support with new `LogicalDeletionConfig` and `LogicalDeletionProcessor` interfaces
 - Add table class `inclusion/exclusion` judgment mechanism
+- Implement multi-tenant support for database operations
 
 ## 1.0.18
 

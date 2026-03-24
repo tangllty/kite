@@ -6,10 +6,12 @@ import com.tang.kite.annotation.Table
 import com.tang.kite.annotation.id.Id
 import com.tang.kite.annotation.id.IdType
 import com.tang.kite.annotation.logical.LogicalDeletion
+import com.tang.kite.annotation.tenant.TenantId
 import com.tang.kite.config.KiteConfig
 import com.tang.kite.config.logical.LogicalDeletionConfig
 import com.tang.kite.config.table.DynamicTableProcessor
 import com.tang.kite.config.table.TableConfig
+import com.tang.kite.config.tenant.TenantConfig
 import com.tang.kite.constants.SqlString.DOT
 import com.tang.kite.enumeration.SqlType
 import com.tang.kite.function.SFunction
@@ -66,6 +68,8 @@ object Reflects {
     private val columnNameCache: ConcurrentMap<Field, String> = ConcurrentHashMap()
 
     private val logicalDeleteFieldCache: ConcurrentMap<Class<*>, Field> = ConcurrentHashMap()
+
+    private val tenantFieldCache: ConcurrentMap<Class<*>, Field> = ConcurrentHashMap()
 
     @JvmStatic
     fun <T> makeAccessible(accessibleObject: AccessibleObject, instance: T): Boolean {
@@ -328,20 +332,40 @@ object Reflects {
     @JvmStatic
     fun getLogicalField(clazz: Class<*>): Field {
         return logicalDeleteFieldCache.computeIfAbsent(clazz) {
-            if (LogicalDeletionConfig.enabled) {
-                val logicalField = getSqlFields(clazz).firstOrNull { it.isAnnotationPresent(LogicalDeletion::class.java) }
-                if (logicalField != null) {
-                    return@computeIfAbsent logicalField
-                }
-
-                val logicalDeleteFieldName = LogicalDeletionConfig.fieldName
-                val configLogicalField = getSqlFields(clazz).firstOrNull { it.name == logicalDeleteFieldName }
-                if (configLogicalField != null) {
-                    return@computeIfAbsent configLogicalField
-                }
-                throw NoSuchFieldException("No logical deletion field found in ${clazz.simpleName}")
+            if (LogicalDeletionConfig.enabled.not()) {
+                throw IllegalStateException("Logical deletion is not enabled")
             }
-            throw IllegalStateException("Logical deletion is not enabled")
+            val fields = getSqlFields(clazz)
+            val logicalField = fields.firstOrNull { it.isAnnotationPresent(LogicalDeletion::class.java) }
+            if (logicalField != null) {
+                return@computeIfAbsent logicalField
+            }
+            val logicalDeleteFieldName = LogicalDeletionConfig.fieldName
+            val configLogicalField = fields.firstOrNull { it.name == logicalDeleteFieldName }
+            if (configLogicalField != null) {
+                return@computeIfAbsent configLogicalField
+            }
+            throw NoSuchFieldException("No logical deletion field found in ${clazz.simpleName}")
+        }
+    }
+
+    @JvmStatic
+    fun getTenantField(clazz: Class<*>): Field {
+        return tenantFieldCache.computeIfAbsent(clazz) {
+            if (TenantConfig.enabled.not()) {
+                throw IllegalStateException("Tenant is not enabled")
+            }
+            val fields = getSqlFields(clazz)
+            val tenantField = fields.firstOrNull { it.isAnnotationPresent(TenantId::class.java) }
+            if (tenantField != null) {
+                return@computeIfAbsent tenantField
+            }
+            val tenantFieldName = TenantConfig.fieldName
+            val configTenantField = fields.firstOrNull { it.name == tenantFieldName }
+            if (configTenantField != null) {
+                return@computeIfAbsent configTenantField
+            }
+            throw NoSuchFieldException("No tenant field found in ${clazz.simpleName}")
         }
     }
 

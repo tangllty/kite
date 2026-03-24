@@ -2,6 +2,7 @@ package com.tang.kite.sql
 
 import com.tang.kite.config.SqlConfig
 import com.tang.kite.config.logical.LogicalDeletionConfig
+import com.tang.kite.config.tenant.TenantConfig
 import com.tang.kite.constants.SqlString.ASC
 import com.tang.kite.constants.SqlString.COMMA_SPACE
 import com.tang.kite.constants.SqlString.DELETE_FROM
@@ -23,15 +24,19 @@ import com.tang.kite.constants.SqlString.SPACE
 import com.tang.kite.constants.SqlString.UPDATE
 import com.tang.kite.constants.SqlString.VALUES
 import com.tang.kite.constants.SqlString.WHERE
+import com.tang.kite.enumeration.SqlType
 import com.tang.kite.logical.LogicalDeletionContext
 import com.tang.kite.paginate.OrderItem
 import com.tang.kite.sql.dialect.SqlDialect
+import com.tang.kite.sql.enumeration.ComparisonOperator
 import com.tang.kite.sql.enumeration.LogicalOperator
 import com.tang.kite.sql.statement.BatchSqlStatement
 import com.tang.kite.sql.statement.ComparisonStatement
 import com.tang.kite.sql.statement.LogicalStatement
 import com.tang.kite.sql.statement.SqlStatement
+import com.tang.kite.tenant.TenantContext
 import com.tang.kite.utils.Reflects
+import java.lang.reflect.Field
 
 /**
  * @author Tang
@@ -135,7 +140,7 @@ sealed class SqlNode {
 
         appendTable(sql, from, withAlias)
         appendJoins(joins, sql, withAlias)
-        appendWhere(sql, from, parameters, where, withAlias)
+        appendWhere(sql, from, parameters, where, SqlType.SELECT, withAlias)
 
         if (groupBy.isNotEmpty()) {
             sql.append(GROUP_BY)
@@ -177,19 +182,35 @@ sealed class SqlNode {
         sql.append(RIGHT_BRACKET + VALUES)
     }
 
-    private fun appendInsertLogicalColumn(insert: Insert) {
-        val (table, columns, valuesList) = insert
-        if (shouldProcessLogicalDeletion(table)) {
-            val logicalField = Reflects.getLogicalField(table?.clazz!!)
-            val logicalColumn = columns.find { it.name == logicalField.name }
-            if (logicalColumn != null) {
-                val logicalIndex = columns.indexOf(logicalColumn)
-                columns.removeAt(logicalIndex)
-                valuesList.forEach { it.removeAt(logicalIndex) }
-            }
-            columns.add(Column(logicalField))
+    private fun applyInsertColumn(insert: Insert, field: Field, value: Any?) {
+        val (_, columns, valuesList) = insert
+        val column = columns.find { it.name == Reflects.getColumnName(field) }
+        if (column != null) {
+            val index = columns.indexOf(column)
+            columns.removeAt(index)
+            valuesList.forEach { it.removeAt(index) }
+        }
+        columns.add(Column(field))
+        valuesList.forEach { it.add(value) }
+    }
+
+    private fun applyInsertLogical(insert: Insert) {
+        val table = insert.table
+        val clazz = table?.clazz!!
+        if (shouldApplyLogicalDeletion(table)) {
+            val logicalField = Reflects.getLogicalField(clazz)
             val logicalValue = LogicalDeletionConfig.logicalDeletionProcessor.process(logicalField)
-            valuesList.forEach { it.add(logicalValue.normalValue) }
+            applyInsertColumn(insert, logicalField, logicalValue.normalValue)
+        }
+    }
+
+    private fun applyInsertTenant(insert: Insert) {
+        val table = insert.table
+        val clazz = table?.clazz!!
+        if (shouldApplyTenant(table)) {
+            val tenantField = Reflects.getTenantField(clazz)
+            val tenantId = TenantConfig.tenantProcessor.getFirstTenantId(tenantField)
+            applyInsertColumn(insert, tenantField, tenantId)
         }
     }
 
@@ -197,7 +218,8 @@ sealed class SqlNode {
         val (table, columns, valuesList) = insert
         val sql = StringBuilder()
         val parameters = mutableListOf<Any?>()
-        appendInsertLogicalColumn(insert)
+        applyInsertLogical(insert)
+        applyInsertTenant(insert)
         appendInsertPrefix(sql, table, columns)
         valuesList.joinToString("$RIGHT_BRACKET$COMMA_SPACE$LEFT_BRACKET", LEFT_BRACKET, RIGHT_BRACKET) { values ->
             values.joinToString(COMMA_SPACE) {
@@ -211,7 +233,8 @@ sealed class SqlNode {
     private fun getInsertBatchSqlStatement(insert: Insert): BatchSqlStatement {
         val (table, columns, valuesList) = insert
         val sql = StringBuilder()
-        appendInsertLogicalColumn(insert)
+        applyInsertLogical(insert)
+        applyInsertTenant(insert)
         appendInsertPrefix(sql, table, columns)
         sql.append(LEFT_BRACKET)
         sql.append(valuesList.first().joinToString(COMMA_SPACE) { QUESTION_MARK })
@@ -232,7 +255,7 @@ sealed class SqlNode {
             "${it.key.toString(withAlias)} = $QUESTION_MARK"
         })
         appendJoins(joins, sql, withAlias)
-        appendWhere(sql, table, parameters, where, withAlias)
+        appendWhere(sql, table, parameters, where, SqlType.UPDATE, withAlias)
         return SqlStatement(SqlConfig.getSql(sql), parameters)
     }
 
@@ -247,12 +270,12 @@ sealed class SqlNode {
             "${it.key.toString(withAlias)} = $QUESTION_MARK"
         })
         appendJoins(joins, sql, withAlias)
-        if (shouldProcessLogicalDeletion(table)) {
+        if (shouldApplyLogicalDeletion(table)) {
             val logicalField = Reflects.getLogicalField(table?.clazz!!)
             val logicalValue = LogicalDeletionConfig.logicalDeletionProcessor.process(logicalField)
             valuesList.forEach { it.add(logicalValue.normalValue) }
         }
-        appendWhere(sql, table, mutableListOf(), where, withAlias)
+        appendWhere(sql, table, mutableListOf(), where, SqlType.UPDATE, withAlias)
         return BatchSqlStatement(SqlConfig.getSql(sql), valuesList)
     }
 
@@ -260,7 +283,7 @@ sealed class SqlNode {
         val (table, joins, where) = delete
         val sql = StringBuilder()
         val parameters = mutableListOf<Any?>()
-        if (shouldProcessLogicalDeletion(table)) {
+        if (shouldApplyLogicalDeletion(table)) {
             val update = Update()
             update.table = table
             val logicalField = Reflects.getLogicalField(table?.clazz!!)
@@ -318,20 +341,36 @@ sealed class SqlNode {
         where.forEach { it.appendSql(sql, parameters, withAlias) }
     }
 
-    private fun appendWhere(sql: StringBuilder, table: TableReference?, parameters: MutableList<Any?>, where: MutableList<LogicalStatement>, withAlias: Boolean) {
+    private fun appendWhere(sql: StringBuilder, table: TableReference?, parameters: MutableList<Any?>, where: MutableList<LogicalStatement>, sqlType: SqlType, withAlias: Boolean) {
         if (table == null) {
             throw IllegalArgumentException("Table reference can not be null")
         }
-        if (shouldProcessLogicalDeletion(table)) {
+        if (shouldApplyLogicalDeletion(table)) {
             val logicalField = Reflects.getLogicalField(table.clazz!!)
             val logicalValue = LogicalDeletionConfig.logicalDeletionProcessor.process(logicalField)
             where.add(LogicalStatement(ComparisonStatement(Column(logicalField), logicalValue.normalValue), LogicalOperator.AND))
         }
+        if (shouldApplyTenant(table)) {
+            val tenantField = Reflects.getTenantField(table.clazz!!)
+            val tenantIds = if (sqlType == SqlType.SELECT) {
+                TenantConfig.tenantProcessor.getTenantIds(tenantField)
+            } else {
+                listOf(TenantConfig.tenantProcessor.getFirstTenantId(tenantField))
+            }
+            val tenantValue = if (tenantIds.size <= 1) tenantIds.firstOrNull() else tenantIds
+            val comparisonOperator = if (tenantIds.size > 1) ComparisonOperator.IN else ComparisonOperator.EQUAL
+            val comparisonStatement = ComparisonStatement(Column(tenantField), tenantValue, comparisonOperator)
+            where.add(LogicalStatement(comparisonStatement, LogicalOperator.AND))
+        }
         appendWhere(sql, parameters, where, withAlias)
     }
 
-    private fun shouldProcessLogicalDeletion(table: TableReference?): Boolean {
+    private fun shouldApplyLogicalDeletion(table: TableReference?): Boolean {
         return LogicalDeletionContext.shouldLogicalDeletion() && LogicalDeletionConfig.logicalDeletionProcessor.isTableNeedProcessing(table?.clazz!!)
+    }
+
+    private fun shouldApplyTenant(table: TableReference?): Boolean {
+        return TenantContext.shouldApplyTenant() && TenantConfig.tenantProcessor.isTableNeedProcessing(table?.clazz!!)
     }
 
 }
