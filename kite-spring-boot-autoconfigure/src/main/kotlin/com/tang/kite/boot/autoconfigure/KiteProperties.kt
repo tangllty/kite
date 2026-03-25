@@ -7,6 +7,8 @@ import com.tang.kite.config.logical.LogicalDeletionConfig
 import com.tang.kite.config.logical.LogicalDeletionProcessor
 import com.tang.kite.config.table.DynamicTableProcessor
 import com.tang.kite.config.table.TableConfig
+import com.tang.kite.config.tenant.TenantConfig
+import com.tang.kite.config.tenant.TenantProcessor
 import com.tang.kite.handler.fill.FillHandler
 import com.tang.kite.handler.fill.FillKey
 import com.tang.kite.sql.dialect.SqlDialect
@@ -65,7 +67,12 @@ data class KiteProperties(
     /**
      * Logical delete properties for logical delete configuration.
      */
-    val logicalDelete: LogicalDeleteProperties = LogicalDeleteProperties()
+    val logicalDelete: LogicalDeleteProperties = LogicalDeleteProperties(),
+
+    /**
+     * Tenant properties for tenant configuration.
+     */
+    val tenant: TenantProperties = TenantProperties()
 
 ) {
 
@@ -159,6 +166,28 @@ data class KiteProperties(
 
     )
 
+    /**
+     * Tenant properties for tenant configuration.
+     */
+    data class TenantProperties (
+
+        /**
+         * Whether tenant functionality is enabled
+         */
+        val enabled: Boolean = TenantConfig.enabled,
+
+        /**
+         * Tenant ID field name
+         */
+        val fieldName: String = TenantConfig.fieldName,
+
+        /**
+         * Tenant processor for handling multiple tenant IDs
+         */
+        var tenantProcessor: TenantProcessor = TenantConfig.tenantProcessor
+
+    )
+
     companion object {
 
         const val KITE_PREFIX = "kite"
@@ -187,6 +216,10 @@ data class KiteProperties(
         LogicalDeletionConfig.enabled = logicalDelete.enabled
         LogicalDeletionConfig.fieldName = logicalDelete.fieldName
         LogicalDeletionConfig.logicalDeletionProcessor = logicalDelete.logicalDeletionProcessor
+
+        TenantConfig.enabled = tenant.enabled
+        TenantConfig.fieldName = tenant.fieldName
+        TenantConfig.tenantProcessor = tenant.tenantProcessor
     }
 
 }

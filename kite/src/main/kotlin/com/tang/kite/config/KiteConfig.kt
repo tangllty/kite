@@ -5,6 +5,7 @@ import com.tang.kite.annotation.fill.UpdateTime
 import com.tang.kite.config.defaults.DefaultSelectiveStrategy
 import com.tang.kite.config.logical.LogicalDeletionConfig
 import com.tang.kite.config.table.TableConfig
+import com.tang.kite.config.tenant.TenantConfig
 import com.tang.kite.enumeration.SqlType
 import com.tang.kite.handler.fill.FillHandler
 import com.tang.kite.handler.fill.FillKey
@@ -76,5 +77,11 @@ object KiteConfig {
      */
     @JvmStatic
     val logicalDelete = LogicalDeletionConfig
+
+    /**
+     * Tenant properties for tenant configuration.
+     */
+    @JvmStatic
+    val tenant = TenantConfig
 
 }
