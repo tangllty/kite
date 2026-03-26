@@ -6,6 +6,11 @@ plugins {
 dependencies {
     api(project(":kite"))
     api(project(":kite-spring6"))
+    api(project(":kite-spring-boot-autoconfigure")) {
+        exclude(group = "org.springframework.boot", module = "spring-boot-autoconfigure")
+        exclude(group = "org.springframework.boot", module = "spring-boot-starter")
+        exclude(group = "org.springframework.boot", module = "spring-boot-starter-jdbc")
+    }
     kapt(libs.springBootConfigurationProcessor3)
     implementation(libs.springBootStarter3)
     implementation(libs.springBootStarterJdbc3)

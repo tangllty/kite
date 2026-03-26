@@ -11,8 +11,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate
 import org.springframework.boot.context.properties.EnableConfigurationProperties
-import org.springframework.boot.jdbc.autoconfigure.DataSourceAutoConfiguration
-import org.springframework.boot.jdbc.autoconfigure.DataSourceProperties
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.DependsOn
 import javax.sql.DataSource
@@ -22,7 +20,12 @@ import javax.sql.DataSource
  *
  * @author Tang
  */
-@AutoConfiguration(after = [DataSourceAutoConfiguration::class, DataSourceProperties::class])
+@AutoConfiguration(afterName = [
+    "org.springframework.boot.autoconfigure.jdbc.DataSourceProperties",
+    "org.springframework.boot.jdbc.autoconfigure.DataSourceProperties",
+    "org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration",
+    "org.springframework.boot.jdbc.autoconfigure.DataSourceAutoConfiguration"
+])
 @ConditionalOnClass(SqlSessionFactoryBean::class, SqlSessionBean::class)
 @ConditionalOnSingleCandidate(DataSource::class)
 @EnableConfigurationProperties(KiteProperties::class)

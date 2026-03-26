@@ -11,6 +11,7 @@
 - Add logical deletion support with new `LogicalDeletionConfig` and `LogicalDeletionProcessor` interfaces
 - Add table class `inclusion/exclusion` judgment mechanism
 - Implement multi-tenant support for database operations
+- Refactor Spring Boot 3 support for kite framework
 
 ## 1.0.18
 

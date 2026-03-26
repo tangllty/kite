@@ -22,7 +22,7 @@ import kotlin.time.DurationUnit
  * @author Tang
  */
 @ConfigurationProperties(prefix = KiteProperties.KITE_PREFIX)
-data class KiteProperties(
+open class KiteProperties(
 
     /**
      * Whether to display the banner during application startup.
@@ -79,7 +79,7 @@ data class KiteProperties(
     /**
      * Page properties for pagination configuration.
      */
-    data class PageProperties (
+    class PageProperties (
 
         /**
          * Default page number.
@@ -106,7 +106,7 @@ data class KiteProperties(
     /**
      * SQL properties for SQL configuration.
      */
-    data class SqlProperties (
+    class SqlProperties (
 
         /**
          * SQL lowercase setting.
@@ -138,7 +138,7 @@ data class KiteProperties(
     /**
      * Table properties for table configuration.
      */
-    data class TableProperties (
+    class TableProperties (
 
         /**
          * Dynamic table name processor.
@@ -147,7 +147,7 @@ data class KiteProperties(
 
     )
 
-    data class LogicalDeleteProperties (
+    class LogicalDeleteProperties (
 
         /**
          * Whether logical delete is enabled
@@ -169,7 +169,7 @@ data class KiteProperties(
     /**
      * Tenant properties for tenant configuration.
      */
-    data class TenantProperties (
+    class TenantProperties (
 
         /**
          * Whether tenant functionality is enabled
