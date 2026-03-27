@@ -6,6 +6,13 @@
 
 ### Dependencies
 
+- Bump snakeyaml from 2.5 to 2.6
+- Bump spring6 from 6.2.16 to 6.2.17
+- Bump spring from 7.0.5 to 7.0.6
+- Bump spring-boot3 from 3.5.11 to 3.5.12
+- Bump spring-boot from 4.0.3 to 4.0.4
+- Bump gradle from 9.0.0 to 9.4.1
+
 ### Features
 
 - Refactor batch processing methods to measure execution time

@@ -5,7 +5,7 @@
  */
 class Versions {
     // https://mvnrepository.com/artifact/org.yaml/snakeyaml
-    val snakeyaml = "2.5"
+    val snakeyaml = "2.6"
     // https://mvnrepository.com/artifact/com.h2database/h2
     val h2 = "2.4.240"
     // https://mvnrepository.com/artifact/org.slf4j/slf4j-api
@@ -17,13 +17,13 @@ class Versions {
     // https://mvnrepository.com/artifact/org.freemarker/freemarker
     val freemarker = "2.3.34"
     // https://mvnrepository.com/artifact/org.springframework/spring-core
-    val spring6 = "6.2.16"
+    val spring6 = "6.2.17"
     // https://mvnrepository.com/artifact/org.springframework/spring-core
-    val spring = "7.0.3"
+    val spring = "7.0.6"
     // https://mvnrepository.com/artifact/org.springframework.boot/spring-boot
-    val springBoot3 = "3.5.11"
+    val springBoot3 = "3.5.12"
     // https://mvnrepository.com/artifact/org.springframework.boot/spring-boot
-    val springBoot = "4.0.3"
+    val springBoot = "4.0.4"
 }
 
 class Libraries {
@@ -49,6 +49,7 @@ class Libraries {
     val springBootAutoconfigureProcessor = "org.springframework.boot:spring-boot-autoconfigure-processor:${versions.springBoot}"
     val springBootConfigurationProcessor = "org.springframework.boot:spring-boot-configuration-processor:${versions.springBoot}"
     val springBootStarterTest = "org.springframework.boot:spring-boot-starter-test:${versions.springBoot}"
+    val springBootStarterWeb = "org.springframework.boot:spring-boot-starter-web:${versions.springBoot}"
 }
 
 val versions = Versions()
