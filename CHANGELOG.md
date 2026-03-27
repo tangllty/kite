@@ -2,6 +2,8 @@
 
 ### Bug Fixes
 
+- Suppress ConfigurationProperties inspection for multi-version compatibility
+
 ### Dependencies
 
 ### Features

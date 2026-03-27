@@ -21,6 +21,7 @@ import kotlin.time.DurationUnit
  *
  * @author Tang
  */
+@Suppress("ConfigurationProperties")
 @ConfigurationProperties(prefix = KiteProperties.KITE_PREFIX)
 open class KiteProperties(
 
@@ -197,6 +198,7 @@ open class KiteProperties(
     fun apply() {
         KiteConfig.banner = banner
         KiteConfig.selectiveStrategy = selectiveStrategy
+        KiteConfig.batchSize = batchSize
         KiteConfig.dialects = dialects
         KiteConfig.fillHandlers = fillHandlers
 
