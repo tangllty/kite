@@ -3,6 +3,7 @@
 ### Bug Fixes
 
 - Suppress ConfigurationProperties inspection for multi-version compatibility
+- Use Kotlin native types instead of Java classes
 
 ### Dependencies
 

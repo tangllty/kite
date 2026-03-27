@@ -61,7 +61,7 @@ class ResultHandlerFactory {
             Char::class.java -> CharResultHandler()
             Short::class.java -> ShortResultHandler()
             Byte::class.java -> ByteResultHandler()
-            Int::class.java, Int::class.javaObjectType, Integer::class.java -> IntResultHandler()
+            Int::class.java, Int::class.javaObjectType -> IntResultHandler()
             Long::class.java, Long::class.javaObjectType -> LongResultHandler()
             Double::class.java -> DoubleResultHandler()
             Float::class.java -> FloatResultHandler()
