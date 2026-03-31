@@ -1,3 +1,13 @@
+## 1.0.20
+
+### Bug Fixes
+
+### Dependencies
+
+### Features
+
+- Simplify `Processor` interface, remove include/exclude table logic
+
 ## 1.0.19
 
 ### Bug Fixes
