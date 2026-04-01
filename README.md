@@ -32,4 +32,4 @@ Kite uses the MIT license. For more details, please refer to [LICENSE](https://g
 
 - QQ
 
-    - ![QQ](https://github.com/tangllty/tang-docs/raw/master/docs/public/qq.png)
+    - ![QQ](https://github.com/tangllty/tang-docs/raw/main/docs/public/qq.png)
