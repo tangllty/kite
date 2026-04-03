@@ -25,7 +25,7 @@ object SqlConfig {
      * Whether to log SQL duration.
      */
     @JvmStatic
-    var sqlDurationLogging = true
+    var durationLogging = true
 
     /**
      * SQL duration unit.
@@ -38,6 +38,78 @@ object SqlConfig {
      */
     @JvmStatic
     var durationDecimals = 0
+
+    /**
+     * Whether to log SQL prepare.
+     */
+    @JvmStatic
+    var prepareLogging = durationLogging
+
+    /**
+     * SQL prepare unit.
+     */
+    @JvmStatic
+    var prepareUnit = durationUnit
+
+    /**
+     * SQL prepare decimals.
+     */
+    @JvmStatic
+    var prepareDecimals = durationDecimals
+
+    /**
+     * Whether to log SQL execution.
+     */
+    @JvmStatic
+    var executionLogging = durationLogging
+
+    /**
+     * SQL execution unit.
+     */
+    @JvmStatic
+    var executionUnit = durationUnit
+
+    /**
+     * SQL execution decimals.
+     */
+    @JvmStatic
+    var executionDecimals = durationDecimals
+
+    /**
+     * Whether to log SQL mapping.
+     */
+    @JvmStatic
+    var mappingLogging = durationLogging
+
+    /**
+     * SQL mapping unit.
+     */
+    @JvmStatic
+    var mappingUnit = durationUnit
+
+    /**
+     * SQL mapping decimals.
+     */
+    @JvmStatic
+    var mappingDecimals = durationDecimals
+
+    /**
+     * Whether to log SQL elapsed.
+     */
+    @JvmStatic
+    var elapsedLogging = durationLogging
+
+    /**
+     * SQL elapsed unit.
+     */
+    @JvmStatic
+    var elapsedUnit = durationUnit
+
+    /**
+     * SQL elapsed decimals.
+     */
+    @JvmStatic
+    var elapsedDecimals = durationDecimals
 
     @JvmStatic
     fun getSql(sql: StringBuilder): String {

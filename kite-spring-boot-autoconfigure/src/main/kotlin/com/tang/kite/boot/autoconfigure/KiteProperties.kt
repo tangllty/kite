@@ -122,7 +122,7 @@ open class KiteProperties(
         /**
          * Whether to log SQL duration.
          */
-        var sqlDurationLogging: Boolean = SqlConfig.sqlDurationLogging,
+        var durationLogging: Boolean = SqlConfig.durationLogging,
 
         /**
          * SQL duration unit.
@@ -132,7 +132,67 @@ open class KiteProperties(
         /**
          * SQL duration decimals.
          */
-        var durationDecimals: Int = SqlConfig.durationDecimals
+        var durationDecimals: Int = SqlConfig.durationDecimals,
+
+        /**
+         * Whether to log SQL prepare.
+         */
+        var prepareLogging: Boolean = durationLogging,
+
+        /**
+         * SQL prepare unit.
+         */
+        var prepareUnit: DurationUnit = durationUnit,
+
+        /**
+         * SQL prepare decimals.
+         */
+        var prepareDecimals: Int = durationDecimals,
+
+        /**
+         * Whether to log SQL execution.
+         */
+        var executionLogging: Boolean = durationLogging,
+
+        /**
+         * SQL execution unit.
+         */
+        var executionUnit: DurationUnit = durationUnit,
+
+        /**
+         * SQL execution decimals.
+         */
+        var executionDecimals: Int = durationDecimals,
+
+        /**
+         * Whether to log SQL mapping.
+         */
+        var mappingLogging: Boolean = durationLogging,
+
+        /**
+         * SQL mapping unit.
+         */
+        var mappingUnit: DurationUnit = durationUnit,
+
+        /**
+         * SQL mapping decimals.
+         */
+        var mappingDecimals: Int = durationDecimals,
+
+        /**
+         * Whether to log SQL elapsed.
+         */
+        var elapsedLogging: Boolean = durationLogging,
+
+        /**
+         * SQL elapsed unit.
+         */
+        var elapsedUnit: DurationUnit = durationUnit,
+
+        /**
+         * SQL elapsed decimals.
+         */
+        var elapsedDecimals: Int = durationDecimals
 
     )
 
@@ -209,7 +269,7 @@ open class KiteProperties(
 
         SqlConfig.sqlLowercase = sql.sqlLowercase
         SqlConfig.sqlLogging = sql.sqlLogging
-        SqlConfig.sqlDurationLogging = sql.sqlDurationLogging
+        SqlConfig.durationLogging = sql.durationLogging
         SqlConfig.durationUnit = sql.durationUnit
         SqlConfig.durationDecimals = sql.durationDecimals
 

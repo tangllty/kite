@@ -11,13 +11,13 @@ interface Executor : AutoCloseable {
 
     fun getConnection(): Connection
 
-    fun <T> count(statement: SqlStatement, type: Class<T>): Long
+    fun <T> count(statement: SqlStatement, type: Class<T>): ExecutionResult<Long>
 
-    fun <T> query(statement: SqlStatement, type: Class<T>): List<T>
+    fun <T> query(statement: SqlStatement, type: Class<T>): ExecutionResult<List<T>>
 
-    fun update(statement: SqlStatement, parameter: Any): Int
+    fun update(statement: SqlStatement, parameter: Any): ExecutionResult<Int>
 
-    fun update(batchSqlStatement: BatchSqlStatement, parameters: List<Any>): Int
+    fun update(batchSqlStatement: BatchSqlStatement, parameters: List<Any>): ExecutionResult<Int>
 
     fun commit()
 

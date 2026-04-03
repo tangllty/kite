@@ -8,12 +8,15 @@ import com.tang.kite.annotation.Update
 import com.tang.kite.config.PageConfig
 import com.tang.kite.config.SqlConfig
 import com.tang.kite.constants.BaseMethodName
+import com.tang.kite.constants.SqlString
 import com.tang.kite.enumeration.MethodType
+import com.tang.kite.executor.ExecutionResult
 import com.tang.kite.executor.Executor
 import com.tang.kite.mapper.BaseMapper
 import com.tang.kite.paginate.OrderItem
 import com.tang.kite.paginate.Page
 import com.tang.kite.proxy.MapperProxyFactory
+import com.tang.kite.session.DurationValue
 import com.tang.kite.session.SqlSession
 import com.tang.kite.sql.dialect.SqlDialect
 import com.tang.kite.sql.provider.SqlNodeProvider
@@ -27,6 +30,7 @@ import com.tang.kite.wrapper.query.QueryWrapper
 import com.tang.kite.wrapper.update.UpdateWrapper
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import java.lang.reflect.Field
 import java.lang.reflect.Method
 import java.lang.reflect.ParameterizedType
 import kotlin.reflect.KClass
@@ -60,8 +64,8 @@ class DefaultSqlSession(
         return System.nanoTime()
     }
 
-    private fun elapsedSince(start: Long): Long {
-        return nanoTime() - start
+    private fun Long.elapsed(): Long {
+        return nanoTime() - this
     }
 
     private fun getFirstArg(args: Array<out Any>?): Any {
@@ -142,20 +146,79 @@ class DefaultSqlSession(
     }
 
     private fun getIsSelect(sql: String): Boolean {
-        return sql.trim().startsWith("SELECT", ignoreCase = true)
+        return sql.trim().startsWith(SqlString.SELECT, ignoreCase = true)
     }
 
-    private fun logDuration(logger: Logger, duration: Long) {
-        if (SqlConfig.sqlDurationLogging.not()) {
+    private fun logPrepare(logger: Logger, duration: Long) {
+        if (SqlConfig.prepareLogging.not()) {
             return
         }
-        val unit = SqlConfig.durationUnit
-        val decimals = SqlConfig.durationDecimals
-        val executionDuration = "<==   Duration: ${duration.nanoseconds.toString(unit, decimals)}"
-        logger.debug(executionDuration)
+        val prepare = "<==    Prepare: ${duration.nanoseconds.toString(SqlConfig.prepareUnit, SqlConfig.prepareDecimals)}"
+        logSqlInfo(logger, prepare)
     }
 
-    private fun log(method: Method, mapperInterface: Class<*>, batchSqlStatement: BatchSqlStatement, rows: Long, duration: Long) {
+    private fun logExecution(logger: Logger, duration: Long) {
+        if (SqlConfig.executionLogging.not()) {
+            return
+        }
+        val execution = "<==  Execution: ${duration.nanoseconds.toString(SqlConfig.executionUnit, SqlConfig.executionDecimals)}"
+        logSqlInfo(logger, execution)
+    }
+
+    private fun logMapping(logger: Logger, duration: Long) {
+        if (SqlConfig.mappingLogging.not()) {
+            return
+        }
+        val mapping = "<==    Mapping: ${duration.nanoseconds.toString(SqlConfig.mappingUnit, SqlConfig.mappingDecimals)}"
+        logSqlInfo(logger, mapping)
+    }
+
+    private fun logElapsed(logger: Logger, duration: Long) {
+        if (SqlConfig.elapsedLogging.not()) {
+            return
+        }
+        val elapsed = "<==    Elapsed: ${duration.nanoseconds.toString(SqlConfig.elapsedUnit, SqlConfig.elapsedDecimals)}"
+        logSqlInfo(logger, elapsed)
+    }
+
+    private fun logDuration(logger: Logger, sql: String, duration: DurationValue) {
+        if (SqlConfig.durationLogging.not()) {
+            return
+        }
+        logPrepare(logger, duration.prepareTime)
+        logExecution(logger, duration.executionTime)
+        if (getIsSelect(sql)) {
+            logMapping(logger, duration.mappingTime)
+        }
+        logElapsed(logger, duration.elapsedTime)
+    }
+
+    private fun log(method: Method, mapperInterface: Class<*>, sqlStatement: SqlStatement, rows: Long, duration: DurationValue) {
+        if (SqlConfig.sqlLogging.not()) {
+            return
+        }
+        val logger = getMapperLogger(mapperInterface, method)
+        logPreparing(logger, sqlStatement.sql)
+        logParameters(logger, sqlStatement.parameters)
+        logTotalOrUpdates(logger, sqlStatement.sql, rows)
+        logDuration(logger, sqlStatement.sql, duration)
+    }
+
+    private fun log(method: Method, mapperInterface: Class<*>, sqlStatementValue: SqlStatementValue<*>, rows: Int) {
+        log(method, mapperInterface, sqlStatementValue.sqlStatement, rows.toLong(), sqlStatementValue.duration)
+    }
+
+    private fun returnRows(method: Method, mapperInterface: Class<*>, sqlStatementValue: SqlStatementValue<*>, rows: Long): Long {
+        log(method, mapperInterface, sqlStatementValue.sqlStatement, rows, sqlStatementValue.duration)
+        return rows
+    }
+
+    private fun returnRows(method: Method, mapperInterface: Class<*>, sqlStatementValue: SqlStatementValue<*>, rows: Int): Int {
+        log(method, mapperInterface, sqlStatementValue.sqlStatement, rows.toLong(), sqlStatementValue.duration)
+        return rows
+    }
+
+    private fun log(method: Method, mapperInterface: Class<*>, batchSqlStatement: BatchSqlStatement, rows: Long, duration: DurationValue) {
         if (SqlConfig.sqlLogging.not()) {
             return
         }
@@ -165,63 +228,30 @@ class DefaultSqlSession(
             logParameters(logger, parameters)
         }
         logTotalOrUpdates(logger, batchSqlStatement.sql, rows)
-        logDuration(logger, duration)
+        logDuration(logger, batchSqlStatement.sql, duration)
     }
 
-    private fun returnRows(method: Method, mapperInterface: Class<*>, batchSqlStatement: BatchSqlStatement, rows: Long, duration: Long): Long {
-        log(method, mapperInterface, batchSqlStatement, rows, duration)
+    private fun returnRows(method: Method, mapperInterface: Class<*>, batchSqlStatementValue: BatchSqlStatementValue<*>, rows: Int): Int {
+        log(method, mapperInterface, batchSqlStatementValue.batchSqlStatement, rows.toLong(), batchSqlStatementValue.duration)
         return rows
     }
 
-    private fun returnRows(method: Method, mapperInterface: Class<*>, batchSqlStatement: BatchSqlStatement, rows: Int, duration: Long): Int {
-        return returnRows(method, mapperInterface, batchSqlStatement, rows.toLong(), duration).toInt()
+    fun <T : Any> sqlStatementTemplate(prepare: () -> SqlStatement, execution: (SqlStatement) -> ExecutionResult<T>): SqlStatementValue<T> {
+        val start = nanoTime()
+        val sqlStatement = prepare.invoke()
+        val prepareTime = start.elapsed()
+        val result = execution.invoke(sqlStatement)
+        val duration = result.toValue(prepareTime, start.elapsed())
+        return SqlStatementValue(sqlStatement, result, duration)
     }
 
-    private fun log(method: Method, mapperInterface: Class<*>, sqlStatements: List<SqlStatement>, rows: Long, duration: Long) {
-        if (SqlConfig.sqlLogging.not()) {
-            return
-        }
-        val logger = getMapperLogger(mapperInterface, method)
-        for (sqlStatement in sqlStatements) {
-            logPreparing(logger, sqlStatement.sql)
-            logParameters(logger, sqlStatement.parameters)
-        }
-        logTotalOrUpdates(logger, sqlStatements.first().sql, rows)
-        logDuration(logger, duration)
-    }
-
-    private fun returnRows(method: Method, mapperInterface: Class<*>, sqlStatements: List<SqlStatement>, rows: Long, duration: Long): Long {
-        log(method, mapperInterface, sqlStatements, rows, duration)
-        return rows
-    }
-
-    private fun returnRows(method: Method, mapperInterface: Class<*>, sqlStatements: List<SqlStatement>, rows: Int, duration: Long): Int {
-        return returnRows(method, mapperInterface, sqlStatements, rows.toLong(), duration).toInt()
-    }
-
-    private fun log(method: Method, mapperInterface: Class<*>, sqlStatement: SqlStatement, rows: Long, duration: Long) {
-        if (SqlConfig.sqlLogging.not()) {
-            return
-        }
-        val logger = getMapperLogger(mapperInterface, method)
-        logPreparing(logger, sqlStatement.sql)
-        logParameters(logger, sqlStatement.parameters)
-        logTotalOrUpdates(logger, sqlStatement.sql, rows)
-        logDuration(logger, duration)
-    }
-
-    private fun log(method: Method, mapperInterface: Class<*>, sqlStatement: SqlStatement, rows: Int, execution: Long) {
-        log(method, mapperInterface, sqlStatement, rows.toLong(), execution)
-    }
-
-    private fun returnRows(method: Method, mapperInterface: Class<*>, sqlStatement: SqlStatement, rows: Long, execution: Long): Long {
-        log(method, mapperInterface, sqlStatement, rows, execution)
-        return rows
-    }
-
-    private fun returnRows(method: Method, mapperInterface: Class<*>, sqlStatement: SqlStatement, rows: Int, execution: Long): Int {
-        log(method, mapperInterface, sqlStatement, rows, execution)
-        return rows
+    fun <T : Any> batchSqlStatementTemplate(prepare: () -> BatchSqlStatement, execution: (BatchSqlStatement) -> ExecutionResult<T>): BatchSqlStatementValue<T> {
+        val start = nanoTime()
+        val batchSqlStatement = prepare.invoke()
+        val prepareTime = start.elapsed()
+        val result = execution.invoke(batchSqlStatement)
+        val duration = result.toValue(prepareTime, start.elapsed())
+        return BatchSqlStatementValue(batchSqlStatement, result, duration)
     }
 
     override fun <M : BaseMapper<T>, T : Any> execute(type: MethodType, method: Method, args: Array<out Any>?, mapperInterface: Class<M>): Any? {
@@ -263,24 +293,31 @@ class DefaultSqlSession(
     }
 
     private fun <M : BaseMapper<T>, T : Any> annotatedMethodsInvoker(method: Method, args: Array<out Any>?, mapperInterface: Class<M>): Any {
-        val start = nanoTime()
-        val select = method.getAnnotation(Select::class.java)
-        val insert = method.getAnnotation(Insert::class.java)
-        val update = method.getAnnotation(Update::class.java)
-        val delete = method.getAnnotation(Delete::class.java)
-        val sql = select?.value ?: insert?.value ?: update?.value ?: delete?.value
-
-        val type: Class<T> = getGenericType(mapperInterface)
-        val sqlStatement = annotatedMethodParameters(method, args, sql!!)
-
-        if (select != null) {
-            val list = executor.query(sqlStatement, type)
-            log(method, mapperInterface, sqlStatement, list.size, elapsedSince(start))
+        val value = sqlStatementTemplate(
+            prepare = {
+                val select = method.getAnnotation(Select::class.java)
+                val insert = method.getAnnotation(Insert::class.java)
+                val update = method.getAnnotation(Update::class.java)
+                val delete = method.getAnnotation(Delete::class.java)
+                val sql = select?.value ?: insert?.value ?: update?.value ?: delete?.value
+                annotatedMethodParameters(method, args, sql!!)
+            },
+            execution = {
+                if (method.isAnnotationPresent(Select::class.java)) {
+                    val type: Class<T> = getGenericType(mapperInterface)
+                    executor.query(it, type)
+                } else {
+                    val parameter = getFirstArg(args)
+                    executor.update(it, parameter)
+                }
+            }
+        )
+        if (method.isAnnotationPresent(Select::class.java)) {
+            val list = value.result.data as List<*>
+            log(method, mapperInterface, value, list.size)
             return list
         }
-        val parameter = getFirstArg(args)
-        val rows = executor.update(sqlStatement, parameter)
-        return returnRows(method, mapperInterface, sqlStatement, rows, elapsedSince(start))
+        return returnRows(method, mapperInterface, value, value.result.data as Int)
     }
 
     private fun annotatedMethodParameters(method: Method, args: Array<out Any>?, sql: String): SqlStatement {
@@ -302,17 +339,19 @@ class DefaultSqlSession(
     }
 
     override fun <M : BaseMapper<T>, T : Any> insert(method: Method, mapperInterface: Class<M>, parameter: Any): Int {
-        val start = nanoTime()
-        val insert = provider.insert(parameter)
-        val rows = executor.update(insert, parameter)
-        return returnRows(method, mapperInterface, insert, rows, elapsedSince(start))
+        val value = sqlStatementTemplate(
+            prepare = { provider.insert(parameter) },
+            execution = { executor.update(it, parameter) }
+        )
+        return returnRows(method, mapperInterface, value, value.result.data)
     }
 
     override fun <M : BaseMapper<T>, T : Any> insertSelective(method: Method, mapperInterface: Class<M>, parameter: Any): Int {
-        val start = nanoTime()
-        val insert = provider.insertSelective(parameter)
-        val rows = executor.update(insert, parameter)
-        return returnRows(method, mapperInterface, insert, rows, elapsedSince(start))
+        val value = sqlStatementTemplate(
+            prepare = { provider.insertSelective(parameter) },
+            execution = { executor.update(it, parameter) }
+        )
+        return returnRows(method, mapperInterface, value, value.result.data)
     }
 
     private fun processBatch(parameter: Any, batchSize: Int, action: (List<Any>) -> Int): Int {
@@ -322,104 +361,122 @@ class DefaultSqlSession(
     }
 
     override fun <M : BaseMapper<T>, T : Any> insertValues(method: Method, mapperInterface: Class<M>, parameter: Any, batchSize: Int): Int {
-        return processBatch(parameter, batchSize) {
-            val start = nanoTime()
-            val insertValues = provider.insertValues(it)
-            val rows = executor.update(insertValues, it)
-            returnRows(method, mapperInterface, insertValues, rows, elapsedSince(start))
+        return processBatch(parameter, batchSize) { list ->
+            val value = sqlStatementTemplate(
+                prepare = { provider.insertValues(list) },
+                execution = { executor.update(it, list) }
+            )
+            returnRows(method, mapperInterface, value, value.result.data)
         }
     }
 
     override fun <M : BaseMapper<T>, T : Any> batchInsert(method: Method, mapperInterface: Class<M>, parameter: Any, batchSize: Int): Int {
-        return processBatch(parameter, batchSize) {
-            val start = nanoTime()
-            val batchInsert = provider.batchInsert(it)
-            val rows = executor.update(batchInsert, it)
-            returnRows(method, mapperInterface, batchInsert, rows, elapsedSince(start))
+        return processBatch(parameter, batchSize) { list ->
+            val value = batchSqlStatementTemplate(
+                prepare = { provider.batchInsert(list) },
+                execution = { executor.update(it, list) }
+            )
+            returnRows(method, mapperInterface, value, value.result.data)
         }
     }
 
     override fun <M : BaseMapper<T>, T : Any> update(method: Method, mapperInterface: Class<M>, parameter: Any): Int {
-        val start = nanoTime()
-        val update = provider.update(parameter)
-        val rows = executor.update(update, parameter)
-        return returnRows(method, mapperInterface, update, rows, elapsedSince(start))
+        val value = sqlStatementTemplate(
+            prepare = { provider.update(parameter) },
+            execution = { executor.update(it, parameter) }
+        )
+        return returnRows(method, mapperInterface, value, value.result.data)
     }
 
     override fun <M : BaseMapper<T>, T : Any> update(method: Method, mapperInterface: Class<M>, parameter: Any, condition: Any): Int {
-        val start = nanoTime()
-        val update = provider.update(parameter, condition)
-        val rows = executor.update(update, parameter)
-        return returnRows(method, mapperInterface, update, rows, elapsedSince(start))
+        val value = sqlStatementTemplate(
+            prepare = { provider.update(parameter, condition) },
+            execution = { executor.update(it, parameter) }
+        )
+        return returnRows(method, mapperInterface, value, value.result.data)
     }
 
     override fun <M : BaseMapper<T>, T : Any> updateSelective(method: Method, mapperInterface: Class<M>, parameter: Any): Int {
-        val start = nanoTime()
-        val update = provider.updateSelective(parameter)
-        val rows = executor.update(update, parameter)
-        return returnRows(method, mapperInterface, update, rows, elapsedSince(start))
+        val value = sqlStatementTemplate(
+            prepare = { provider.updateSelective(parameter) },
+            execution = { executor.update(it, parameter) }
+        )
+        return returnRows(method, mapperInterface, value, value.result.data)
     }
 
     override fun <M : BaseMapper<T>, T : Any> updateSelective(method: Method, mapperInterface: Class<M>, parameter: Any, condition: Any): Int {
-        val start = nanoTime()
-        val updateWrapper = provider.updateSelective(parameter, condition)
-        val rows = executor.update(updateWrapper, parameter)
-        return returnRows(method, mapperInterface, updateWrapper, rows, elapsedSince(start))
+        val value = sqlStatementTemplate(
+            prepare = { provider.updateSelective(parameter, condition) },
+            execution = { executor.update(it, parameter) }
+        )
+        return returnRows(method, mapperInterface, value, value.result.data)
     }
 
     override fun <M : BaseMapper<T>, T : Any> updateWrapper(method: Method, mapperInterface: Class<M>, type: Class<T>, parameter: Any): Int {
-        val start = nanoTime()
-        @Suppress("UNCHECKED_CAST")
-        val updateWrapper = parameter as UpdateWrapper<*>
-        updateWrapper.setTableClassIfNotSet(type)
-        updateWrapper.setTableFillFields()
-        val sqlStatement = updateWrapper.getSqlStatement(sqlDialect)
-        val rows = executor.update(sqlStatement, parameter)
-        return returnRows(method, mapperInterface, sqlStatement, rows, elapsedSince(start))
+        val value = sqlStatementTemplate(
+            prepare = {
+                @Suppress("UNCHECKED_CAST")
+                val updateWrapper = parameter as UpdateWrapper<*>
+                updateWrapper.setTableClassIfNotSet(type)
+                updateWrapper.setTableFillFields()
+                updateWrapper.getSqlStatement(sqlDialect)
+            },
+            execution = { executor.update(it, parameter) }
+        )
+        return returnRows(method, mapperInterface, value, value.result.data)
     }
 
     override fun <M : BaseMapper<T>, T : Any> batchUpdate(method: Method, mapperInterface: Class<M>, parameter: Any, batchSize: Int): Int {
-        return processBatch(parameter, batchSize) {
-            val start = nanoTime()
-            val batchUpdate = provider.batchUpdate(it)
-            val rows = executor.update(batchUpdate, it)
-            returnRows(method, mapperInterface, batchUpdate, rows, elapsedSince(start))
+        return processBatch(parameter, batchSize) { list ->
+            val value = batchSqlStatementTemplate(
+                prepare = { provider.batchUpdate(list) },
+                execution = { executor.update(it, list) }
+            )
+            returnRows(method, mapperInterface, value, value.result.data)
         }
     }
 
     override fun <M : BaseMapper<T>, T : Any> delete(method: Method, mapperInterface: Class<M>, type: Class<T>, parameter: Any): Int {
-        val start = nanoTime()
-        val delete = provider.delete(type, parameter)
-        val rows = executor.update(delete, parameter)
-        return returnRows(method, mapperInterface, delete, rows, elapsedSince(start))
+        val value = sqlStatementTemplate(
+            prepare = { provider.delete(type, parameter) },
+            execution = { executor.update(it, parameter) }
+        )
+        return returnRows(method, mapperInterface, value, value.result.data)
     }
 
     override fun <M : BaseMapper<T>, T : Any> deleteById(method: Method, mapperInterface: Class<M>, type: Class<T>, parameter: Any): Int {
-        val start = nanoTime()
-        val entity = type.getDeclaredConstructor().newInstance()
-        val idField = Reflects.getIdField(type)
-        setValue(idField, entity, parameter)
-        val delete = provider.delete(type, entity as Any)
-        val rows = executor.update(delete, parameter)
-        return returnRows(method, mapperInterface, delete, rows, elapsedSince(start))
+        val value = sqlStatementTemplate(
+            prepare = {
+                val entity = type.getDeclaredConstructor().newInstance()
+                val idField = Reflects.getIdField(type)
+                setValue(idField, entity, parameter)
+                provider.delete(type, entity as Any)
+            },
+            execution = { executor.update(it, parameter) }
+        )
+        return returnRows(method, mapperInterface, value, value.result.data)
     }
 
     override fun <M : BaseMapper<T>, T : Any> deleteByIds(method: Method, mapperInterface: Class<M>, type: Class<T>, ids: Iterable<Any>): Int {
-        val start = nanoTime()
-        val delete = provider.deleteByIds(type, ids)
-        val rows = executor.update(delete, ids)
-        return returnRows(method, mapperInterface, delete, rows, elapsedSince(start))
+        val value = sqlStatementTemplate(
+            prepare = { provider.deleteByIds(type, ids) },
+            execution = { executor.update(it, ids) }
+        )
+        return returnRows(method, mapperInterface, value, value.result.data)
     }
 
     override fun <M : BaseMapper<T>, T : Any> deleteWrapper(method: Method, mapperInterface: Class<M>, type: Class<T>, parameter: Any): Int {
-        val start = nanoTime()
-        @Suppress("UNCHECKED_CAST")
-        val deleteWrapper = parameter as DeleteWrapper<*>
-        deleteWrapper.setTableClassIfNotSet(type)
-        deleteWrapper.setTableFillFields()
-        val sqlStatement = deleteWrapper.getSqlStatement(sqlDialect)
-        val rows = executor.update(sqlStatement, parameter)
-        return returnRows(method, mapperInterface, sqlStatement, rows, elapsedSince(start))
+        val value = sqlStatementTemplate(
+            prepare = {
+                @Suppress("UNCHECKED_CAST")
+                val deleteWrapper = parameter as DeleteWrapper<*>
+                deleteWrapper.setTableClassIfNotSet(type)
+                deleteWrapper.setTableFillFields()
+                deleteWrapper.getSqlStatement(sqlDialect)
+            },
+            execution = { executor.update(it, parameter) }
+        )
+        return returnRows(method, mapperInterface, value, value.result.data)
     }
 
     private fun <M : BaseMapper<T>, T : Any> processSelect(method: Method, mapperInterface: Class<M>, type: Class<T>, args: Array<out Any>?): List<T> {
@@ -439,23 +496,27 @@ class DefaultSqlSession(
     }
 
     override fun <M : BaseMapper<T>, T : Any> selectList(method: Method, mapperInterface: Class<M>, type: Class<T>, parameter: Any?, orderBys: Array<OrderItem<T>>): List<T> {
-        val start = nanoTime()
-        val select = provider.select(type, parameter, orderBys)
-        val list = executor.query(select, type)
-        log(method, mapperInterface, select, list.size, elapsedSince(start))
-        return list
+        val value = sqlStatementTemplate(
+            prepare = { provider.select(type, parameter, orderBys) },
+            execution = { executor.query(it, type) }
+        )
+        log(method, mapperInterface, value, value.result.data.size)
+        return value.result.data
     }
 
     override fun <M : BaseMapper<T>, T : Any> queryWrapper(method: Method, mapperInterface: Class<M>, type: Class<T>, parameter: Any): List<T> {
-        val start = nanoTime()
-        @Suppress("UNCHECKED_CAST")
-        val queryWrapper = parameter as QueryWrapper<*>
-        queryWrapper.setTableClassIfNotSet(type)
-        queryWrapper.setTableFillFields()
-        val sqlStatement = queryWrapper.getSqlStatement(sqlDialect)
-        val list = executor.query(sqlStatement, type)
-        log(method, mapperInterface, sqlStatement, list.size, elapsedSince(start))
-        return list
+        val value = sqlStatementTemplate(
+            prepare = {
+                @Suppress("UNCHECKED_CAST")
+                val queryWrapper = parameter as QueryWrapper<*>
+                queryWrapper.setTableClassIfNotSet(type)
+                queryWrapper.setTableFillFields()
+                queryWrapper.getSqlStatement(sqlDialect)
+            },
+            execution = { executor.query(it, type) }
+        )
+        log(method, mapperInterface, value, value.result.data.size)
+        return value.result.data
     }
 
     override fun <M : BaseMapper<T>, T : Any> selectById(method: Method, mapperInterface: Class<M>, type: Class<T>, parameter: Any): T? {
@@ -495,40 +556,87 @@ class DefaultSqlSession(
     }
 
     override fun <M : BaseMapper<T>, T : Any> selectListWithJoins(method: Method, mapperInterface: Class<M>, type: Class<T>, parameter: Any?, orderBys: Array<OrderItem<T>>): List<T> {
-        val start = nanoTime()
-        val select = provider.selectWithJoins(type, parameter, orderBys)
-        val list = executor.query(select, type)
-        log(method, mapperInterface, select, list.size, elapsedSince(start))
+        val value = sqlStatementTemplate(
+            prepare = { provider.selectWithJoins(type, parameter, orderBys) },
+            execution = { executor.query(it, type) }
+        )
+        val list = value.result.data
+        log(method, mapperInterface, value, list.size)
         val joins = Reflects.getIterableJoins(type)
         if (joins.isEmpty()) {
             return list
         }
+        populateJoins(list, joins, type, method, mapperInterface)
+        return list
+    }
+
+    private fun <M : BaseMapper<T>, T : Any> populateJoins(list: List<T>, joins: List<Field>, type: Class<T>, method: Method, mapperInterface: Class<M>) {
         list.forEach {
             joins.forEach { join ->
-                val joinStart = nanoTime()
                 val joinType = (join.genericType as ParameterizedType).actualTypeArguments[0] as Class<*>
-                val joinAnnotation = join.getAnnotation(Join::class.java)!!
-                val joinTable = joinAnnotation.joinTable
-                val joinSelfField = joinAnnotation.joinSelfColumn
-                val joinTargetField = joinAnnotation.joinTargetColumn
-                val selfField = Reflects.getField(type, joinAnnotation.selfField)
-                Reflects.makeAccessible(selfField!!, it as Any)
-                val selfFieldValue = Reflects.getValue(selfField, it)
-                var joinSelect = provider.selectWithJoins(joinType, null, emptyArray())
-                val joinSqlStatement = if (joinTable.isNotEmpty() && joinSelfField.isNotEmpty() && joinTargetField.isNotEmpty()) {
-                    provider.getNestedSelect(joinSelect.sql, joinAnnotation.targetField, listOf(selfFieldValue), joinAnnotation)
-                } else {
-                    provider.getInCondition(joinSelect.sql, joinAnnotation.targetField, listOf(selfFieldValue))
-                }
-                val parameters = joinSelect.parameters.plus(joinSqlStatement.parameters).toMutableList()
-                joinSelect = SqlStatement(joinSqlStatement.sql, parameters)
-                val joinList = executor.query(joinSelect, joinType)
-                log(method, mapperInterface, joinSelect, joinList.size, nanoTime() - joinStart)
+                val value = sqlStatementTemplate(
+                    prepare = {
+                        val joinAnnotation = join.getAnnotation(Join::class.java)!!
+                        val joinTable = joinAnnotation.joinTable
+                        val joinSelfField = joinAnnotation.joinSelfColumn
+                        val joinTargetField = joinAnnotation.joinTargetColumn
+                        val selfField = Reflects.getField(type, joinAnnotation.selfField)
+                        Reflects.makeAccessible(selfField!!, it as Any)
+                        val selfFieldValue = Reflects.getValue(selfField, it)
+                        val joinSelect = provider.selectWithJoins(joinType, null, emptyArray())
+                        val joinSqlStatement =
+                            if (joinTable.isNotEmpty() && joinSelfField.isNotEmpty() && joinTargetField.isNotEmpty()) {
+                                provider.getNestedSelect(
+                                    joinSelect.sql,
+                                    joinAnnotation.targetField,
+                                    listOf(selfFieldValue),
+                                    joinAnnotation
+                                )
+                            } else {
+                                provider.getInCondition(joinSelect.sql, joinAnnotation.targetField, listOf(selfFieldValue))
+                            }
+                        val parameters = joinSelect.parameters.plus(joinSqlStatement.parameters).toMutableList()
+                        SqlStatement(joinSqlStatement.sql, parameters)
+                    },
+                    execution = { statement -> executor.query(statement, joinType) }
+                )
+                val joinList = value.result.data
+                log(method, mapperInterface, value, joinList.size)
                 Reflects.makeAccessible(join, it as Any)
                 join.set(it, joinList)
+
+//                val joinStart = nanoTime()
+//                val joinType = (join.genericType as ParameterizedType).actualTypeArguments[0] as Class<*>
+//                val joinAnnotation = join.getAnnotation(Join::class.java)!!
+//                val joinTable = joinAnnotation.joinTable
+//                val joinSelfField = joinAnnotation.joinSelfColumn
+//                val joinTargetField = joinAnnotation.joinTargetColumn
+//                val selfField = Reflects.getField(type, joinAnnotation.selfField)
+//                Reflects.makeAccessible(selfField!!, it as Any)
+//                val selfFieldValue = Reflects.getValue(selfField, it)
+//                var joinSelect = provider.selectWithJoins(joinType, null, emptyArray())
+//                val joinSqlStatement =
+//                    if (joinTable.isNotEmpty() && joinSelfField.isNotEmpty() && joinTargetField.isNotEmpty()) {
+//                        provider.getNestedSelect(
+//                            joinSelect.sql,
+//                            joinAnnotation.targetField,
+//                            listOf(selfFieldValue),
+//                            joinAnnotation
+//                        )
+//                    } else {
+//                        provider.getInCondition(joinSelect.sql, joinAnnotation.targetField, listOf(selfFieldValue))
+//                    }
+//                val parameters = joinSelect.parameters.plus(joinSqlStatement.parameters).toMutableList()
+//                joinSelect = SqlStatement(joinSqlStatement.sql, parameters)
+//                val joinPrepareTime = joinStart.elapsed()
+//                val joinResult = executor.query(joinSelect, joinType)
+//                val joinList = joinResult.data
+//                val joinDuration = joinResult.toValue(joinPrepareTime, joinStart.elapsed())
+//                log(method, mapperInterface, joinSelect, joinList.size, joinDuration)
+//                Reflects.makeAccessible(join, it as Any)
+//                join.set(it, joinList)
             }
         }
-        return list
     }
 
     override fun <M : BaseMapper<T>, T : Any> selectByIdWithJoins(method: Method, mapperInterface: Class<M>, type: Class<T>, parameter: Any): T? {
@@ -546,21 +654,25 @@ class DefaultSqlSession(
     }
 
     override fun <M : BaseMapper<T>, T : Any> count(method: Method, mapperInterface: Class<M>, type: Class<T>, parameter: Any?): Long {
-        val start = nanoTime()
-        val count = provider.count(type, parameter)
-        val total = executor.count(count, Long::class.java)
-        return returnRows(method, mapperInterface, count, total, elapsedSince(start))
+        val value = sqlStatementTemplate(
+            prepare = { provider.count(type, parameter) },
+            execution = { executor.count(it, Long::class.java) }
+        )
+        return returnRows(method, mapperInterface, value, value.result.data)
     }
 
     override fun <M : BaseMapper<T>, T : Any> countWrapper(method: Method, mapperInterface: Class<M>, type: Class<T>, parameter: Any): Long {
-        val start = nanoTime()
-        @Suppress("UNCHECKED_CAST")
-        val countWrapper = parameter as QueryWrapper<*>
-        countWrapper.setTableClassIfNotSet(type)
-        countWrapper.setTableFillFields()
-        val sqlStatement = countWrapper.getSqlStatement(sqlDialect)
-        val count = executor.count(sqlStatement, type)
-        return returnRows(method, mapperInterface, sqlStatement, count, elapsedSince(start))
+        val value = sqlStatementTemplate(
+            prepare = {
+                @Suppress("UNCHECKED_CAST")
+                val countWrapper = parameter as QueryWrapper<*>
+                countWrapper.setTableClassIfNotSet(type)
+                countWrapper.setTableFillFields()
+                countWrapper.getSqlStatement(sqlDialect)
+            },
+            execution = { executor.count(it, type) }
+        )
+        return returnRows(method, mapperInterface, value, value.result.data)
     }
 
     private fun <M : BaseMapper<T>, T : Any> processPaginate(method: Method, mapperInterface: Class<M>, type: Class<T>, args: Array<out Any>?): Page<T> {
@@ -589,12 +701,13 @@ class DefaultSqlSession(
     }
 
     override fun <M : BaseMapper<T>, T : Any> paginate(method: Method, mapperInterface: Class<M>, type: Class<T>, pageNumber: Long, pageSize: Long, parameter: Any?, orderBys: Array<OrderItem<T>>): Page<T> {
-        val start = nanoTime()
         val (reasonablePageNumber, total) = reasonable(method, mapperInterface, type, pageNumber, pageSize)
-        val paginate = provider.paginate(type, parameter, orderBys, reasonablePageNumber, pageSize)
-        val list = executor.query(paginate, type)
-        log(method, mapperInterface, paginate, list.size, elapsedSince(start))
-        return Page(list, total, reasonablePageNumber, pageSize)
+        val value = sqlStatementTemplate(
+            prepare = { provider.paginate(type, parameter, orderBys, reasonablePageNumber, pageSize) },
+            execution = { executor.query(it, type) }
+        )
+        log(method, mapperInterface, value, value.result.data.size)
+        return Page(value.result.data, total, reasonablePageNumber, pageSize)
     }
 
     private fun <M : BaseMapper<T>, T : Any> processPaginateWithJoins(method: Method, mapperInterface: Class<M>, type: Class<T>, args: Array<out Any>?): Page<T> {
@@ -616,40 +729,18 @@ class DefaultSqlSession(
     }
 
     override fun <M : BaseMapper<T>, T : Any> paginateWithJoins(method: Method, mapperInterface: Class<M>, type: Class<T>, pageNumber: Long, pageSize: Long, parameter: Any?, orderBys: Array<OrderItem<T>>): Page<T> {
-        val start = nanoTime()
         val (reasonablePageNumber, total) = reasonable(method, mapperInterface, type, pageNumber, pageSize)
-        val paginate = provider.paginateWithJoins(type, parameter, orderBys, reasonablePageNumber, pageSize)
-        val list = executor.query(paginate, type)
-        log(method, mapperInterface, paginate, list.size, elapsedSince(start))
+        val value = sqlStatementTemplate(
+            prepare = { provider.paginateWithJoins(type, parameter, orderBys, reasonablePageNumber, pageSize) },
+            execution = { executor.query(it, type) }
+        )
+        val list = value.result.data
+        log(method, mapperInterface, value, list.size)
         val joins = Reflects.getIterableJoins(type)
         if (joins.isEmpty()) {
             return Page(list, total, reasonablePageNumber, pageSize)
         }
-        list.forEach {
-            joins.forEach { join ->
-                val joinStart = nanoTime()
-                val joinType = (join.genericType as ParameterizedType).actualTypeArguments[0] as Class<*>
-                val joinAnnotation = join.getAnnotation(Join::class.java)!!
-                val joinTable = joinAnnotation.joinTable
-                val joinSelfField = joinAnnotation.joinSelfColumn
-                val joinTargetField = joinAnnotation.joinTargetColumn
-                val selfField = Reflects.getField(type, joinAnnotation.selfField)
-                Reflects.makeAccessible(selfField!!, it as Any)
-                val selfFieldValue = Reflects.getValue(selfField, it)
-                var joinSelect = provider.selectWithJoins(joinType, null, emptyArray())
-                val joinSqlStatement = if (joinTable.isNotEmpty() && joinSelfField.isNotEmpty() && joinTargetField.isNotEmpty()) {
-                    provider.getNestedSelect(joinSelect.sql, joinAnnotation.targetField, listOf(selfFieldValue), joinAnnotation)
-                } else {
-                    provider.getInCondition(joinSelect.sql, joinAnnotation.targetField, listOf(selfFieldValue))
-                }
-                val parameters = joinSelect.parameters.plus(joinSqlStatement.parameters).toMutableList()
-                joinSelect = SqlStatement(joinSqlStatement.sql, parameters)
-                val joinList = executor.query(joinSelect, joinType)
-                log(method, mapperInterface, joinSelect, joinList.size, nanoTime() - joinStart)
-                Reflects.makeAccessible(join, it as Any)
-                join.set(it, joinList)
-            }
-        }
+        populateJoins(list, joins, type, method, mapperInterface)
         return Page(list, total, reasonablePageNumber, pageSize)
     }
 

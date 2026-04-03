@@ -7,6 +7,7 @@
 ### Features
 
 - Simplify `Processor` interface, remove include/exclude table logic
+- Add detailed SQL timing logs for each execution stage
 
 ## 1.0.19
 
