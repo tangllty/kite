@@ -66,6 +66,18 @@ class QueryWhereWrapper<T : Any>(
     }
 
     /**
+     * Generic join operation
+     *
+     * @param clazz the entity class to join
+     * @param joinType the type of join to perform
+     * @return JoinWrapper<T> for chaining operations
+     */
+    fun join(clazz: KClass<*>, joinType: JoinType): JoinWrapper<T> {
+        joinWrapper.joinTables.add(JoinTable(clazz.java, joinType))
+        return joinWrapper
+    }
+
+    /**
      * Left join operation
      *
      * @param clazz the entity class to left join
@@ -123,6 +135,46 @@ class QueryWhereWrapper<T : Any>(
      */
     fun innerJoin(clazz: KClass<*>): JoinWrapper<T> {
         return innerJoin(clazz.java)
+    }
+
+    /**
+     * Full join operation
+     *
+     * @param clazz the entity class to full join
+     * @return JoinWrapper<T> for chaining operations
+     */
+    fun fullJoin(clazz: Class<*>): JoinWrapper<T> {
+        return join(clazz, JoinType.FULL)
+    }
+
+    /**
+     * Full join operation using Kotlin class
+     *
+     * @param clazz the entity class to full join
+     * @return JoinWrapper<T> for chaining operations
+     */
+    fun fullJoin(clazz: KClass<*>): JoinWrapper<T> {
+        return fullJoin(clazz.java)
+    }
+
+    /**
+     * Cross join operation
+     *
+     * @param clazz the entity class to cross join
+     * @return JoinWrapper<T> for chaining operations
+     */
+    fun crossJoin(clazz: Class<*>): JoinWrapper<T> {
+        return join(clazz, JoinType.CROSS)
+    }
+
+    /**
+     * Cross join operation using Kotlin class
+     *
+     * @param clazz the entity class to cross join
+     * @return JoinWrapper<T> for chaining operations
+     */
+    fun crossJoin(clazz: KClass<*>): JoinWrapper<T> {
+        return crossJoin(clazz.java)
     }
 
     /**

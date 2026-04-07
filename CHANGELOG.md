@@ -8,6 +8,7 @@
 
 - Simplify `Processor` interface, remove include/exclude table logic
 - Add detailed SQL timing logs for each execution stage
+- Enhance join operations in `JoinWrapper` and `QueryWhereWrapper` with Kotlin class support
 
 ## 1.0.19
 
