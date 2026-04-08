@@ -1,5 +1,6 @@
-package com.tang.kite.utils.parser
+package com.tang.kite.sql.parser
 
+import com.tang.kite.sql.parser.defaults.DefaultSqlParser
 import kotlin.test.Test
 
 /**
@@ -11,7 +12,7 @@ class SqlParserTest {
     fun noCondition() {
         val sql = "select * from user"
         val params = emptyMap<String, Any?>()
-        val parsed = SqlParser.parse(sql, params)
+        val parsed = DefaultSqlParser.parse(sql, params)
         assert(parsed.sql == "select * from user")
         assert(parsed.parameters.isEmpty())
     }
@@ -20,7 +21,7 @@ class SqlParserTest {
     fun withCondition() {
         val sql = "select * from user where age > #{age} and name = #{name}"
         val params = mapOf("age" to 18, "name" to "Tang")
-        val parsed = SqlParser.parse(sql, params)
+        val parsed = DefaultSqlParser.parse(sql, params)
         assert(parsed.sql == "select * from user where age > ? and name = ?")
         assert(parsed.parameters == listOf(18, "Tang"))
     }
@@ -29,7 +30,7 @@ class SqlParserTest {
     fun withNestedProperties() {
         val sql = "select * from user where age > #{user.age} and name = #{user.name}"
         val params = mapOf("user" to mapOf("age" to 18, "name" to "Tang"))
-        val parsed = SqlParser.parse(sql, params)
+        val parsed = DefaultSqlParser.parse(sql, params)
         assert(parsed.sql == "select * from user where age > ? and name = ?")
         assert(parsed.parameters == listOf(18, "Tang"))
     }
@@ -41,7 +42,7 @@ class SqlParserTest {
             where age>#{age} and name = #{name}
         """.trimIndent()
         val params = mapOf("age" to 18, "name" to "Tang")
-        val parsed = SqlParser.parse(sql, params)
+        val parsed = DefaultSqlParser.parse(sql, params)
         assert(parsed.sql == "select * from user where age > ? and name = ?")
         assert(parsed.parameters == listOf(18, "Tang"))
     }
@@ -57,7 +58,7 @@ class SqlParserTest {
                 )
         """.trimIndent()
         val params = mapOf("age" to 18, "name" to "Tang", "email" to "tang@gmail.com")
-        val parsed = SqlParser.parse(sql, params)
+        val parsed = DefaultSqlParser.parse(sql, params)
         assert(parsed.sql == "select * from user where age > ? and (name = ? or email = ?)")
         assert(parsed.parameters == listOf(18, "Tang", "tang@gmail.com"))
     }
@@ -66,7 +67,7 @@ class SqlParserTest {
     fun withSpecialCharacters() {
         val sql = "select * from user where name = #{name} and email like #{email}"
         val params = mapOf("name" to "Tang", "email" to "%@gmail.com")
-        val parsed = SqlParser.parse(sql, params)
+        val parsed = DefaultSqlParser.parse(sql, params)
         assert(parsed.sql == "select * from user where name = ? and email like ?")
         assert(parsed.parameters == listOf("Tang", "%@gmail.com"))
     }
@@ -76,7 +77,7 @@ class SqlParserTest {
         val sql = "select * from user where age > #{age} and name = #{name}"
         val params = emptyMap<String, Any?>()
         try {
-            SqlParser.parse(sql, params)
+            DefaultSqlParser.parse(sql, params)
             assert(false)
         } catch (e: Exception) {
             assert(e.message?.contains("Key not found: age in map") == true)
@@ -88,7 +89,7 @@ class SqlParserTest {
         val sql = "select * from user where age > #{age and name = #{name}"
         val params = mapOf("age" to 18, "name" to "Tang")
         try {
-            SqlParser.parse(sql, params)
+            DefaultSqlParser.parse(sql, params)
             assert(false)
         } catch (e: Exception) {
             assert(e.message?.contains("SQL syntax error: unmatched #{} placeholder") == true)
@@ -100,7 +101,7 @@ class SqlParserTest {
         val sql = "select * from user where (age > #{age} and name = #{name}"
         val params = mapOf("age" to 18, "name" to "Tang")
         try {
-            SqlParser.parse(sql, params)
+            DefaultSqlParser.parse(sql, params)
             assert(false)
         } catch (e: IllegalArgumentException) {
             assert(e.message?.contains("SQL syntax error: unmatched '(' or ')' in SQL.") == true)
@@ -117,7 +118,7 @@ class SqlParserTest {
             }
         """.trimIndent()
         val params = mapOf("age" to 18, "name" to "Tang")
-        val parsed = SqlParser.parse(sql, params)
+        val parsed = DefaultSqlParser.parse(sql, params)
         assert(parsed.sql == "select * from user where age > ? and name = ?")
         assert(parsed.parameters == listOf(18, "Tang"))
     }
@@ -132,7 +133,7 @@ class SqlParserTest {
             }
         """.trimIndent()
         val params = mapOf("age" to 18, "name" to null)
-        val parsed = SqlParser.parse(sql, params)
+        val parsed = DefaultSqlParser.parse(sql, params)
         assert(parsed.sql == "select * from user where age > ?")
         assert(parsed.parameters == listOf(18))
     }
@@ -150,7 +151,7 @@ class SqlParserTest {
             }
         """.trimIndent()
         val params = mapOf("age" to 18, "name" to "Tang", "email" to "tang@gmail.com")
-        val parsed = SqlParser.parse(sql, params)
+        val parsed = DefaultSqlParser.parse(sql, params)
         assert(parsed.sql == "select * from user where age > ? and name = ? and email = ?")
         assert(parsed.parameters == listOf(18, "Tang", "tang@gmail.com"))
     }
@@ -167,7 +168,7 @@ class SqlParserTest {
             }
         """.trimIndent()
         val params = mapOf("age" to 18, "name" to "Tang")
-        val parsed = SqlParser.parse(sql, params)
+        val parsed = DefaultSqlParser.parse(sql, params)
         assert(parsed.sql == "select * from user where age > ? and name = ?")
         assert(parsed.parameters == listOf(18, "Tang"))
     }
@@ -184,7 +185,7 @@ class SqlParserTest {
             }
         """.trimIndent()
         val params = mapOf("age" to null, "name" to null)
-        val parsed = SqlParser.parse(sql, params)
+        val parsed = DefaultSqlParser.parse(sql, params)
         assert(parsed.sql == "select * from user")
         assert(parsed.parameters.isEmpty())
     }
@@ -198,7 +199,7 @@ class SqlParserTest {
             }
         """.trimIndent()
         val params = mapOf("groupBy" to "age")
-        val parsed = SqlParser.parse(sql, params)
+        val parsed = DefaultSqlParser.parse(sql, params)
         assert(parsed.sql == "select count(1) from user group by ?")
         assert(parsed.parameters == listOf("age"))
     }
@@ -212,7 +213,7 @@ class SqlParserTest {
             }
         """.trimIndent()
         val params = mapOf("orderBy" to "age desc")
-        val parsed = SqlParser.parse(sql, params)
+        val parsed = DefaultSqlParser.parse(sql, params)
         assert(parsed.sql == "select * from user order by ?")
         assert(parsed.parameters == listOf("age desc"))
     }
@@ -226,7 +227,7 @@ class SqlParserTest {
             }
         """.trimIndent()
         val params = mapOf("limit" to 10)
-        val parsed = SqlParser.parse(sql, params)
+        val parsed = DefaultSqlParser.parse(sql, params)
         assert(parsed.sql == "select * from user limit ?")
         assert(parsed.parameters == listOf(10))
     }
@@ -243,7 +244,7 @@ class SqlParserTest {
             }
         """.trimIndent()
         val params = mapOf("user" to mapOf("age" to 18, "name" to "Tang"))
-        val parsed = SqlParser.parse(sql, params)
+        val parsed = DefaultSqlParser.parse(sql, params)
         assert(parsed.sql == "select * from user where age > ? and name = ?")
         assert(parsed.parameters == listOf(18, "Tang"))
     }
@@ -260,7 +261,7 @@ class SqlParserTest {
             }
         """.trimIndent()
         val params = mapOf("user" to mapOf("age" to null, "name" to "Tang"))
-        val parsed = SqlParser.parse(sql, params)
+        val parsed = DefaultSqlParser.parse(sql, params)
         assert(parsed.sql == "select * from user where name = ?")
         assert(parsed.parameters == listOf("Tang"))
     }
@@ -275,7 +276,7 @@ class SqlParserTest {
             }
         """.trimIndent()
         val params = mapOf("user" to mapOf("age" to 18, "name" to "Tang"))
-        val parsed = SqlParser.parse(sql, params)
+        val parsed = DefaultSqlParser.parse(sql, params)
         assert(parsed.sql == "select * from user where age > ? and name = ?")
         assert(parsed.parameters == listOf(18, "Tang"))
     }
@@ -292,7 +293,7 @@ class SqlParserTest {
             }
         """.trimIndent()
         val params = mapOf("user" to mapOf("age" to 18, "name" to "Tang"))
-        val parsed = SqlParser.parse(sql, params)
+        val parsed = DefaultSqlParser.parse(sql, params)
         assert(parsed.sql == "select * from user where age > ? and name = ?")
         assert(parsed.parameters == listOf(18, "Tang"))
     }
@@ -308,12 +309,12 @@ class SqlParserTest {
             }
         """.trimIndent()
         val params = mapOf("age" to 18)
-        val parsed = SqlParser.parse(sql, params)
+        val parsed = DefaultSqlParser.parse(sql, params)
         assert(parsed.sql == "select * from user where age > ?")
         assert(parsed.parameters == listOf(18))
 
         val params2 = mapOf("age" to null)
-        val parsed2 = SqlParser.parse(sql, params2)
+        val parsed2 = DefaultSqlParser.parse(sql, params2)
         assert(parsed2.sql == "select * from user where age is null")
         assert(parsed2.parameters.isEmpty())
     }
@@ -329,12 +330,12 @@ class SqlParserTest {
             }
         """.trimIndent()
         val params = mapOf("age" to 18, "name" to null)
-        val parsed = SqlParser.parse(sql, params)
+        val parsed = DefaultSqlParser.parse(sql, params)
         assert(parsed.sql == "select * from user where age > ?")
         assert(parsed.parameters == listOf(18))
 
         val params2 = mapOf("age" to null, "name" to "Tang")
-        val parsed2 = SqlParser.parse(sql, params2)
+        val parsed2 = DefaultSqlParser.parse(sql, params2)
         assert(parsed2.sql == "select * from user where name = ?")
         assert(parsed2.parameters == listOf("Tang"))
     }
@@ -352,17 +353,17 @@ class SqlParserTest {
             }
         """.trimIndent()
         val params = mapOf("age" to 18, "name" to null)
-        val parsed = SqlParser.parse(sql, params)
+        val parsed = DefaultSqlParser.parse(sql, params)
         assert(parsed.sql == "select * from user where age > ?")
         assert(parsed.parameters == listOf(18))
 
         val params2 = mapOf("age" to null, "name" to "Tang")
-        val parsed2 = SqlParser.parse(sql, params2)
+        val parsed2 = DefaultSqlParser.parse(sql, params2)
         assert(parsed2.sql == "select * from user where name = ?")
         assert(parsed2.parameters == listOf("Tang"))
 
         val params3 = mapOf("age" to null, "name" to null)
-        val parsed3 = SqlParser.parse(sql, params3)
+        val parsed3 = DefaultSqlParser.parse(sql, params3)
         assert(parsed3.sql == "select * from user where email is null")
         assert(parsed3.parameters.isEmpty())
     }
@@ -376,7 +377,7 @@ class SqlParserTest {
             and date_format(created_at, '%Y-%m-%d') = #{date}
         """.trimIndent()
         val params = mapOf("age" to 18, "name" to "Tang", "date" to "2023-10-01")
-        val parsed = SqlParser.parse(sql, params)
+        val parsed = DefaultSqlParser.parse(sql, params)
         assert(parsed.sql == "select * from user where age > ? and name like concat('%', ?, '%') and date_format(created_at, '%Y-%m-%d') = ?")
         assert(parsed.parameters == listOf(18, "Tang", "2023-10-01"))
     }
@@ -385,7 +386,7 @@ class SqlParserTest {
     fun withArrayElementAccess() {
         val sql = "select * from user where id = #{ids[0]}"
         val params = mapOf("ids" to listOf(1, 2, 3))
-        val parsed = SqlParser.parse(sql, params)
+        val parsed = DefaultSqlParser.parse(sql, params)
         assert(parsed.sql == "select * from user where id = ?")
         assert(parsed.parameters == listOf(1))
     }
@@ -394,7 +395,7 @@ class SqlParserTest {
     fun withArrayElementAccessMultiple() {
         val sql = "select * from user where id = #{ids[0]} and age = #{ages[1]}"
         val params = mapOf("ids" to listOf(1, 2, 3), "ages" to listOf(18, 25, 30))
-        val parsed = SqlParser.parse(sql, params)
+        val parsed = DefaultSqlParser.parse(sql, params)
         assert(parsed.sql == "select * from user where id = ? and age = ?")
         assert(parsed.parameters == listOf(1, 25))
     }
@@ -403,7 +404,7 @@ class SqlParserTest {
     fun withStringArrayElementAccess() {
         val sql = "select * from user where name = #{names[0]}"
         val params = mapOf("names" to listOf("Alice", "Bob", "Charlie"))
-        val parsed = SqlParser.parse(sql, params)
+        val parsed = DefaultSqlParser.parse(sql, params)
         assert(parsed.sql == "select * from user where name = ?")
         assert(parsed.parameters == listOf("Alice"))
     }
@@ -417,7 +418,7 @@ class SqlParserTest {
             }
         """.trimIndent()
         val params = mapOf("ids" to listOf(1, 2, 3))
-        val parsed = SqlParser.parse(sql, params)
+        val parsed = DefaultSqlParser.parse(sql, params)
         assert(parsed.sql == "select * from user where id = ?")
         assert(parsed.parameters == listOf(1))
     }
@@ -427,7 +428,7 @@ class SqlParserTest {
         val sql = "select * from user where id = #{ids[5]}"
         val params = mapOf("ids" to listOf(1, 2, 3))
         try {
-            SqlParser.parse(sql, params)
+            DefaultSqlParser.parse(sql, params)
         } catch (e: Exception) {
             assert(e.message?.contains("Index 5 out of bounds for length 3") == true)
         }
@@ -437,7 +438,7 @@ class SqlParserTest {
     fun withNestedArrayElementAccess() {
         val sql = "select * from user where id = #{users[0].id}"
         val params = mapOf("users" to listOf(mapOf("id" to 1), mapOf("id" to 2)))
-        val parsed = SqlParser.parse(sql, params)
+        val parsed = DefaultSqlParser.parse(sql, params)
         assert(parsed.sql == "select * from user where id = ?")
         assert(parsed.parameters == listOf(1))
     }

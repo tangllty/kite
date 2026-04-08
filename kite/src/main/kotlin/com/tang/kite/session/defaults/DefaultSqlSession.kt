@@ -24,7 +24,6 @@ import com.tang.kite.sql.statement.BatchSqlStatement
 import com.tang.kite.sql.statement.SqlStatement
 import com.tang.kite.utils.Reflects
 import com.tang.kite.utils.Reflects.setValue
-import com.tang.kite.utils.parser.SqlParser
 import com.tang.kite.wrapper.delete.DeleteWrapper
 import com.tang.kite.wrapper.query.QueryWrapper
 import com.tang.kite.wrapper.update.UpdateWrapper
@@ -328,8 +327,8 @@ class DefaultSqlSession(
     }
 
     private fun annotatedMethodParameters(method: Method, args: Array<out Any>?, sql: String): SqlStatement {
-        val paramValueMap = SqlParser.buildParamValueMap(method.parameters, args)
-        return SqlParser.parse(sql, paramValueMap)
+        val params = SqlConfig.sqlParser.buildParams(method.parameters, args)
+        return SqlConfig.sqlParser.parse(sql, params)
     }
 
     private fun <M : BaseMapper<T>, T : Any> getGenericType(mapperInterface: Class<M>): Class<T> {

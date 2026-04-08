@@ -1,10 +1,8 @@
-package com.tang.kite.utils.parser
+package com.tang.kite.sql.parser.defaults
 
-import com.tang.kite.annotation.Param
+import com.tang.kite.sql.parser.SqlParser
 import com.tang.kite.sql.statement.SqlStatement
-import com.tang.kite.utils.Reflects
 import com.tang.kite.utils.expression.ExpressionParser
-import java.lang.reflect.Parameter
 
 /**
  * SQL Parser for dynamic SQL with conditional logic and parameter binding.
@@ -17,7 +15,7 @@ import java.lang.reflect.Parameter
  *
  * @author Tang
  */
-object SqlParser {
+object DefaultSqlParser : SqlParser {
 
     /**
      * Parses SQL with parameters and default beautification enabled.
@@ -26,7 +24,7 @@ object SqlParser {
      * @param params Parameter map containing values for placeholders
      * @return Parsed and prepared SQL statement with parameter list
      */
-    fun parse(sql: String, params: Map<String, Any?>): SqlStatement {
+    override fun parse(sql: String, params: Map<String, Any?>): SqlStatement {
         return parse(sql, params, true)
     }
 
@@ -39,7 +37,7 @@ object SqlParser {
      * @return Parsed and prepared SQL statement with parameter list
      * @throws IllegalArgumentException if SQL is blank or invalid
      */
-    fun parse(sql: String, params: Map<String, Any?>, beautify: Boolean): SqlStatement {
+    override fun parse(sql: String, params: Map<String, Any?>, beautify: Boolean): SqlStatement {
         require(sql.isNotBlank()) { "SQL must not be blank." }
 
         val (rawSql, paramList) = parseSql(sql, params)
@@ -49,63 +47,6 @@ object SqlParser {
 
         val cleanedSql = if (beautify) beautifySql(finalSql) else cleanSql(finalSql)
         return SqlStatement(cleanedSql, paramList)
-    }
-
-    /**
-     * Builds a comprehensive parameter map from method parameters and arguments.
-     *
-     * Supports multiple parameter naming strategies:
-     * 1. @Param annotation: explicitly named parameters
-     * 2. Indexed parameters: param1, param2, param3, etc.
-     * 3. Single Map argument: all map entries are added
-     * 4. Single object argument: all object fields are reflectively extracted
-     *
-     * @param parameters Method parameter metadata
-     * @param args Actual argument values passed to the method
-     * @return Map of parameter names to their values
-     */
-    fun buildParamValueMap(parameters: Array<Parameter>, args: Array<out Any>?): Map<String, Any?> {
-        if (args.isNullOrEmpty()) {
-            return emptyMap()
-        }
-
-        val map = mutableMapOf<String, Any?>()
-
-        // Add indexed and annotated parameters
-        parameters.forEachIndexed { index, param ->
-            val annotation = param.getAnnotation(Param::class.java)
-            if (annotation != null) {
-                map[annotation.value] = args[index]
-            }
-            // Always add indexed parameter format
-            map["param${index + 1}"] = args[index]
-        }
-
-        // Special handling for single argument
-        if (args.size == 1) {
-            when (val singleArg = args.first()) {
-                is Map<*, *> -> {
-                    // Merge all String-keyed map entries
-                    singleArg.forEach { (key, value) ->
-                        if (key is String) {
-                            map[key] = value
-                        }
-                    }
-                }
-                is Any -> {
-                    // Handle entity objects: extract all fields via reflection
-                    if (Reflects.isEntity(singleArg)) {
-                        val clazz = singleArg.javaClass
-                        val fields = Reflects.getFields(clazz)
-                        fields.forEach { field ->
-                            Reflects.makeAccessible(field, singleArg)
-                            map[field.name] = Reflects.getValue(singleArg, field.name)
-                        }
-                    }
-                }
-            }
-        }
-        return map
     }
 
     /**
