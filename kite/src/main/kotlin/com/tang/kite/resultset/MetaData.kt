@@ -1,4 +1,4 @@
-package com.tang.kite.utils.resultset
+package com.tang.kite.resultset
 
 import java.sql.JDBCType
 

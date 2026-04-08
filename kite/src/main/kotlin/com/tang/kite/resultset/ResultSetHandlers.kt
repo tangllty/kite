@@ -1,4 +1,4 @@
-package com.tang.kite.utils.resultset
+package com.tang.kite.resultset
 
 import com.tang.kite.constants.SqlString
 import com.tang.kite.utils.Reflects

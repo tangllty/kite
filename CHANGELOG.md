@@ -14,6 +14,7 @@
 - Add logging for SQL execution details in `DefaultSqlSession`
 - Implement `DefaultSqlParser` for dynamic SQL parsing with conditional logic and parameter binding
 - Refactor expression package structure and introduce `ExpressionMethod` interface for enhanced SQL expression handling
+- Refactor result set package structure and update imports for improved organization
 
 ## 1.0.19
 
