@@ -11,6 +11,7 @@
 - Enhance join operations in `JoinWrapper` and `QueryWhereWrapper` with Kotlin class support
 - Refactor SQL statement handling to streamline row return logging and enhance method clarity
 - Refactor argument handling in SQL selection methods for improved readability
+- Add logging for SQL execution details in `DefaultSqlSession`
 
 ## 1.0.19
 

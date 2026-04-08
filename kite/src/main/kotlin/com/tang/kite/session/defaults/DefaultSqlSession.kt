@@ -323,7 +323,8 @@ class DefaultSqlSession(
             return list
         }
         val rows = value.result.data as Int
-        return returnRows(method, mapperInterface, value, rows.toLong())
+        log(method, mapperInterface, value.sqlStatement, rows.toLong(), value.duration)
+        return rows
     }
 
     private fun annotatedMethodParameters(method: Method, args: Array<out Any>?, sql: String): SqlStatement {
