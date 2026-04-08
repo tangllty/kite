@@ -332,8 +332,8 @@ class DefaultSqlSession(
     }
 
     private fun <M : BaseMapper<T>, T : Any> getGenericType(mapperInterface: Class<M>): Class<T> {
-        val baseMapper = mapperInterface.genericInterfaces[0]
-        val type = (baseMapper as ParameterizedType).actualTypeArguments[0]
+        val baseMapper = mapperInterface.genericInterfaces.firstOrNull() ?: throw IllegalArgumentException("Mapper interface must inherit from a generic interface")
+        val type = (baseMapper as ParameterizedType).actualTypeArguments.firstOrNull() ?: throw IllegalArgumentException("Mapper interface must declare a generic type")
         @Suppress("UNCHECKED_CAST")
         return type as Class<T>
     }
@@ -504,13 +504,13 @@ class DefaultSqlSession(
             return selectList(method, mapperInterface, type, null, emptyArray())
         }
         if (args.size == 1) {
-            if (args[0].javaClass.isArray) {
-                return selectList(method, mapperInterface, type, null, toOrderBys(args[0]))
+            if (args.first().javaClass.isArray) {
+                return selectList(method, mapperInterface, type, null, toOrderBys(args.first()))
             }
-            return selectList(method, mapperInterface, type, args[0], emptyArray())
+            return selectList(method, mapperInterface, type, args.first(), emptyArray())
         }
         if (args.size == 2) {
-            return selectList(method, mapperInterface, type, args[0], toOrderBys(args[1]))
+            return selectList(method, mapperInterface, type, args.first(), toOrderBys(args.last()))
         }
         return selectList(method, mapperInterface, type, null, emptyArray())
     }
@@ -564,13 +564,13 @@ class DefaultSqlSession(
             return selectListWithJoins(method, mapperInterface, type, null, emptyArray())
         }
         if (args.size == 1) {
-            if (args[0].javaClass.isArray) {
-                return selectListWithJoins(method, mapperInterface, type, null, toOrderBys(args[0]))
+            if (args.first().javaClass.isArray) {
+                return selectListWithJoins(method, mapperInterface, type, null, toOrderBys(args.first()))
             }
-            return selectListWithJoins(method, mapperInterface, type, args[0], emptyArray())
+            return selectListWithJoins(method, mapperInterface, type, args.first(), emptyArray())
         }
         if (args.size == 2) {
-            return selectListWithJoins(method, mapperInterface, type, args[0], toOrderBys(args[1]))
+            return selectListWithJoins(method, mapperInterface, type, args.first(), toOrderBys(args.last()))
         }
         return selectListWithJoins(method, mapperInterface, type, null, emptyArray())
     }
