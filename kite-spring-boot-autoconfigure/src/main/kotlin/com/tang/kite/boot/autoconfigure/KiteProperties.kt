@@ -9,10 +9,12 @@ import com.tang.kite.config.table.DynamicTableProcessor
 import com.tang.kite.config.table.TableConfig
 import com.tang.kite.config.tenant.TenantConfig
 import com.tang.kite.config.tenant.TenantProcessor
+import com.tang.kite.expression.ExpressionMethod
 import com.tang.kite.handler.fill.FillHandler
 import com.tang.kite.handler.fill.FillKey
 import com.tang.kite.sql.dialect.SqlDialect
 import com.tang.kite.sql.enumeration.DatabaseType
+import com.tang.kite.sql.parser.SqlParser
 import org.springframework.boot.context.properties.ConfigurationProperties
 import kotlin.time.DurationUnit
 
@@ -137,62 +139,72 @@ open class KiteProperties(
         /**
          * Whether to log SQL prepare.
          */
-        var prepareLogging: Boolean = durationLogging,
+        var prepareLogging: Boolean = SqlConfig.prepareLogging,
 
         /**
          * SQL prepare unit.
          */
-        var prepareUnit: DurationUnit = durationUnit,
+        var prepareUnit: DurationUnit = SqlConfig.prepareUnit,
 
         /**
          * SQL prepare decimals.
          */
-        var prepareDecimals: Int = durationDecimals,
+        var prepareDecimals: Int = SqlConfig.prepareDecimals,
 
         /**
          * Whether to log SQL execution.
          */
-        var executionLogging: Boolean = durationLogging,
+        var executionLogging: Boolean = SqlConfig.executionLogging,
 
         /**
          * SQL execution unit.
          */
-        var executionUnit: DurationUnit = durationUnit,
+        var executionUnit: DurationUnit = SqlConfig.executionUnit,
 
         /**
          * SQL execution decimals.
          */
-        var executionDecimals: Int = durationDecimals,
+        var executionDecimals: Int = SqlConfig.executionDecimals,
 
         /**
          * Whether to log SQL mapping.
          */
-        var mappingLogging: Boolean = durationLogging,
+        var mappingLogging: Boolean = SqlConfig.mappingLogging,
 
         /**
          * SQL mapping unit.
          */
-        var mappingUnit: DurationUnit = durationUnit,
+        var mappingUnit: DurationUnit = SqlConfig.mappingUnit,
 
         /**
          * SQL mapping decimals.
          */
-        var mappingDecimals: Int = durationDecimals,
+        var mappingDecimals: Int = SqlConfig.mappingDecimals,
 
         /**
          * Whether to log SQL elapsed.
          */
-        var elapsedLogging: Boolean = durationLogging,
+        var elapsedLogging: Boolean = SqlConfig.elapsedLogging,
 
         /**
          * SQL elapsed unit.
          */
-        var elapsedUnit: DurationUnit = durationUnit,
+        var elapsedUnit: DurationUnit = SqlConfig.elapsedUnit,
 
         /**
          * SQL elapsed decimals.
          */
-        var elapsedDecimals: Int = durationDecimals
+        var elapsedDecimals: Int = SqlConfig.elapsedDecimals,
+
+        /**
+         * SQL parser.
+         */
+        var sqlParser: SqlParser = SqlConfig.sqlParser,
+
+        /**
+         * Expression methods for SQL configuration.
+         */
+        var expressionMethods: MutableMap<String, ExpressionMethod> = SqlConfig.expressionMethods
 
     )
 
@@ -272,6 +284,20 @@ open class KiteProperties(
         SqlConfig.durationLogging = sql.durationLogging
         SqlConfig.durationUnit = sql.durationUnit
         SqlConfig.durationDecimals = sql.durationDecimals
+        SqlConfig.prepareLogging = sql.prepareLogging
+        SqlConfig.prepareUnit = sql.prepareUnit
+        SqlConfig.prepareDecimals = sql.prepareDecimals
+        SqlConfig.executionLogging = sql.executionLogging
+        SqlConfig.executionUnit = sql.executionUnit
+        SqlConfig.executionDecimals = sql.executionDecimals
+        SqlConfig.mappingLogging = sql.mappingLogging
+        SqlConfig.mappingUnit = sql.mappingUnit
+        SqlConfig.mappingDecimals = sql.mappingDecimals
+        SqlConfig.elapsedLogging = sql.elapsedLogging
+        SqlConfig.elapsedUnit = sql.elapsedUnit
+        SqlConfig.elapsedDecimals = sql.elapsedDecimals
+        SqlConfig.sqlParser = sql.sqlParser
+        SqlConfig.expressionMethods = sql.expressionMethods
 
         TableConfig.dynamicTableProcessor = table.dynamicTableProcessor
 

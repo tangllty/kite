@@ -1,6 +1,8 @@
-package com.tang.kite.utils.expression
+package com.tang.kite.expression
 
+import com.tang.kite.config.SqlConfig
 import com.tang.kite.utils.Reflects
+import kotlin.collections.get
 import kotlin.math.pow
 
 /**
@@ -65,6 +67,10 @@ class Evaluator(private val context: Map<String, Any?>) {
     private fun evalMethodCall(expr: Expr.MethodCall): Any? {
         val target = evaluate(expr.target)
         val args = expr.arguments.map { evaluate(it) }
+        val method = SqlConfig.expressionMethods[expr.name]
+        if (method != null) {
+            return method.call(target, args)
+        }
         return when (expr.name) {
             "length", "size" -> getLengthOrSize(target)
             "isEmpty" -> getIsEmpty(target)

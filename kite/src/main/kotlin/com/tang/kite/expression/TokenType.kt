@@ -1,4 +1,4 @@
-package com.tang.kite.utils.expression
+package com.tang.kite.expression
 
 /**
  * Token types for the lexer and parser.

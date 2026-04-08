@@ -1,4 +1,4 @@
-package com.tang.kite.utils.expression
+package com.tang.kite.expression
 
 import kotlin.test.Test
 import kotlin.test.assertEquals

@@ -1,8 +1,8 @@
 package com.tang.kite.sql.parser.defaults
 
+import com.tang.kite.expression.ExpressionParser
 import com.tang.kite.sql.parser.SqlParser
 import com.tang.kite.sql.statement.SqlStatement
-import com.tang.kite.utils.expression.ExpressionParser
 
 /**
  * SQL Parser for dynamic SQL with conditional logic and parameter binding.

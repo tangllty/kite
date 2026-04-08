@@ -13,6 +13,7 @@
 - Refactor argument handling in SQL selection methods for improved readability
 - Add logging for SQL execution details in `DefaultSqlSession`
 - Implement `DefaultSqlParser` for dynamic SQL parsing with conditional logic and parameter binding
+- Refactor expression package structure and introduce `ExpressionMethod` interface for enhanced SQL expression handling
 
 ## 1.0.19
 

@@ -1,5 +1,6 @@
 package com.tang.kite.config
 
+import com.tang.kite.expression.ExpressionMethod
 import com.tang.kite.sql.parser.SqlParser
 import com.tang.kite.sql.parser.defaults.DefaultSqlParser
 import kotlin.time.DurationUnit
@@ -113,8 +114,17 @@ object SqlConfig {
     @JvmStatic
     var elapsedDecimals = durationDecimals
 
+    /**
+     * SQL parser.
+     */
     @JvmStatic
     var sqlParser: SqlParser = DefaultSqlParser
+
+    /**
+     * Expression methods for SQL configuration.
+     */
+    @JvmStatic
+    var expressionMethods: MutableMap<String, ExpressionMethod> = mutableMapOf()
 
     @JvmStatic
     fun getSql(sql: StringBuilder): String {
