@@ -7,6 +7,7 @@ dependencies {
     api(project(":kite"))
     api(project(":kite-spring6"))
     api(project(":kite-spring-boot-autoconfigure")) {
+        exclude(group = "io.github.tangllty", module = "kite-spring")
         exclude(group = "org.springframework.boot", module = "spring-boot-autoconfigure")
         exclude(group = "org.springframework.boot", module = "spring-boot-starter")
         exclude(group = "org.springframework.boot", module = "spring-boot-starter-jdbc")
@@ -22,6 +23,7 @@ dependencies {
 }
 
 kapt {
+    correctErrorTypes = true
     useBuildCache = false
     showProcessorStats = true
 }

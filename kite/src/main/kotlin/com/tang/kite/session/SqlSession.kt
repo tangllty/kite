@@ -5,6 +5,7 @@ import com.tang.kite.mapper.BaseMapper
 import com.tang.kite.paginate.OrderItem
 import com.tang.kite.paginate.Page
 import java.lang.reflect.Method
+import java.sql.Connection
 import kotlin.reflect.KClass
 
 /**
@@ -14,11 +15,13 @@ import kotlin.reflect.KClass
  */
 interface SqlSession : AutoCloseable {
 
+    fun getConnection(): Connection
+
     fun <M : BaseMapper<T>, T : Any> getMapper(clazz: Class<M>): M
 
     fun <M : BaseMapper<T>, T : Any> getMapper(clazz: KClass<M>): M
 
-    fun <M : BaseMapper<T>, T : Any> execute(type: MethodType, method: Method, args: Array<out Any>?, mapperInterface: Class<M>): Any?
+    fun <M : BaseMapper<T>, T : Any> execute(methodType: MethodType, method: Method, args: Array<out Any>?, mapperInterface: Class<M>): Any?
 
     fun <M : BaseMapper<T>, T : Any> insert(method: Method, mapperInterface: Class<M>, parameter: Any): Int
 

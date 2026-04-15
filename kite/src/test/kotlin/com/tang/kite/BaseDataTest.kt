@@ -1,12 +1,14 @@
 package com.tang.kite
 
+import com.tang.kite.datasource.DataSourceRegistry
 import com.tang.kite.datasource.unpooled.UnpooledDataSourceFactory
+import com.tang.kite.datasource.unpooled.UnpooledProperties
 import com.tang.kite.io.Resources
 import com.tang.kite.session.factory.SqlSessionFactoryBuilder
 import jakarta.servlet.http.HttpServletRequestWrapper
-import org.junit.jupiter.api.BeforeAll
 import org.yaml.snakeyaml.Yaml
 import javax.sql.DataSource
+import kotlin.test.BeforeTest
 
 /**
  * @author Tang
@@ -18,7 +20,8 @@ open class BaseDataTest {
         val yaml = Yaml().load<Map<String, Map<String, Map<String, String>>>>(inputStream)
         val kite = yaml["kite"]
         val datasource = kite!!["datasource"] as Map<String, String>
-        return UnpooledDataSourceFactory(datasource).getDataSource()
+        val properties = Resources.propertyToObject(datasource, UnpooledProperties::class.java)
+        return UnpooledDataSourceFactory(properties).getDataSource()
     }
 
     fun createDatabase() {
@@ -49,14 +52,14 @@ open class BaseDataTest {
         connection.close()
     }
 
-    companion object {
+    @BeforeTest
+    fun setup() {
+        val baseDataTest = BaseDataTest()
+        baseDataTest.createDatabase()
+        DataSourceRegistry.clear()
+    }
 
-        @JvmStatic
-        @BeforeAll
-        fun setup() {
-            val baseDataTest = BaseDataTest()
-            baseDataTest.createDatabase()
-        }
+    companion object {
 
         private val resource = Resources.getResourceAsStream("kite-config.yml")
 

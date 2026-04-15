@@ -1,7 +1,5 @@
 package com.tang.kite.spring.proxy
 
-import com.tang.kite.proxy.MapperProxyFactory
-import com.tang.kite.session.SqlSession
 import com.tang.kite.session.factory.SqlSessionFactory
 import com.tang.kite.spring.utils.SqlSessions
 import java.lang.reflect.InvocationHandler

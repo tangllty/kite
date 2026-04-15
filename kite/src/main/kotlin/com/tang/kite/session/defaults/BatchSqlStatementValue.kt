@@ -7,4 +7,12 @@ import com.tang.kite.sql.statement.BatchSqlStatement
 /**
  * @author Tang
  */
-class BatchSqlStatementValue<T>(val batchSqlStatement: BatchSqlStatement, val result: ExecutionResult<T>, val duration: DurationValue)
+class BatchSqlStatementValue<T>(
+
+    val batchSqlStatement: BatchSqlStatement,
+
+    val result: ExecutionResult<T>,
+
+    val duration: DurationValue
+
+)

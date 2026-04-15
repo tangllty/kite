@@ -3,6 +3,7 @@ package com.tang.kite.utils
 import com.tang.kite.annotation.Column
 import com.tang.kite.annotation.Join
 import com.tang.kite.annotation.Table
+import com.tang.kite.annotation.datasource.DataSource
 import com.tang.kite.annotation.id.Id
 import com.tang.kite.annotation.id.IdType
 import com.tang.kite.annotation.logical.LogicalDeletion
@@ -19,11 +20,15 @@ import com.tang.kite.handler.fill.Fill
 import com.tang.kite.handler.fill.FillKey
 import com.tang.kite.handler.result.ResultHandlerFactory
 import com.tang.kite.logging.LOGGER
+import com.tang.kite.mapper.BaseMapper
 import java.lang.invoke.SerializedLambda
 import java.lang.reflect.AccessibleObject
 import java.lang.reflect.Field
+import java.lang.reflect.Method
 import java.lang.reflect.Modifier
+import java.lang.reflect.ParameterizedType
 import java.lang.reflect.Proxy
+import java.util.Date
 import java.util.Locale
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.ConcurrentMap
@@ -31,6 +36,7 @@ import kotlin.jvm.java
 import kotlin.reflect.KCallable
 import kotlin.reflect.KMutableProperty1
 import kotlin.reflect.full.createInstance
+import kotlin.reflect.full.isSubclassOf
 import kotlin.reflect.jvm.isAccessible
 import kotlin.reflect.jvm.javaField
 
@@ -511,6 +517,14 @@ object Reflects {
             Proxy.isProxyClass(clazz) -> true
             clazz.isAnonymousClass -> true
             clazz.isMemberClass && !Modifier.isStatic(clazz.modifiers) -> true
+            Iterable::class.java.isAssignableFrom(clazz) -> true
+            Collection::class.java.isAssignableFrom(clazz) -> true
+            Map::class.java.isAssignableFrom(clazz) -> true
+            Number::class.java.isAssignableFrom(clazz) -> true
+            CharSequence::class.java.isAssignableFrom(clazz) -> true
+            Enum::class.java.isAssignableFrom(clazz) -> true
+            Date::class.java.isAssignableFrom(clazz) -> true
+            kClazz.isSubclassOf(Comparable::class) -> true
             else -> false
         }
         if (isNonEntity) return false
@@ -519,6 +533,57 @@ object Reflects {
             clazz.isRecord -> true
             else -> true
         }
+    }
+
+    /**
+     * Merges properties from default object into target object.
+     * If a field in target object is null or blank string, it will be overwritten by the value from default object.
+     *
+     * @param target The target object to be merged
+     * @param default The default object to provide fallback values
+     */
+    @JvmStatic
+    fun <T: Any> mergeProperties(target: T, default: T) {
+        val clazz = target::class.java
+        getFields(clazz).forEach { field ->
+            makeAccessible(field, target)
+            val useDefault = when (val targetValue = field.get(target)) {
+                null -> true
+                is String -> targetValue.isBlank()
+                else -> false
+            }
+            if (useDefault) {
+                field.set(target, field.get(default))
+            }
+        }
+    }
+
+    /**
+     * Get the generic type of the mapper interface.
+     *
+     * @param mapperInterface The mapper interface class.
+     * @return The generic type of the mapper interface.
+     */
+    @JvmStatic
+    fun <M : BaseMapper<T>, T : Any> getGenericType(mapperInterface: Class<M>): Class<T> {
+        val baseMapper = mapperInterface.genericInterfaces.firstOrNull() ?: throw IllegalArgumentException("Mapper interface must inherit from a generic interface")
+        val type = (baseMapper as ParameterizedType).actualTypeArguments.firstOrNull() ?: throw IllegalArgumentException("Mapper interface must declare a generic type")
+        @Suppress("UNCHECKED_CAST")
+        return type as Class<T>
+    }
+
+    @JvmStatic
+    fun <M : BaseMapper<T>, T : Any> getDataSourceKey(mapperInterface: Class<M>, method: Method, type: Class<T>): String? {
+        if (method.isAnnotationPresent(DataSource::class.java)) {
+            return method.getAnnotation(DataSource::class.java).value
+        }
+        if (mapperInterface.isAnnotationPresent(DataSource::class.java)) {
+            return mapperInterface.getAnnotation(DataSource::class.java).value
+        }
+        if (type.isAnnotationPresent(DataSource::class.java)) {
+            return type.getAnnotation(DataSource::class.java).value
+        }
+        return null
     }
 
 }

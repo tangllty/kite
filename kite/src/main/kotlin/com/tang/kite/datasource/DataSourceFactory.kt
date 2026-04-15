@@ -5,9 +5,9 @@ import javax.sql.DataSource
 /**
  * @author Tang
  */
-interface DataSourceFactory {
+interface DataSourceFactory<T> {
 
-    fun getProperties(): Map<String, String>
+    fun getProperties(): T
 
     fun getDataSource(): DataSource
 

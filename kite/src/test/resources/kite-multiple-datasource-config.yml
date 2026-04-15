@@ -1,0 +1,15 @@
+kite:
+  datasource:
+    driver: org.h2.Driver
+    url: jdbc:h2:mem:kite-h2;MODE=PostgreSQL
+    username:
+    password:
+
+    ds1:
+      url: jdbc:h2:mem:kite-h2-ds1;MODE=PostgreSQL
+
+    ds2:
+      url: jdbc:h2:mem:kite-h2-ds2;MODE=PostgreSQL
+
+    ds3:
+      url: jdbc:h2:mem:kite-h2-ds3;MODE=PostgreSQL

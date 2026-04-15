@@ -4,19 +4,12 @@ import com.tang.kite.config.KiteConfig
 import com.tang.kite.config.PageConfig
 import com.tang.kite.config.SqlConfig
 import com.tang.kite.config.logical.LogicalDeletionConfig
-import com.tang.kite.config.logical.LogicalDeletionProcessor
-import com.tang.kite.config.table.DynamicTableProcessor
 import com.tang.kite.config.table.TableConfig
 import com.tang.kite.config.tenant.TenantConfig
-import com.tang.kite.config.tenant.TenantProcessor
-import com.tang.kite.expression.ExpressionMethod
 import com.tang.kite.handler.fill.FillHandler
 import com.tang.kite.handler.fill.FillKey
 import com.tang.kite.sql.dialect.SqlDialect
-import com.tang.kite.sql.enumeration.DatabaseType
-import com.tang.kite.sql.parser.SqlParser
 import org.springframework.boot.context.properties.ConfigurationProperties
-import kotlin.time.DurationUnit
 
 /**
  * Kite properties class includes core properties for Kite framework.
@@ -30,12 +23,12 @@ open class KiteProperties(
     /**
      * Whether to display the banner during application startup.
      */
-    val banner: Boolean = KiteConfig.banner,
+    var banner: Boolean = KiteConfig.banner,
 
     /**
      * The strategy for selective query
      */
-    val selectiveStrategy: Function1<Any?, Boolean> = KiteConfig.selectiveStrategy,
+    var selectiveStrategy: Function1<Any?, Boolean> = KiteConfig.selectiveStrategy,
 
     /**
      * The batch size for operations like inserts or updates.
@@ -45,17 +38,22 @@ open class KiteProperties(
     /**
      * SQL dialects for different databases.
      */
-    var dialects: MutableMap<DatabaseType, SqlDialect> = KiteConfig.dialects,
+    var dialects: MutableMap<String, SqlDialect> = KiteConfig.dialects,
 
     /**
      * Fill handlers for handling fill annotations.
      */
-    val fillHandlers: MutableMap<FillKey, FillHandler> = KiteConfig.fillHandlers,
+    var fillHandlers: MutableMap<FillKey, FillHandler> = KiteConfig.fillHandlers,
+
+    /**
+     * Data source properties for data source configuration.
+     */
+    var datasource: LinkedHashMap<String, Any?> = LinkedHashMap(),
 
     /**
      * Page properties for pagination configuration.
      */
-    val page: PageProperties = PageProperties(),
+    var page: PageProperties = PageProperties(),
 
     /**
      * SQL properties for SQL configuration.
@@ -70,7 +68,7 @@ open class KiteProperties(
     /**
      * Logical delete properties for logical delete configuration.
      */
-    val logicalDelete: LogicalDeleteProperties = LogicalDeleteProperties(),
+    val logicalDeletion: LogicalDeletionProperties = LogicalDeletionProperties(),
 
     /**
      * Tenant properties for tenant configuration.
@@ -78,188 +76,6 @@ open class KiteProperties(
     val tenant: TenantProperties = TenantProperties()
 
 ) {
-
-    /**
-     * Page properties for pagination configuration.
-     */
-    class PageProperties (
-
-        /**
-         * Default page number.
-         */
-        val pageNumber: Long = PageConfig.pageNumber,
-
-        /**
-         * Default page size.
-         */
-        val pageSize: Long = PageConfig.pageSize,
-
-        /**
-         * Default page number parameter name.
-         */
-        val pageNumberParameter: String = PageConfig.pageNumberParameter,
-
-        /**
-         * Default page size parameter name.
-         */
-        val pageSizeParameter: String = PageConfig.pageSizeParameter
-
-    )
-
-    /**
-     * SQL properties for SQL configuration.
-     */
-    class SqlProperties (
-
-        /**
-         * SQL lowercase setting.
-         */
-        var sqlLowercase: Boolean = SqlConfig.sqlLowercase,
-
-        /**
-         * Whether to log SQL statements.
-         */
-        var sqlLogging: Boolean = SqlConfig.sqlLogging,
-
-        /**
-         * Whether to log SQL duration.
-         */
-        var durationLogging: Boolean = SqlConfig.durationLogging,
-
-        /**
-         * SQL duration unit.
-         */
-        var durationUnit: DurationUnit = SqlConfig.durationUnit,
-
-        /**
-         * SQL duration decimals.
-         */
-        var durationDecimals: Int = SqlConfig.durationDecimals,
-
-        /**
-         * Whether to log SQL prepare.
-         */
-        var prepareLogging: Boolean = SqlConfig.prepareLogging,
-
-        /**
-         * SQL prepare unit.
-         */
-        var prepareUnit: DurationUnit = SqlConfig.prepareUnit,
-
-        /**
-         * SQL prepare decimals.
-         */
-        var prepareDecimals: Int = SqlConfig.prepareDecimals,
-
-        /**
-         * Whether to log SQL execution.
-         */
-        var executionLogging: Boolean = SqlConfig.executionLogging,
-
-        /**
-         * SQL execution unit.
-         */
-        var executionUnit: DurationUnit = SqlConfig.executionUnit,
-
-        /**
-         * SQL execution decimals.
-         */
-        var executionDecimals: Int = SqlConfig.executionDecimals,
-
-        /**
-         * Whether to log SQL mapping.
-         */
-        var mappingLogging: Boolean = SqlConfig.mappingLogging,
-
-        /**
-         * SQL mapping unit.
-         */
-        var mappingUnit: DurationUnit = SqlConfig.mappingUnit,
-
-        /**
-         * SQL mapping decimals.
-         */
-        var mappingDecimals: Int = SqlConfig.mappingDecimals,
-
-        /**
-         * Whether to log SQL elapsed.
-         */
-        var elapsedLogging: Boolean = SqlConfig.elapsedLogging,
-
-        /**
-         * SQL elapsed unit.
-         */
-        var elapsedUnit: DurationUnit = SqlConfig.elapsedUnit,
-
-        /**
-         * SQL elapsed decimals.
-         */
-        var elapsedDecimals: Int = SqlConfig.elapsedDecimals,
-
-        /**
-         * SQL parser.
-         */
-        var sqlParser: SqlParser = SqlConfig.sqlParser,
-
-        /**
-         * Expression methods for SQL configuration.
-         */
-        var expressionMethods: MutableMap<String, ExpressionMethod> = SqlConfig.expressionMethods
-
-    )
-
-    /**
-     * Table properties for table configuration.
-     */
-    class TableProperties (
-
-        /**
-         * Dynamic table name processor.
-         */
-        var dynamicTableProcessor: DynamicTableProcessor? = TableConfig.dynamicTableProcessor
-
-    )
-
-    class LogicalDeleteProperties (
-
-        /**
-         * Whether logical delete is enabled
-         */
-        val enabled: Boolean = LogicalDeletionConfig.enabled,
-
-        /**
-         * Logical delete field name
-         */
-        val fieldName: String = LogicalDeletionConfig.fieldName,
-
-        /**
-         * Static processor for logical delete operations
-         */
-        var logicalDeletionProcessor: LogicalDeletionProcessor = LogicalDeletionConfig.logicalDeletionProcessor
-
-    )
-
-    /**
-     * Tenant properties for tenant configuration.
-     */
-    class TenantProperties (
-
-        /**
-         * Whether tenant functionality is enabled
-         */
-        val enabled: Boolean = TenantConfig.enabled,
-
-        /**
-         * Tenant ID field name
-         */
-        val fieldName: String = TenantConfig.fieldName,
-
-        /**
-         * Tenant processor for handling multiple tenant IDs
-         */
-        var tenantProcessor: TenantProcessor = TenantConfig.tenantProcessor
-
-    )
 
     companion object {
 
@@ -301,9 +117,9 @@ open class KiteProperties(
 
         TableConfig.dynamicTableProcessor = table.dynamicTableProcessor
 
-        LogicalDeletionConfig.enabled = logicalDelete.enabled
-        LogicalDeletionConfig.fieldName = logicalDelete.fieldName
-        LogicalDeletionConfig.logicalDeletionProcessor = logicalDelete.logicalDeletionProcessor
+        LogicalDeletionConfig.enabled = logicalDeletion.enabled
+        LogicalDeletionConfig.fieldName = logicalDeletion.fieldName
+        LogicalDeletionConfig.logicalDeletionProcessor = logicalDeletion.logicalDeletionProcessor
 
         TenantConfig.enabled = tenant.enabled
         TenantConfig.fieldName = tenant.fieldName

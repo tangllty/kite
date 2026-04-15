@@ -1,9 +1,9 @@
 package com.tang.kite.session.factory.defaults
 
-import com.tang.kite.executor.defaults.DefaultExecutorFactory
-import com.tang.kite.session.Configuration
-import com.tang.kite.session.SqlSession
+import com.tang.kite.datasource.KiteDataSource
 import com.tang.kite.enumeration.transaction.TransactionIsolationLevel
+import com.tang.kite.executor.defaults.DefaultExecutorFactory
+import com.tang.kite.session.SqlSession
 import com.tang.kite.session.defaults.DefaultSqlSession
 import com.tang.kite.session.factory.SqlSessionFactory
 
@@ -12,7 +12,7 @@ import com.tang.kite.session.factory.SqlSessionFactory
  *
  * @author Tang
  */
-class DefaultSqlSessionFactory(private val configuration: Configuration) : SqlSessionFactory {
+class DefaultSqlSessionFactory(private val kiteDataSource: KiteDataSource) : SqlSessionFactory {
 
     /**
      * Open a new session
@@ -51,10 +51,10 @@ class DefaultSqlSessionFactory(private val configuration: Configuration) : SqlSe
      * @return [SqlSession]
      */
     private fun openSession(isolationLevel: TransactionIsolationLevel?, autoCommit: Boolean): SqlSession {
-        val transactionFactory = configuration.transactionFactory
-        val transaction = transactionFactory.newTransaction(configuration.dataSource, isolationLevel, autoCommit)
+        val transactionFactory = kiteDataSource.transactionFactory
+        val transaction = transactionFactory.newTransaction(kiteDataSource, isolationLevel, autoCommit)
         val executor = DefaultExecutorFactory().newExecutor(transaction)
-        return DefaultSqlSession(executor, configuration.sqlDialect)
+        return DefaultSqlSession(executor, kiteDataSource.getCurrentDatabase().sqlDialect)
     }
 
 }

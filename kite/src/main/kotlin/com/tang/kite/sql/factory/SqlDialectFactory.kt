@@ -8,8 +8,8 @@ import com.tang.kite.sql.enumeration.DatabaseType
  */
 interface SqlDialectFactory {
 
-    fun newSqlDialect(url: String): SqlDialect
+    fun createSqlDialect(url: String): SqlDialect
 
-    fun getDialects(): MutableMap<DatabaseType, SqlDialect>
+    fun createSqlDialect(databaseType: DatabaseType): SqlDialect
 
 }

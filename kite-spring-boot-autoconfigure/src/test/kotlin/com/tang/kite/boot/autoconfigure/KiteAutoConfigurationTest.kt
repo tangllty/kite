@@ -1,6 +1,7 @@
 package com.tang.kite.boot.autoconfigure
 
 import com.tang.kite.config.KiteConfig
+import com.tang.kite.datasource.DataSourceRegistry
 import com.tang.kite.spring.constants.BeanNames
 import org.springframework.beans.factory.getBean
 import org.springframework.boot.jdbc.autoconfigure.DataSourceAutoConfiguration
@@ -28,6 +29,7 @@ class KiteAutoConfigurationTest {
             assertNotNull(context.getBean("dataSource"))
             assertNotNull(context.getBean(BeanNames.SQL_SESSION_FACTORY))
         }
+        DataSourceRegistry.clear()
     }
 
     @Test
@@ -36,6 +38,7 @@ class KiteAutoConfigurationTest {
             assertNotNull(context.getBean(BeanNames.SQL_SESSION_FACTORY))
             assertNotNull(context.getBean(BeanNames.SQL_SESSION))
         }
+        DataSourceRegistry.clear()
     }
 
     @Test
@@ -47,6 +50,7 @@ class KiteAutoConfigurationTest {
             assertEquals(kiteProperties.page.pageNumber, KiteConfig.page.pageNumber)
             assertEquals(kiteProperties.page.pageSize, KiteConfig.page.pageSize)
         }
+        DataSourceRegistry.clear()
     }
 
 }

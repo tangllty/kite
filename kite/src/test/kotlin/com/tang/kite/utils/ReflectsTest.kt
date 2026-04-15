@@ -4,8 +4,10 @@ import com.tang.kite.config.table.DynamicTableProcessor
 import com.tang.kite.config.table.TableConfig
 import com.tang.kite.session.entity.Account
 import com.tang.kite.session.entity.Role
+import com.tang.kite.session.mapper.AccountMapper
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
@@ -118,6 +120,42 @@ class ReflectsTest {
         val tableName = Reflects.getTableName(Account::class.java)
         TableConfig.dynamicTableProcessor = null
         assertEquals("account_dynamic", tableName)
+    }
+
+    @Test
+    fun isEntity() {
+        assertTrue { Reflects.isEntity(Account()) }
+        assertFalse { Reflects.isEntity(listOf(Account())) }
+    }
+
+    @Test
+    fun mergeProperties() {
+        val default = Account(username = "default", password = "password")
+        val target = Account()
+        Reflects.mergeProperties(target, default)
+        assertEquals("default", target.username)
+    }
+
+    @Test
+    fun getGenericType() {
+        val genericType = Reflects.getGenericType(AccountMapper::class.java)
+        assertEquals(genericType.name, Account::class.java.name)
+    }
+
+    @Test
+    fun getDataSourceKey() {
+        val method = DataSourceClassAccountMapper::class.java.getMethod("select")
+        val hasDataSourceMethod = DataSourceMethodAccountMapper::class.java.getMethod("select")
+        val mapper = DataSourceMethodAccountMapper::class.java
+        val hasDataSourceMapper = DataSourceClassAccountMapper::class.java
+        val entity = EntityAccount::class.java
+        val hasDataSourceEntity = DataSourceEntityAccount::class.java
+        val methodKey = Reflects.getDataSourceKey(hasDataSourceMapper, hasDataSourceMethod, entity)
+        assertEquals("ds1", methodKey)
+        val mapperKey = Reflects.getDataSourceKey(hasDataSourceMapper, method, entity)
+        assertEquals("ds2", mapperKey)
+        val entityKey = Reflects.getDataSourceKey(mapper, method, hasDataSourceEntity)
+        assertEquals("ds3", entityKey)
     }
 
 }

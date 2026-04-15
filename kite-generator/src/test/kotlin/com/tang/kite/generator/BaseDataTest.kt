@@ -1,6 +1,7 @@
 package com.tang.kite.generator
 
 import com.tang.kite.datasource.unpooled.UnpooledDataSourceFactory
+import com.tang.kite.datasource.unpooled.UnpooledProperties
 import com.tang.kite.io.Resources
 import com.tang.kite.session.factory.SqlSessionFactoryBuilder
 import org.junit.jupiter.api.BeforeAll
@@ -17,7 +18,8 @@ open class BaseDataTest {
         val yaml = Yaml().load<Map<String, Map<String, Map<String, String>>>>(inputStream)
         val kite = yaml["kite"]
         val datasource = kite!!["datasource"] as Map<String, String>
-        return UnpooledDataSourceFactory(datasource).getDataSource()
+        val properties = Resources.propertyToObject(datasource, UnpooledProperties::class.java)
+        return UnpooledDataSourceFactory(properties).getDataSource()
     }
 
     fun createDatabase() {

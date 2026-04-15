@@ -14,83 +14,72 @@ import com.tang.kite.sql.enumeration.DatabaseType
  *
  * @author Tang
  */
-class DefaultSqlDialectFactory : SqlDialectFactory {
+object DefaultSqlDialectFactory : SqlDialectFactory {
 
-    override fun newSqlDialect(url: String): SqlDialect {
-        val dialects = getDialects()
-        val databaseType = dialects.keys.firstOrNull {
-            url.contains(":${it.url}:") || url.contains(":${it.url}") || url.contains(it.url)
-        }
-        return dialects[databaseType] ?: throw IllegalArgumentException("Unsupported database url: $url")
+    override fun createSqlDialect(url: String): SqlDialect {
+        val databaseType = DatabaseType.getDatabaseType(url)
+        return createSqlDialect(databaseType)
     }
 
-    override fun getDialects(): MutableMap<DatabaseType, SqlDialect> {
-        val postgresqlDialect = PostgresqlDialect()
-        val mysqlDialect = MysqlDialect()
-        val sqlServerDialect = SqlServerDialect()
-        val oracleDialect = OracleDialect()
-        val db2Dialect = Db2Dialect()
+    override fun createSqlDialect(databaseType: DatabaseType): SqlDialect {
+        return when (databaseType) {
+            DatabaseType.POSTGRE_SQL,
+            DatabaseType.SQLITE,
+            DatabaseType.H2,
+            DatabaseType.HSQL,
+            DatabaseType.KINGBASE_ES,
+            DatabaseType.PHOENIX,
+            DatabaseType.SAP_HANA,
+            DatabaseType.IMPALA,
+            DatabaseType.GAUSS,
+            DatabaseType.HIGH_GO,
+            DatabaseType.VERTICA,
+            DatabaseType.REDSHIFT,
+            DatabaseType.OPENGAUSS,
+            DatabaseType.TDENGINE,
+            DatabaseType.UXDB,
+            DatabaseType.LEALONE,
+            DatabaseType.DUCKDB,
+            DatabaseType.GBASE_8C,
+            DatabaseType.GBASE_8S_PG,
+            DatabaseType.VASTBASE,
+            DatabaseType.TRINO,
+            DatabaseType.PRESTO,
+            DatabaseType.GREENPLUM,
+            DatabaseType.GOLDILOCKS,
+            DatabaseType.HIVE,
+            DatabaseType.X_CLOUD -> PostgresqlDialect()
 
-        return mutableMapOf(
-            DatabaseType.POSTGRE_SQL to postgresqlDialect,
-            DatabaseType.SQLITE to postgresqlDialect,
-            DatabaseType.H2 to postgresqlDialect,
-            DatabaseType.HSQL to postgresqlDialect,
-            DatabaseType.KINGBASE_ES to postgresqlDialect,
-            DatabaseType.PHOENIX to postgresqlDialect,
-            DatabaseType.SAP_HANA to postgresqlDialect,
-            DatabaseType.IMPALA to postgresqlDialect,
-            DatabaseType.GAUSS to postgresqlDialect,
-            DatabaseType.HIGH_GO to postgresqlDialect,
-            DatabaseType.VERTICA to postgresqlDialect,
-            DatabaseType.REDSHIFT to postgresqlDialect,
-            DatabaseType.OPENGAUSS to postgresqlDialect,
-            DatabaseType.TDENGINE to postgresqlDialect,
-            DatabaseType.UXDB to postgresqlDialect,
-            DatabaseType.LEALONE to postgresqlDialect,
-            DatabaseType.DUCKDB to postgresqlDialect,
-            DatabaseType.GBASE_8C to postgresqlDialect,
-            DatabaseType.GBASE_8S_PG to postgresqlDialect,
-            DatabaseType.VASTBASE to postgresqlDialect,
-            DatabaseType.TRINO to postgresqlDialect,
-            DatabaseType.PRESTO to postgresqlDialect,
-            DatabaseType.GREENPLUM to postgresqlDialect,
+            DatabaseType.MYSQL,
+            DatabaseType.MARIADB,
+            DatabaseType.GBASE,
+            DatabaseType.OSCAR,
+            DatabaseType.XUGU,
+            DatabaseType.CLICK_HOUSE,
+            DatabaseType.OCEAN_BASE,
+            DatabaseType.CUBRID,
+            DatabaseType.SUNDB,
+            DatabaseType.GOLDENDB,
+            DatabaseType.YASDB,
+            DatabaseType.DM,
+            DatabaseType.DORIS,
+            DatabaseType.SINODB -> MysqlDialect()
 
-            DatabaseType.MYSQL to mysqlDialect,
-            DatabaseType.MARIADB to mysqlDialect,
-            DatabaseType.GBASE to mysqlDialect,
-            DatabaseType.OSCAR to mysqlDialect,
-            DatabaseType.XUGU to mysqlDialect,
-            DatabaseType.CLICK_HOUSE to mysqlDialect,
-            DatabaseType.OCEAN_BASE to mysqlDialect,
-            DatabaseType.CUBRID to mysqlDialect,
-            DatabaseType.SUNDB to mysqlDialect,
-            DatabaseType.GOLDENDB to mysqlDialect,
-            DatabaseType.YASDB to mysqlDialect,
-            DatabaseType.DM to mysqlDialect,
-            DatabaseType.DORIS to mysqlDialect,
+            DatabaseType.ORACLE,
+            DatabaseType.ORACLE_12C,
+            DatabaseType.CSIIDB -> OracleDialect()
 
-            DatabaseType.ORACLE to oracleDialect,
-            DatabaseType.ORACLE_12C to oracleDialect,
-            DatabaseType.CSIIDB to oracleDialect,
+            DatabaseType.SQLSERVER,
+            DatabaseType.SQLSERVER_2005,
+            DatabaseType.DERBY,
+            DatabaseType.SYBASE,
+            DatabaseType.FIREBIRD,
+            DatabaseType.GBASE_8S,
+            DatabaseType.INFORMIX -> SqlServerDialect()
 
-            DatabaseType.SQLSERVER to sqlServerDialect,
-            DatabaseType.SQLSERVER_2005 to sqlServerDialect,
-            DatabaseType.DERBY to sqlServerDialect,
-            DatabaseType.SYBASE to sqlServerDialect,
-
-            DatabaseType.DB2 to db2Dialect,
-            DatabaseType.DB2_1005 to db2Dialect,
-
-
-            DatabaseType.FIREBIRD to sqlServerDialect,
-            DatabaseType.GBASE_8S to sqlServerDialect,
-            DatabaseType.GOLDILOCKS to postgresqlDialect,
-            DatabaseType.HIVE to postgresqlDialect,
-            DatabaseType.INFORMIX to sqlServerDialect,
-            DatabaseType.SINODB to mysqlDialect,
-            DatabaseType.X_CLOUD to postgresqlDialect
-        )
+            DatabaseType.DB2,
+            DatabaseType.DB2_1005 -> Db2Dialect()
+        }
     }
 
 }

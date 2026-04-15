@@ -7,4 +7,12 @@ import com.tang.kite.sql.statement.SqlStatement
 /**
  * @author Tang
  */
-class SqlStatementValue<T>(val sqlStatement: SqlStatement, val result: ExecutionResult<T>, val duration: DurationValue)
+class SqlStatementValue<T>(
+
+    val sqlStatement: SqlStatement,
+
+    val result: ExecutionResult<T>,
+
+    val duration: DurationValue
+
+)

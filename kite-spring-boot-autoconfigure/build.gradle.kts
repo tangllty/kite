@@ -17,6 +17,7 @@ dependencies {
 }
 
 kapt {
+    correctErrorTypes = true
     useBuildCache = false
     showProcessorStats = true
 }

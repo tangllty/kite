@@ -1,5 +1,7 @@
 package com.tang.kite.sql.enumeration
 
+import javax.sql.DataSource
+
 /**
  * Database type enumeration
  *
@@ -266,5 +268,24 @@ enum class DatabaseType(val url: String) {
      * XCloud database
      */
     X_CLOUD("xcloud");
+
+    companion object {
+
+        @JvmStatic
+        fun getDatabaseType(url: String): DatabaseType {
+            return entries.toTypedArray().firstOrNull {
+                url.contains(":${it.url}:") || url.contains(":${it.url}") || url.contains(it.url)
+            }?: throw IllegalArgumentException("Unsupported database url: $url")
+        }
+
+        @JvmStatic
+        fun getDatabaseType(dataSource: DataSource): DatabaseType {
+            val connection = dataSource.connection
+            val url = connection.metaData.url
+            connection.close()
+            return DatabaseType.getDatabaseType(url)
+        }
+
+    }
 
 }

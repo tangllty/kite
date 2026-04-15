@@ -1,9 +1,10 @@
 package com.tang.kite.spring
 
+import com.tang.kite.datasource.KiteDataSource
 import com.tang.kite.session.SqlSession
 import com.tang.kite.session.factory.SqlSessionFactory
 import com.tang.kite.spring.annotation.MapperScan
-import com.tang.kite.spring.beans.DataSourceBean
+import com.tang.kite.spring.beans.datasource.KiteDataSourceBean
 import com.tang.kite.spring.beans.session.SqlSessionBean
 import com.tang.kite.spring.beans.session.factory.SqlSessionFactoryBean
 import com.tang.kite.spring.constants.BeanNames
@@ -24,16 +25,16 @@ import javax.sql.DataSource
 @MapperScan(["com.tang.kite.spring.mapper"])
 open class ApplicationConfig {
 
-    @Bean(BeanNames.DATA_SOURCE)
-    open fun dataSource(): DataSource {
-        val dataSource = DataSourceBean("kite-config.yml")
-        dataSource.afterPropertiesSet()
-        return dataSource.getObject()
+    @Bean(BeanNames.KITE_DATA_SOURCE)
+    open fun kiteDataSource(): KiteDataSource {
+        val kiteDataSourceBean = KiteDataSourceBean("kite-config.yml")
+        kiteDataSourceBean.afterPropertiesSet()
+        return kiteDataSourceBean.getObject()
     }
 
     @Bean(BeanNames.SQL_SESSION_FACTORY)
-    open fun sqlSessionFactory(@Qualifier(BeanNames.DATA_SOURCE) dataSource: DataSource): SqlSessionFactory {
-        val sqlSessionFactoryBean = SqlSessionFactoryBean(dataSource)
+    open fun sqlSessionFactory(@Qualifier(BeanNames.KITE_DATA_SOURCE) kiteDataSource: KiteDataSource): SqlSessionFactory {
+        val sqlSessionFactoryBean = SqlSessionFactoryBean(kiteDataSource)
         sqlSessionFactoryBean.afterPropertiesSet()
         return sqlSessionFactoryBean.getObject()
     }

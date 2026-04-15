@@ -11,8 +11,6 @@ import com.tang.kite.handler.fill.FillHandler
 import com.tang.kite.handler.fill.FillKey
 import com.tang.kite.handler.fill.TimeFillHandler
 import com.tang.kite.sql.dialect.SqlDialect
-import com.tang.kite.sql.enumeration.DatabaseType
-import com.tang.kite.sql.factory.defaults.DefaultSqlDialectFactory
 
 /**
  * Kite properties class includes core properties for Kite framework.
@@ -43,7 +41,7 @@ object KiteConfig {
      * SQL dialects for different databases.
      */
     @JvmStatic
-    var dialects: MutableMap<DatabaseType, SqlDialect> = DefaultSqlDialectFactory().getDialects()
+    var dialects: MutableMap<String, SqlDialect> = mutableMapOf()
 
     /**
      * Fill handlers for handling fill annotations.

@@ -9,6 +9,7 @@ import com.tang.kite.config.PageConfig
 import com.tang.kite.config.SqlConfig
 import com.tang.kite.constants.BaseMethodName
 import com.tang.kite.constants.SqlString
+import com.tang.kite.datasource.withDataSource
 import com.tang.kite.enumeration.MethodType
 import com.tang.kite.executor.ExecutionResult
 import com.tang.kite.executor.Executor
@@ -32,6 +33,7 @@ import org.slf4j.LoggerFactory
 import java.lang.reflect.Field
 import java.lang.reflect.Method
 import java.lang.reflect.ParameterizedType
+import java.sql.Connection
 import kotlin.reflect.KClass
 import kotlin.time.Duration.Companion.nanoseconds
 
@@ -49,6 +51,10 @@ class DefaultSqlSession(
     private val provider = SqlNodeProvider(sqlDialect)
 
     private var isDirty = false
+
+    override fun getConnection(): Connection {
+        return executor.getConnection()
+    }
 
     override fun <M : BaseMapper<T>, T : Any> getMapper(clazz: Class<M>): M {
         val mapperProxyFactory = MapperProxyFactory(clazz)
@@ -257,15 +263,25 @@ class DefaultSqlSession(
         return rowsInt
     }
 
-    override fun <M : BaseMapper<T>, T : Any> execute(type: MethodType, method: Method, args: Array<out Any>?, mapperInterface: Class<M>): Any? {
-        return when (type) {
-            MethodType.BASE -> baseExecutor(method, args, mapperInterface)
-            MethodType.ANNOTATED -> annotatedMethodsInvoker(method, args, mapperInterface)
+    override fun <M : BaseMapper<T>, T : Any> execute(methodType: MethodType, method: Method, args: Array<out Any>?, mapperInterface: Class<M>): Any? {
+        val type: Class<T> = Reflects.getGenericType(mapperInterface)
+        val dataSourceKey = Reflects.getDataSourceKey(mapperInterface, method, type)
+        if (dataSourceKey.isNullOrBlank()) {
+            return execute(methodType, method, args, mapperInterface, type)
+        }
+        withDataSource(dataSourceKey) {
+            return execute(methodType, method, args, mapperInterface, type)
         }
     }
 
-    private fun <M : BaseMapper<T>, T : Any> baseExecutor(method: Method, args: Array<out Any>?, mapperInterface: Class<M>): Any? {
-        val type: Class<T> = getGenericType(mapperInterface)
+    private fun <M: BaseMapper<T>, T: Any> execute(methodType: MethodType, method: Method, args: Array<out Any>?, mapperInterface: Class<M>, type: Class<T>): Any? {
+        return when (methodType) {
+            MethodType.BASE -> baseExecutor(method, args, mapperInterface, type)
+            MethodType.ANNOTATED -> annotatedMethodsInvoker(method, args, mapperInterface, type)
+        }
+    }
+
+    private fun <M : BaseMapper<T>, T : Any> baseExecutor(method: Method, args: Array<out Any>?, mapperInterface: Class<M>, type: Class<T>): Any? {
         return when {
             BaseMethodName.isInsert(method) -> insert(method, mapperInterface, getFirstArg(args))
             BaseMethodName.isInsertSelective(method) -> insertSelective(method, mapperInterface, getFirstArg(args))
@@ -295,7 +311,7 @@ class DefaultSqlSession(
         }
     }
 
-    private fun <M : BaseMapper<T>, T : Any> annotatedMethodsInvoker(method: Method, args: Array<out Any>?, mapperInterface: Class<M>): Any {
+    private fun <M : BaseMapper<T>, T : Any> annotatedMethodsInvoker(method: Method, args: Array<out Any>?, mapperInterface: Class<M>, type: Class<T>): Any {
         val isSelect = method.isAnnotationPresent(Select::class.java)
         val value = sqlStatementTemplate(
             prepare = {
@@ -308,7 +324,6 @@ class DefaultSqlSession(
             },
             execution = {
                 if (isSelect) {
-                    val type: Class<T> = getGenericType(mapperInterface)
                     executor.query(it, type)
                 } else {
                     val parameter = getFirstArg(args)
@@ -329,13 +344,6 @@ class DefaultSqlSession(
     private fun annotatedMethodParameters(method: Method, args: Array<out Any>?, sql: String): SqlStatement {
         val params = SqlConfig.sqlParser.buildParams(method.parameters, args)
         return SqlConfig.sqlParser.parse(sql, params)
-    }
-
-    private fun <M : BaseMapper<T>, T : Any> getGenericType(mapperInterface: Class<M>): Class<T> {
-        val baseMapper = mapperInterface.genericInterfaces.firstOrNull() ?: throw IllegalArgumentException("Mapper interface must inherit from a generic interface")
-        val type = (baseMapper as ParameterizedType).actualTypeArguments.firstOrNull() ?: throw IllegalArgumentException("Mapper interface must declare a generic type")
-        @Suppress("UNCHECKED_CAST")
-        return type as Class<T>
     }
 
     private fun getMethodSignature(method: Method): String {
@@ -744,7 +752,7 @@ class DefaultSqlSession(
     }
 
     override fun close() {
-        if (!executor.getConnection().autoCommit && isDirty) {
+        if (!getConnection().autoCommit && isDirty) {
             rollback()
         }
         executor.close()

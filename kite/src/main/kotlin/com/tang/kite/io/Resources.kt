@@ -36,10 +36,27 @@ object Resources {
     }
 
     @JvmStatic
-    fun getDataSourceProperties(inputStream: InputStream): Map<String, String> {
+    fun getDataSourceProperties(inputStream: InputStream): Map<String, Any?> {
         val kite = getKiteProperties(inputStream)
-        val datasource = kite["datasource"] as Map<String, String>
-        return datasource
+        return kite["datasource"] as Map<String, String>
+    }
+
+    fun <T : Any> getDataSourceProperties(inputStream: InputStream, clazz: Class<T>): Map<String, T> {
+        val dataSourceProperties = getDataSourceProperties(inputStream)
+        return getDataSourceProperties(dataSourceProperties, clazz)
+    }
+
+    fun <T : Any> getDataSourceProperties(properties: Map<String, Any?>, clazz: Class<T>): Map<String, T> {
+        val defaultProperties = propertyToObject(properties, clazz)
+        val dataSourcePropertiesMap = properties.filter { it.value is Map<*, *> }
+        if (dataSourcePropertiesMap.isEmpty()) {
+            return mapOf("default" to defaultProperties)
+        }
+        return dataSourcePropertiesMap.mapValues {
+            val targetObject = propertyToObject(it.value as Map<*, *>, clazz)
+            Reflects.mergeProperties(targetObject, defaultProperties)
+            targetObject
+        }
     }
 
     @JvmStatic
