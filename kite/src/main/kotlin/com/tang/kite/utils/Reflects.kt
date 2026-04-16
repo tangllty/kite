@@ -230,7 +230,7 @@ object Reflects {
     @JvmStatic
     fun getGeneratedId(idField: Field): Any {
         val idStrategy = idField.getAnnotation(Id::class.java).idStrategy
-        return idStrategy.java.getDeclaredConstructor().newInstance().getId(idField)
+        return idStrategy.createInstance().getId(idField)
     }
 
     @JvmStatic

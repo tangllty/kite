@@ -1,6 +1,7 @@
 package com.tang.kite.handler.result
 
 import com.tang.kite.annotation.Column
+import com.tang.kite.config.KiteConfig
 import com.tang.kite.handler.result.math.BigDecimalResultHandler
 import com.tang.kite.handler.result.math.BigIntegerResultHandler
 import com.tang.kite.handler.result.primitive.BooleanResultHandler
@@ -35,6 +36,7 @@ import java.util.Calendar
 import java.util.Date
 import kotlin.Double
 import kotlin.Long
+import kotlin.reflect.full.createInstance
 
 /**
  * @author Tang
@@ -53,8 +55,12 @@ class ResultHandlerFactory {
         if (field.isAnnotationPresent(Column::class.java)) {
             val column = field.getAnnotation(Column::class.java)
             if (column.resultHandler != ResultHandler::class) {
-                return column.resultHandler.java.getDeclaredConstructor().newInstance()
+                return column.resultHandler.createInstance()
             }
+        }
+        val resultHandlers = KiteConfig.resultHandlers
+        if (resultHandlers.containsKey(field.type)) {
+            return resultHandlers[field.type]!!::class.createInstance()
         }
         return when (field.type) {
             // Primitive types

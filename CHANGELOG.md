@@ -17,6 +17,7 @@
 - Refactor result set package structure and update imports for improved organization
 - Support multiple data sources
 - Refactor property application logic to use `applyProperties` method in configuration classes
+- Support global `ResultHandler`
 
 ## 1.0.19
 

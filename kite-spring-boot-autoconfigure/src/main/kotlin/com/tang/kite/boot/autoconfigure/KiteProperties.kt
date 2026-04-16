@@ -3,6 +3,7 @@ package com.tang.kite.boot.autoconfigure
 import com.tang.kite.config.KiteConfig
 import com.tang.kite.handler.fill.FillHandler
 import com.tang.kite.handler.fill.FillKey
+import com.tang.kite.handler.result.ResultHandler
 import com.tang.kite.sql.dialect.SqlDialect
 import org.springframework.boot.context.properties.ConfigurationProperties
 
@@ -39,6 +40,11 @@ open class KiteProperties(
      * Fill handlers for handling fill annotations.
      */
     var fillHandlers: MutableMap<FillKey, FillHandler> = KiteConfig.fillHandlers,
+
+    /**
+     * Result handlers for handling result types.
+     */
+    var resultHandlers: MutableMap<Class<*>, ResultHandler> = KiteConfig.resultHandlers,
 
     /**
      * Data source properties for data source configuration.
@@ -84,6 +90,7 @@ open class KiteProperties(
         KiteConfig.batchSize = batchSize
         KiteConfig.dialects = dialects
         KiteConfig.fillHandlers = fillHandlers
+        KiteConfig.resultHandlers = resultHandlers
         page.applyProperties()
         sql.applyProperties()
         table.applyProperties()

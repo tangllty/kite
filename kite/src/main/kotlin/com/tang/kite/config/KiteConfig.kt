@@ -10,6 +10,7 @@ import com.tang.kite.enumeration.SqlType
 import com.tang.kite.handler.fill.FillHandler
 import com.tang.kite.handler.fill.FillKey
 import com.tang.kite.handler.fill.TimeFillHandler
+import com.tang.kite.handler.result.ResultHandler
 import com.tang.kite.sql.dialect.SqlDialect
 
 /**
@@ -51,6 +52,12 @@ object KiteConfig {
         FillKey(CreateTime::class, SqlType.INSERT) to TimeFillHandler(),
         FillKey(UpdateTime::class, SqlType.UPDATE) to TimeFillHandler()
     )
+
+    /**
+     * Result handlers for handling result types.
+     */
+    @JvmStatic
+    var resultHandlers: MutableMap<Class<*>, ResultHandler> = mutableMapOf()
 
     /**
      * Page properties for pagination configuration.
