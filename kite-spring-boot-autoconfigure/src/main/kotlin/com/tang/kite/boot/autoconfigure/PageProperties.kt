@@ -32,12 +32,19 @@ open class PageProperties (
      */
     var pageSizeParameter: String = PageConfig.pageSizeParameter
 
-) {
+) : PropertyApplier {
 
     companion object {
 
         const val PAGE_PREFIX = KiteProperties.KITE_PREFIX + ".page"
 
+    }
+
+    override fun applyProperties() {
+        PageConfig.pageNumber = pageNumber
+        PageConfig.pageSize = pageSize
+        PageConfig.pageNumberParameter = pageNumberParameter
+        PageConfig.pageSizeParameter = pageSizeParameter
     }
 
 }

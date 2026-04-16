@@ -28,12 +28,18 @@ open class TenantProperties (
      */
     var tenantProcessor: TenantProcessor = TenantConfig.tenantProcessor
 
-) {
+) : PropertyApplier {
 
     companion object {
 
         const val TENANT_PREFIX = KiteProperties.KITE_PREFIX + ".tenant"
 
+    }
+
+    override fun applyProperties() {
+        TenantConfig.enabled = enabled
+        TenantConfig.fieldName = fieldName
+        TenantConfig.tenantProcessor = tenantProcessor
     }
 
 }

@@ -33,7 +33,7 @@ import javax.sql.DataSource
 open class KiteAutoConfiguration {
 
     constructor(kiteProperties: KiteProperties) {
-        kiteProperties.apply()
+        kiteProperties.applyProperties()
     }
 
     @Bean(BeanNames.KITE_DATA_SOURCE)

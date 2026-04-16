@@ -110,12 +110,34 @@ open class SqlProperties (
      */
     var expressionMethods: MutableMap<String, ExpressionMethod> = SqlConfig.expressionMethods
 
-) {
+) : PropertyApplier {
 
     companion object {
 
         const val SQL_PREFIX = KiteProperties.KITE_PREFIX + ".sql"
 
+    }
+
+    override fun applyProperties() {
+        SqlConfig.sqlLowercase = sqlLowercase
+        SqlConfig.sqlLogging = sqlLogging
+        SqlConfig.durationLogging = durationLogging
+        SqlConfig.durationUnit = durationUnit
+        SqlConfig.durationDecimals = durationDecimals
+        SqlConfig.prepareLogging = prepareLogging
+        SqlConfig.prepareUnit = prepareUnit
+        SqlConfig.prepareDecimals = prepareDecimals
+        SqlConfig.executionLogging = executionLogging
+        SqlConfig.executionUnit = executionUnit
+        SqlConfig.executionDecimals = executionDecimals
+        SqlConfig.mappingLogging = mappingLogging
+        SqlConfig.mappingUnit = mappingUnit
+        SqlConfig.mappingDecimals = mappingDecimals
+        SqlConfig.elapsedLogging = elapsedLogging
+        SqlConfig.elapsedUnit = elapsedUnit
+        SqlConfig.elapsedDecimals = elapsedDecimals
+        SqlConfig.sqlParser = sqlParser
+        SqlConfig.expressionMethods = expressionMethods
     }
 
 }

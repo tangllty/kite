@@ -18,12 +18,16 @@ open class TableProperties (
      */
     var dynamicTableProcessor: DynamicTableProcessor? = TableConfig.dynamicTableProcessor
 
-) {
+) : PropertyApplier {
 
     companion object {
 
         const val TABLE_PREFIX = KiteProperties.KITE_PREFIX + ".table"
 
+    }
+
+    override fun applyProperties() {
+        TableConfig.dynamicTableProcessor = dynamicTableProcessor
     }
 
 }

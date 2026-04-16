@@ -28,12 +28,18 @@ open class LogicalDeletionProperties (
      */
     var logicalDeletionProcessor: LogicalDeletionProcessor = LogicalDeletionConfig.logicalDeletionProcessor
 
-) {
+) : PropertyApplier {
 
     companion object {
 
         const val LOGICAL_DELETE_PREFIX = KiteProperties.KITE_PREFIX + ".logical-delete"
 
+    }
+
+    override fun applyProperties() {
+        LogicalDeletionConfig.enabled = enabled
+        LogicalDeletionConfig.fieldName = fieldName
+        LogicalDeletionConfig.logicalDeletionProcessor = logicalDeletionProcessor
     }
 
 }
