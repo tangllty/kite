@@ -4,6 +4,9 @@
 
 ### Dependencies
 
+- Bump spring-boot3 from 3.5.12 to 3.5.13
+- Bump spring-boot from 4.0.4 to 4.0.5
+
 ### Features
 
 - Simplify `Processor` interface, remove include/exclude table logic

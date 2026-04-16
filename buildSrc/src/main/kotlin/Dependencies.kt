@@ -21,9 +21,9 @@ class Versions {
     // https://mvnrepository.com/artifact/org.springframework/spring-core
     val spring = "7.0.6"
     // https://mvnrepository.com/artifact/org.springframework.boot/spring-boot
-    val springBoot3 = "3.5.12"
+    val springBoot3 = "3.5.13"
     // https://mvnrepository.com/artifact/org.springframework.boot/spring-boot
-    val springBoot = "4.0.4"
+    val springBoot = "4.0.5"
 }
 
 class Libraries {
