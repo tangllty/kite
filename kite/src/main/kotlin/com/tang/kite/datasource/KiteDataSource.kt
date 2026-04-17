@@ -2,17 +2,13 @@ package com.tang.kite.datasource
 
 import com.tang.kite.transaction.TransactionFactory
 import com.tang.kite.transaction.jdbc.JdbcTransactionFactory
-import java.io.PrintWriter
 import java.sql.Connection
-import java.sql.DriverManager
-import java.sql.SQLException
-import java.util.logging.Logger
 import javax.sql.DataSource
 
 /**
  * @author Tang
  */
-class KiteDataSource : DataSource {
+class KiteDataSource : AbstractDataSource {
 
     private val dataSourceKey: String
 
@@ -57,34 +53,6 @@ class KiteDataSource : DataSource {
 
     override fun getConnection(username: String?, password: String?): Connection {
         return getCurrentDataSource().getConnection(username, password)
-    }
-
-    override fun getLogWriter(): PrintWriter? {
-        return DriverManager.getLogWriter()
-    }
-
-    override fun setLogWriter(out: PrintWriter?) {
-        DriverManager.setLogWriter(out)
-    }
-
-    override fun setLoginTimeout(seconds: Int) {
-        DriverManager.setLoginTimeout(seconds)
-    }
-
-    override fun getLoginTimeout(): Int {
-        return DriverManager.getLoginTimeout()
-    }
-
-    override fun getParentLogger(): Logger? {
-        return Logger.getLogger(Logger.GLOBAL_LOGGER_NAME)
-    }
-
-    override fun <T> unwrap(iface: Class<T?>?): T? {
-        throw SQLException(javaClass.name + " is not a wrapper.")
-    }
-
-    override fun isWrapperFor(iface: Class<*>?): Boolean {
-        return iface?.isInstance(this) ?: false
     }
 
 }

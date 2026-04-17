@@ -1,3 +1,13 @@
+## 1.0.21
+
+### Bug Fixes
+
+### Dependencies
+
+### Features
+
+- Introduce `AbstractDataSource` class to streamline data source implementations
+
 ## 1.0.20
 
 ### Bug Fixes

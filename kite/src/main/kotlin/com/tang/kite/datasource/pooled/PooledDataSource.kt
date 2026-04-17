@@ -1,21 +1,18 @@
 package com.tang.kite.datasource.pooled
 
+import com.tang.kite.datasource.AbstractDataSource
 import org.slf4j.LoggerFactory
-import java.io.PrintWriter
-import java.lang.UnsupportedOperationException
 import java.sql.Connection
 import java.sql.DriverManager
 import java.sql.SQLException
 import java.util.concurrent.BlockingQueue
 import java.util.concurrent.Executors
 import java.util.concurrent.LinkedBlockingQueue
-import java.util.logging.Logger
-import javax.sql.DataSource
 
 /**
  * @author Tang
  */
-class PooledDataSource(private val properties: PooledProperties) : DataSource {
+class PooledDataSource(private val properties: PooledProperties) : AbstractDataSource() {
 
     private val logger: org.slf4j.Logger = LoggerFactory.getLogger(PooledDataSource::class.java)
 
@@ -30,34 +27,6 @@ class PooledDataSource(private val properties: PooledProperties) : DataSource {
             freeConnections.add(newConnection())
         }
         logger.debug("Initialized pooled data source with ${properties.initialConnections} connections in ${System.currentTimeMillis() - start} ms.")
-    }
-
-    override fun getLogWriter(): PrintWriter {
-        return DriverManager.getLogWriter()
-    }
-
-    override fun setLogWriter(out: PrintWriter?) {
-        DriverManager.setLogWriter(out)
-    }
-
-    override fun setLoginTimeout(seconds: Int) {
-        DriverManager.setLoginTimeout(seconds)
-    }
-
-    override fun getLoginTimeout(): Int {
-        return DriverManager.getLoginTimeout()
-    }
-
-    override fun getParentLogger(): Logger {
-        return Logger.getLogger(Logger.GLOBAL_LOGGER_NAME)
-    }
-
-    override fun <T> unwrap(iface: Class<T>?): T {
-        throw SQLException(javaClass.name + " is not a wrapper.")
-    }
-
-    override fun isWrapperFor(iface: Class<*>?): Boolean {
-        return false
     }
 
     override fun getConnection(): Connection {
