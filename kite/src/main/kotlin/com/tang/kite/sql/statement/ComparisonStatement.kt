@@ -19,6 +19,11 @@ class ComparisonStatement(val column: Column, val value: Any?, val comparisonOpe
 
     fun appendSql(sql: StringBuilder, parameters: MutableList<Any?>, withAlias: Boolean) {
         when (comparisonOperator) {
+            ComparisonOperator.SUBQUERY -> {
+                val subqueryStatement = value as SubqueryStatement
+                sql.append("${getColumn(withAlias)}${subqueryStatement.comparisonOperator.value}")
+                subqueryStatement.appendSql(sql, parameters)
+            }
             ComparisonOperator.BETWEEN, ComparisonOperator.NOT_BETWEEN -> {
                 // TODO Pair's element type may be is FunctionColumn
                 val pair = value as Pair<*, *>

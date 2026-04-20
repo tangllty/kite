@@ -37,6 +37,8 @@ enum class ComparisonOperator(val value: String) {
 
     IS_NULL(SqlString.IS_NULL),
 
-    IS_NOT_NULL(SqlString.IS_NOT_NULL)
+    IS_NOT_NULL(SqlString.IS_NOT_NULL),
+
+    SUBQUERY("subquery")
 
 }

@@ -7,6 +7,7 @@
 ### Features
 
 - Introduce `AbstractDataSource` class to streamline data source implementations
+- Add support for subqueries in SQL statements and refactor join population logic
 
 ## 1.0.20
 

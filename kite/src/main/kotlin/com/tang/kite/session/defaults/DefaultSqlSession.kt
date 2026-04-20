@@ -2,7 +2,6 @@ package com.tang.kite.session.defaults
 
 import com.tang.kite.annotation.Delete
 import com.tang.kite.annotation.Insert
-import com.tang.kite.annotation.Join
 import com.tang.kite.annotation.Select
 import com.tang.kite.annotation.Update
 import com.tang.kite.config.PageConfig
@@ -599,39 +598,17 @@ class DefaultSqlSession(
     }
 
     private fun <M : BaseMapper<T>, T : Any> populateJoins(list: List<T>, joins: List<Field>, type: Class<T>, method: Method, mapperInterface: Class<M>) {
-        list.forEach {
+        list.forEach { entity ->
             joins.forEach { join ->
                 val joinType = (join.genericType as ParameterizedType).actualTypeArguments[0] as Class<*>
                 val value = sqlStatementTemplate(
-                    prepare = {
-                        val joinAnnotation = join.getAnnotation(Join::class.java)!!
-                        val joinTable = joinAnnotation.joinTable
-                        val joinSelfField = joinAnnotation.joinSelfColumn
-                        val joinTargetField = joinAnnotation.joinTargetColumn
-                        val selfField = Reflects.getField(type, joinAnnotation.selfField)
-                        Reflects.makeAccessible(selfField!!, it as Any)
-                        val selfFieldValue = Reflects.getValue(selfField, it)
-                        val joinSelect = provider.selectWithJoins(joinType, null, emptyArray())
-                        val joinSqlStatement =
-                            if (joinTable.isNotEmpty() && joinSelfField.isNotEmpty() && joinTargetField.isNotEmpty()) {
-                                provider.getNestedSelect(
-                                    joinSelect.sql,
-                                    joinAnnotation.targetField,
-                                    listOf(selfFieldValue),
-                                    joinAnnotation
-                                )
-                            } else {
-                                provider.getInCondition(joinSelect.sql, joinAnnotation.targetField, listOf(selfFieldValue))
-                            }
-                        val parameters = joinSelect.parameters.plus(joinSqlStatement.parameters).toMutableList()
-                        SqlStatement(joinSqlStatement.sql, parameters)
-                    },
+                    prepare = { provider.populateJoins(join, type, entity, joinType) },
                     execution = { statement -> executor.query(statement, joinType) }
                 )
                 val joinList = value.result.data
                 log(method, mapperInterface, value, joinList.size)
-                Reflects.makeAccessible(join, it as Any)
-                join.set(it, joinList)
+                Reflects.makeAccessible(join, entity as Any)
+                setValue(join, entity, joinList)
             }
         }
     }
