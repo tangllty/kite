@@ -3,7 +3,7 @@ plugins {
 }
 
 dependencies {
-    api(project(":kite"))
+    api(project(":kite-core"))
     api(libs.springContext)
     api(libs.springJdbc)
     testImplementation(libs.h2)

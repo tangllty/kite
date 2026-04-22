@@ -4,7 +4,7 @@ plugins {
 }
 
 dependencies {
-    api(project(":kite"))
+    api(project(":kite-core"))
     api(project(":kite-spring6"))
     api(project(":kite-spring-boot-autoconfigure")) {
         exclude(group = "io.github.tangllty", module = "kite-spring")

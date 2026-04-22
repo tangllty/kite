@@ -10,7 +10,7 @@ Kite is a high-performance, lightweight ORM framework written in Kotlin. It is d
 
 ### Maven Central
 
- * [kite](https://central.sonatype.com/artifact/io.github.tangllty/kite)
+ * [kite-core](https://central.sonatype.com/artifact/io.github.tangllty/kite-core)
  * [kite-spring-boot-starter](https://central.sonatype.com/artifact/io.github.tangllty/kite-spring-boot-starter)
  * [kite-spring-boot3-starter](https://central.sonatype.com/artifact/io.github.tangllty/kite-spring-boot3-starter)
 

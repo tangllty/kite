@@ -2,7 +2,7 @@ plugins {
     id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"
 }
 rootProject.name = "kite"
-include("kite")
+include("kite-core")
 include("kite-generator")
 include("kite-spring")
 include("kite-spring-boot-autoconfigure")

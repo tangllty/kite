@@ -3,7 +3,7 @@ plugins {
 }
 
 dependencies {
-    api(project(":kite"))
+    api(project(":kite-core"))
     api(project(":kite-spring")) {
         exclude(group = "org.springframework", module = "spring-context")
         exclude(group = "org.springframework", module = "spring-jdbc")

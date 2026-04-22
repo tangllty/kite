@@ -3,7 +3,7 @@ plugins {
 }
 
 dependencies {
-    api(project(":kite"))
+    api(project(":kite-core"))
     api(project(":kite-spring"))
     api(project(":kite-spring-boot-autoconfigure"))
 }

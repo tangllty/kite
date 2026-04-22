@@ -4,7 +4,7 @@ plugins {
 }
 
 dependencies {
-    api(project(":kite"))
+    api(project(":kite-core"))
     api(project(":kite-spring"))
     kapt(libs.springBootConfigurationProcessor)
     implementation(libs.springBootStarter)
