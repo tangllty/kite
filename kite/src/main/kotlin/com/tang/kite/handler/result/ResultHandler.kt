@@ -21,7 +21,9 @@ interface ResultHandler {
     }
 
     /**
-     * Sets the value of the specified field in the given instance.
+     * Sets the value of the specified field in the given instance to the provided value.
+     * This method is called when the value is not null.
+     * If the value is null, it calls the [setNullValue] method to set the field to null.
      *
      * @param field The field to set.
      * @param instance The instance whose field is to be set.
