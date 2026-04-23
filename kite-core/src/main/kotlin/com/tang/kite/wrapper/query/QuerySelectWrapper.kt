@@ -2,8 +2,8 @@ package com.tang.kite.wrapper.query
 
 import com.tang.kite.function.SFunction
 import com.tang.kite.sql.Column
-import com.tang.kite.sql.SqlNode
 import com.tang.kite.sql.TableReference
+import com.tang.kite.sql.ast.SqlNode
 import kotlin.reflect.KClass
 import kotlin.reflect.KMutableProperty1
 

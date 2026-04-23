@@ -9,8 +9,8 @@ import com.tang.kite.paginate.OrderItem
 import com.tang.kite.sql.Column
 import com.tang.kite.sql.JoinTable
 import com.tang.kite.sql.LimitClause
-import com.tang.kite.sql.SqlNode
 import com.tang.kite.sql.TableReference
+import com.tang.kite.sql.ast.SqlNode
 import com.tang.kite.sql.dialect.SqlDialect
 import com.tang.kite.sql.enumeration.ComparisonOperator
 import com.tang.kite.sql.enumeration.JoinType

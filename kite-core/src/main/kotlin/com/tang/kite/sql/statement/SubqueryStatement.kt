@@ -3,7 +3,7 @@ package com.tang.kite.sql.statement
 import com.tang.kite.constants.SqlString.LEFT_BRACKET
 import com.tang.kite.constants.SqlString.RIGHT_BRACKET
 import com.tang.kite.constants.SqlString.SPACE
-import com.tang.kite.sql.SqlNode
+import com.tang.kite.sql.ast.SqlNode
 import com.tang.kite.sql.dialect.SqlDialect
 import com.tang.kite.sql.enumeration.ComparisonOperator
 import java.lang.StringBuilder

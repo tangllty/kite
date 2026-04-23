@@ -2,6 +2,7 @@ package com.tang.kite.sql
 
 import com.tang.kite.session.entity.Account
 import com.tang.kite.session.entity.Role
+import com.tang.kite.sql.ast.SqlNode
 import com.tang.kite.sql.dialect.DerbyDialect
 import com.tang.kite.sql.enumeration.ComparisonOperator
 import com.tang.kite.sql.enumeration.JoinType

@@ -4,7 +4,7 @@ import com.tang.kite.function.SFunction
 import com.tang.kite.paginate.OrderItem
 import com.tang.kite.sql.Column
 import com.tang.kite.sql.JoinTable
-import com.tang.kite.sql.SqlNode
+import com.tang.kite.sql.ast.SqlNode
 import com.tang.kite.sql.enumeration.JoinType
 import com.tang.kite.sql.statement.LogicalStatement
 import com.tang.kite.wrapper.where.AbstractWhereWrapper

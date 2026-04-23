@@ -2,8 +2,8 @@ package com.tang.kite.wrapper.update
 
 import com.tang.kite.enumeration.SqlType
 import com.tang.kite.mapper.BaseMapper
-import com.tang.kite.sql.SqlNode
 import com.tang.kite.sql.TableReference
+import com.tang.kite.sql.ast.SqlNode
 import com.tang.kite.sql.dialect.SqlDialect
 import com.tang.kite.sql.statement.LogicalStatement
 import com.tang.kite.sql.statement.SqlStatement
