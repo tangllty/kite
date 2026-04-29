@@ -1,5 +1,7 @@
 package com.tang.kite.generator.info
 
+import com.tang.kite.metadata.ColumnMeta
+
 /**
  * Column information
  *
@@ -7,22 +9,10 @@ package com.tang.kite.generator.info
  */
 data class ColumnInfo(
 
-    val columnName: String,
+    val columnMeta: ColumnMeta,
 
     val propertyName: String,
 
-    val dataType: String,
-
-    val targetType: TargetType,
-
-    val comment: String? = null,
-
-    val isNullable: Boolean = true,
-
-    val isPrimaryKey: Boolean = false,
-
-    val isAutoIncrement: Boolean = false,
-
-    val defaultValue: String? = null
+    val targetType: TargetType
 
 )

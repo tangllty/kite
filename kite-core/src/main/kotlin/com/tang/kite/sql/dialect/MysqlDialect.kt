@@ -11,16 +11,20 @@ import com.tang.kite.sql.enumeration.DatabaseType
  *
  * @author Tang
  */
-class MysqlDialect : SqlDialect {
-
-    override fun getType(): DatabaseType {
-        return DatabaseType.MYSQL
-    }
+class MysqlDialect : AbstractSqlDialect(DatabaseType.MYSQL) {
 
     override fun applyLimitClause(sql: StringBuilder, parameters: MutableList<Any?>, limitClause: LimitClause) {
-        parameters.add(((limitClause.pageNumber - 1) * limitClause.pageSize))
+        parameters.add((limitClause.pageNumber - 1) * limitClause.pageSize)
         parameters.add(limitClause.pageSize)
         sql.append("$LIMIT$QUESTION_MARK$COMMA_SPACE$QUESTION_MARK")
     }
+
+    override fun supportsCommentOnColumn(): Boolean = false
+
+    override fun requiresTableForDropIndex(): Boolean = true
+
+    override fun getAutoIncrementKeyword(): String = "auto_increment"
+
+    override fun getAlterColumnKeyword(): String = "modify"
 
 }

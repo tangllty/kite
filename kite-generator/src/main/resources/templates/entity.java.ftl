@@ -17,7 +17,7 @@ import ${entity.superClass.qualifiedName};
 </#if>
 
 /**
- * Entity corresponding to database table ${table.tableName}
+ * Entity corresponding to database table ${table.tableMeta.tableName}
 <#if table.comment?? && table.comment != "">
  * ${table.comment}
 </#if>
@@ -27,7 +27,7 @@ import ${entity.superClass.qualifiedName};
 </#if>
  */
 <#if entity.withTableAnnotation>
-@Table("${table.tableName}")
+@Table("${table.tableMeta.tableName}")
 </#if>
 public class ${table.className}<#if entity.superClass??> extends ${entity.superClass.simpleName}</#if> implements Serializable {
 
@@ -42,13 +42,13 @@ public class ${table.className}<#if entity.superClass??> extends ${entity.superC
      * ${column.comment}
      */
     </#if>
-    <#if column.primaryKey>
+    <#if column.columnMeta.primaryKey>
     @Id(type = IdType.AUTO)
     </#if>
     <#if entity.withColumnAnnotation>
     @Column("${column.columnName}")
     </#if>
-    private ${column.targetType.className}<#if column.nullable || !column.defaultValue??> ${column.propertyName};</#if><#if !column.nullable && column.defaultValue??> ${column.propertyName} = ${column.defaultValue};</#if>
+    private ${column.targetType.className}<#if column.columnMeta.nullable || !column.defaultValue??> ${column.propertyName};</#if><#if !column.columnMeta.nullable && column.defaultValue??> ${column.propertyName} = ${column.defaultValue};</#if>
 
 </#list>
 <#list table.columns as column>

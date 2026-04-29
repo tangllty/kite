@@ -11,7 +11,7 @@ import com.tang.kite.constants.SqlString
 import com.tang.kite.datasource.withDataSource
 import com.tang.kite.enumeration.MethodType
 import com.tang.kite.executor.ExecutionResult
-import com.tang.kite.executor.Executor
+import com.tang.kite.executor.defaults.DefaultExecutorFactory
 import com.tang.kite.mapper.BaseMapper
 import com.tang.kite.paginate.OrderItem
 import com.tang.kite.paginate.Page
@@ -22,6 +22,7 @@ import com.tang.kite.sql.dialect.SqlDialect
 import com.tang.kite.sql.provider.SqlNodeProvider
 import com.tang.kite.sql.statement.BatchSqlStatement
 import com.tang.kite.sql.statement.SqlStatement
+import com.tang.kite.transaction.Transaction
 import com.tang.kite.utils.Reflects
 import com.tang.kite.utils.Reflects.setValue
 import com.tang.kite.wrapper.delete.DeleteWrapper
@@ -41,11 +42,13 @@ import kotlin.time.Duration.Companion.nanoseconds
  */
 class DefaultSqlSession(
 
-    private val executor: Executor,
+    transaction: Transaction,
 
     private val sqlDialect: SqlDialect
 
 ) : SqlSession {
+
+    private val executor = DefaultExecutorFactory().newExecutor(transaction)
 
     private val provider = SqlNodeProvider(sqlDialect)
 

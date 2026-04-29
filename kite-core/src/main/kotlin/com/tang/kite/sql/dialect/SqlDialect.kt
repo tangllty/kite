@@ -12,4 +12,18 @@ interface SqlDialect {
 
     fun applyLimitClause(sql: StringBuilder, parameters: MutableList<Any?>, limitClause: LimitClause)
 
+    fun supportsCascade(): Boolean
+
+    fun supportsCommentOnColumn(): Boolean
+
+    fun requiresTableForDropIndex(): Boolean
+
+    fun getAutoIncrementKeyword(): String
+
+    fun getAddColumnKeyword(): String
+
+    fun getDropColumnKeyword(): String
+
+    fun getAlterColumnKeyword(): String
+
 }

@@ -30,7 +30,7 @@ class CodeGenerator(
 
         // Filter tables with prefix
         val filteredTables = if (config.tablePrefix.isNotEmpty()) {
-            tables.filter { it.tableName.startsWith(config.tablePrefix) }
+            tables.filter { it.tableMeta.tableName.startsWith(config.tablePrefix) }
         } else {
             tables
         }

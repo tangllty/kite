@@ -1,10 +1,13 @@
 package com.tang.kite.sql.ast
 
+import com.tang.kite.metadata.ColumnMeta
 import com.tang.kite.paginate.OrderItem
 import com.tang.kite.sql.Column
 import com.tang.kite.sql.JoinTable
 import com.tang.kite.sql.LimitClause
 import com.tang.kite.sql.TableReference
+import com.tang.kite.sql.ast.ddl.DdlHandler
+import com.tang.kite.sql.ast.ddl.SqlStatementDdlHandler
 import com.tang.kite.sql.ast.dml.BatchSqlStatementHandler
 import com.tang.kite.sql.ast.dml.SqlStatementHandler
 import com.tang.kite.sql.ast.dml.DmlHandler
@@ -35,6 +38,29 @@ sealed class SqlNode {
 
         fun getBatchSqlStatement(): BatchSqlStatement {
             return accept(BatchSqlStatementHandler, null)
+        }
+
+    }
+
+    sealed class DdlNode : SqlNode() {
+
+        fun <T> accept(visitor: DdlHandler<T>, dialect: SqlDialect): T {
+            return when (this) {
+                is CreateTable -> visitor.handleCreateTable(this, dialect)
+                is AlterTable -> visitor.handleAlterTable(this, dialect)
+                is DropTable -> visitor.handleDropTable(this, dialect)
+                is CreateIndex -> visitor.handleCreateIndex(this, dialect)
+                is DropIndex -> visitor.handleDropIndex(this, dialect)
+                is TruncateTable -> visitor.handleTruncateTable(this, dialect)
+            }
+        }
+
+        fun getSqlList(dialect: SqlDialect): List<String> {
+            return accept(SqlStatementDdlHandler, dialect)
+        }
+
+        fun getFirstSql(dialect: SqlDialect): String {
+            return getSqlList(dialect).first()
         }
 
     }
@@ -96,5 +122,61 @@ sealed class SqlNode {
         val where: MutableList<LogicalStatement> = mutableListOf()
 
     ) : DmlNode()
+
+    data class CreateTable(
+
+        var table: TableReference? = null,
+
+        val columns: MutableList<ColumnMeta> = mutableListOf(),
+
+        val constraints: MutableList<TableConstraint> = mutableListOf(),
+
+        val createIndexes: MutableList<CreateIndex> = mutableListOf()
+
+    ) : DdlNode()
+
+    data class AlterTable(
+
+        var table: TableReference? = null,
+
+        val operations: MutableList<AlterOperation> = mutableListOf()
+
+    ) : DdlNode()
+
+    data class DropTable(
+
+        var table: TableReference? = null,
+
+        var cascade: Boolean = false
+
+    ) : DdlNode()
+
+    data class CreateIndex(
+
+        var indexName: String,
+
+        var table: TableReference,
+
+        val columns: List<String>,
+
+        var unique: Boolean = false,
+
+    ) : DdlNode()
+
+    data class DropIndex(
+
+        var indexName: String? = null,
+
+        var table: TableReference? = null
+
+    ) : DdlNode()
+
+    data class TruncateTable(
+
+        var table: TableReference? = null,
+
+        var cascade: Boolean = false
+
+    ) : DdlNode()
 
 }

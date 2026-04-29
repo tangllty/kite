@@ -5,12 +5,13 @@ import com.tang.kite.generator.config.Language
 import com.tang.kite.generator.info.ColumnInfo
 import com.tang.kite.generator.info.TableInfo
 import com.tang.kite.generator.info.TargetType
-import com.tang.kite.generator.utils.serialversion.SerialVersionGenerator
 import com.tang.kite.generator.utils.serialversion.FieldInfo
+import com.tang.kite.generator.utils.serialversion.SerialVersionGenerator
 import com.tang.kite.logging.LOGGER
+import com.tang.kite.metadata.MetaDataHandlers
+import com.tang.kite.metadata.TableMeta
 import com.tang.kite.utils.CaseFormat
-import java.sql.DatabaseMetaData
-import java.sql.ResultSet
+import java.sql.Connection
 import java.sql.Types
 import javax.sql.DataSource
 
@@ -32,20 +33,11 @@ class DatabaseMetadataReader(
      */
     fun getTables(): List<TableInfo> {
         val connection = dataSource.connection
-        val metaData = connection.metaData
-        val tables = mutableListOf<TableInfo>()
-
-        val types = getTableTypes(metaData)
-        val resultSet = metaData.getTables(connection.catalog, null, null, types)
-        while (resultSet.next()) {
-            val tableInfo = getTableInfo(resultSet)
-            tables.add(tableInfo)
-        }
-        resultSet.close()
+        val tables = MetaDataHandlers.getTables(connection)
 
         val tableNames = config.tableNames
         if (tableNames.isEmpty()) {
-            return tables
+            return tables.map { getTableInfo(connection, it) }
         }
         val filteredTables = tables.filter { tableInfo ->
             tableNames.any { it.equals(tableInfo.tableName, ignoreCase = true) }
@@ -58,101 +50,38 @@ class DatabaseMetadataReader(
             LOGGER.warn("The following table names were not found in the database: ${unmatchedTables.joinToString(", ")}")
         }
 
-        return filteredTables.map { getTableInfo(metaData, it) }
+        return filteredTables.map { getTableInfo(connection, it) }
     }
 
-    private fun getTableTypes(metaData: DatabaseMetaData): Array<String> {
-        val tableTypes = metaData.tableTypes
-        val types = arrayListOf<String>()
-        while (tableTypes.next()) {
-            types.add(tableTypes.getString(1))
-        }
-        return types.toTypedArray()
-    }
-
-    private fun getTableInfo(resultSet: ResultSet): TableInfo {
-        val tableName = resultSet.getString("TABLE_NAME")
-        val tableComment = resultSet.getString("REMARKS") ?: ""
-        return TableInfo(tableName, tableComment)
-    }
-
-    private fun getTableInfo(metaData: DatabaseMetaData, tableInfo: TableInfo): TableInfo {
-        val tableName = tableInfo.tableName
+    private fun getTableInfo(connection: Connection, tableMeta: TableMeta): TableInfo {
+        val tableName = tableMeta.tableName
         val className = CaseFormat.LOWER_UNDERSCORE.to(CaseFormat.UPPER_CAMEL, tableName.lowercase())
         val variableName = CaseFormat.LOWER_UNDERSCORE.to(CaseFormat.LOWER_CAMEL, tableName.lowercase())
         val mappingName = CaseFormat.LOWER_UNDERSCORE.to(CaseFormat.LOWER_HYPHEN, tableName.lowercase())
 
-        val columns = getColumns(metaData, tableName)
-
+        val columns = getColumns(connection, tableName)
         val fields = columns.map { FieldInfo(it.propertyName, it.targetType.getFullName()) }
         val serialVersionUID = SerialVersionGenerator.generate(className, fields)
 
-        return TableInfo(tableName, tableInfo.comment, className, variableName, mappingName, serialVersionUID, columns)
+        return TableInfo(tableMeta, className, variableName, mappingName, serialVersionUID, columns)
     }
 
     /**
      * Get table column information
      */
-    private fun getColumns(metaData: DatabaseMetaData, tableName: String): List<ColumnInfo> {
-        val columns = mutableListOf<ColumnInfo>()
-
-        val pkColumns = getPrimaryKeys(metaData, tableName)
-
-        val colRs = metaData.getColumns(null, null, tableName, null)
-        while (colRs.next()) {
-            val columnName = colRs.getString("COLUMN_NAME")
-            val dataType = colRs.getInt("DATA_TYPE")
-            val typeName = colRs.getString("TYPE_NAME")
-            val columnSize = colRs.getInt("COLUMN_SIZE")
-            val decimalDigits = colRs.getInt("DECIMAL_DIGITS")
-            val nullable = colRs.getInt("NULLABLE") == DatabaseMetaData.columnNullable
-            val columnComment = colRs.getString("REMARKS") ?: ""
-            val defaultValue = colRs.getString("COLUMN_DEF")
-            val isAutoIncrement = colRs.getBoolean("IS_AUTOINCREMENT")
-
-            val targetType = getTargetType(dataType, typeName, columnSize, decimalDigits)
-            val propertyName = CaseFormat.UPPER_UNDERSCORE.to(CaseFormat.LOWER_CAMEL, columnName)
-            val isPrimaryKey = pkColumns.contains(columnName.lowercase())
-
-            columns.add(
-                ColumnInfo(
-                    columnName = columnName,
-                    propertyName = propertyName,
-                    dataType = typeName,
-                    targetType = targetType,
-                    comment = columnComment,
-                    isNullable = nullable,
-                    isPrimaryKey = isPrimaryKey,
-                    isAutoIncrement = isAutoIncrement,
-                    defaultValue = defaultValue
-                )
-            )
+    private fun getColumns(connection: Connection, tableName: String): List<ColumnInfo> {
+        val columns = MetaDataHandlers.getColumns(connection, tableName)
+        return columns.map {
+            val propertyName = CaseFormat.UPPER_UNDERSCORE.to(CaseFormat.LOWER_CAMEL, it.columnName)
+            val targetType = getTargetType(it.dataType, it.typeName, it.columnSize, it.decimalDigits)
+            ColumnInfo(it, propertyName, targetType)
         }
-
-        colRs.close()
-        return columns
-    }
-
-    /**
-     * Get primary key columns
-     */
-    private fun getPrimaryKeys(metaData: DatabaseMetaData, tableName: String): Set<String> {
-        val pkColumns = mutableSetOf<String>()
-        val pkRs = metaData.getPrimaryKeys(null, null, tableName)
-
-        while (pkRs.next()) {
-            val columnName = pkRs.getString("COLUMN_NAME")
-            pkColumns.add(columnName.lowercase())
-        }
-
-        pkRs.close()
-        return pkColumns
     }
 
     /**
      * Get Java/Kotlin type based on database type and target language
      */
-    private fun getTargetType(dataType: Int, typeName: String, columnSize: Int, decimalDigits: Int): TargetType {
+    private fun getTargetType(dataType: Int, typeName: String, columnSize: Int, decimalDigits: Int?): TargetType {
         val baseType = when (dataType) {
             Types.TINYINT, Types.SMALLINT, Types.INTEGER -> TargetType("Integer")
             Types.BIGINT -> TargetType("Long")
@@ -175,8 +104,8 @@ class DatabaseMetadataReader(
     /**
      * Get numeric base type based on precision and scale
      */
-    private fun getNumericBaseType(columnSize: Int, decimalDigits: Int): String {
-        return if (decimalDigits > 0) {
+    private fun getNumericBaseType(columnSize: Int, decimalDigits: Int?): String {
+        return if (decimalDigits != null && decimalDigits > 0) {
             "java.math.BigDecimal"
         } else {
             when {

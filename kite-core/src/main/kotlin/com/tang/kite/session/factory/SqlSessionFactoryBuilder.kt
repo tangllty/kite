@@ -1,8 +1,10 @@
 package com.tang.kite.session.factory
 
 import com.tang.kite.config.KiteConfig
+import com.tang.kite.config.SchemaConfig
 import com.tang.kite.datasource.KiteDataSource
 import com.tang.kite.datasource.KiteDataSourceFactory
+import com.tang.kite.schema.SchemaSynchronization
 import com.tang.kite.session.factory.defaults.DefaultSqlSessionFactory
 import com.tang.kite.transaction.TransactionFactory
 import com.tang.kite.transaction.jdbc.JdbcTransactionFactory
@@ -41,6 +43,10 @@ class SqlSessionFactoryBuilder {
     }
 
     fun build(kiteDataSource: KiteDataSource): SqlSessionFactory {
+        if (SchemaConfig.enabled) {
+            val schemaSynchronization = SchemaSynchronization(kiteDataSource.getCurrentDatabase())
+            schemaSynchronization.synchronizeSchema()
+        }
         return DefaultSqlSessionFactory(kiteDataSource)
     }
 

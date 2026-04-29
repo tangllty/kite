@@ -1,5 +1,7 @@
 package com.tang.kite.generator.info
 
+import com.tang.kite.metadata.TableMeta
+
 /**
  * Table information
  *
@@ -7,9 +9,7 @@ package com.tang.kite.generator.info
  */
 data class TableInfo(
 
-    val tableName: String,
-
-    val comment: String,
+    val tableMeta: TableMeta,
 
     val className: String? = null,
 

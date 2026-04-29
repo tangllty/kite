@@ -11,16 +11,16 @@ import com.tang.kite.sql.enumeration.DatabaseType
  *
  * @author Tang
  */
-class PostgresqlDialect : SqlDialect {
-
-    override fun getType(): DatabaseType {
-        return DatabaseType.POSTGRE_SQL
-    }
+class PostgresqlDialect : AbstractSqlDialect(DatabaseType.POSTGRE_SQL) {
 
     override fun applyLimitClause(sql: StringBuilder, parameters: MutableList<Any?>, limitClause: LimitClause) {
         parameters.add(limitClause.pageSize)
         parameters.add((limitClause.pageNumber - 1) * limitClause.pageSize)
         sql.append("$LIMIT$QUESTION_MARK$OFFSET$QUESTION_MARK")
     }
+
+    override fun getAutoIncrementKeyword(): String = "generated always as identity"
+
+    override fun getAlterColumnKeyword(): String = "modify"
 
 }

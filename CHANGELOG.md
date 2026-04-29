@@ -10,6 +10,7 @@
 - Add support for subqueries in SQL statements and refactor join population logic
 - Rename project from `kite` to `kite-core` for better module organization
 - Add DML handler classes and `SqlNode` structure for SQL statement processing
+- Implement Code-First schema synchronization support
 
 ## 1.0.20
 

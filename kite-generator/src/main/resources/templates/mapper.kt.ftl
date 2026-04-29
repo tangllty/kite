@@ -9,7 +9,7 @@ import ${mapper.superClass.qualifiedName}
 </#if>
 
 /**
- * Mapper interface for database table ${table.tableName}
+ * Mapper interface for database table ${table.tableMeta.tableName}
 <#if table.comment?? && table.comment != "">
  * ${table.comment}
 </#if>
