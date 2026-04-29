@@ -14,6 +14,8 @@ interface Wrapper<T> {
 
     fun setTableFillFields()
 
-    fun getSqlStatement(dialect: SqlDialect? = null): SqlStatement
+    fun getSqlStatement(): SqlStatement
+
+    fun getSqlStatement(dialect: SqlDialect): SqlStatement
 
 }

@@ -134,7 +134,11 @@ class QueryWrapper<T : Any> : AbstractWhereWrapper<QueryWhereWrapper<T>, T>, Wra
         }
     }
 
-    override fun getSqlStatement(dialect: SqlDialect?): SqlStatement {
+    override fun getSqlStatement(): SqlStatement {
+        throw UnsupportedOperationException("Not supported, please use getSqlStatement(dialect: SqlDialect) instead")
+    }
+
+    override fun getSqlStatement(dialect: SqlDialect): SqlStatement {
         queryWhereWrapper.appendSqlNode(sqlNode)
         return sqlNode.getSqlStatement(dialect)
     }

@@ -4,19 +4,15 @@ import com.tang.kite.config.SqlConfig
 import com.tang.kite.config.logical.LogicalDeletionConfig
 import com.tang.kite.constants.SqlString
 import com.tang.kite.enumeration.SqlType
+import com.tang.kite.sql.ast.AbstractSqlHandler
 import com.tang.kite.sql.ast.SqlNode
-import com.tang.kite.sql.dialect.SqlDialect
 import com.tang.kite.sql.statement.BatchSqlStatement
 import com.tang.kite.utils.Reflects
 
 /**
  * @author Tang
  */
-object BatchSqlStatementHandler : AbstractDmlHandler<BatchSqlStatement>() {
-
-    override fun handleSelect(selectNode: SqlNode.Select, dialect: SqlDialect?): BatchSqlStatement {
-        throw UnsupportedOperationException("BatchSqlStatement does not support select statement")
-    }
+object BatchSqlStatementDmlHandler : AbstractSqlHandler(), DmlHandler<BatchSqlStatement> {
 
     override fun handleInsert(insertNode: SqlNode.Insert): BatchSqlStatement {
         val (table, columns, valuesList) = insertNode

@@ -445,7 +445,7 @@ class DefaultSqlSession(
                 val updateWrapper = parameter as UpdateWrapper<*>
                 updateWrapper.setTableClassIfNotSet(type)
                 updateWrapper.setTableFillFields()
-                updateWrapper.getSqlStatement(sqlDialect)
+                updateWrapper.getSqlStatement()
             },
             execution = { executor.update(it, parameter) }
         )
@@ -503,7 +503,7 @@ class DefaultSqlSession(
                 val deleteWrapper = parameter as DeleteWrapper<*>
                 deleteWrapper.setTableClassIfNotSet(type)
                 deleteWrapper.setTableFillFields()
-                deleteWrapper.getSqlStatement(sqlDialect)
+                deleteWrapper.getSqlStatement()
             },
             execution = { executor.update(it, parameter) }
         )

@@ -1,4 +1,4 @@
-package com.tang.kite.sql.ast.dml
+package com.tang.kite.sql.ast
 
 import com.tang.kite.config.logical.LogicalDeletionConfig
 import com.tang.kite.config.tenant.TenantConfig
@@ -8,7 +8,6 @@ import com.tang.kite.logical.LogicalDeletionContext
 import com.tang.kite.sql.Column
 import com.tang.kite.sql.JoinTable
 import com.tang.kite.sql.TableReference
-import com.tang.kite.sql.ast.SqlNode
 import com.tang.kite.sql.enumeration.ComparisonOperator
 import com.tang.kite.sql.enumeration.LogicalOperator
 import com.tang.kite.sql.statement.ComparisonStatement
@@ -20,7 +19,7 @@ import java.lang.reflect.Field
 /**
  * @author Tang
  */
-abstract class AbstractDmlHandler<T> : DmlHandler<T> {
+open class AbstractSqlHandler {
 
     internal fun appendColumns(columns: MutableList<Column>, from: TableReference?, joins: MutableList<JoinTable>) {
         if (columns.isNotEmpty()) {

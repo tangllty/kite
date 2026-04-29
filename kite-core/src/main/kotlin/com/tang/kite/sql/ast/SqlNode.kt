@@ -8,9 +8,11 @@ import com.tang.kite.sql.LimitClause
 import com.tang.kite.sql.TableReference
 import com.tang.kite.sql.ast.ddl.DdlHandler
 import com.tang.kite.sql.ast.ddl.SqlStatementDdlHandler
-import com.tang.kite.sql.ast.dml.BatchSqlStatementHandler
-import com.tang.kite.sql.ast.dml.SqlStatementHandler
+import com.tang.kite.sql.ast.dml.BatchSqlStatementDmlHandler
 import com.tang.kite.sql.ast.dml.DmlHandler
+import com.tang.kite.sql.ast.dml.SqlStatementDmlHandler
+import com.tang.kite.sql.ast.dql.DqlHandler
+import com.tang.kite.sql.ast.dql.SqlStatementDqlHandler
 import com.tang.kite.sql.dialect.SqlDialect
 import com.tang.kite.sql.statement.BatchSqlStatement
 import com.tang.kite.sql.statement.LogicalStatement
@@ -21,37 +23,50 @@ import com.tang.kite.sql.statement.SqlStatement
  */
 sealed class SqlNode {
 
-    sealed class DmlNode : SqlNode() {
+    sealed class DqlNode : SqlNode() {
 
-        fun <T> accept(visitor: DmlHandler<T>, dialect: SqlDialect?): T {
+        fun <T> accept(handler: DqlHandler<T>, dialect: SqlDialect): T {
             return when (this) {
-                is Select -> visitor.handleSelect(this, dialect)
-                is Insert -> visitor.handleInsert(this)
-                is Update -> visitor.handleUpdate(this)
-                is Delete -> visitor.handleDelete(this)
+                is Select -> handler.handleSelect(this, dialect)
             }
         }
 
-        fun getSqlStatement(dialect: SqlDialect? = null): SqlStatement {
-            return accept(SqlStatementHandler, dialect)
+        fun getSqlStatement(dialect: SqlDialect): SqlStatement {
+            return accept(SqlStatementDqlHandler, dialect)
+        }
+
+    }
+
+    sealed class DmlNode : SqlNode() {
+
+        fun <T> accept(handler: DmlHandler<T>): T {
+            return when (this) {
+                is Insert -> handler.handleInsert(this)
+                is Update -> handler.handleUpdate(this)
+                is Delete -> handler.handleDelete(this)
+            }
+        }
+
+        fun getSqlStatement(): SqlStatement {
+            return accept(SqlStatementDmlHandler)
         }
 
         fun getBatchSqlStatement(): BatchSqlStatement {
-            return accept(BatchSqlStatementHandler, null)
+            return accept(BatchSqlStatementDmlHandler)
         }
 
     }
 
     sealed class DdlNode : SqlNode() {
 
-        fun <T> accept(visitor: DdlHandler<T>, dialect: SqlDialect): T {
+        fun <T> accept(handler: DdlHandler<T>, dialect: SqlDialect): T {
             return when (this) {
-                is CreateTable -> visitor.handleCreateTable(this, dialect)
-                is AlterTable -> visitor.handleAlterTable(this, dialect)
-                is DropTable -> visitor.handleDropTable(this, dialect)
-                is CreateIndex -> visitor.handleCreateIndex(this, dialect)
-                is DropIndex -> visitor.handleDropIndex(this, dialect)
-                is TruncateTable -> visitor.handleTruncateTable(this, dialect)
+                is CreateTable -> handler.handleCreateTable(this, dialect)
+                is AlterTable -> handler.handleAlterTable(this, dialect)
+                is DropTable -> handler.handleDropTable(this, dialect)
+                is CreateIndex -> handler.handleCreateIndex(this, dialect)
+                is DropIndex -> handler.handleDropIndex(this, dialect)
+                is TruncateTable -> handler.handleTruncateTable(this, dialect)
             }
         }
 
@@ -87,7 +102,7 @@ sealed class SqlNode {
 
         var limit: LimitClause? = null
 
-    ) : DmlNode()
+    ) : DqlNode()
 
     data class Insert(
 

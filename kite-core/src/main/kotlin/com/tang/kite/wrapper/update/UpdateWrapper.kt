@@ -108,10 +108,14 @@ class UpdateWrapper<T : Any> : UpdateSetWrapper<T>, Wrapper<T> {
         }
     }
 
-    override fun getSqlStatement(dialect: SqlDialect?): SqlStatement {
+    override fun getSqlStatement(): SqlStatement {
         updateSetWrapper.appendSqlNode(sqlNode.sets)
         updateWhereWrapper.appendSqlNode(sqlNode.where)
-        return sqlNode.getSqlStatement(dialect)
+        return sqlNode.getSqlStatement()
+    }
+
+    override fun getSqlStatement(dialect: SqlDialect): SqlStatement {
+        return getSqlStatement()
     }
 
 }

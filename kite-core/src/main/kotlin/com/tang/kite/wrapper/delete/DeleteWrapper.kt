@@ -105,8 +105,12 @@ class DeleteWrapper<T : Any> : AbstractWhereWrapper<DeleteWhereWrapper<T>, T>, W
         }
     }
 
-    override fun getSqlStatement(dialect: SqlDialect?): SqlStatement {
-        return sqlNode.getSqlStatement(dialect)
+    override fun getSqlStatement(): SqlStatement {
+        return sqlNode.getSqlStatement()
+    }
+
+    override fun getSqlStatement(dialect: SqlDialect): SqlStatement {
+        return getSqlStatement()
     }
 
 }
