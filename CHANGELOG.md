@@ -4,6 +4,12 @@
 
 ### Dependencies
 
+- Bump gradle from 9.4.1 to 9.5.0
+- Bump spring6 from 6.2.17 to 6.2.18
+- Bump spring from 7.0.6 to 7.0.7
+- Bump spring-boot3 from 3.5.13 to 3.5.14
+- Bump spring-boot from 4.0.5 to 4.0.6
+
 ### Features
 
 - Introduce `AbstractDataSource` class to streamline data source implementations

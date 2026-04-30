@@ -17,13 +17,13 @@ class Versions {
     // https://mvnrepository.com/artifact/org.freemarker/freemarker
     val freemarker = "2.3.34"
     // https://mvnrepository.com/artifact/org.springframework/spring-core
-    val spring6 = "6.2.17"
+    val spring6 = "6.2.18"
     // https://mvnrepository.com/artifact/org.springframework/spring-core
-    val spring = "7.0.6"
+    val spring = "7.0.7"
     // https://mvnrepository.com/artifact/org.springframework.boot/spring-boot
-    val springBoot3 = "3.5.13"
+    val springBoot3 = "3.5.14"
     // https://mvnrepository.com/artifact/org.springframework.boot/spring-boot
-    val springBoot = "4.0.5"
+    val springBoot = "4.0.6"
 }
 
 class Libraries {
