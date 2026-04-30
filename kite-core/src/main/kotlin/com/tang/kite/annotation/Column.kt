@@ -73,11 +73,6 @@ annotation class Column(
     val defaultValue: String = "",
 
     /**
-     * Whether to add unique constraint on this column
-     */
-    val unique: Boolean = false,
-
-    /**
      * Database column comment
      */
     val comment: String = "",
@@ -85,17 +80,12 @@ annotation class Column(
     /**
      * Whether to create ordinary index for this column
      */
-    val indexed: Boolean = false,
+    val index: Boolean = false,
 
     /**
-     * Custom index name, auto generate if empty
+     * Whether to add unique constraint on this column
      */
-    val indexName: String = "",
-
-    /**
-     * Whether to create unique index for this column
-     */
-    val uniqueIndex: Boolean = false,
+    val unique: Boolean = false,
 
     /**
      * Referenced foreign key table name

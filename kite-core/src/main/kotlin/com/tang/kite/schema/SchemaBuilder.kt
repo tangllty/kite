@@ -63,7 +63,7 @@ object SchemaBuilder {
                         table = TableReference(entityClass),
                         columns = listOf(columnName)
                     ))
-                } else if (columnAnnotation.indexed) {
+                } else if (columnAnnotation.index) {
                     createIndexes.add(SqlNode.CreateIndex(
                         indexName = "idx_${tableName}_$columnName",
                         table = TableReference(entityClass),

@@ -18,7 +18,7 @@ class AccountNode(
     @Id(type = IdType.AUTO)
     var id: Long? = null,
 
-    @Column(operator = ColumnOperator.LIKE, length = 20, indexed = true)
+    @Column(operator = ColumnOperator.LIKE, length = 20, index = true)
     var username: String? = null,
 
     var password: String? = null,
