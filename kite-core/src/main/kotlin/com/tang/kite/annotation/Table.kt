@@ -14,27 +14,29 @@ import kotlin.reflect.KClass
 annotation class Table(
 
     /**
-     * Table name
+     * Database table name, uses class name if empty
      */
     val value: String = "",
 
     /**
-     * Table alias
+     * SQL query alias for the table, uses class name generated if empty
      */
     val alias: String = "",
 
     /**
-     * Dynamic table name processor
+     * Processor for dynamic table name generation
+     *
+     * @see DynamicTableProcessor
      */
     val dynamicTableName: KClass<out DynamicTableProcessor> = DynamicTableProcessor::class,
 
     /**
-     * Table comment/description
+     * Table comment or description
      */
     val comment: String = "",
 
     /**
-     * Table schema/catalog name
+     * Database schema or catalog where the table resides
      */
     val schema: String = "",
 
@@ -44,7 +46,7 @@ annotation class Table(
     val charset: String = "",
 
     /**
-     * Table collation
+     * Table collation rules
      */
     val collation: String = ""
 

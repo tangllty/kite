@@ -17,31 +17,31 @@ import kotlin.reflect.KClass
 annotation class Column(
 
     /**
-     * Column name
+     * Database column name, use field name if empty
      */
     val value: String = "",
 
     /**
-     * Ignore this column when generate SQL
+     * Whether to ignore this column when generating SQL
      */
     val ignore: Boolean = false,
 
     /**
-     * Result handler for this column
+     * Custom result handler for column value conversion
      *
      * @see ResultHandler
      */
     val resultHandler: KClass<out ResultHandler> = ResultHandler::class,
 
     /**
-     * Column operator
+     * Query condition operator
      *
      * @see ColumnOperator
      */
     val operator: ColumnOperator = ColumnOperator.EQUAL,
 
     /**
-     * Column data type
+     * Database column data type
      *
      * @see DataType
      */
@@ -53,79 +53,71 @@ annotation class Column(
     val length: Int = 255,
 
     /**
-     * Column precision for DECIMAL, NUMERIC, etc.
+     * Numeric precision for DECIMAL, NUMERIC, etc.
      */
     val precision: Int = 10,
 
     /**
-     * Column scale for DECIMAL, NUMERIC, etc.
+     * Numeric scale for DECIMAL, NUMERIC, etc.
      */
     val scale: Int = 2,
 
     /**
-     * Whether the column is nullable
+     * Whether column allows null value
      */
     val nullable: Boolean = true,
 
     /**
-     * Default value for the column
+     * Database column default value
      */
     val defaultValue: String = "",
 
     /**
-     * Whether the column is auto-increment
-     */
-    @Deprecated("")
-    val autoIncrement: Boolean = false,
-
-    /**
-     * Whether the column is primary key
-     */
-    @Deprecated("")
-    val primaryKey: Boolean = false,
-
-    /**
-     * Whether the column has unique constraint
+     * Whether to add unique constraint on this column
      */
     val unique: Boolean = false,
 
     /**
-     * Column comment/description
+     * Database column comment
      */
     val comment: String = "",
 
     /**
-     * Whether this column should have an index
+     * Whether to create ordinary index for this column
      */
     val indexed: Boolean = false,
 
     /**
-     * Index name for this column (empty means generated name)
+     * Custom index name, auto generate if empty
      */
     val indexName: String = "",
 
     /**
-     * Whether the index is unique
+     * Whether to create unique index for this column
      */
     val uniqueIndex: Boolean = false,
 
     /**
-     * Foreign key table reference
+     * Referenced foreign key table name
      */
     val foreignKey: String = "",
 
     /**
-     * Foreign key column reference
+     * Referenced column name of foreign key table
      */
     val foreignKeyColumn: String = "",
 
     /**
-     * ON DELETE action for foreign key
+     * Foreign key action on delete
+     *
+     * @see ForeignKeyAction
      */
     val onDelete: ForeignKeyAction = ForeignKeyAction.NO_ACTION,
 
     /**
-     * ON UPDATE action for foreign key
+     * Foreign key action on update
+     *
+     * @see ForeignKeyAction
      */
     val onUpdate: ForeignKeyAction = ForeignKeyAction.NO_ACTION
 
