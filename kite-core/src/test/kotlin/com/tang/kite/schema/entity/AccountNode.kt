@@ -1,6 +1,7 @@
 package com.tang.kite.schema.entity
 
 import com.tang.kite.annotation.Column
+import com.tang.kite.annotation.Table
 import com.tang.kite.annotation.fill.CreateTime
 import com.tang.kite.annotation.fill.UpdateTime
 import com.tang.kite.annotation.id.Id
@@ -13,6 +14,7 @@ import java.time.LocalDateTime
 /**
  * @author Tang
  */
+@Table(comment = "Table for account nodes")
 class AccountNode(
 
     @Id(type = IdType.AUTO)

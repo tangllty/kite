@@ -19,6 +19,8 @@ class MysqlDialect : AbstractSqlDialect(DatabaseType.MYSQL) {
         sql.append("$LIMIT$QUESTION_MARK$COMMA_SPACE$QUESTION_MARK")
     }
 
+    override fun supportsCommentOnTable(): Boolean = false
+
     override fun supportsCommentOnColumn(): Boolean = false
 
     override fun requiresTableForDropIndex(): Boolean = true

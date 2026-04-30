@@ -31,15 +31,21 @@ object SqlStatementDdlHandler : DdlHandler<List<String>> {
             sql.append(", ")
             appendTableConstraint(sql, constraint)
         }
-
         sql.append(")")
+
+        if (createTableNode.comment != null && dialect.supportsCommentOnTable().not()) {
+            sql.append(" comment = '${createTableNode.comment}'")
+        }
         sqlList.add(sql.toString())
 
         createTableNode.createIndexes.forEach { createIndexNode ->
             sqlList.addAll(handleCreateIndex(createIndexNode, dialect))
         }
 
-        // Add comments if supported
+        if (createTableNode.comment != null && dialect.supportsCommentOnTable()) {
+            sqlList.add("comment on table ${createTableNode.table?.toString(false)} is '${createTableNode.comment}'")
+        }
+
         createTableNode.columns.forEach { column ->
             if (column.comment != null && dialect.supportsCommentOnColumn()) {
                 sqlList.add("comment on column ${createTableNode.table?.toString(false)}.${column.columnName} is '${column.comment}'")
@@ -167,7 +173,6 @@ object SqlStatementDdlHandler : DdlHandler<List<String>> {
                 if (column.columnSize > 0 && column.decimalDigits >= 0) {
                     sql.append("(${column.columnSize}, ${column.decimalDigits})")
                 } else {
-                    // TODO Make default precision and scale configurable
                     sql.append("(10, 2)")
                 }
             }
@@ -175,7 +180,6 @@ object SqlStatementDdlHandler : DdlHandler<List<String>> {
                 if (column.columnSize > 0) {
                     sql.append("(${column.columnSize})")
                 } else {
-                    // TODO Make default length configurable
                     sql.append("(255)")
                 }
             }

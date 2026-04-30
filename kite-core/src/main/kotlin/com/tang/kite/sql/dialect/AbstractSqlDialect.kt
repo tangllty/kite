@@ -27,6 +27,8 @@ abstract class AbstractSqlDialect(private val databaseType: DatabaseType) : SqlD
 
     override fun supportsCascade(): Boolean = true
 
+    override fun supportsCommentOnTable(): Boolean = true
+
     override fun supportsCommentOnColumn(): Boolean = true
 
     override fun requiresTableForDropIndex(): Boolean = false

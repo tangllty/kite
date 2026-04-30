@@ -12,6 +12,7 @@
 - Add DML handler classes and `SqlNode` structure for SQL statement processing
 - Implement Code-First schema synchronization support
 - Refactor DML and DQL handler classes for improved organization and clarity
+- Add support for table comments and update dialects accordingly
 
 ## 1.0.20
 

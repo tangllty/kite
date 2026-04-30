@@ -33,21 +33,6 @@ annotation class Table(
     /**
      * Table comment or description
      */
-    val comment: String = "",
-
-    /**
-     * Database schema or catalog where the table resides
-     */
-    val schema: String = "",
-
-    /**
-     * Table character set
-     */
-    val charset: String = "",
-
-    /**
-     * Table collation rules
-     */
-    val collation: String = ""
+    val comment: String = ""
 
 )

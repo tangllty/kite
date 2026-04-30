@@ -41,6 +41,7 @@ object SchemaBuilder {
         val columns = mutableListOf<ColumnMeta>()
         val constraints = mutableListOf<TableConstraint>()
         val createIndexes = mutableListOf<SqlNode.CreateIndex>()
+        val tableComment = tableAnnotation?.comment
 
         // Scan all properties with @Column annotation
         Reflects.getSqlFields(entityClass.java).forEach { field ->
@@ -82,7 +83,7 @@ object SchemaBuilder {
                 }
             }
         }
-        return SqlNode.CreateTable(TableReference(entityClass), columns, constraints, createIndexes)
+        return SqlNode.CreateTable(TableReference(entityClass), columns, constraints, createIndexes, tableComment)
     }
 
     /**

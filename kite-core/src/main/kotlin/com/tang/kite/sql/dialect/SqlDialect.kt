@@ -14,6 +14,8 @@ interface SqlDialect {
 
     fun supportsCascade(): Boolean
 
+    fun supportsCommentOnTable(): Boolean
+
     fun supportsCommentOnColumn(): Boolean
 
     fun requiresTableForDropIndex(): Boolean

@@ -146,7 +146,9 @@ sealed class SqlNode {
 
         val constraints: MutableList<TableConstraint> = mutableListOf(),
 
-        val createIndexes: MutableList<CreateIndex> = mutableListOf()
+        val createIndexes: MutableList<CreateIndex> = mutableListOf(),
+
+        var comment: String? = null
 
     ) : DdlNode()
 
