@@ -1,4 +1,4 @@
-package com.tang.kite.config
+package com.tang.kite.config.schema
 
 /**
  * Schema Configuration for database schema management
@@ -43,17 +43,5 @@ object SchemaConfig {
      */
     @JvmStatic
     var dropExistingColumns = false
-
-    /**
-     * Whether to enable verbose logging
-     */
-    @JvmStatic
-    var verboseLogging = true
-
-    /**
-     * Whether to validate schema before execution
-     */
-    @JvmStatic
-    var validateSchema = true
 
 }

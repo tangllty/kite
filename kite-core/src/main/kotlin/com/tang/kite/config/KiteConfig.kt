@@ -4,6 +4,7 @@ import com.tang.kite.annotation.fill.CreateTime
 import com.tang.kite.annotation.fill.UpdateTime
 import com.tang.kite.config.defaults.DefaultSelectiveStrategy
 import com.tang.kite.config.logical.LogicalDeletionConfig
+import com.tang.kite.config.schema.SchemaConfig
 import com.tang.kite.config.table.TableConfig
 import com.tang.kite.config.tenant.TenantConfig
 import com.tang.kite.enumeration.SqlType
@@ -88,5 +89,11 @@ object KiteConfig {
      */
     @JvmStatic
     val tenant = TenantConfig
+
+    /**
+     * Schema properties for schema configuration.
+     */
+    @JvmStatic
+    val schema = SchemaConfig
 
 }

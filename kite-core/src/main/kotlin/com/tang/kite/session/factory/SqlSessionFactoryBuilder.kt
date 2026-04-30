@@ -1,7 +1,7 @@
 package com.tang.kite.session.factory
 
 import com.tang.kite.config.KiteConfig
-import com.tang.kite.config.SchemaConfig
+import com.tang.kite.config.schema.SchemaConfig
 import com.tang.kite.datasource.KiteDataSource
 import com.tang.kite.datasource.KiteDataSourceFactory
 import com.tang.kite.schema.SchemaSynchronization

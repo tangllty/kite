@@ -1,6 +1,6 @@
 package com.tang.kite.schema
 
-import com.tang.kite.config.SchemaConfig
+import com.tang.kite.config.schema.SchemaConfig
 import com.tang.kite.datasource.DatabaseValue
 import com.tang.kite.logging.getLogger
 import com.tang.kite.metadata.ColumnMeta

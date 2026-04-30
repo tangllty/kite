@@ -32,3 +32,7 @@ class SpringBoot3TenantProperties : TenantProperties()
 @Suppress("ConfigurationProperties")
 @ConfigurationProperties(prefix = DataSourceProperties.DATA_SOURCE_PREFIX)
 class SpringBoot3DataSourceProperties : DataSourceProperties()
+
+@Suppress("ConfigurationProperties")
+@ConfigurationProperties(prefix = SchemaProperties.SCHEMA_PREFIX)
+class SpringBoot3SchemaProperties : SchemaProperties()

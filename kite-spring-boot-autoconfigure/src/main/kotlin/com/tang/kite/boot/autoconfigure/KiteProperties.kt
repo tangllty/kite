@@ -74,7 +74,12 @@ open class KiteProperties(
     /**
      * Tenant properties for tenant configuration.
      */
-    val tenant: TenantProperties = TenantProperties()
+    val tenant: TenantProperties = TenantProperties(),
+
+    /**
+     * Schema properties for schema configuration.
+     */
+    val schema: SchemaProperties = SchemaProperties()
 
 ) : PropertyApplier {
 
@@ -96,6 +101,7 @@ open class KiteProperties(
         table.applyProperties()
         logicalDeletion.applyProperties()
         tenant.applyProperties()
+        schema.applyProperties()
     }
 
 }
