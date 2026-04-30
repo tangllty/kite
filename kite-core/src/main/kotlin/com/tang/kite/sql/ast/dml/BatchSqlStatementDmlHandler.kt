@@ -19,6 +19,7 @@ object BatchSqlStatementDmlHandler : AbstractSqlHandler(), DmlHandler<BatchSqlSt
         val sql = StringBuilder()
         applyInsertLogical(insertNode)
         applyInsertTenant(insertNode)
+        applyInsertOptimisticLock(insertNode)
         appendInsertPrefix(sql, table, columns)
         sql.append(SqlString.LEFT_BRACKET)
         sql.append(valuesList.first().joinToString(SqlString.COMMA_SPACE) { SqlString.QUESTION_MARK })
@@ -33,9 +34,11 @@ object BatchSqlStatementDmlHandler : AbstractSqlHandler(), DmlHandler<BatchSqlSt
         sql.append(SqlString.UPDATE)
         appendTable(sql, table)
         sql.append(SqlString.SET)
+        applyUpdateRemoveOptimisticLockColumn(updateNode)
         sql.append(sets.entries.joinToString(SqlString.COMMA_SPACE) {
             "${it.key.toString(withAlias)} = ${SqlString.QUESTION_MARK}"
         })
+        applyUpdateOptimisticLock(sql, withAlias, updateNode)
         appendJoins(joins, sql, withAlias)
         if (shouldApplyLogicalDeletion(table)) {
             val logicalField = Reflects.getLogicalField(table?.clazz!!)

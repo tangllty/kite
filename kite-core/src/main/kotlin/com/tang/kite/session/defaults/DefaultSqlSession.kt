@@ -401,12 +401,14 @@ class DefaultSqlSession(
     }
 
     override fun <M : BaseMapper<T>, T : Any> update(method: Method, mapperInterface: Class<M>, parameter: Any): Int {
-        return returnRowsSqlStatementTemplate(
+        val affectedRows = returnRowsSqlStatementTemplate(
             method,
             mapperInterface,
             prepare = { provider.update(parameter) },
             execution = { executor.update(it, parameter) }
         )
+
+        return affectedRows
     }
 
     override fun <M : BaseMapper<T>, T : Any> update(method: Method, mapperInterface: Class<M>, parameter: Any, condition: Any): Int {

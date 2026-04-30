@@ -4,6 +4,7 @@ import com.tang.kite.annotation.fill.CreateTime
 import com.tang.kite.annotation.fill.UpdateTime
 import com.tang.kite.config.defaults.DefaultSelectiveStrategy
 import com.tang.kite.config.logical.LogicalDeletionConfig
+import com.tang.kite.config.optimistic.OptimisticLockConfig
 import com.tang.kite.config.schema.SchemaConfig
 import com.tang.kite.config.table.TableConfig
 import com.tang.kite.config.tenant.TenantConfig
@@ -95,5 +96,11 @@ object KiteConfig {
      */
     @JvmStatic
     val schema = SchemaConfig
+
+    /**
+     * Optimistic lock properties for optimistic locking configuration.
+     */
+    @JvmStatic
+    val optimisticLock = OptimisticLockConfig
 
 }

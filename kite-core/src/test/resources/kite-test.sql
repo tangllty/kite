@@ -10,7 +10,8 @@ create table account (
     update_time timestamp default null,
     balance decimal(10, 2) default 0.00,
     deleted boolean default false,
-    tenant_id bigint default null
+    tenant_id bigint default null,
+    version bigint default null
 );
 
 insert into account (username, password, create_time, balance) values

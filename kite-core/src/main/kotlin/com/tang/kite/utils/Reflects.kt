@@ -7,9 +7,11 @@ import com.tang.kite.annotation.datasource.DataSource
 import com.tang.kite.annotation.id.Id
 import com.tang.kite.annotation.id.IdType
 import com.tang.kite.annotation.logical.LogicalDeletion
+import com.tang.kite.annotation.optimistic.Version
 import com.tang.kite.annotation.tenant.TenantId
 import com.tang.kite.config.KiteConfig
 import com.tang.kite.config.logical.LogicalDeletionConfig
+import com.tang.kite.config.optimistic.OptimisticLockConfig
 import com.tang.kite.config.table.DynamicTableProcessor
 import com.tang.kite.config.table.TableConfig
 import com.tang.kite.config.tenant.TenantConfig
@@ -76,6 +78,8 @@ object Reflects {
     private val logicalDeleteFieldCache: ConcurrentMap<Class<*>, Field> = ConcurrentHashMap()
 
     private val tenantFieldCache: ConcurrentMap<Class<*>, Field> = ConcurrentHashMap()
+
+    private val versionFieldCache: ConcurrentMap<Class<*>, Field> = ConcurrentHashMap()
 
     @JvmStatic
     fun <T> makeAccessible(accessibleObject: AccessibleObject, instance: T): Boolean {
@@ -372,6 +376,23 @@ object Reflects {
                 return@computeIfAbsent configTenantField
             }
             throw NoSuchFieldException("No tenant field found in ${clazz.simpleName}")
+        }
+    }
+
+    @JvmStatic
+    fun getVersionField(clazz: Class<*>): Field {
+        return versionFieldCache.computeIfAbsent(clazz) {
+            val fields = getSqlFields(clazz)
+            val versionField = fields.firstOrNull { it.isAnnotationPresent(Version::class.java) }
+            if (versionField != null) {
+                return@computeIfAbsent versionField
+            }
+            val versionFieldName = OptimisticLockConfig.versionFieldName
+            val configVersionField = fields.firstOrNull { it.name == versionFieldName }
+            if (configVersionField != null) {
+                return@computeIfAbsent configVersionField
+            }
+            throw NoSuchFieldException("No version field found in ${clazz.simpleName}")
         }
     }
 

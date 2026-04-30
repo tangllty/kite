@@ -2,9 +2,11 @@ package com.tang.kite.sql.provider
 
 import com.tang.kite.annotation.Join
 import com.tang.kite.config.KiteConfig
+import com.tang.kite.config.optimistic.OptimisticLockConfig
 import com.tang.kite.constants.SqlString.DOT
 import com.tang.kite.enumeration.ColumnOperator
 import com.tang.kite.enumeration.SqlType
+import com.tang.kite.optimistic.OptimisticLockContext
 import com.tang.kite.paginate.OrderItem
 import com.tang.kite.sql.Column
 import com.tang.kite.sql.JoinTable
@@ -132,6 +134,11 @@ class SqlNodeProvider(private val dialect: SqlDialect) : SqlProvider {
         val updateFieldList = fieldList.filter { it != idField && (isSelective.not() || selectiveStrategy(valueMap[it])) }
         updateFieldList.forEach { sqlNode.sets[Column(it)] = valueMap[it] }
         sqlNode.where.add(LogicalStatement(ComparisonStatement(Column(idField), valueMap[idField]), LogicalOperator.AND))
+        if (OptimisticLockContext.shouldApplyOptimisticLock(sqlNode.table?.clazz!!)) {
+            val versionField = Reflects.getVersionField(clazz)
+            val comparisonStatement = ComparisonStatement(Column(versionField), valueMap[versionField])
+            sqlNode.where.add(LogicalStatement(comparisonStatement, LogicalOperator.AND))
+        }
         return sqlNode.getSqlStatement()
     }
 

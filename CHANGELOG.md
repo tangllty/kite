@@ -1,3 +1,13 @@
+## 1.0.22
+
+### Bug Fixes
+
+### Dependencies
+
+### Features
+
+- Implement optimistic locking support with version field handling
+
 ## 1.0.21
 
 ### Bug Fixes

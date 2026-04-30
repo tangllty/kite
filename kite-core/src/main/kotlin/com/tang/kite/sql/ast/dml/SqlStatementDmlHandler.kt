@@ -21,6 +21,7 @@ object SqlStatementDmlHandler : AbstractSqlHandler(), DmlHandler<SqlStatement> {
         val parameters = mutableListOf<Any?>()
         applyInsertLogical(insertNode)
         applyInsertTenant(insertNode)
+        applyInsertOptimisticLock(insertNode)
         appendInsertPrefix(sql, table, columns)
         valuesList.joinToString("${SqlString.RIGHT_BRACKET}${SqlString.COMMA_SPACE}${SqlString.LEFT_BRACKET}",
             SqlString.LEFT_BRACKET,
@@ -42,10 +43,12 @@ object SqlStatementDmlHandler : AbstractSqlHandler(), DmlHandler<SqlStatement> {
         sql.append(SqlString.UPDATE)
         appendTable(sql, table)
         sql.append(SqlString.SET)
+        applyUpdateRemoveOptimisticLockColumn(updateNode)
         sql.append(sets.entries.joinToString(SqlString.COMMA_SPACE) {
             parameters.add(it.value)
             "${it.key.toString(withAlias)} = ${SqlString.QUESTION_MARK}"
         })
+        applyUpdateOptimisticLock(sql, withAlias, updateNode)
         appendJoins(joins, sql, withAlias)
         appendWhere(sql, table, parameters, where, SqlType.UPDATE, withAlias)
         return SqlStatement(SqlConfig.getSql(sql), parameters)
