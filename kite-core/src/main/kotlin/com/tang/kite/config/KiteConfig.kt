@@ -32,7 +32,7 @@ object KiteConfig {
      * The strategy for selective methods.
      */
     @JvmStatic
-    var selectiveStrategy: Function1<Any?, Boolean> = DefaultSelectiveStrategy::isSelective
+    var selectiveStrategy: SelectiveStrategy = DefaultSelectiveStrategy
 
     /**
      * The batch size for operations like inserts or updates.

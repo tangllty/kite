@@ -1,6 +1,7 @@
 package com.tang.kite.boot.autoconfigure
 
 import com.tang.kite.config.KiteConfig
+import com.tang.kite.config.SelectiveStrategy
 import com.tang.kite.handler.fill.FillHandler
 import com.tang.kite.handler.fill.FillKey
 import com.tang.kite.handler.result.ResultHandler
@@ -24,7 +25,7 @@ open class KiteProperties(
     /**
      * The strategy for selective query
      */
-    var selectiveStrategy: Function1<Any?, Boolean> = KiteConfig.selectiveStrategy,
+    var selectiveStrategy: SelectiveStrategy = KiteConfig.selectiveStrategy,
 
     /**
      * The batch size for operations like inserts or updates.

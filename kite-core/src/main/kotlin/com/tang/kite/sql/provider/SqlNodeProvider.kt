@@ -2,7 +2,6 @@ package com.tang.kite.sql.provider
 
 import com.tang.kite.annotation.Join
 import com.tang.kite.config.KiteConfig
-import com.tang.kite.config.optimistic.OptimisticLockConfig
 import com.tang.kite.constants.SqlString.DOT
 import com.tang.kite.enumeration.ColumnOperator
 import com.tang.kite.enumeration.SqlType
@@ -36,7 +35,7 @@ import java.lang.reflect.Field
 class SqlNodeProvider(private val dialect: SqlDialect) : SqlProvider {
 
     private fun selectiveStrategy(any: Any?): Boolean {
-        return KiteConfig.selectiveStrategy.invoke(any)
+        return KiteConfig.selectiveStrategy.isSelective(any)
     }
 
     override fun getWhere(fields: List<Field>, entity: Any, sqlType: SqlType?): List<LogicalStatement> {

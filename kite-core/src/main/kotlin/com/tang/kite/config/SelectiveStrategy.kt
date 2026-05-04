@@ -7,6 +7,12 @@ package com.tang.kite.config
  */
 interface SelectiveStrategy {
 
+    /**
+     * Check if the object is selective
+     *
+     * @param any object to check
+     * @return true if selective, false otherwise
+     */
     fun isSelective(any: Any?): Boolean
 
 }

@@ -9,6 +9,12 @@ import com.tang.kite.config.SelectiveStrategy
  */
 object DefaultSelectiveStrategy : SelectiveStrategy {
 
+    /**
+     * Check if the object is selective
+     *
+     * @param any object to check
+     * @return true if selective, false otherwise
+     */
     override fun isSelective(any: Any?): Boolean {
         return any != null
     }
