@@ -1,7 +1,5 @@
 package com.tang.kite.config.optimistic
 
-import com.tang.kite.config.optimistic.defaults.DefaultOptimisticLockProcessor
-
 /**
  * Optimistic lock configuration properties for database optimistic locking.
  *
@@ -37,6 +35,6 @@ object OptimisticLockConfig {
      * Optimistic lock processor for handling version operations
      */
     @JvmStatic
-    var optimisticLockProcessor: OptimisticLockProcessor = DefaultOptimisticLockProcessor()
+    var optimisticLockProcessor: OptimisticLockProcessor = object : OptimisticLockProcessor {}
 
 }

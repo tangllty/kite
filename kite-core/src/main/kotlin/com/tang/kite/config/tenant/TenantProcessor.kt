@@ -1,5 +1,6 @@
 package com.tang.kite.config.tenant
 
+import com.tang.kite.config.TableProcessor
 import java.lang.reflect.Field
 
 /**
@@ -7,17 +8,7 @@ import java.lang.reflect.Field
  *
  * @author Tang
  */
-interface TenantProcessor {
-
-    /**
-     * Determine whether a specific table entity class requires multi-tenant processing.
-     *
-     * @param tableClass The table class to check
-     * @return true if the table needs processing, false otherwise
-     */
-    fun isTableNeedProcessing(tableClass: Class<*>): Boolean {
-        return true
-    }
+interface TenantProcessor : TableProcessor {
 
     /**
      * Get the list of tenant IDs in the current context

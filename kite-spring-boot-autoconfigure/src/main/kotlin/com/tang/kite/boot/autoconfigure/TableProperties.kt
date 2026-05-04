@@ -16,7 +16,7 @@ open class TableProperties (
     /**
      * Dynamic table name processor.
      */
-    var dynamicTableProcessor: DynamicTableProcessor? = TableConfig.dynamicTableProcessor
+    var tableNameProcessor: DynamicTableProcessor? = TableConfig.tableNameProcessor
 
 ) : PropertyApplier {
 
@@ -27,7 +27,7 @@ open class TableProperties (
     }
 
     override fun applyProperties() {
-        TableConfig.dynamicTableProcessor = dynamicTableProcessor
+        TableConfig.tableNameProcessor = tableNameProcessor
     }
 
 }

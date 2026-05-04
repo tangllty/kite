@@ -109,7 +109,7 @@ class ReflectsTest {
 
     @Test
     fun getDynamicTableName() {
-        TableConfig.dynamicTableProcessor = object : DynamicTableProcessor {
+        TableConfig.tableNameProcessor = object : DynamicTableProcessor {
 
             override fun process(tableName: String): String {
                 return "${tableName}_dynamic"
@@ -118,7 +118,7 @@ class ReflectsTest {
         }
 
         val tableName = Reflects.getTableName(Account::class.java)
-        TableConfig.dynamicTableProcessor = null
+        TableConfig.tableNameProcessor = null
         assertEquals("account_dynamic", tableName)
     }
 

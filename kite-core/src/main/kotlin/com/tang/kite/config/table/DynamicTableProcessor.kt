@@ -1,11 +1,13 @@
 package com.tang.kite.config.table
 
+import com.tang.kite.config.TableProcessor
+
 /**
  * Dynamic table processor interface
  *
  * @author Tang
  */
-interface DynamicTableProcessor {
+interface DynamicTableProcessor : TableProcessor {
 
     /**
      * Process table name

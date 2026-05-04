@@ -1,5 +1,6 @@
 package com.tang.kite.config.logical
 
+import com.tang.kite.config.TableProcessor
 import java.lang.reflect.Field
 
 /**
@@ -7,17 +8,7 @@ import java.lang.reflect.Field
  *
  * @author Tang
  */
-interface LogicalDeletionProcessor {
-
-    /**
-     * Determine whether a specific table class needs to be processed.
-     *
-     * @param tableClass The table class to check
-     * @return true if the table needs processing, false otherwise
-     */
-    fun isTableNeedProcessing(tableClass: Class<*>): Boolean {
-        return true
-    }
+interface LogicalDeletionProcessor : TableProcessor {
 
     /**
      * Process the specified database field to generate logical deletion value

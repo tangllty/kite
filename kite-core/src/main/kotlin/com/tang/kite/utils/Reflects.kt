@@ -90,22 +90,36 @@ object Reflects {
         callable.isAccessible = true
     }
 
+    /**
+     * Get the table name from the entity class
+     *
+     * @param clazz entity class
+     * @return table name
+     */
     @JvmStatic
     fun getTableName(clazz: Class<*>): String {
+        val hasTableAnnotation = clazz.isAnnotationPresent(Table::class.java)
+        val tableAnnotation = if (hasTableAnnotation) clazz.getAnnotation(Table::class.java) else null
         val tableName = tableNameCache.computeIfAbsent(clazz) {
-            if (clazz.isAnnotationPresent(Table::class.java) && clazz.getAnnotation(Table::class.java).value.isNotBlank()) {
-                clazz.getAnnotation(Table::class.java).value
+            if (tableAnnotation != null && tableAnnotation.value.isNotBlank()) {
+                tableAnnotation.value
             } else {
                 CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, clazz.simpleName)
             }
         }
-        if (clazz.isAnnotationPresent(Table::class.java) && clazz.getAnnotation(Table::class.java).dynamicTableName != DynamicTableProcessor::class) {
-            return clazz.getAnnotation(Table::class.java).dynamicTableName.createInstance().process(tableName)
+        if (tableAnnotation != null && tableAnnotation.tableNameProcessor != DynamicTableProcessor::class) {
+            val dynamicTableProcessor = tableAnnotation.tableNameProcessor.createInstance()
+            if (dynamicTableProcessor.processable(clazz)) {
+                return dynamicTableProcessor.process(tableName)
+            }
         }
-        if (TableConfig.dynamicTableProcessor == null) {
+        if (TableConfig.tableNameProcessor == null) {
             return tableName
         }
-        return TableConfig.dynamicTableProcessor!!.process(tableName)
+        if (TableConfig.tableNameProcessor!!.processable(clazz)) {
+            return TableConfig.tableNameProcessor!!.process(tableName)
+        }
+        return tableName
     }
 
     /**

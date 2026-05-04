@@ -7,6 +7,7 @@
 ### Features
 
 - Implement optimistic locking support with version field handling
+- Refactor table processing interfaces to unify processing checks and rename dynamic table processor
 
 ## 1.0.21
 

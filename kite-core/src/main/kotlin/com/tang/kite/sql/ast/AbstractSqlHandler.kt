@@ -169,11 +169,11 @@ open class AbstractSqlHandler {
     }
 
     internal fun shouldApplyLogicalDeletion(table: TableReference?): Boolean {
-        return LogicalDeletionContext.shouldLogicalDeletion() && LogicalDeletionConfig.logicalDeletionProcessor.isTableNeedProcessing(table?.clazz!!)
+        return LogicalDeletionContext.shouldLogicalDeletion() && LogicalDeletionConfig.logicalDeletionProcessor.processable(table?.clazz!!)
     }
 
     internal fun shouldApplyTenant(table: TableReference?): Boolean {
-        return TenantContext.shouldApplyTenant() && TenantConfig.tenantProcessor.isTableNeedProcessing(table?.clazz!!)
+        return TenantContext.shouldApplyTenant() && TenantConfig.tenantProcessor.processable(table?.clazz!!)
     }
 
     internal fun shouldApplyOptimisticLock(table: TableReference?): Boolean {

@@ -28,7 +28,7 @@ object OptimisticLockContext {
 
     @JvmStatic
     fun shouldApplyOptimisticLock(clazz: Class<*>): Boolean {
-        return shouldApplyOptimisticLock() && OptimisticLockConfig.optimisticLockProcessor.isTableNeedProcessing(clazz)
+        return shouldApplyOptimisticLock() && OptimisticLockConfig.optimisticLockProcessor.processable(clazz)
     }
 
     @JvmStatic

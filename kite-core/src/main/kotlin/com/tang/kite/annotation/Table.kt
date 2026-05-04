@@ -28,7 +28,7 @@ annotation class Table(
      *
      * @see DynamicTableProcessor
      */
-    val dynamicTableName: KClass<out DynamicTableProcessor> = DynamicTableProcessor::class,
+    val tableNameProcessor: KClass<out DynamicTableProcessor> = DynamicTableProcessor::class,
 
     /**
      * Table comment or description
