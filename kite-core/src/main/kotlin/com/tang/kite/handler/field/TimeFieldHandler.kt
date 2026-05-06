@@ -1,4 +1,4 @@
-package com.tang.kite.handler.fill
+package com.tang.kite.handler.field
 
 import com.tang.kite.exception.UnsupportedTypeException
 import java.lang.reflect.Field
@@ -20,12 +20,22 @@ import kotlin.time.toJavaInstant
 import kotlin.time.Instant as KotlinInstant
 
 /**
+ * Time field handler for handling time field values.
+ *
  * @author Tang
  */
-class TimeFillHandler : FillHandler {
+class TimeFieldHandler : FieldHandler {
 
+    /**
+     * Handle the value of a field.
+     *
+     * @param annotation The annotation for the field.
+     * @param field      The field to handle.
+     * @param entity     The entity containing the field.
+     * @return The value of the field.
+     */
     @OptIn(ExperimentalTime::class)
-    override fun fillValue(annotation: Annotation, field: Field, entity: Any): Any? {
+    override fun handleValue(annotation: Annotation, field: Field, entity: Any): Any? {
         return when (field.type) {
             Time::class.java -> Time(System.currentTimeMillis())
             SqlDate::class.java -> SqlDate(System.currentTimeMillis())

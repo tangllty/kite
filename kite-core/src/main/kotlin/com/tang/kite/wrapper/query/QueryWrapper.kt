@@ -129,7 +129,7 @@ class QueryWrapper<T : Any> : AbstractWhereWrapper<QueryWhereWrapper<T>, T>, Wra
         if (tableRef == null || tableRef.clazz == null) {
             return
         }
-        Reflects.setTableFillFields(tableRef.clazz, SqlType.SELECT) { column, value ->
+        Reflects.setTableHandledFields(tableRef.clazz, SqlType.SELECT) { column, value ->
             queryWhereWrapper.eq(column, value)
         }
     }

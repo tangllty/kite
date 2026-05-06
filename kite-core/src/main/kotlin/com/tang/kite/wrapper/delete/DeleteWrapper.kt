@@ -100,7 +100,7 @@ class DeleteWrapper<T : Any> : AbstractWhereWrapper<DeleteWhereWrapper<T>, T>, W
         if (tableRef == null || tableRef.clazz == null) {
             return
         }
-        Reflects.setTableFillFields(tableRef.clazz, SqlType.DELETE) { column, value ->
+        Reflects.setTableHandledFields(tableRef.clazz, SqlType.DELETE) { column, value ->
             deleteWhereWrapper.eq(column, value)
         }
     }

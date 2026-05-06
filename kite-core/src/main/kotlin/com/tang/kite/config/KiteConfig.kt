@@ -9,9 +9,9 @@ import com.tang.kite.config.schema.SchemaConfig
 import com.tang.kite.config.table.TableConfig
 import com.tang.kite.config.tenant.TenantConfig
 import com.tang.kite.enumeration.SqlType
-import com.tang.kite.handler.fill.FillHandler
-import com.tang.kite.handler.fill.FillKey
-import com.tang.kite.handler.fill.TimeFillHandler
+import com.tang.kite.handler.field.FieldHandler
+import com.tang.kite.handler.field.FieldMetaKey
+import com.tang.kite.handler.field.TimeFieldHandler
 import com.tang.kite.handler.result.ResultHandler
 import com.tang.kite.sql.dialect.SqlDialect
 
@@ -47,12 +47,12 @@ object KiteConfig {
     var dialects: MutableMap<String, SqlDialect> = mutableMapOf()
 
     /**
-     * Fill handlers for handling fill annotations.
+     * Field handlers for handling field types and annotations.
      */
     @JvmStatic
-    var fillHandlers: MutableMap<FillKey, FillHandler> = mutableMapOf(
-        FillKey(CreateTime::class, SqlType.INSERT) to TimeFillHandler(),
-        FillKey(UpdateTime::class, SqlType.UPDATE) to TimeFillHandler()
+    var fieldHandlers: MutableMap<FieldMetaKey, FieldHandler> = mutableMapOf(
+        FieldMetaKey(CreateTime::class, SqlType.INSERT) to TimeFieldHandler(),
+        FieldMetaKey(UpdateTime::class, SqlType.UPDATE) to TimeFieldHandler()
     )
 
     /**

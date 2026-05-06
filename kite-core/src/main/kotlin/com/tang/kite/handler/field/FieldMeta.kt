@@ -1,15 +1,15 @@
-package com.tang.kite.handler.fill
+package com.tang.kite.handler.field
 
 import com.tang.kite.enumeration.SqlType
 
 /**
  * @author Tang
  */
-data class Fill(
+data class FieldMeta(
 
     val annotation: Annotation,
 
-    val handler: FillHandler,
+    val handler: FieldHandler,
 
     val sqlType: SqlType
 

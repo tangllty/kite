@@ -18,8 +18,8 @@ import com.tang.kite.config.tenant.TenantConfig
 import com.tang.kite.constants.SqlString.DOT
 import com.tang.kite.enumeration.SqlType
 import com.tang.kite.function.SFunction
-import com.tang.kite.handler.fill.Fill
-import com.tang.kite.handler.fill.FillKey
+import com.tang.kite.handler.field.FieldMeta
+import com.tang.kite.handler.field.FieldMetaKey
 import com.tang.kite.handler.result.ResultHandlerFactory
 import com.tang.kite.logging.LOGGER
 import com.tang.kite.mapper.BaseMapper
@@ -446,37 +446,37 @@ object Reflects {
     }
 
     @JvmStatic
-    fun <T> getFill(field: Field, entity: T, sqlType: SqlType): Fill? {
+    fun <T> getFieldMeta(field: Field, entity: T, sqlType: SqlType): FieldMeta? {
         makeAccessible(field, entity)
-        val fillAnnotationHandlers = KiteConfig.fillHandlers
+        val fieldHandlers = KiteConfig.fieldHandlers
         val annotations = field.annotations
         for (annotation in annotations) {
-            val key = FillKey(annotation.annotationClass, sqlType)
-            val handler = fillAnnotationHandlers[key]
+            val key = FieldMetaKey(annotation.annotationClass, sqlType)
+            val handler = fieldHandlers[key]
             if (handler != null) {
-                return Fill(annotation, handler, sqlType)
+                return FieldMeta(annotation, handler, sqlType)
             }
         }
         return null
     }
 
     @JvmStatic
-    fun <T> isFillField(field: Field, entity: T, sqlType: SqlType): Boolean {
-        return getFill(field, entity, sqlType) != null
+    fun <T> isHandledField(field: Field, entity: T, sqlType: SqlType): Boolean {
+        return getFieldMeta(field, entity, sqlType) != null
     }
 
     @JvmStatic
-    fun <T> getValue(field: Field, entity: T, sqlType: SqlType): Any? {
-        val fill = getFill(field, entity, sqlType)
-        return if (fill != null) {
-            fill.handler.fillValue(fill.annotation, field, entity as Any)
+    fun <T> getHandledValue(field: Field, entity: T, sqlType: SqlType): Any? {
+        val fieldMeta = getFieldMeta(field, entity, sqlType)
+        return if (fieldMeta != null) {
+            fieldMeta.handler.handleValue(fieldMeta.annotation, field, entity as Any)
         } else {
             getValue(field, entity)
         }
     }
 
     @JvmStatic
-    fun <T> setTableFillFields(tableClass: Class<T>?, sqlType: SqlType, action: (String, Any?) -> Unit) {
+    fun <T> setTableHandledFields(tableClass: Class<T>?, sqlType: SqlType, action: (String, Any?) -> Unit) {
         if (tableClass == null) {
             throw IllegalArgumentException("Table class is not set")
         }
@@ -484,10 +484,10 @@ object Reflects {
         val entity = tableClass.getDeclaredConstructor().newInstance()
         fields.forEach {
             makeAccessible(it, entity)
-            if (isFillField(it, entity, sqlType).not()) {
+            if (isHandledField(it, entity, sqlType).not()) {
                 return@forEach
             }
-            action(getColumnName(it), getValue(it, entity, sqlType))
+            action(getColumnName(it), getHandledValue(it, entity, sqlType))
         }
     }
 

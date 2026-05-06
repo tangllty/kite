@@ -1,4 +1,4 @@
-package com.tang.kite.handler.fill
+package com.tang.kite.handler.field
 
 import com.tang.kite.enumeration.SqlType
 import kotlin.reflect.KClass
@@ -6,7 +6,7 @@ import kotlin.reflect.KClass
 /**
  * @author Tang
  */
-data class FillKey(
+data class FieldMetaKey(
 
     val annotationClass: KClass<out Annotation>,
 

@@ -2,8 +2,8 @@ package com.tang.kite.boot.autoconfigure
 
 import com.tang.kite.config.KiteConfig
 import com.tang.kite.config.SelectiveStrategy
-import com.tang.kite.handler.fill.FillHandler
-import com.tang.kite.handler.fill.FillKey
+import com.tang.kite.handler.field.FieldHandler
+import com.tang.kite.handler.field.FieldMetaKey
 import com.tang.kite.handler.result.ResultHandler
 import com.tang.kite.sql.dialect.SqlDialect
 import org.springframework.boot.context.properties.ConfigurationProperties
@@ -38,9 +38,9 @@ open class KiteProperties(
     var dialects: MutableMap<String, SqlDialect> = KiteConfig.dialects,
 
     /**
-     * Fill handlers for handling fill annotations.
+     * Field handlers for handling field types and annotations.
      */
-    var fillHandlers: MutableMap<FillKey, FillHandler> = KiteConfig.fillHandlers,
+    var fieldHandlers: MutableMap<FieldMetaKey, FieldHandler> = KiteConfig.fieldHandlers,
 
     /**
      * Result handlers for handling result types.
@@ -95,7 +95,7 @@ open class KiteProperties(
         KiteConfig.selectiveStrategy = selectiveStrategy
         KiteConfig.batchSize = batchSize
         KiteConfig.dialects = dialects
-        KiteConfig.fillHandlers = fillHandlers
+        KiteConfig.fieldHandlers = fieldHandlers
         KiteConfig.resultHandlers = resultHandlers
         page.applyProperties()
         sql.applyProperties()

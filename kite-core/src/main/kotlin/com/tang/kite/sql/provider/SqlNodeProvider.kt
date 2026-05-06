@@ -25,7 +25,6 @@ import com.tang.kite.utils.Reflects
 import com.tang.kite.utils.Reflects.getIdField
 import com.tang.kite.utils.Reflects.getSqlFields
 import com.tang.kite.utils.Reflects.getTableAlias
-import com.tang.kite.utils.Reflects.getValue
 import com.tang.kite.utils.Reflects.isAutoIncrementId
 import java.lang.reflect.Field
 
@@ -65,9 +64,9 @@ class SqlNodeProvider(private val dialect: SqlDialect) : SqlProvider {
                 Reflects.getGeneratedId(it)
             } else {
                 if (sqlType != null) {
-                    getValue(it, entity, sqlType)
+                    Reflects.getHandledValue(it, entity, sqlType)
                 } else {
-                    getValue(it, entity)
+                    Reflects.getValue(it, entity)
                 }
             }
         }
@@ -285,7 +284,7 @@ class SqlNodeProvider(private val dialect: SqlDialect) : SqlProvider {
         val joinTargetField = joinAnnotation.joinTargetColumn
         val selfField = Reflects.getField(type, joinAnnotation.selfField)
         Reflects.makeAccessible(selfField!!, entity)
-        val selfFieldValue = getValue(selfField, entity)
+        val selfFieldValue = Reflects.getValue(selfField, entity)
         val joinSelect = selectOrPaginateWithJoins(joinType, null, emptyArray())
         val joinSqlNode = if (joinTable.isNotEmpty() && joinSelfField.isNotEmpty() && joinTargetField.isNotEmpty()) {
             getNestedSelect(joinSelect, joinAnnotation.targetField, selfFieldValue, joinAnnotation)

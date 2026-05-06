@@ -103,7 +103,7 @@ class UpdateWrapper<T : Any> : UpdateSetWrapper<T>, Wrapper<T> {
         if (tableRef == null || tableRef.clazz == null) {
             return
         }
-        Reflects.setTableFillFields(tableRef.clazz, SqlType.UPDATE) { column, value ->
+        Reflects.setTableHandledFields(tableRef.clazz, SqlType.UPDATE) { column, value ->
             updateSetWrapper.set(column, value)
         }
     }
