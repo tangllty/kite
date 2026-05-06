@@ -2,12 +2,11 @@ package com.tang.kite.optimistic.entity
 
 import com.tang.kite.annotation.Column
 import com.tang.kite.annotation.Table
-import com.tang.kite.annotation.fill.CreateTime
-import com.tang.kite.annotation.fill.UpdateTime
+import com.tang.kite.annotation.field.CreateTime
+import com.tang.kite.annotation.field.UpdateTime
 import com.tang.kite.annotation.id.Id
 import com.tang.kite.annotation.id.IdType
 import com.tang.kite.annotation.optimistic.Version
-import com.tang.kite.annotation.tenant.TenantId
 import com.tang.kite.enumeration.ColumnOperator
 import java.math.BigDecimal
 import java.time.LocalDateTime

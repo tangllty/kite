@@ -1,7 +1,7 @@
 package com.tang.kite.config
 
-import com.tang.kite.annotation.fill.CreateTime
-import com.tang.kite.annotation.fill.UpdateTime
+import com.tang.kite.annotation.field.CreateTime
+import com.tang.kite.annotation.field.UpdateTime
 import com.tang.kite.config.defaults.DefaultSelectiveStrategy
 import com.tang.kite.config.logical.LogicalDeletionConfig
 import com.tang.kite.config.optimistic.OptimisticLockConfig
