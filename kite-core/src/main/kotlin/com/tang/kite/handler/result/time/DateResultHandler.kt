@@ -16,7 +16,7 @@ import java.util.Date
 /**
  * @author Tang
  */
-class DateResultHandler : ResultHandler {
+object DateResultHandler : ResultHandler {
 
     override fun <T> setValue(field: Field, instance: T, value: Any) {
         val date = when (value) {

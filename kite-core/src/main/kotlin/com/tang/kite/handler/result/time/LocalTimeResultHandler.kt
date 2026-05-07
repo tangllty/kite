@@ -13,7 +13,7 @@ import java.time.LocalTime
 /**
  * @author Tang
  */
-class LocalTimeResultHandler : ResultHandler {
+object LocalTimeResultHandler : ResultHandler {
 
     override fun <T> setValue(field: Field, instance: T, value: Any) {
         val localTime = when (value) {

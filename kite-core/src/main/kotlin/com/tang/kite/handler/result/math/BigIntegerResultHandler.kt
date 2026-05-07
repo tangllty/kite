@@ -9,7 +9,7 @@ import java.math.BigInteger
 /**
  * @author Tang
  */
-class BigIntegerResultHandler : ResultHandler {
+object BigIntegerResultHandler : ResultHandler {
 
     override fun <T> setValue(field: Field, instance: T, value: Any) {
         val bigInteger = when (value) {

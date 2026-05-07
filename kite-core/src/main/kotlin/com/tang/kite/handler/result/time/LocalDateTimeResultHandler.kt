@@ -13,7 +13,7 @@ import java.time.ZoneOffset
 /**
  * @author Tang
  */
-class LocalDateTimeResultHandler : ResultHandler {
+object LocalDateTimeResultHandler : ResultHandler {
 
     override fun <T> setValue(field: Field, instance: T, value: Any) {
         val localDateTime = when (value) {

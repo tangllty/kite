@@ -12,7 +12,7 @@ import java.time.LocalDateTime
 /**
  * @author Tang
  */
-class TimestampResultHandler : ResultHandler {
+object TimestampResultHandler : ResultHandler {
 
     override fun <T> setValue(field: Field, instance: T, value: Any) {
         val timestamp = when (value) {

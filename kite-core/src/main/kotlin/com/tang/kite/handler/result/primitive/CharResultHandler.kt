@@ -8,7 +8,7 @@ import java.lang.reflect.Field
 /**
  * @author Tang
  */
-class CharResultHandler : ResultHandler {
+object CharResultHandler : ResultHandler {
 
     override fun <T> setValue(field: Field, instance: T, value: Any) {
         val char = when (value) {

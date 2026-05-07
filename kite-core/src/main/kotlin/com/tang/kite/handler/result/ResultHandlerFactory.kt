@@ -41,7 +41,7 @@ import kotlin.reflect.full.createInstance
 /**
  * @author Tang
  */
-class ResultHandlerFactory {
+object ResultHandlerFactory {
 
     /**
      * Creates a new instance of [ResultHandler] based on the field type or the [Column] annotation.
@@ -64,31 +64,31 @@ class ResultHandlerFactory {
         }
         return when (field.type) {
             // Primitive types
-            Char::class.java -> CharResultHandler()
-            Short::class.java -> ShortResultHandler()
-            Byte::class.java -> ByteResultHandler()
-            Int::class.java, Int::class.javaObjectType -> IntResultHandler()
-            Long::class.java, Long::class.javaObjectType -> LongResultHandler()
-            Double::class.java -> DoubleResultHandler()
-            Float::class.java -> FloatResultHandler()
-            Boolean::class.java -> BooleanResultHandler()
-            String::class.java -> StringResultHandler()
+            Char::class.java -> CharResultHandler
+            Short::class.java -> ShortResultHandler
+            Byte::class.java -> ByteResultHandler
+            Int::class.java, Int::class.javaObjectType -> IntResultHandler
+            Long::class.java, Long::class.javaObjectType -> LongResultHandler
+            Double::class.java -> DoubleResultHandler
+            Float::class.java -> FloatResultHandler
+            Boolean::class.java -> BooleanResultHandler
+            String::class.java -> StringResultHandler
             // Date and time types
-            SqlDate::class.java -> SqlDateResultHandler()
-            Time::class.java -> TimeResultHandler()
-            Timestamp::class.java -> TimestampResultHandler()
-            Calendar::class.java -> CalendarResultHandler()
-            Date::class.java -> DateResultHandler()
-            Instant::class.java -> InstantResultHandler()
-            LocalDate::class.java -> LocalDateResultHandler()
-            LocalTime::class.java -> LocalTimeResultHandler()
-            LocalDateTime::class.java -> LocalDateTimeResultHandler()
+            SqlDate::class.java -> SqlDateResultHandler
+            Time::class.java -> TimeResultHandler
+            Timestamp::class.java -> TimestampResultHandler
+            Calendar::class.java -> CalendarResultHandler
+            Date::class.java -> DateResultHandler
+            Instant::class.java -> InstantResultHandler
+            LocalDate::class.java -> LocalDateResultHandler
+            LocalTime::class.java -> LocalTimeResultHandler
+            LocalDateTime::class.java -> LocalDateTimeResultHandler
             // Math types
-            BigDecimal::class.java -> BigDecimalResultHandler()
-            BigInteger::class.java -> BigIntegerResultHandler()
+            BigDecimal::class.java -> BigDecimalResultHandler
+            BigInteger::class.java -> BigIntegerResultHandler
             // Enum types
-            Enum::class.java -> EnumResultHandler()
-            else -> DefaultResultHandler()
+            Enum::class.java -> EnumResultHandler
+            else -> DefaultResultHandler
         }
     }
 

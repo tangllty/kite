@@ -11,6 +11,7 @@
 - Refactor selective strategy handling to use interface and improve type safety
 - Refactor fill handling to unify field processing and improve naming consistency
 - Refactor annotation imports to unify field categorization and improve package structure
+- Refactor change all result handlers to singleton object
 
 ## 1.0.21
 

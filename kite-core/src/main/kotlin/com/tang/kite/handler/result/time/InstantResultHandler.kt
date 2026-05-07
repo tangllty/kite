@@ -16,7 +16,7 @@ import java.time.ZoneId
 /**
  * @author Tang
  */
-class InstantResultHandler : ResultHandler {
+object InstantResultHandler : ResultHandler {
 
     override fun <T> setValue(field: Field, instance: T, value: Any) {
         val instant = when (value) {

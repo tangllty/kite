@@ -15,7 +15,7 @@ import java.time.ZoneId
 /**
  * @author Tang
  */
-class SqlDateResultHandler : ResultHandler {
+object SqlDateResultHandler : ResultHandler {
 
     override fun <T> setValue(field: Field, instance: T, value: Any) {
         val sqlDate = when (value) {

@@ -9,7 +9,7 @@ import java.math.BigDecimal
 /**
  * @author Tang
  */
-class BigDecimalResultHandler : ResultHandler {
+object BigDecimalResultHandler : ResultHandler {
 
     override fun <T> setValue(field: Field, instance: T, value: Any) {
         val bigDecimal = when (value) {

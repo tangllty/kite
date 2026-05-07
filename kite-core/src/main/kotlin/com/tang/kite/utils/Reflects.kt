@@ -431,7 +431,7 @@ object Reflects {
     @JvmStatic
     fun <T> setResultValue(field: Field, instance: T, value: Any?) {
         makeAccessible(field, instance)
-        val resultHandler = ResultHandlerFactory().newResultHandler(field)
+        val resultHandler = ResultHandlerFactory.newResultHandler(field)
         if (value == null) {
             resultHandler.setNullValue(field, instance)
         } else {

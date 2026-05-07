@@ -9,7 +9,7 @@ import java.sql.Clob
 /**
  * @author Tang
  */
-class StringResultHandler : ResultHandler {
+object StringResultHandler : ResultHandler {
 
     override fun <T> setValue(field: Field, instance: T, value: Any) {
         val string = when (value) {

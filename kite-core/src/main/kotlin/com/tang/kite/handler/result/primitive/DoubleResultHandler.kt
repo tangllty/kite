@@ -8,7 +8,7 @@ import java.lang.reflect.Field
 /**
  * @author Tang
  */
-class DoubleResultHandler : ResultHandler {
+object DoubleResultHandler : ResultHandler {
 
     override fun <T> setValue(field: Field, instance: T, value: Any) {
         val double = when (value) {

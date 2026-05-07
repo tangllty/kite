@@ -15,7 +15,7 @@ import java.util.Calendar
 /**
  * @author Tang
  */
-class CalendarResultHandler : ResultHandler {
+object CalendarResultHandler : ResultHandler {
 
     override fun <T> setValue(field: Field, instance: T, value: Any) {
         val calendar = getCalendarInstance {

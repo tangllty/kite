@@ -7,7 +7,7 @@ import java.lang.reflect.Field
 /**
  * @author Tang
  */
-class EnumResultHandler : ResultHandler {
+object EnumResultHandler : ResultHandler {
 
     override fun <T> setValue(field: Field, instance: T, value: Any) {
         val enumClass = field.type as Class<*>

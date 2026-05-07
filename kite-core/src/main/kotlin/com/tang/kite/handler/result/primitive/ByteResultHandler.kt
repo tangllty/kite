@@ -8,7 +8,7 @@ import java.lang.reflect.Field
 /**
  * @author Tang
  */
-class ByteResultHandler : ResultHandler {
+object ByteResultHandler : ResultHandler {
 
     override fun <T> setValue(field: Field, instance: T, value: Any) {
         val byte = when (value) {
