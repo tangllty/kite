@@ -23,7 +23,7 @@ class LocalTimeResultHandlerTest {
 
     @Test
     fun setValue() {
-        val handler = LocalTimeResultHandler()
+        val handler = LocalTimeResultHandler
         val instance = LocalTimeData()
         val fields = LocalTimeData::class.java.declaredFields
         val expectedTime = LocalTime.of(12, 30, 0)

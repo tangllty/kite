@@ -23,7 +23,7 @@ class TimestampResultHandlerTest {
 
     @Test
     fun setValue() {
-        val handler = TimestampResultHandler()
+        val handler = TimestampResultHandler
         val instance = TimestampData()
         val fields = TimestampData::class.java.declaredFields
         val expectedTimestamp = Timestamp.valueOf("2024-06-01 12:30:45")

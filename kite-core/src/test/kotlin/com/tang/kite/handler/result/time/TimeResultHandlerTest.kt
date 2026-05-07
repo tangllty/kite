@@ -21,7 +21,7 @@ class TimeResultHandlerTest {
 
     @Test
     fun setValue() {
-        val handler = TimeResultHandler()
+        val handler = TimeResultHandler
         val instance = TimeData()
         val fields = TimeData::class.java.declaredFields
         val expectedTime = Time.valueOf("12:30:00")

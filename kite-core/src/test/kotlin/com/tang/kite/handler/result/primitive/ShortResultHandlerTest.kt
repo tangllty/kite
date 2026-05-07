@@ -21,7 +21,7 @@ class ShortResultHandlerTest {
 
     @Test
     fun setValue() {
-        val handler = ShortResultHandler()
+        val handler = ShortResultHandler
         val instance = ShortData()
         val fields = ShortData::class.java.declaredFields
         for (field in fields) {

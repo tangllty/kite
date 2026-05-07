@@ -18,7 +18,7 @@ class BooleanResultHandlerTest {
 
     @Test
     fun setValue() {
-        val handler = BooleanResultHandler()
+        val handler = BooleanResultHandler
         val instance = BooleanData()
         val fields = BooleanData::class.java.declaredFields
         for (field in fields) {

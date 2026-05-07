@@ -31,7 +31,7 @@ class DateResultHandlerTest {
 
     @Test
     fun setValue() {
-        val handler = DateResultHandler()
+        val handler = DateResultHandler
         val instance = DateData()
         val fields = DateData::class.java.declaredFields
         for (field in fields) {

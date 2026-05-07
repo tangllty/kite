@@ -21,7 +21,7 @@ class LongResultHandlerTest {
 
     @Test
     fun setValue() {
-        val handler = LongResultHandler()
+        val handler = LongResultHandler
         val instance = LongData()
         val fields = LongData::class.java.declaredFields
         for (field in fields) {

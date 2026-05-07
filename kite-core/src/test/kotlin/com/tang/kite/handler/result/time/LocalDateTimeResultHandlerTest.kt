@@ -25,7 +25,7 @@ class LocalDateTimeResultHandlerTest {
 
     @Test
     fun setValue() {
-        val handler = LocalDateTimeResultHandler()
+        val handler = LocalDateTimeResultHandler
         val instance = LocalDateTimeData()
         val fields = LocalDateTimeData::class.java.declaredFields
         val expectedDateTime = LocalDateTime.of(2024, 6, 1, 12, 30, 0)

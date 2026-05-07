@@ -18,7 +18,7 @@ class EnumResultHandlerTest {
 
     @Test
     fun setValue() {
-        val handler = EnumResultHandler()
+        val handler = EnumResultHandler
         val instance = EnumData()
         val fields = EnumData::class.java.declaredFields
         val expectedEnum = TestEnum.ONE

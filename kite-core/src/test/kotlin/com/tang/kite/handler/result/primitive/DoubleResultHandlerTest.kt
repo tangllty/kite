@@ -21,7 +21,7 @@ class DoubleResultHandlerTest {
 
     @Test
     fun setValue() {
-        val handler = DoubleResultHandler()
+        val handler = DoubleResultHandler
         val instance = DoubleData()
         val fields = DoubleData::class.java.declaredFields
         for (field in fields) {

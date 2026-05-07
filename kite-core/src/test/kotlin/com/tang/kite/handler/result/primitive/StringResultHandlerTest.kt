@@ -22,7 +22,7 @@ class StringResultHandlerTest {
 
     @Test
     fun setValue() {
-        val handler = StringResultHandler()
+        val handler = StringResultHandler
         val instance = StringData()
         val fields = StringData::class.java.declaredFields
         for (field in fields) {

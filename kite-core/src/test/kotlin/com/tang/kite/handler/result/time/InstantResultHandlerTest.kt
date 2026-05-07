@@ -30,7 +30,7 @@ class InstantResultHandlerTest {
 
     @Test
     fun setValue() {
-        val handler = InstantResultHandler()
+        val handler = InstantResultHandler
         val instance = InstantData()
         val fields = InstantData::class.java.declaredFields
         val sqlDate = Date.valueOf("2024-06-01")

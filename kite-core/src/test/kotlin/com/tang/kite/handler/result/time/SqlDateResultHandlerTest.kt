@@ -29,7 +29,7 @@ class SqlDateResultHandlerTest {
 
     @Test
     fun setValue() {
-        val handler = SqlDateResultHandler()
+        val handler = SqlDateResultHandler
         val instance = SqlDateData()
         val fields = SqlDateData::class.java.declaredFields
         val expectedDate = Date.valueOf("2024-06-01")

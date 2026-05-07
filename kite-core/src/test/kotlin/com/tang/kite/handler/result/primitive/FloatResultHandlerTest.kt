@@ -21,7 +21,7 @@ class FloatResultHandlerTest {
 
     @Test
     fun setValue() {
-        val handler = FloatResultHandler()
+        val handler = FloatResultHandler
         val instance = FloatData()
         val fields = FloatData::class.java.declaredFields
         for (field in fields) {

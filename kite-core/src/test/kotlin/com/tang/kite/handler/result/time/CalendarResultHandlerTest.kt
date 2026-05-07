@@ -30,7 +30,7 @@ class CalendarResultHandlerTest {
 
     @Test
     fun setValue() {
-        val handler = CalendarResultHandler()
+        val handler = CalendarResultHandler
         val instance = CalendarData()
         val fields = CalendarData::class.java.declaredFields
         for (field in fields) {

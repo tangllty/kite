@@ -21,7 +21,7 @@ class ByteResultHandlerTest {
 
     @Test
     fun setValue() {
-        val handler = ByteResultHandler()
+        val handler = ByteResultHandler
         val instance = ByteData()
         val fields = ByteData::class.java.declaredFields
         for (field in fields) {

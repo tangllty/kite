@@ -21,7 +21,7 @@ class IntResultHandlerTest {
 
     @Test
     fun setValue() {
-        val handler = IntResultHandler()
+        val handler = IntResultHandler
         val instance = IntData()
         val fields = IntData::class.java.declaredFields
         for (field in fields) {

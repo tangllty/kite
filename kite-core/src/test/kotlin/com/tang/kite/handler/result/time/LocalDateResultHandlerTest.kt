@@ -23,7 +23,7 @@ class LocalDateResultHandlerTest {
 
     @Test
     fun setValue() {
-        val handler = LocalDateResultHandler()
+        val handler = LocalDateResultHandler
         val instance = LocalDateData()
         val fields = LocalDateData::class.java.declaredFields
         val sqlDate = Date.valueOf("2024-06-01")

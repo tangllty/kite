@@ -20,7 +20,7 @@ class CharResultHandlerTest {
 
     @Test
     fun setValue() {
-        val handler = CharResultHandler()
+        val handler = CharResultHandler
         val instance = CharData()
         val fields = CharData::class.java.declaredFields
         for (field in fields) {
