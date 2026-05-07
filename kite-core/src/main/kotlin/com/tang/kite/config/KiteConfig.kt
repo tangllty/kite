@@ -51,8 +51,8 @@ object KiteConfig {
      */
     @JvmStatic
     var fieldHandlers: MutableMap<FieldMetaKey, FieldHandler> = mutableMapOf(
-        FieldMetaKey(CreateTime::class, SqlType.INSERT) to TimeFieldHandler(),
-        FieldMetaKey(UpdateTime::class, SqlType.UPDATE) to TimeFieldHandler()
+        FieldMetaKey(CreateTime::class, SqlType.INSERT) to TimeFieldHandler,
+        FieldMetaKey(UpdateTime::class, SqlType.UPDATE) to TimeFieldHandler
     )
 
     /**

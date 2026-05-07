@@ -9,7 +9,7 @@ import javax.sql.DataSource
 /**
  * @author Tang
  */
-class JdbcTransactionFactory : TransactionFactory {
+object JdbcTransactionFactory : TransactionFactory {
 
     override fun newTransaction(connection: Connection): Transaction {
         return JdbcTransaction(connection)

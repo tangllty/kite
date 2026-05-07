@@ -18,7 +18,7 @@ class KiteDataSource : AbstractDataSource {
 
     constructor(dataSourceKey: String, database: DatabaseValue) : this(mapOf(dataSourceKey to database))
 
-    constructor(databaseMap: Map<String, DatabaseValue>) : this(databaseMap, JdbcTransactionFactory())
+    constructor(databaseMap: Map<String, DatabaseValue>) : this(databaseMap, JdbcTransactionFactory)
 
     constructor(databaseMap: Map<String, DatabaseValue>, transactionFactory: TransactionFactory) {
         this.dataSourceKey = databaseMap.keys.first()

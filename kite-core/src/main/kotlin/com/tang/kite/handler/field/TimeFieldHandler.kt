@@ -24,7 +24,7 @@ import kotlin.time.Instant as KotlinInstant
  *
  * @author Tang
  */
-class TimeFieldHandler : FieldHandler {
+object TimeFieldHandler : FieldHandler {
 
     /**
      * Handle the value of a field.

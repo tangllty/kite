@@ -12,6 +12,7 @@
 - Refactor fill handling to unify field processing and improve naming consistency
 - Refactor annotation imports to unify field categorization and improve package structure
 - Refactor change all result handlers to singleton object
+- Refactor change factory classes to singleton objects for improved instantiation and memory efficiency
 
 ## 1.0.21
 

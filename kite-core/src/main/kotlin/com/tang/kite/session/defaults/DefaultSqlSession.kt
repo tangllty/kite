@@ -48,7 +48,7 @@ class DefaultSqlSession(
 
 ) : SqlSession {
 
-    private val executor = DefaultExecutorFactory().newExecutor(transaction)
+    private val executor = DefaultExecutorFactory.newExecutor(transaction)
 
     private val provider = SqlNodeProvider(sqlDialect)
 

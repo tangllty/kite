@@ -7,7 +7,7 @@ import com.tang.kite.transaction.Transaction
 /**
  * @author Tang
  */
-class DefaultExecutorFactory : ExecutorFactory {
+object DefaultExecutorFactory : ExecutorFactory {
 
     override fun newExecutor(transaction: Transaction): Executor {
         return DefaultExecutor(transaction)

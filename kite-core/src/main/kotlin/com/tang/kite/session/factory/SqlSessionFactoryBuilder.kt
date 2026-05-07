@@ -24,7 +24,7 @@ class SqlSessionFactoryBuilder {
 
     var transactionFactory: TransactionFactory
 
-    constructor() : this(JdbcTransactionFactory())
+    constructor() : this(JdbcTransactionFactory)
 
     constructor(transactionFactory: TransactionFactory) {
         this.transactionFactory = transactionFactory
