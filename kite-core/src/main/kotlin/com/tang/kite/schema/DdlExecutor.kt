@@ -26,29 +26,27 @@ class DdlExecutor(private val databaseValue: DatabaseValue) {
         val validSqlList = sqlList.filter(String::isNotBlank)
         if (validSqlList.isEmpty()) return true
 
-        val connection = databaseValue.dataSource.connection
-
         return runCatching {
-            connection.use { conn ->
-                val originalAutoCommit = conn.autoCommit
-                conn.autoCommit = false
+            databaseValue.dataSource.connection.use { connection ->
+                val originalAutoCommit = connection.autoCommit
+                connection.autoCommit = false
 
                 try {
-                    conn.createStatement().use { statement ->
+                    connection.createStatement().use { statement ->
                         validSqlList.forEach { sql ->
                             logger.info("Executing DDL: $sql")
                             statement.execute(sql)
                         }
                     }
 
-                    conn.commit()
+                    connection.commit()
                     true
                 } catch (e: Exception) {
-                    conn.rollback()
+                    connection.rollback()
                     logger.error("DDL execution failed, rolled back", e)
                     throw e
                 } finally {
-                    conn.autoCommit = originalAutoCommit
+                    connection.autoCommit = originalAutoCommit
                 }
             }
         }.getOrDefault(false)

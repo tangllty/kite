@@ -14,9 +14,7 @@ class MetaDataHandlersTest : BaseDataTest() {
 
     @Test
     fun getTable() {
-        val connection = sqlSessionFactory.openSession().getConnection()
-        val table = MetaDataHandlers.getTable(connection, "account")
-        connection.close()
+        val table = MetaDataHandlers.getTable(kiteDataSource.getCurrentDatabase(), "account")
         assertNotNull(table)
         assertEquals("account", table.tableName.lowercase())
     }
@@ -24,7 +22,7 @@ class MetaDataHandlersTest : BaseDataTest() {
     @Test
     fun getTables() {
         val connection = sqlSessionFactory.openSession().getConnection()
-        val tables = MetaDataHandlers.getTables(connection)
+        val tables = MetaDataHandlers.getTables(kiteDataSource.getCurrentDatabase())
         connection.close()
         assertNotNull(tables)
         assertTrue { tables.isNotEmpty() }
@@ -34,7 +32,7 @@ class MetaDataHandlersTest : BaseDataTest() {
     @Test
     fun getColumns() {
         val connection = sqlSessionFactory.openSession().getConnection()
-        val columns = MetaDataHandlers.getColumns(connection, "account")
+        val columns = MetaDataHandlers.getColumns(kiteDataSource.getCurrentDatabase(), "account")
         connection.close()
         assertNotNull(columns)
         assertTrue { columns.map { it.columnName.lowercase() }.contains("id") }
@@ -43,7 +41,7 @@ class MetaDataHandlersTest : BaseDataTest() {
     @Test
     fun getPrimaryKeys() {
         val connection = sqlSessionFactory.openSession().getConnection()
-        val primaryKeys = MetaDataHandlers.getPrimaryKeys(connection, "account")
+        val primaryKeys = MetaDataHandlers.getPrimaryKeys(kiteDataSource.getCurrentDatabase(), "account")
         connection.close()
         assertNotNull(primaryKeys)
         assertContentEquals(listOf("id"), primaryKeys.map { it.lowercase() })
@@ -52,7 +50,7 @@ class MetaDataHandlersTest : BaseDataTest() {
     @Test
     fun getUniqueKeys() {
         val connection = sqlSessionFactory.openSession().getConnection()
-        val uniqueKeys = MetaDataHandlers.getUniqueKeys(connection, "account")
+        val uniqueKeys = MetaDataHandlers.getUniqueKeys(kiteDataSource.getCurrentDatabase(), "account")
         connection.close()
         assertNotNull(uniqueKeys)
         assertContentEquals(listOf("id"), uniqueKeys.map { it.lowercase() })
@@ -61,7 +59,7 @@ class MetaDataHandlersTest : BaseDataTest() {
     @Test
     fun getUniqueIndexes() {
         val connection = sqlSessionFactory.openSession().getConnection()
-        val uniqueIndexes = MetaDataHandlers.getUniqueIndexes(connection, "account")
+        val uniqueIndexes = MetaDataHandlers.getUniqueIndexes(kiteDataSource.getCurrentDatabase(), "account")
         connection.close()
         assertNotNull(uniqueIndexes)
     }
@@ -69,7 +67,7 @@ class MetaDataHandlersTest : BaseDataTest() {
     @Test
     fun getIndexes() {
         val connection = sqlSessionFactory.openSession().getConnection()
-        val indexes = MetaDataHandlers.getIndexes(connection, "account")
+        val indexes = MetaDataHandlers.getIndexes(kiteDataSource.getCurrentDatabase(), "account")
         connection.close()
         assertNotNull(indexes)
     }

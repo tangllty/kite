@@ -48,15 +48,15 @@ object SqlStatementDdlHandler : DdlHandler<List<String>> {
 
         createTableNode.columns.forEach { column ->
             if (column.comment != null && dialect.supportsCommentOnColumn()) {
-                sqlList.add("comment on column ${createTableNode.table?.toString(false)}.${column.columnName} is '${column.comment}'")
+                sqlList.add(getColumnComment(column, dialect))
             }
         }
-
         return sqlList
     }
 
     override fun handleAlterTable(alterTableNode: SqlNode.AlterTable, dialect: SqlDialect): List<String> {
         val sqlList = mutableListOf<String>()
+        val commentList = mutableListOf<String>()
         val tableName = alterTableNode.table?.toString(false) ?: throw IllegalArgumentException("Table name cannot be null")
 
         alterTableNode.operations.forEach { operation ->
@@ -67,6 +67,7 @@ object SqlStatementDdlHandler : DdlHandler<List<String>> {
                 is AlterOperation.AddColumn -> {
                     sql.append(dialect.getAddColumnKeyword()).append(" ")
                     appendColumnMeta(sql, operation.column, dialect)
+                    commentList.add(getColumnComment(operation.column, dialect))
                 }
                 is AlterOperation.DropColumn -> {
                     sql.append(dialect.getDropColumnKeyword())
@@ -78,6 +79,7 @@ object SqlStatementDdlHandler : DdlHandler<List<String>> {
                 is AlterOperation.ModifyColumn -> {
                     sql.append(dialect.getAlterColumnKeyword()).append(" ")
                     appendColumnMeta(sql, operation.column, dialect)
+                    commentList.add(getColumnComment(operation.column, dialect))
                 }
                 is AlterOperation.RenameColumn -> {
                     sql.append("rename column ${operation.oldName} to ${operation.newName}")
@@ -93,10 +95,9 @@ object SqlStatementDdlHandler : DdlHandler<List<String>> {
                     }
                 }
             }
-
             sqlList.add(sql.toString())
         }
-
+        sqlList.addAll(commentList)
         return sqlList
     }
 
@@ -166,24 +167,7 @@ object SqlStatementDdlHandler : DdlHandler<List<String>> {
     private fun appendColumnMeta(sql: StringBuilder, column: ColumnMeta, dialect: SqlDialect) {
         sql.append(column.columnName)
         sql.append(" ")
-        sql.append(column.typeName)
-
-        when {
-            column.typeName.startsWith("decimal") || column.typeName.startsWith("numeric") -> {
-                if (column.columnSize > 0 && column.decimalDigits >= 0) {
-                    sql.append("(${column.columnSize}, ${column.decimalDigits})")
-                } else {
-                    sql.append("(10, 2)")
-                }
-            }
-            column.typeName.startsWith("varchar") || column.typeName.startsWith("char") -> {
-                if (column.columnSize > 0) {
-                    sql.append("(${column.columnSize})")
-                } else {
-                    sql.append("(255)")
-                }
-            }
-        }
+        sql.append(getType(column))
 
         if (column.nullable.not()) {
             sql.append(" not null")
@@ -247,6 +231,43 @@ object SqlStatementDdlHandler : DdlHandler<List<String>> {
                 sql.append("check (${constraint.expression})")
             }
         }
+    }
+
+    private fun getType(column: ColumnMeta): String {
+        val sql = StringBuilder()
+        sql.append(column.typeName)
+        when {
+            column.typeName.startsWith("decimal") || column.typeName.startsWith("numeric") -> {
+                if (column.columnSize > 0 && column.decimalDigits >= 0) {
+                    sql.append("(${column.columnSize}, ${column.decimalDigits})")
+                } else {
+                    sql.append("(10, 2)")
+                }
+            }
+            column.typeName.startsWith("varchar") || column.typeName.startsWith("char") -> {
+                if (column.columnSize > 0) {
+                    sql.append("(${column.columnSize})")
+                } else {
+                    sql.append("(255)")
+                }
+            }
+        }
+        return sql.toString()
+    }
+
+    fun getColumnComment(column: ColumnMeta, dialect: SqlDialect): String {
+        val tableName = column.tableName
+        val columnName = column.columnName
+        val sql = if (dialect.supportsCommentOnColumn()) {
+            "comment on column $tableName.$columnName is '${column.comment ?: ""}'"
+        } else {
+            if (column.comment == null) {
+                "drop comment on column $tableName.$columnName"
+            } else {
+                "alter table $tableName modify column $columnName ${getType(column)} comment '${column.comment}'"
+            }
+        }
+        return sql
     }
 
 }

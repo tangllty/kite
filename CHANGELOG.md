@@ -13,6 +13,7 @@
 - Refactor annotation imports to unify field categorization and improve package structure
 - Refactor change all result handlers to singleton object
 - Refactor change factory classes to singleton objects for improved instantiation and memory efficiency
+- Add schema synchronization test entities for account table scenarios
 
 ## 1.0.21
 
