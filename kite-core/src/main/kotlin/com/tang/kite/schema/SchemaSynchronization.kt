@@ -181,7 +181,7 @@ class SchemaSynchronization(private val databaseValue: DatabaseValue) {
         logger.info("Updating column '${existingColumn.columnName}' in table '$tableName'")
         if (existingColumn.comment.equals(expectedColumn.comment, ignoreCase = true).not()) {
             val dialect = databaseValue.sqlDialect
-            val sql = SqlStatementDdlHandler.getColumnComment(expectedColumn, dialect)
+            val sql = SqlStatementDdlHandler.getColumnComment(tableName, expectedColumn, dialect)
             val success = ddlExecutor.executeDdl(sql)
             if (success) {
                 logger.info("Successfully updated column comment for '${existingColumn.columnName}' in table '$tableName'")

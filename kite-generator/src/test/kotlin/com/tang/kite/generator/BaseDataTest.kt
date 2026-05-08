@@ -1,5 +1,6 @@
 package com.tang.kite.generator
 
+import com.tang.kite.datasource.KiteDataSourceFactory
 import com.tang.kite.datasource.unpooled.UnpooledDataSourceFactory
 import com.tang.kite.datasource.unpooled.UnpooledProperties
 import com.tang.kite.io.Resources
@@ -61,9 +62,7 @@ open class BaseDataTest {
 
         private val resource = Resources.getResourceAsStream("kite-config.yml")
 
-        val sqlSessionFactoryBuild = SqlSessionFactoryBuilder().build(resource)
-
-        val sqlSessionFactory inline get() = sqlSessionFactoryBuild
+        val kiteDataSource = KiteDataSourceFactory.build(resource)
 
     }
 

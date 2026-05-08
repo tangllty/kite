@@ -1,12 +1,12 @@
 package com.tang.kite.generator
 
+import com.tang.kite.datasource.KiteDataSource
 import com.tang.kite.generator.config.GeneratorConfig
 import com.tang.kite.generator.database.DatabaseMetadataReader
 import com.tang.kite.generator.info.TableInfo
 import com.tang.kite.generator.template.TemplateManager
 import com.tang.kite.logging.LOGGER
 import java.io.File
-import javax.sql.DataSource
 
 /**
  * Kite code generator
@@ -15,7 +15,7 @@ import javax.sql.DataSource
  */
 class CodeGenerator(
 
-    private val dataSource: DataSource,
+    private val kiteDataSource: KiteDataSource,
 
     private val config: GeneratorConfig
 
@@ -25,7 +25,7 @@ class CodeGenerator(
      * Generate code
      */
     fun generate() {
-        val metadataReader = DatabaseMetadataReader(dataSource, config)
+        val metadataReader = DatabaseMetadataReader(kiteDataSource, config)
         val tables = metadataReader.getTables()
 
         // Filter tables with prefix

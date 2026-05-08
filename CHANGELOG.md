@@ -14,6 +14,7 @@
 - Refactor change all result handlers to singleton object
 - Refactor change factory classes to singleton objects for improved instantiation and memory efficiency
 - Add schema synchronization test entities for account table scenarios
+- Refactor data source usage to utilize KiteDataSource for improved consistency and functionality
 
 ## 1.0.21
 

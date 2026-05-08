@@ -1,5 +1,7 @@
 package com.tang.kite.generator.database
 
+import com.tang.kite.datasource.DatabaseValue
+import com.tang.kite.datasource.KiteDataSource
 import com.tang.kite.generator.config.GeneratorConfig
 import com.tang.kite.generator.config.Language
 import com.tang.kite.generator.info.ColumnInfo
@@ -11,9 +13,7 @@ import com.tang.kite.logging.LOGGER
 import com.tang.kite.metadata.MetaDataHandlers
 import com.tang.kite.metadata.TableMeta
 import com.tang.kite.utils.CaseFormat
-import java.sql.Connection
 import java.sql.Types
-import javax.sql.DataSource
 
 /**
  * Database metadata reader
@@ -22,7 +22,7 @@ import javax.sql.DataSource
  */
 class DatabaseMetadataReader(
 
-    private val dataSource: DataSource,
+    private val kiteDataSource: KiteDataSource,
 
     private val config: GeneratorConfig
 
@@ -32,12 +32,12 @@ class DatabaseMetadataReader(
      * Get table information list
      */
     fun getTables(): List<TableInfo> {
-        val connection = dataSource.connection
-        val tables = MetaDataHandlers.getTables(connection)
+        val databaseValue = kiteDataSource.getCurrentDatabase()
+        val tables = MetaDataHandlers.getTables(databaseValue)
 
         val tableNames = config.tableNames
         if (tableNames.isEmpty()) {
-            return tables.map { getTableInfo(connection, it) }
+            return tables.map { getTableInfo(databaseValue, it) }
         }
         val filteredTables = tables.filter { tableInfo ->
             tableNames.any { it.equals(tableInfo.tableName, ignoreCase = true) }
@@ -50,16 +50,16 @@ class DatabaseMetadataReader(
             LOGGER.warn("The following table names were not found in the database: ${unmatchedTables.joinToString(", ")}")
         }
 
-        return filteredTables.map { getTableInfo(connection, it) }
+        return filteredTables.map { getTableInfo(databaseValue, it) }
     }
 
-    private fun getTableInfo(connection: Connection, tableMeta: TableMeta): TableInfo {
+    private fun getTableInfo(databaseValue: DatabaseValue, tableMeta: TableMeta): TableInfo {
         val tableName = tableMeta.tableName
         val className = CaseFormat.LOWER_UNDERSCORE.to(CaseFormat.UPPER_CAMEL, tableName.lowercase())
         val variableName = CaseFormat.LOWER_UNDERSCORE.to(CaseFormat.LOWER_CAMEL, tableName.lowercase())
         val mappingName = CaseFormat.LOWER_UNDERSCORE.to(CaseFormat.LOWER_HYPHEN, tableName.lowercase())
 
-        val columns = getColumns(connection, tableName)
+        val columns = getColumns(databaseValue, tableName)
         val fields = columns.map { FieldInfo(it.propertyName, it.targetType.getFullName()) }
         val serialVersionUID = SerialVersionGenerator.generate(className, fields)
 
@@ -69,8 +69,8 @@ class DatabaseMetadataReader(
     /**
      * Get table column information
      */
-    private fun getColumns(connection: Connection, tableName: String): List<ColumnInfo> {
-        val columns = MetaDataHandlers.getColumns(connection, tableName)
+    private fun getColumns(databaseValue: DatabaseValue, tableName: String): List<ColumnInfo> {
+        val columns = MetaDataHandlers.getColumns(databaseValue, tableName)
         return columns.map {
             val propertyName = CaseFormat.UPPER_UNDERSCORE.to(CaseFormat.LOWER_CAMEL, it.columnName)
             val targetType = getTargetType(it.dataType, it.typeName, it.columnSize, it.decimalDigits)

@@ -48,7 +48,7 @@ object SqlStatementDdlHandler : DdlHandler<List<String>> {
 
         createTableNode.columns.forEach { column ->
             if (column.comment != null && dialect.supportsCommentOnColumn()) {
-                sqlList.add(getColumnComment(column, dialect))
+                sqlList.add(getColumnComment(tableName, column, dialect))
             }
         }
         return sqlList
@@ -67,7 +67,7 @@ object SqlStatementDdlHandler : DdlHandler<List<String>> {
                 is AlterOperation.AddColumn -> {
                     sql.append(dialect.getAddColumnKeyword()).append(" ")
                     appendColumnMeta(sql, operation.column, dialect)
-                    commentList.add(getColumnComment(operation.column, dialect))
+                    commentList.add(getColumnComment(tableName, operation.column, dialect))
                 }
                 is AlterOperation.DropColumn -> {
                     sql.append(dialect.getDropColumnKeyword())
@@ -79,7 +79,7 @@ object SqlStatementDdlHandler : DdlHandler<List<String>> {
                 is AlterOperation.ModifyColumn -> {
                     sql.append(dialect.getAlterColumnKeyword()).append(" ")
                     appendColumnMeta(sql, operation.column, dialect)
-                    commentList.add(getColumnComment(operation.column, dialect))
+                    commentList.add(getColumnComment(tableName, operation.column, dialect))
                 }
                 is AlterOperation.RenameColumn -> {
                     sql.append("rename column ${operation.oldName} to ${operation.newName}")
@@ -255,8 +255,7 @@ object SqlStatementDdlHandler : DdlHandler<List<String>> {
         return sql.toString()
     }
 
-    fun getColumnComment(column: ColumnMeta, dialect: SqlDialect): String {
-        val tableName = column.tableName
+    fun getColumnComment(tableName: String, column: ColumnMeta, dialect: SqlDialect): String {
         val columnName = column.columnName
         val sql = if (dialect.supportsCommentOnColumn()) {
             "comment on column $tableName.$columnName is '${column.comment ?: ""}'"

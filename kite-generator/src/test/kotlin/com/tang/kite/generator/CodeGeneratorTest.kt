@@ -17,8 +17,6 @@ import kotlin.test.assertTrue
  */
 class CodeGeneratorTest : BaseDataTest() {
 
-    private val dataSource = createDataSource()
-
     @Test
     fun testGenerateKotlinCode() {
         testGenerateCode(Language.KOTLIN)
@@ -43,7 +41,7 @@ class CodeGeneratorTest : BaseDataTest() {
             language = language
         )
 
-        val generator = CodeGenerator(dataSource, config)
+        val generator = CodeGenerator(kiteDataSource, config)
         generator.generate()
 
         val languageFolder = language.name.lowercase()
