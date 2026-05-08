@@ -14,7 +14,7 @@
 - Refactor change all result handlers to singleton object
 - Refactor change factory classes to singleton objects for improved instantiation and memory efficiency
 - Add schema synchronization test entities for account table scenarios
-- Refactor data source usage to utilize KiteDataSource for improved consistency and functionality
+- Refactor data source usage to utilize `KiteDataSource` for improved consistency and functionality
 - Rename `IndexType` to `IndexStructure` and update related references for clarity
 
 ## 1.0.21
@@ -68,7 +68,7 @@
 
 ### Bug Fixes
 
-- Suppress ConfigurationProperties inspection for multi-version compatibility
+- Suppress `ConfigurationProperties` inspection for multi-version compatibility
 - Use Kotlin native types instead of Java classes
 
 ### Dependencies
@@ -210,7 +210,7 @@
 - Enhance `JoinTable` and `SqlNode` with improved SQL generation and deprecate old constructors
 - Refactor `SqlNode` to streamline SQL statement generation and add support for DELETE and UPDATE operations
 - Refactor SQL provider interfaces to use `DatabaseType` enumeration and implement `DefaultSqlDialectFactory` for improved SQL dialect management
-- Refactor database type resolution in DefaultSqlDialectFactory to improve URL matching logic
+- Refactor database type resolution in `DefaultSqlDialectFactory` to improve URL matching logic
 - Refactor `SqlNode` and `SqlNodeProvider` to enhance batch insert functionality and streamline SQL statement generation
 - Refactor `SqlNodeProvider` `update` and `updateSelective` methods for better SQL generation and condition handling
 - Refactor `SqlNodeProvider` `batchUpdate` and `batchUpdateSelective` methods for better SQL generation and condition handling
@@ -333,8 +333,8 @@
 
 ### Features
 
-- Refactor KiteConfig to split into multiple configuration classes for simplified configuration logic
-- Enhance getFields to include superclass fields and exclude serialVersionUID
+- Refactor `KiteConfig` to split into multiple configuration classes for simplified configuration logic
+- Enhance `getFields` to include superclass fields and exclude serialVersionUID
 
 ## 1.0.7
 
@@ -342,21 +342,21 @@
 
 - Fix SQL duration logging to ensure execution time is logged when enabled
 - Fix `KiteProperties` cannot apply properties to `KiteConfig` error
-- Fix empty WHERE clause handling in AbstractSqlProvider
+- Fix empty WHERE clause handling in `AbstractSqlProvider`
 
 ### Dependencies
 
 ### Features
 
 - Support SQL duration logging
-- Refactor KiteConfig usage to eliminate INSTANCE references
+- Refactor `KiteConfig` usage to eliminate `INSTANCE` references
 - Enhance logging in transaction management and SQL execution
 - Refactor data source implementation to use unpooled connections and introduce pooled data source classes
 - Refactor data source properties handling and enhance field value setting logic
 - Refactor SQL provider methods to improve readability and consistency
 - Add upload artifact to Sonatype Central task
-- Refactor KiteConfig to split into multiple configuration classes for simplified configuration logic
-- Enhance getFields to include superclass fields and exclude serialVersionUID
+- Refactor `KiteConfig` to split into multiple configuration classes for simplified configuration logic
+- Enhance `getFields` to include superclass fields and exclude `serialVersionUID`
 
 ## 1.0.6
 
@@ -433,7 +433,7 @@
 
 ### Bug Fixes
 
-- Fix lateinit property updateSetWrapper and updateWhereWrapper has not been initialized error
+- Fix lateinit property `updateSetWrapper` and `updateWhereWrapper` has not been initialized error
 
 ### Dependencies
 
@@ -476,10 +476,10 @@
 - Support pagination query
 - Support spring framework
 - Support spring boot
-- Prevent sql injection
+- Prevent SQL injection
 - Add `Column` annotation
 - Add overloading method for `update` method to update column by multiple condition
-- Log sql info
+- Log SQL info
 - Add id generator strategy for `@Id` field
 - Add batch insert
 - Support get `pageNumber` and `pageSize` from `HttpServletRequest`
