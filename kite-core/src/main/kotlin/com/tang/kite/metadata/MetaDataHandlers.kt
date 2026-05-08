@@ -181,10 +181,11 @@ object MetaDataHandlers {
                     val unique = !nonUnique
                     val isPrimaryKey = columnName in primaryKeys
 
-                    val indexType = when (typeCode) {
-                        1.toShort() -> IndexType.CLUSTERED
-                        2.toShort() -> IndexType.HASHED
-                        else -> IndexType.OTHER
+                    val indexStructure = when (typeCode) {
+                        1.toShort() -> IndexStructure.CLUSTERED
+                        2.toShort() -> IndexStructure.HASH
+                        3.toShort() -> IndexStructure.BTREE
+                        else -> IndexStructure.OTHER
                     }
 
                     val indexMeta = indexMap.computeIfAbsent(indexName) {
@@ -193,7 +194,7 @@ object MetaDataHandlers {
                             schema = rs.getString("TABLE_SCHEM"),
                             tableName = rs.getString("TABLE_NAME"),
                             indexName = indexName,
-                            indexType = indexType,
+                            indexStructure = indexStructure,
                             unique = unique,
                             cardinality = rs.getLong("CARDINALITY"),
                             pages = rs.getLong("PAGES"),

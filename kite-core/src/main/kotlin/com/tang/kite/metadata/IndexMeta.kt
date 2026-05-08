@@ -33,9 +33,9 @@ class IndexMeta(
     val unique: Boolean,
 
     /**
-     * Index type (clustered, hashed, other)
+     * Index structure (clustered, hashed, other)
      */
-    val indexType: IndexType,
+    val indexStructure: IndexStructure,
 
     /**
      * Index cardinality (number of unique values)

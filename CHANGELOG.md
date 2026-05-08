@@ -15,6 +15,7 @@
 - Refactor change factory classes to singleton objects for improved instantiation and memory efficiency
 - Add schema synchronization test entities for account table scenarios
 - Refactor data source usage to utilize KiteDataSource for improved consistency and functionality
+- Rename `IndexType` to `IndexStructure` and update related references for clarity
 
 ## 1.0.21
 
