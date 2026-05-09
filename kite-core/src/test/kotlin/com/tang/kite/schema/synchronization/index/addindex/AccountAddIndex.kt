@@ -1,6 +1,6 @@
 package com.tang.kite.schema.synchronization.index.addindex
 
-import com.tang.kite.annotation.Column
+import com.tang.kite.annotation.Index
 import com.tang.kite.annotation.Table
 import com.tang.kite.annotation.field.CreateTime
 import com.tang.kite.annotation.field.UpdateTime
@@ -19,7 +19,7 @@ class AccountAddIndex(
     @Id(type = IdType.AUTO)
     var id: Long? = null,
 
-    @Column(unique = true)
+    @Index(unique = true)
     var username: String? = null,
 
     var password: String? = null,

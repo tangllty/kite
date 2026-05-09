@@ -10,12 +10,12 @@ class IndexMeta(
     /**
      * Database catalog
      */
-    val catalog: String?,
+    val catalog: String? = null,
 
     /**
      * Database schema
      */
-    val schema: String?,
+    val schema: String? = null,
 
     /**
      * Table name

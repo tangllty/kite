@@ -78,18 +78,6 @@ annotation class Column(
     val comment: String = "",
 
     /**
-     * Whether to create ordinary index for this column
-     */
-    @Deprecated("Use Index annotation instead")
-    val index: Boolean = false,
-
-    /**
-     * Whether to add unique constraint on this column
-     */
-    @Deprecated("Use Index annotation instead")
-    val unique: Boolean = false,
-
-    /**
      * Referenced foreign key table name
      */
     val foreignKey: String = "",

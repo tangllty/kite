@@ -9,14 +9,9 @@ package com.tang.kite.metadata
 enum class IndexStructure {
 
     /**
-     * Standard B-tree index
+     * Statistic index
      */
-    BTREE,
-
-    /**
-     * Hash index
-     */
-    HASH,
+    STATISTIC,
 
     /**
      * Clustered index
@@ -24,8 +19,33 @@ enum class IndexStructure {
     CLUSTERED,
 
     /**
+     * Hash index
+     */
+    HASH,
+
+    /**
+     * Standard B-tree index
+     */
+    BTREE,
+
+    /**
      * Other unknown index type
      */
-    OTHER
+    OTHER;
+
+    companion object {
+
+        @JvmStatic
+        fun getIndexStructure(typeCode: Short): IndexStructure {
+            return when (typeCode) {
+                0.toShort() -> STATISTIC
+                1.toShort() -> CLUSTERED
+                2.toShort() -> HASH
+                3.toShort() -> BTREE
+                else -> OTHER
+            }
+        }
+
+    }
 
 }

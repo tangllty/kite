@@ -58,7 +58,7 @@ class SchemaSynchronization(private val databaseValue: DatabaseValue) {
             synchronizeTable(entityClass, tableName)
 
             val existingColumns = MetaDataHandlers.getColumns(databaseValue, tableName)
-            val expectedColumns = SchemaBuilder.getColumns(entityClass)
+            val expectedColumns = SchemaBuilder.buildColumns(entityClass)
             synchronizeColumns(tableName, existingColumns, expectedColumns)
             val missingColumns = expectedColumns.filter { expectedColumn ->
                 !existingColumns.any { existingColumn ->

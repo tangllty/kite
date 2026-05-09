@@ -16,6 +16,7 @@
 - Add schema synchronization test entities for account table scenarios
 - Refactor data source usage to utilize `KiteDataSource` for improved consistency and functionality
 - Rename `IndexType` to `IndexStructure` and update related references for clarity
+- Add `Index` and `CompositeIndex` annotations for database schema indexing
 
 ## 1.0.21
 

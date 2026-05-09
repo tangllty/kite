@@ -174,19 +174,14 @@ object MetaDataHandlers {
                     val columnName = rs.getString("COLUMN_NAME")?.lowercase()
                     val typeCode = rs.getShort("TYPE")
 
+                    val indexStructure = IndexStructure.getIndexStructure(typeCode)
+
                     // Skip statistic rows and invalid entries
-                    if (indexName == null || columnName == null || typeCode == 0.toShort()) continue
+                    if (indexName == null || columnName == null || indexStructure == IndexStructure.STATISTIC) continue
 
                     val nonUnique = rs.getBoolean("NON_UNIQUE")
                     val unique = !nonUnique
                     val isPrimaryKey = columnName in primaryKeys
-
-                    val indexStructure = when (typeCode) {
-                        1.toShort() -> IndexStructure.CLUSTERED
-                        2.toShort() -> IndexStructure.HASH
-                        3.toShort() -> IndexStructure.BTREE
-                        else -> IndexStructure.OTHER
-                    }
 
                     val indexMeta = indexMap.computeIfAbsent(indexName) {
                         IndexMeta(

@@ -176,7 +176,11 @@ sealed class SqlNode {
 
         val columns: List<String>,
 
+        val sorts: List<String> = emptyList(),
+
         var unique: Boolean = false,
+
+        var indexType: String = ""
 
     ) : DdlNode()
 
