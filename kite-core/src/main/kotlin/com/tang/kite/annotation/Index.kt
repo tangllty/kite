@@ -20,7 +20,7 @@ annotation class Index(
     /**
      * Whether the index in unique or not
      */
-    val unique: Boolean,
+    val unique: Boolean = false,
 
     /**
      * Index type

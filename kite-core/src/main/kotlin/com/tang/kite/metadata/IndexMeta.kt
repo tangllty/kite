@@ -28,6 +28,16 @@ class IndexMeta(
     val indexName: String,
 
     /**
+     * Columns in defined order
+     */
+    val columns: MutableList<String> = mutableListOf(),
+
+    /**
+     * Column sort order
+     */
+    val sorts: MutableList<String> = mutableListOf(),
+
+    /**
      * Whether the index is unique
      */
     val unique: Boolean,
@@ -58,16 +68,6 @@ class IndexMeta(
     val isPrimaryKey: Boolean
 
 ) {
-
-    /**
-     * Columns in defined order
-     */
-    val columns: MutableList<String> = mutableListOf()
-
-    /**
-     * Column sort order: A = ASC, D = DESC
-     */
-    val columnSortMap: MutableMap<String, String> = mutableMapOf()
 
     /**
      * Get columns in index definition order

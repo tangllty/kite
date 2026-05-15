@@ -52,12 +52,12 @@ object MetaDataHandlers {
                 while (it.next()) {
                     columnList.add(
                         ColumnMeta(
-                            catalog = it.getString("TABLE_CAT"),
-                            schema = it.getString("TABLE_SCHEM"),
-                            tableName = it.getString("TABLE_NAME"),
-                            columnName = it.getString("COLUMN_NAME"),
+                            catalog = it.getString("TABLE_CAT").lowercase(),
+                            schema = it.getString("TABLE_SCHEM").lowercase(),
+                            tableName = it.getString("TABLE_NAME").lowercase(),
+                            columnName = it.getString("COLUMN_NAME").lowercase(),
                             dataType = it.getInt("DATA_TYPE"),
-                            typeName = it.getString("TYPE_NAME"),
+                            typeName = it.getString("TYPE_NAME").lowercase(),
                             jdbcType = JDBCType.valueOf(it.getInt("DATA_TYPE")),
                             columnSize = it.getInt("COLUMN_SIZE"),
                             decimalDigits = it.getObject("DECIMAL_DIGITS") as? Int ?: 0,
@@ -170,14 +170,14 @@ object MetaDataHandlers {
 
             metaData.getIndexInfo(connection.catalog, connection.schema, tableName.uppercase(), false, true).use { rs ->
                 while (rs.next()) {
-                    val indexName = rs.getString("INDEX_NAME")
-                    val columnName = rs.getString("COLUMN_NAME")?.lowercase()
+                    val indexName = rs.getString("INDEX_NAME").lowercase()
+                    val columnName = rs.getString("COLUMN_NAME").lowercase()
                     val typeCode = rs.getShort("TYPE")
 
                     val indexStructure = IndexStructure.getIndexStructure(typeCode)
 
                     // Skip statistic rows and invalid entries
-                    if (indexName == null || columnName == null || indexStructure == IndexStructure.STATISTIC) continue
+                    if (indexStructure == IndexStructure.STATISTIC) continue
 
                     val nonUnique = rs.getBoolean("NON_UNIQUE")
                     val unique = !nonUnique
@@ -185,9 +185,9 @@ object MetaDataHandlers {
 
                     val indexMeta = indexMap.computeIfAbsent(indexName) {
                         IndexMeta(
-                            catalog = rs.getString("TABLE_CAT"),
-                            schema = rs.getString("TABLE_SCHEM"),
-                            tableName = rs.getString("TABLE_NAME"),
+                            catalog = rs.getString("TABLE_CAT").lowercase(),
+                            schema = rs.getString("TABLE_SCHEM").lowercase(),
+                            tableName = rs.getString("TABLE_NAME").lowercase(),
                             indexName = indexName,
                             indexStructure = indexStructure,
                             unique = unique,
@@ -197,12 +197,9 @@ object MetaDataHandlers {
                             isPrimaryKey = isPrimaryKey
                         )
                     }
-
-                    // Maintain column order and sort direction
-                    if (columnName !in indexMeta.columns) {
-                        indexMeta.columns.add(columnName)
-                        indexMeta.columnSortMap[columnName] = rs.getString("ASC_OR_DESC")
-                    }
+                    indexMeta.columns.add(columnName)
+                    val sort = if (rs.getString("ASC_OR_DESC").equals("A")) "asc" else "desc"
+                    indexMeta.sorts.add(sort)
                 }
             }
             return indexMap

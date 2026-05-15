@@ -41,11 +41,11 @@ annotation class Column(
     val operator: ColumnOperator = ColumnOperator.EQUAL,
 
     /**
-     * Database column data type
+     * Database column data type, auto-detected if empty
      *
      * @see DataType
      */
-    val dataType: String = DataType.VARCHAR,
+    val dataType: String = "",
 
     /**
      * Column length for VARCHAR, CHAR, etc.

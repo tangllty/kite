@@ -131,22 +131,23 @@ object SchemaBuilder {
      * Create column definition from @Column annotation
      */
     private fun createColumnMeta(field: Field, id: Id?, column: Column?): ColumnMeta {
+        val typeName = (column?.dataType ?: "").ifBlank { getDataType(field) }
+        val columnSize = if (Number::class.java.isAssignableFrom(field.type)) column?.precision ?: 0 else column?.length ?: 0
         if (id != null) {
-            return createIdColumnMeta(field, id, column)
+            return createIdColumnMeta(field, id, column, typeName, columnSize)
         }
         if (column == null) {
             return ColumnMeta(
                 tableName = Reflects.getTableName(field.declaringClass),
                 columnName = Reflects.getColumnName(field),
-                typeName = getDataType(field),
-                columnSize = 0
+                typeName = typeName,
+                columnSize = columnSize
             )
         }
-        val columnSize = if (Number::class.java.isAssignableFrom(field.type)) column.precision else column.length
         return ColumnMeta(
             tableName = Reflects.getTableName(field.declaringClass),
             columnName = Reflects.getColumnName(field),
-            typeName = column.dataType,
+            typeName = typeName,
             columnSize = columnSize,
             decimalDigits = column.scale,
             nullable = column.nullable,
@@ -155,10 +156,7 @@ object SchemaBuilder {
         )
     }
 
-    private fun createIdColumnMeta(field: Field, id: Id, column: Column?): ColumnMeta {
-        val typeName = column?.dataType ?: getDataType(field)
-        val columnSize =
-            if (Number::class.java.isAssignableFrom(field.type)) column?.precision ?: 0 else column?.length ?: 0
+    private fun createIdColumnMeta(field: Field, id: Id, column: Column?, typeName: String, columnSize: Int): ColumnMeta {
         val columnMeta = ColumnMeta(
             tableName = Reflects.getTableName(field.declaringClass),
             columnName = Reflects.getColumnName(field),
@@ -235,29 +233,31 @@ object SchemaBuilder {
         val compositeIndexes = entityClass.findAnnotations<CompositeIndex>()
 
         compositeIndexes.forEach {
-            indexes.add(createIndexMeta(tableName, it.unique, it.columns, it.filterCondition))
+            indexes.add(createIndexMeta(tableName, it.unique, it.columns.toMutableList(), it.orders.toMutableList(), it.filterCondition))
         }
 
         Reflects.getSqlFields(entityClass.java).forEach { field ->
             val indexAnnotations = field.getAnnotationsByType(Index::class.java)
             indexAnnotations.forEach { index ->
                 val columnName = Reflects.getColumnName(field)
-                indexes.add(createIndexMeta(tableName, index.unique, arrayOf(columnName), index.filterCondition))
+                indexes.add(createIndexMeta(tableName, index.unique, mutableListOf(columnName), mutableListOf(index.order), index.filterCondition))
             }
         }
         return indexes
     }
 
-    private fun createIndexMeta(tableName: String, unique: Boolean, columns: Array<String>, filterCondition: String): IndexMeta{
+    private fun createIndexMeta(tableName: String, unique: Boolean, columns: MutableList<String>, orders: MutableList<String>, filterCondition: String): IndexMeta{
         val indexNamePrefix = if (unique) "uk_" else "idx_"
         return IndexMeta(
             tableName = tableName,
             indexName = "$indexNamePrefix${tableName}_${columns.joinToString("_")}",
+            columns = columns,
+            sorts = orders.filter { it.isNotEmpty() }.toMutableList(),
             unique = unique,
             indexStructure = if (unique) IndexStructure.BTREE else IndexStructure.HASH,
             cardinality = 0L,
             pages = 0L,
-            filterCondition = filterCondition,
+            filterCondition = filterCondition.ifBlank { null },
             isPrimaryKey = false
         )
     }

@@ -5,8 +5,10 @@ import com.tang.kite.datasource.KiteDataSourceFactory
 import com.tang.kite.metadata.MetaDataHandlers
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
+import kotlin.test.assertTrue
 
 /**
  * @author Tang
@@ -70,8 +72,27 @@ class SchemaSynchronizationTest {
         assertNull(dropUpdateTimeColumnComment?.comment)
 
         synchronization.withPackage("com.tang.kite.schema.synchronization.index.addindex")
-        val indexMap = MetaDataHandlers.getIndexes(databaseValue, tableName)
-        assertEquals(1, indexMap.size)
+        val addIndexMap = MetaDataHandlers.getIndexes(databaseValue, tableName)
+        assertEquals(3, addIndexMap.size)
+        assertTrue { addIndexMap.containsKey("uk_account_username_nickname") }
+        assertTrue { addIndexMap["uk_account_username_nickname"]!!.sorts.contains("desc") }
+        assertTrue { addIndexMap.containsKey("idx_account_username") }
+        assertFalse { addIndexMap["idx_account_username"]!!.unique }
+
+        SchemaConfig.modifyIndexes = true
+        synchronization.withPackage("com.tang.kite.schema.synchronization.index.modifyindex")
+        SchemaConfig.modifyIndexes = false
+        val modifyIndexMap = MetaDataHandlers.getIndexes(databaseValue, tableName)
+        assertEquals(3, modifyIndexMap.size)
+        assertTrue { modifyIndexMap.containsKey("idx_account_username") }
+        assertTrue { modifyIndexMap["idx_account_username"]!!.sorts.contains("desc") }
+
+        SchemaConfig.dropExistingIndexes = true
+        synchronization.withPackage("com.tang.kite.schema.synchronization.index.dropindex")
+        SchemaConfig.dropExistingIndexes = false
+        val dropIndexMap = MetaDataHandlers.getIndexes(databaseValue, tableName)
+        assertEquals(2, dropIndexMap.size)
+        assertFalse { dropIndexMap.containsKey("idx_account_username") }
     }
 
     private fun SchemaSynchronization.withPackage(packageName: String) {

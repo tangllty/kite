@@ -44,4 +44,22 @@ object SchemaConfig {
     @JvmStatic
     var dropExistingColumns = false
 
+    /**
+     * Whether to create missing indexes
+     */
+    @JvmStatic
+    var createMissingIndexes = true
+
+    /**
+     * Whether to modify existing indexes
+     */
+    @JvmStatic
+    var modifyIndexes = false
+
+    /**
+     * Whether to drop existing indexes
+     */
+    @JvmStatic
+    var dropExistingIndexes = false
+
 }

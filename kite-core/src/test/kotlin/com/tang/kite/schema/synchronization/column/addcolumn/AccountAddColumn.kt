@@ -15,7 +15,7 @@ import java.time.LocalDateTime
  * @author Tang
  */
 @Table(value = "account", comment = "Table for account modify column comment")
-class AccountModifyColumn(
+class AccountAddColumn(
 
     @Id(type = IdType.AUTO)
     var id: Long? = null,

@@ -17,6 +17,7 @@
 - Refactor data source usage to utilize `KiteDataSource` for improved consistency and functionality
 - Rename `IndexType` to `IndexStructure` and update related references for clarity
 - Add `Index` and `CompositeIndex` annotations for database schema indexing
+- Add index synchronization and column type normalization
 
 ## 1.0.21
 

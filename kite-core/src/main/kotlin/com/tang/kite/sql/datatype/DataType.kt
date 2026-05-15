@@ -80,4 +80,19 @@ object DataType {
     const val NVARCHAR2 = "nvarchar2"
     const val NUMBER = "number"
 
+    /**
+     * Normalize a type name to its canonical form for comparison.
+     * Maps database-specific type name synonyms/aliases to a standard form.
+     */
+    fun normalize(typeName: String): String {
+        val normalized = typeName.trim().lowercase()
+        return TYPE_NAME_ALIASES[normalized] ?: normalized
+    }
+
+    private val TYPE_NAME_ALIASES = mapOf(
+        "character varying" to VARCHAR,
+        "character" to CHAR,
+        "integer" to INT
+    )
+
 }

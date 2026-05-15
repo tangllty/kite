@@ -104,63 +104,52 @@ object SqlStatementDdlHandler : DdlHandler<List<String>> {
     override fun handleDropTable(dropTableNode: SqlNode.DropTable, dialect: SqlDialect): List<String> {
         val sql = StringBuilder()
         val tableName = dropTableNode.table?.toString(false) ?: throw IllegalArgumentException("Table name cannot be null")
-
         sql.append("drop table ")
         sql.append(tableName)
-
         if (dropTableNode.cascade && dialect.supportsCascade()) {
             sql.append(" cascade")
         }
-
         return listOf(sql.toString())
     }
 
     override fun handleCreateIndex(createIndexNode: SqlNode.CreateIndex, dialect: SqlDialect): List<String> {
         val sql = StringBuilder()
-
         sql.append("create ")
-
         if (createIndexNode.unique) {
             sql.append("unique ")
         }
-
         sql.append("index ")
-
         sql.append(createIndexNode.indexName)
         sql.append(" on ")
         sql.append(createIndexNode.table.toString(false))
         sql.append(" (")
-        sql.append(createIndexNode.columns.joinToString(", "))
+        val columns = createIndexNode.columns.mapIndexed { index, string ->
+            val order = createIndexNode.sorts.getOrNull(index)
+            if (order != null) "$string $order" else string
+        }
+        sql.append(columns.joinToString(", "))
         sql.append(")")
-
         return listOf(sql.toString())
     }
 
     override fun handleDropIndex(dropIndexNode: SqlNode.DropIndex, dialect: SqlDialect): List<String> {
         val sql = StringBuilder()
-
         sql.append("drop index ")
-
-        sql.append(dropIndexNode.indexName ?: "")
-
+        sql.append(dropIndexNode.indexName)
         if (dropIndexNode.table != null && dialect.requiresTableForDropIndex()) {
             sql.append(" on ")
             sql.append(dropIndexNode.table.toString())
         }
-
         return listOf(sql.toString())
     }
 
     override fun handleTruncateTable(truncateTableNode: SqlNode.TruncateTable, dialect: SqlDialect): List<String> {
         val sql = StringBuilder()
-
         sql.append("truncate table ")
         sql.append(truncateTableNode.table?.toString(false))
-
         if (truncateTableNode.cascade && dialect.supportsCascade()) {
             sql.append(" cascade")
         }
-
         return listOf(sql.toString())
     }
 
@@ -168,28 +157,22 @@ object SqlStatementDdlHandler : DdlHandler<List<String>> {
         sql.append(column.columnName)
         sql.append(" ")
         sql.append(getType(column))
-
         if (column.nullable.not()) {
             sql.append(" not null")
         }
-
         if (column.defaultValue.isNullOrBlank().not()) {
             sql.append(" default ${column.defaultValue}")
         }
-
         if (column.autoIncrement) {
             sql.append(" ")
             sql.append(dialect.getAutoIncrementKeyword())
         }
-
         if (column.primaryKey) {
             sql.append(" primary key")
         }
-
         if (column.unique) {
             sql.append(" unique")
         }
-
         if (column.comment != null && dialect.supportsCommentOnColumn().not()) {
             sql.append(" comment '${column.comment}'")
         }

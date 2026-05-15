@@ -186,7 +186,7 @@ sealed class SqlNode {
 
     data class DropIndex(
 
-        var indexName: String? = null,
+        var indexName: String,
 
         var table: TableReference? = null
 
