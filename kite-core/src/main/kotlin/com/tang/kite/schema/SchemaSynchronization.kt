@@ -52,9 +52,9 @@ class SchemaSynchronization(private val databaseValue: DatabaseValue) {
             if (SchemaConfig.dropExistingTables) {
                 dropTable(entityClass, tableName, tableExists)
             }
-            if ((SchemaConfig.createMissingTables && tableExists.not()) || SchemaConfig.dropExistingTables) {
+            if (shouldCreateTable(tableExists)) {
                 createTable(entityClass, tableName, tableExists)
-                return
+                return@forEach
             }
             logger.info("Synchronizing table '$tableName' for entity ${entityClass.simpleName}")
             synchronizeTable(entityClass, tableName)
@@ -64,9 +64,13 @@ class SchemaSynchronization(private val databaseValue: DatabaseValue) {
         }
     }
 
+    private fun shouldCreateTable(tableExists: Boolean): Boolean {
+        return (SchemaConfig.createMissingTables && !tableExists) || SchemaConfig.dropExistingTables
+    }
+
     private fun <T> getMissing(existing: List<T>, expected: List<T>, getKey: (T) -> String): List<T> {
         return expected.filter { expectedItem ->
-            !existing.any { existingItem ->
+            existing.none { existingItem ->
                 getKey(existingItem).equals(getKey(expectedItem), ignoreCase = true)
             }
         }
@@ -74,7 +78,7 @@ class SchemaSynchronization(private val databaseValue: DatabaseValue) {
 
     private fun <T> getExtra(existing: List<T>, expected: List<T>, getKey: (T) -> String): List<T> {
         return existing.filter { existingItem ->
-            !expected.any { expectedItem ->
+            expected.none { expectedItem ->
                 getKey(existingItem).equals(getKey(expectedItem), ignoreCase = true)
             }
         }
@@ -119,22 +123,22 @@ class SchemaSynchronization(private val databaseValue: DatabaseValue) {
             return
         }
         logger.info("Updating table comment for '$tableName' from '${existingComment ?: ""}' to '$expectedComment'")
-        val dialect = databaseValue.sqlDialect
-        val sql = if (dialect.supportsCommentOnTable()) {
-            if (expectedComment == null) {
-                "drop comment on table $tableName"
-            } else {
-                "comment on table $tableName is '$expectedComment'"
-            }
-        } else {
-            if (expectedComment == null) {
-                "alter table $tableName comment ''"
-            } else {
-                "alter table $tableName comment '$expectedComment'"
-            }
-        }
+        val sql = buildTableCommentSql(tableName, expectedComment)
         ddlExecutor.executeDdl(sql)
         logger.info("Successfully updated table comment for '$tableName'")
+    }
+
+    private fun buildTableCommentSql(tableName: String, comment: String?): String {
+        val dialect = databaseValue.sqlDialect
+        return if (dialect.supportsCommentOnTable()) {
+            if (comment == null) {
+                "drop comment on table $tableName"
+            } else {
+                "comment on table $tableName is '$comment'"
+            }
+        } else {
+            "alter table $tableName comment '${comment ?: ""}'"
+        }
     }
 
     private fun synchronizeColumns(entityClass: KClass<*>, tableName: String) {
@@ -152,25 +156,27 @@ class SchemaSynchronization(private val databaseValue: DatabaseValue) {
         if (missingColumns.isEmpty() && extraColumns.isEmpty()) {
             logger.info("Table '$tableName' is already synchronized, no changes needed")
         }
-        if (missingColumns.isNotEmpty()) {
-            if (SchemaConfig.createMissingColumns) {
-                logger.info("Found ${missingColumns.size} missing columns in table '$tableName'")
-                missingColumns.forEach { missingColumn ->
-                    addColumnToTable(tableName, missingColumn, entityClass)
-                }
-            } else {
-                logger.warn("Table '$tableName' has ${missingColumns.size} missing columns that are not defined in entity ${entityClass.simpleName}")
-            }
+        handleMissingColumns(tableName, missingColumns, entityClass)
+        handleExtraColumns(tableName, extraColumns, entityClass)
+    }
+
+    private fun handleMissingColumns(tableName: String, missingColumns: List<ColumnMeta>, entityClass: KClass<*>) {
+        if (missingColumns.isEmpty()) return
+        if (SchemaConfig.createMissingColumns) {
+            logger.info("Found ${missingColumns.size} missing columns in table '$tableName'")
+            missingColumns.forEach { addColumnToTable(tableName, it, entityClass) }
+        } else {
+            logger.warn("Table '$tableName' has ${missingColumns.size} missing columns that are not defined in entity ${entityClass.simpleName}")
         }
-        if (extraColumns.isNotEmpty()) {
-            if (SchemaConfig.dropExistingColumns) {
-                logger.info("Found ${extraColumns.size} extra columns in table '$tableName'")
-                extraColumns.forEach { extraColumn ->
-                    dropColumnFromTable(tableName, extraColumn, entityClass)
-                }
-            } else {
-                logger.warn("Table '$tableName' has ${extraColumns.size} extra columns that are not defined in entity ${entityClass.simpleName}")
-            }
+    }
+
+    private fun handleExtraColumns(tableName: String, extraColumns: List<ColumnMeta>, entityClass: KClass<*>) {
+        if (extraColumns.isEmpty()) return
+        if (SchemaConfig.dropExistingColumns) {
+            logger.info("Found ${extraColumns.size} extra columns in table '$tableName'")
+            extraColumns.forEach { dropColumnFromTable(tableName, it, entityClass) }
+        } else {
+            logger.warn("Table '$tableName' has ${extraColumns.size} extra columns that are not defined in entity ${entityClass.simpleName}")
         }
     }
 
@@ -178,7 +184,7 @@ class SchemaSynchronization(private val databaseValue: DatabaseValue) {
         if (existingColumn == expectedColumn) {
             return
         }
-        if ((existingColumn.comment == expectedColumn.comment).not()) {
+        if (existingColumn.comment != expectedColumn.comment) {
             val dialect = databaseValue.sqlDialect
             val sql = SqlStatementDdlHandler.getColumnComment(tableName, expectedColumn, dialect)
             ddlExecutor.executeDdl(sql)
@@ -186,7 +192,7 @@ class SchemaSynchronization(private val databaseValue: DatabaseValue) {
         }
         val expectedColumnTypeName = DataType.normalize(expectedColumn.typeName)
         val existingColumnTypeName = DataType.normalize(existingColumn.typeName)
-        if ((existingColumnTypeName == expectedColumnTypeName).not()) {
+        if (existingColumnTypeName != expectedColumnTypeName) {
             logger.info("Column '${existingColumn.columnName}' type changed from '${existingColumn.typeName}' to '${expectedColumn.typeName}'")
             val alterTable = SqlNode.AlterTable(
                 table = TableReference(tableName),
@@ -202,53 +208,59 @@ class SchemaSynchronization(private val databaseValue: DatabaseValue) {
             .map { it.value }
             .filter { it.isPrimaryKey.not() }
         val expectedIndexes = SchemaBuilder.buildIndexes(entityClass)
-        val synchronizationIndexes = expectedIndexes.filter { expectedIndex ->
-            val existingIndex = existingIndexes.firstOrNull { expectedIndex.indexName.equals(it.indexName, ignoreCase = true) }
-            if (existingIndex != null) {
-                (existingIndex.columns == expectedIndex.columns
-                && existingIndex.sorts == expectedIndex.sorts
-                && existingIndex.unique == expectedIndex.unique
-                && existingIndex.filterCondition == expectedIndex.filterCondition).not()
-            } else {
-                false
-            }
-        }
-        if (synchronizationIndexes.isNotEmpty()) {
+        val modifiedIndexes = findModifiedIndexes(existingIndexes, expectedIndexes)
+        if (modifiedIndexes.isNotEmpty()) {
             if (SchemaConfig.modifyIndexes) {
-                synchronizationIndexes.forEach { index ->
+                modifiedIndexes.forEach { index ->
                     executeDropIndex(index)
                     executeCreateIndex(index)
                     logger.info("Successfully synchronized index '${index.indexName}' in table '$tableName'")
                 }
             } else {
-                logger.info("Table '$tableName' has ${synchronizationIndexes.size} synchronization indexes that are not synchronized in entity ${entityClass.simpleName}'")
+                logger.info("Table '$tableName' has ${modifiedIndexes.size} modified indexes that are not synchronized in entity ${entityClass.simpleName}")
             }
         }
 
         val missingIndexes = getMissing(existingIndexes, expectedIndexes) { it.indexName }
         val extraIndexes = getExtra(existingIndexes, expectedIndexes) { it.indexName }
 
-        if (missingIndexes.isNotEmpty()) {
-            if (SchemaConfig.createMissingIndexes) {
-                missingIndexes.forEach { missingIndex ->
-                    executeCreateIndex(missingIndex)
-                    logger.info("Successfully created index '${missingIndex.indexName}' in table '$tableName'")
-                }
-            } else {
-                logger.warn("Table '$tableName' has ${missingIndexes.size} missing indexes that are not defined in entity ${entityClass.simpleName}")
-            }
-        }
-        if (extraIndexes.isNotEmpty()) {
-            if (SchemaConfig.dropExistingIndexes) {
-                extraIndexes.forEach { extraIndex ->
-                    executeDropIndex(extraIndex)
-                    logger.info("Successfully dropped index '${extraIndex.indexName}' in table '$tableName'")
-                }
-            } else {
-                logger.warn("Table '$tableName' has ${extraIndexes.size} extra indexes that are not defined in entity ${entityClass.simpleName}")
-            }
-        }
+        handleMissingIndexes(tableName, missingIndexes, entityClass)
+        handleExtraIndexes(tableName, extraIndexes, entityClass)
         logger.info("Successfully synchronized indexes in table '$tableName'")
+    }
+
+    private fun findModifiedIndexes(existingIndexes: List<IndexMeta>, expectedIndexes: List<IndexMeta>): List<IndexMeta> {
+        return expectedIndexes.filter { expectedIndex ->
+            val existingIndex = existingIndexes.firstOrNull { expectedIndex.indexName.equals(it.indexName, ignoreCase = true) }
+            existingIndex != null && (existingIndex.columns != expectedIndex.columns
+                || existingIndex.sorts != expectedIndex.sorts
+                || existingIndex.unique != expectedIndex.unique
+                || existingIndex.filterCondition != expectedIndex.filterCondition)
+        }
+    }
+
+    private fun handleMissingIndexes(tableName: String, missingIndexes: List<IndexMeta>, entityClass: KClass<*>) {
+        if (missingIndexes.isEmpty()) return
+        if (SchemaConfig.createMissingIndexes) {
+            missingIndexes.forEach { index ->
+                executeCreateIndex(index)
+                logger.info("Successfully created index '${index.indexName}' in table '$tableName'")
+            }
+        } else {
+            logger.warn("Table '$tableName' has ${missingIndexes.size} missing indexes that are not defined in entity ${entityClass.simpleName}")
+        }
+    }
+
+    private fun handleExtraIndexes(tableName: String, extraIndexes: List<IndexMeta>, entityClass: KClass<*>) {
+        if (extraIndexes.isEmpty()) return
+        if (SchemaConfig.dropExistingIndexes) {
+            extraIndexes.forEach { index ->
+                executeDropIndex(index)
+                logger.info("Successfully dropped index '${index.indexName}' in table '$tableName'")
+            }
+        } else {
+            logger.warn("Table '$tableName' has ${extraIndexes.size} extra indexes that are not defined in entity ${entityClass.simpleName}")
+        }
     }
 
     private fun executeDropIndex(index: IndexMeta) {

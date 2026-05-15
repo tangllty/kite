@@ -18,6 +18,7 @@
 - Rename `IndexType` to `IndexStructure` and update related references for clarity
 - Add `Index` and `CompositeIndex` annotations for database schema indexing
 - Add index synchronization and column type normalization
+- Refactor schema synchronization logic for clarity
 
 ## 1.0.21
 
