@@ -19,6 +19,7 @@
 - Add `Index` and `CompositeIndex` annotations for database schema indexing
 - Add index synchronization and column type normalization
 - Refactor schema synchronization logic for clarity
+- Extract column and index synchronization into separate classes
 
 ## 1.0.21
 
