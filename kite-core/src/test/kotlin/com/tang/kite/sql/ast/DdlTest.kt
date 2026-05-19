@@ -20,6 +20,7 @@ class DdlTest {
             table = TableReference("account"),
             columns = mutableListOf(
                 ColumnMeta(
+                    tableName = "products",
                     columnName = "id",
                     typeName = DataType.INT,
                     nullable = false,
@@ -28,17 +29,20 @@ class DdlTest {
                     columnSize = 19
                 ),
                 ColumnMeta(
+                    tableName = "products",
                     columnName = "username",
                     typeName = DataType.VARCHAR,
                     nullable = false,
                     columnSize = 50
                 ),
                 ColumnMeta(
+                    tableName = "products",
                     columnName = "email",
                     typeName = DataType.VARCHAR,
                     columnSize = 100
                 ),
                 ColumnMeta(
+                    tableName = "products",
                     columnName = "created_at",
                     typeName = DataType.TIMESTAMP,
                     nullable = false,
@@ -65,6 +69,7 @@ class DdlTest {
             table = TableReference("orders"),
             columns = mutableListOf(
                 ColumnMeta(
+                    tableName = "products",
                     columnName = "id",
                     typeName = DataType.INT,
                     nullable = false,
@@ -73,12 +78,14 @@ class DdlTest {
                     columnSize = 19
                 ),
                 ColumnMeta(
+                    tableName = "products",
                     columnName = "user_id",
                     typeName = DataType.INT,
                     nullable = false,
                     columnSize = 19
                 ),
                 ColumnMeta(
+                    tableName = "products",
                     columnName = "amount",
                     typeName = DataType.DECIMAL,
                     nullable = false,
@@ -112,6 +119,7 @@ class DdlTest {
             operations = mutableListOf(
                 AlterOperation.AddColumn(
                     column = ColumnMeta(
+                        tableName = "products",
                         columnName = "phone",
                         typeName = DataType.VARCHAR,
                         columnSize = 20,
@@ -149,6 +157,7 @@ class DdlTest {
             operations = mutableListOf(
                 AlterOperation.ModifyColumn(
                     column = ColumnMeta(
+                        tableName = "products",
                         columnName = "email",
                         typeName = DataType.VARCHAR,
                         columnSize = 150,
@@ -170,6 +179,7 @@ class DdlTest {
             operations = mutableListOf(
                 AlterOperation.AddColumn(
                     column = ColumnMeta(
+                        tableName = "products",
                         columnName = "phone",
                         typeName = DataType.VARCHAR,
                         columnSize = 20,
@@ -178,6 +188,7 @@ class DdlTest {
                 ),
                 AlterOperation.ModifyColumn(
                     column = ColumnMeta(
+                        tableName = "products",
                         columnName = "email",
                         typeName = DataType.VARCHAR,
                         columnSize = 150,
@@ -314,6 +325,7 @@ class DdlTest {
     @Test
     fun testColumnDefinitionWithAllProperties() {
         val column = ColumnMeta(
+            tableName = "products",
             columnName = "price",
             typeName = DataType.DECIMAL,
             nullable = false,
@@ -348,11 +360,13 @@ class DdlTest {
             table = TableReference("account"),
             columns = mutableListOf(
                 ColumnMeta(
+                    tableName = "products",
                     columnName = "id",
                     typeName = DataType.INT,
                     nullable = false
                 ),
                 ColumnMeta(
+                    tableName = "products",
                     columnName = "tenant_id",
                     typeName = DataType.INT,
                     nullable = false
@@ -379,12 +393,14 @@ class DdlTest {
             table = TableReference("orders"),
             columns = mutableListOf(
                 ColumnMeta(
+                    tableName = "products",
                     columnName = "id",
                     typeName = DataType.INT,
                     nullable = false,
                     primaryKey = true
                 ),
                 ColumnMeta(
+                    tableName = "products",
                     columnName = "customer_id",
                     typeName = DataType.INT,
                     nullable = false
@@ -404,6 +420,7 @@ class DdlTest {
             table = TableReference("products"),
             columns = mutableListOf(
                 ColumnMeta(
+                    tableName = "products",
                     columnName = "id",
                     typeName = DataType.INT,
                     nullable = false,
@@ -412,6 +429,7 @@ class DdlTest {
                     comment = "产品ID"
                 ),
                 ColumnMeta(
+                    tableName = "products",
                     columnName = "name",
                     typeName = DataType.VARCHAR,
                     columnSize = 100,
@@ -419,6 +437,7 @@ class DdlTest {
                     comment = "产品名称"
                 ),
                 ColumnMeta(
+                    tableName = "products",
                     columnName = "price",
                     typeName = DataType.DECIMAL,
                     columnSize = 10,

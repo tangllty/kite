@@ -15,9 +15,29 @@ class TableReference(
 
     val alias: String? = null,
 
-    val schema: String? = null
+    val schema: String? = null,
+
+    val lowercase: Boolean = true
 
 ) {
+
+    constructor(clazz: Class<*>, lowercase: Boolean) : this(
+        name = Reflects.getTableName(clazz).toCase(lowercase),
+        clazz = clazz,
+        alias = Reflects.getTableAlias(clazz).toCase(lowercase),
+        lowercase = lowercase
+    )
+
+    constructor(clazz: KClass<*>, lowercase: Boolean) : this(clazz.java, lowercase)
+
+    constructor(name: String, alias: String, lowercase: Boolean) : this(
+        name = name.toCase(lowercase),
+        alias = alias.toCase(lowercase),
+        schema = null,
+        lowercase = lowercase
+    )
+
+    constructor(name: String, lowercase: Boolean): this(name.toCase(lowercase), null, null, null, lowercase)
 
     constructor(clazz: Class<*>) : this(Reflects.getTableName(clazz), clazz, Reflects.getTableAlias(clazz))
 
@@ -27,10 +47,26 @@ class TableReference(
 
     fun toString(withAlias: Boolean): String {
         return if (withAlias) {
-            name + SqlString.AS + alias
+            name + SqlString.AS.toCase(lowercase) + alias
         } else {
             name
         }
+    }
+
+    override fun toString(): String {
+        return toString(false)
+    }
+
+    companion object {
+
+        private fun String.toCase(lowercase: Boolean): String {
+            return if (lowercase) {
+                this.lowercase()
+            } else {
+                this.uppercase()
+            }
+        }
+
     }
 
 }

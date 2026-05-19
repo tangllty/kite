@@ -2,6 +2,7 @@ package com.tang.kite.schema
 
 import com.tang.kite.annotation.Table
 import com.tang.kite.config.schema.SchemaConfig
+import com.tang.kite.config.schema.SchemaConfig.getSql
 import com.tang.kite.datasource.DatabaseValue
 import com.tang.kite.logging.getLogger
 import com.tang.kite.metadata.MetaDataHandlers
@@ -29,7 +30,7 @@ class TableSynchronization(private val databaseValue: DatabaseValue) {
      */
     fun synchronizeTables(entityClasses: Set<KClass<*>>) {
         entityClasses.forEach { entityClass ->
-            val tableName = Reflects.getTableName(entityClass.java)
+            val tableName = getSql(Reflects.getTableName(entityClass.java))
             val tableExists = MetaDataHandlers.tableExists(databaseValue, tableName)
             if (SchemaConfig.dropExistingTables) {
                 dropTable(entityClass, tableName, tableExists)
@@ -92,12 +93,12 @@ class TableSynchronization(private val databaseValue: DatabaseValue) {
         val dialect = databaseValue.sqlDialect
         return if (dialect.supportsCommentOnTable()) {
             if (comment == null) {
-                "drop comment on table $tableName"
+                "${getSql("drop comment on table ")}$tableName"
             } else {
-                "comment on table $tableName is '$comment'"
+                "${getSql("comment on table")} $tableName ${getSql("is")} '$comment'"
             }
         } else {
-            "alter table $tableName comment '${comment ?: ""}'"
+            "${getSql("alter table")} $tableName ${getSql("comment")} '${comment ?: ""}'"
         }
     }
 

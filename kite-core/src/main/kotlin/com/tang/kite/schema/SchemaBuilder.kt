@@ -6,14 +6,16 @@ import com.tang.kite.annotation.Index
 import com.tang.kite.annotation.Table
 import com.tang.kite.annotation.id.Id
 import com.tang.kite.annotation.id.IdType
+import com.tang.kite.config.schema.SchemaConfig
+import com.tang.kite.config.schema.SchemaConfig.getSql
+import com.tang.kite.enumeration.SortOrder
 import com.tang.kite.metadata.ColumnMeta
 import com.tang.kite.metadata.IndexMeta
 import com.tang.kite.metadata.IndexStructure
+import com.tang.kite.sql.TableReference
 import com.tang.kite.sql.ast.SqlNode
 import com.tang.kite.sql.ast.TableConstraint
-import com.tang.kite.sql.TableReference
 import com.tang.kite.sql.datatype.DataType
-import com.tang.kite.utils.CaseFormat
 import com.tang.kite.utils.Reflects
 import java.lang.reflect.Field
 import java.math.BigDecimal
@@ -39,9 +41,10 @@ object SchemaBuilder {
     /**
      * Build entity class and generate CREATE TABLE DDL node
      */
+    @JvmStatic
     fun buildEntity(entityClass: KClass<*>): SqlNode.CreateTable {
         val tableAnnotation = entityClass.findAnnotation<Table>()
-        val tableName = Reflects.getTableName(entityClass.java)
+        val tableName = getSql(Reflects.getTableName(entityClass.java))
 
         val columns = mutableListOf<ColumnMeta>()
         val constraints = mutableListOf<TableConstraint>()
@@ -51,21 +54,22 @@ object SchemaBuilder {
         if (entityClass.java.isAnnotationPresent(CompositeIndex::class.java)) {
             val compositeIndexes = entityClass.java.getAnnotationsByType(CompositeIndex::class.java)
             compositeIndexes.forEach { compositeIndex ->
+                val columns = compositeIndex.columns.map { getSql(it) }
                 if (compositeIndex.unique) {
                     createIndexes.add(
                         SqlNode.CreateIndex(
-                            indexName = "uk_${tableName}_${compositeIndex.columns.joinToString("_")}",
-                            columns = compositeIndex.columns.toList(),
-                            table = TableReference(entityClass),
+                            indexName = "${getSql("uk")}_${tableName}_${columns.joinToString("_")}",
+                            columns = columns.toList(),
+                            table = TableReference(entityClass, SchemaConfig.sqlLowercase),
                             unique = true
                         )
                     )
                 } else {
                     createIndexes.add(
                         SqlNode.CreateIndex(
-                            indexName = "idx_${tableName}_${compositeIndex.columns.joinToString("_")}",
-                            table = TableReference(entityClass),
-                            columns = compositeIndex.columns.toList()
+                            indexName = "${getSql("idx")}_${tableName}_${columns.joinToString("_")}",
+                            table = TableReference(entityClass, SchemaConfig.sqlLowercase),
+                            columns = columns.toList()
                         )
                     )
                 }
@@ -76,13 +80,12 @@ object SchemaBuilder {
             val columnAnnotation = field.getAnnotation(Column::class.java)
             val columnMeta = createColumnMeta(field, idAnnotation, columnAnnotation)
             columns.add(columnMeta)
-            val snakeCaseFieldName = field.name.toSnakeCase()
-            val columnName = columnAnnotation?.value?.ifEmpty { snakeCaseFieldName } ?: snakeCaseFieldName
+            val columnName = getSql(Reflects.getColumnName(field))
             if (field.isAnnotationPresent(Id::class.java)) {
                 constraints.add(
                     TableConstraint.PrimaryKey(
                         columns = listOf(columnName),
-                        name = "pk_${tableName}_$columnName"
+                        name = "${getSql("pk")}_${tableName}_$columnName"
                     )
                 )
             }
@@ -93,7 +96,7 @@ object SchemaBuilder {
                             columns = listOf(columnName),
                             referencedTable = columnAnnotation.foreignKey,
                             referencedColumns = listOf(columnAnnotation.foreignKeyColumn.ifEmpty { "id" }),
-                            name = "fk_${tableName}_$columnName",
+                            name = "${getSql("fk")}_${tableName}_$columnName",
                             onDelete = columnAnnotation.onDelete,
                             onUpdate = columnAnnotation.onUpdate
                         )
@@ -106,8 +109,8 @@ object SchemaBuilder {
                     if (index.unique) {
                         createIndexes.add(
                             SqlNode.CreateIndex(
-                                indexName = "uk_${tableName}_$columnName",
-                                table = TableReference(entityClass),
+                                indexName = "${getSql("uk")}_${tableName}_$columnName",
+                                table = TableReference(entityClass, SchemaConfig.sqlLowercase),
                                 columns = listOf(columnName),
                                 unique = true
                             )
@@ -115,8 +118,8 @@ object SchemaBuilder {
                     } else {
                         createIndexes.add(
                             SqlNode.CreateIndex(
-                                indexName = "idx_${tableName}_$columnName",
-                                table = TableReference(entityClass),
+                                indexName = "${getSql("idx")}_${tableName}_$columnName",
+                                table = TableReference(entityClass, SchemaConfig.sqlLowercase),
                                 columns = listOf(columnName)
                             )
                         )
@@ -124,29 +127,37 @@ object SchemaBuilder {
                 }
             }
         }
-        return SqlNode.CreateTable(TableReference(entityClass), columns, constraints, createIndexes, tableComment)
+        return SqlNode.CreateTable(
+            table = TableReference(entityClass, SchemaConfig.sqlLowercase),
+            columns = columns,
+            constraints = constraints,
+            createIndexes = createIndexes,
+            comment = tableComment
+        )
     }
 
     /**
      * Create column definition from @Column annotation
      */
     private fun createColumnMeta(field: Field, id: Id?, column: Column?): ColumnMeta {
-        val typeName = (column?.dataType ?: "").ifBlank { getDataType(field) }
+        val typeName = getSql((column?.dataType ?: "").ifBlank { getDataType(field) })
         val columnSize = if (Number::class.java.isAssignableFrom(field.type)) column?.precision ?: 0 else column?.length ?: 0
         if (id != null) {
             return createIdColumnMeta(field, id, column, typeName, columnSize)
         }
+        val tableName = getSql(Reflects.getTableName(field.declaringClass))
+        val columnName = getSql(Reflects.getColumnName(field))
         if (column == null) {
             return ColumnMeta(
-                tableName = Reflects.getTableName(field.declaringClass),
-                columnName = Reflects.getColumnName(field),
+                tableName = tableName,
+                columnName = columnName,
                 typeName = typeName,
                 columnSize = columnSize
             )
         }
         return ColumnMeta(
-            tableName = Reflects.getTableName(field.declaringClass),
-            columnName = Reflects.getColumnName(field),
+            tableName = tableName,
+            columnName = columnName,
             typeName = typeName,
             columnSize = columnSize,
             decimalDigits = column.scale,
@@ -157,19 +168,20 @@ object SchemaBuilder {
     }
 
     private fun createIdColumnMeta(field: Field, id: Id, column: Column?, typeName: String, columnSize: Int): ColumnMeta {
-        val columnMeta = ColumnMeta(
-            tableName = Reflects.getTableName(field.declaringClass),
-            columnName = Reflects.getColumnName(field),
-            typeName = typeName,
-            columnSize = columnSize,
-            nullable = false
-        )
+        val tableName = getSql(Reflects.getTableName(field.declaringClass))
+        val columnName = getSql(Reflects.getColumnName(field))
         if (column == null) {
-            return columnMeta
+            return ColumnMeta(
+                tableName = tableName,
+                columnName = columnName,
+                typeName = typeName,
+                columnSize = columnSize,
+                nullable = false
+            )
         }
         return ColumnMeta(
-            tableName = Reflects.getTableName(field.declaringClass),
-            columnName = Reflects.getColumnName(field),
+            tableName = tableName,
+            columnName = columnName,
             typeName = typeName,
             columnSize = columnSize,
             decimalDigits = column.scale,
@@ -204,15 +216,9 @@ object SchemaBuilder {
     }
 
     /**
-     * Convert camelCase to snake_case
-     */
-    private fun String.toSnakeCase(): String {
-        return CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, this)
-    }
-
-    /**
      * Build entity columns metadata for schema synchronization
      */
+    @JvmStatic
     fun buildColumns(entityClass: KClass<*>): List<ColumnMeta> {
         val columns = mutableListOf<ColumnMeta>()
         Reflects.getSqlFields(entityClass.java).forEach { field ->
@@ -227,32 +233,34 @@ object SchemaBuilder {
     /**
      * Build entity indexes metadata for schema synchronization
      */
+    @JvmStatic
     fun buildIndexes(entityClass: KClass<*>): List<IndexMeta> {
-        val tableName = Reflects.getTableName(entityClass.java)
+        val tableName = getSql(Reflects.getTableName(entityClass.java))
         val indexes = mutableListOf<IndexMeta>()
         val compositeIndexes = entityClass.findAnnotations<CompositeIndex>()
 
         compositeIndexes.forEach {
-            indexes.add(createIndexMeta(tableName, it.unique, it.columns.toMutableList(), it.orders.toMutableList(), it.filterCondition))
+            val columns = it.columns.map { column -> getSql(column) }.toMutableList()
+            indexes.add(createIndexMeta(tableName, it.unique, columns, it.orders.toMutableList(), it.filterCondition))
         }
 
         Reflects.getSqlFields(entityClass.java).forEach { field ->
             val indexAnnotations = field.getAnnotationsByType(Index::class.java)
             indexAnnotations.forEach { index ->
-                val columnName = Reflects.getColumnName(field)
+                val columnName = getSql(Reflects.getColumnName(field))
                 indexes.add(createIndexMeta(tableName, index.unique, mutableListOf(columnName), mutableListOf(index.order), index.filterCondition))
             }
         }
         return indexes
     }
 
-    private fun createIndexMeta(tableName: String, unique: Boolean, columns: MutableList<String>, orders: MutableList<String>, filterCondition: String): IndexMeta{
-        val indexNamePrefix = if (unique) "uk_" else "idx_"
+    private fun createIndexMeta(tableName: String, unique: Boolean, columns: MutableList<String>, orders: MutableList<SortOrder>, filterCondition: String): IndexMeta{
+        val indexNamePrefix = getSql(if (unique) "uk_" else "idx_")
         return IndexMeta(
             tableName = tableName,
             indexName = "$indexNamePrefix${tableName}_${columns.joinToString("_")}",
             columns = columns,
-            sorts = orders.filter { it.isNotEmpty() }.toMutableList(),
+            sorts = orders,
             unique = unique,
             indexStructure = if (unique) IndexStructure.BTREE else IndexStructure.HASH,
             cardinality = 0L,

@@ -1,5 +1,7 @@
 package com.tang.kite.annotation
 
+import com.tang.kite.enumeration.SortOrder
+
 /**
  * Composite index annotation for defining multi-column indexes on database tables
  *
@@ -34,7 +36,7 @@ annotation class CompositeIndex(
     /**
      * Index sort orders for each column (ASC / DESC)
      */
-    val orders: Array<String> = [],
+    val orders: Array<SortOrder> = [],
 
     /**
      * Filter condition for partial index

@@ -1,6 +1,10 @@
 package com.tang.kite.metadata
 
+import com.tang.kite.config.schema.SchemaConfig
+import com.tang.kite.config.schema.SchemaConfig.getSql
+import com.tang.kite.config.schema.SchemaConfig.getSqlNullable
 import com.tang.kite.datasource.DatabaseValue
+import com.tang.kite.enumeration.SortOrder
 import java.sql.DatabaseMetaData
 import java.sql.JDBCType
 import kotlin.use
@@ -27,10 +31,10 @@ object MetaDataHandlers {
             while (resultSet.next()) {
                 tables.add(
                     TableMeta(
-                        catalog = resultSet.getString("TABLE_CAT"),
-                        schema = resultSet.getString("TABLE_SCHEM"),
-                        tableName = resultSet.getString("TABLE_NAME"),
-                        tableType = resultSet.getString("TABLE_TYPE"),
+                        catalog = getSqlNullable(resultSet.getString("TABLE_CAT")),
+                        schema = getSqlNullable(resultSet.getString("TABLE_SCHEM")),
+                        tableName = getSql(resultSet.getString("TABLE_NAME")),
+                        tableType = getSql(resultSet.getString("TABLE_TYPE")),
                         comment = resultSet.getString("REMARKS")
                     )
                 )
@@ -52,12 +56,12 @@ object MetaDataHandlers {
                 while (it.next()) {
                     columnList.add(
                         ColumnMeta(
-                            catalog = it.getString("TABLE_CAT").lowercase(),
-                            schema = it.getString("TABLE_SCHEM").lowercase(),
-                            tableName = it.getString("TABLE_NAME").lowercase(),
-                            columnName = it.getString("COLUMN_NAME").lowercase(),
+                            catalog = getSqlNullable(it.getString("TABLE_CAT")),
+                            schema = getSqlNullable(it.getString("TABLE_SCHEM")),
+                            tableName = getSql(it.getString("TABLE_NAME")),
+                            columnName = getSql(it.getString("COLUMN_NAME")),
                             dataType = it.getInt("DATA_TYPE"),
-                            typeName = it.getString("TYPE_NAME").lowercase(),
+                            typeName = getSql(it.getString("TYPE_NAME")),
                             jdbcType = JDBCType.valueOf(it.getInt("DATA_TYPE")),
                             columnSize = it.getInt("COLUMN_SIZE"),
                             decimalDigits = it.getObject("DECIMAL_DIGITS") as? Int ?: 0,
@@ -65,8 +69,8 @@ object MetaDataHandlers {
                             defaultValue = it.getString("COLUMN_DEF"),
                             ordinalPosition = it.getInt("ORDINAL_POSITION"),
                             comment = it.getString("REMARKS"),
-                            primaryKey = primaryKeySet.contains(it.getString("COLUMN_NAME")),
-                            unique = uniqueKeySet.contains(it.getString("COLUMN_NAME")),
+                            primaryKey = primaryKeySet.contains(getSql(it.getString("COLUMN_NAME"))),
+                            unique = uniqueKeySet.contains(getSql(it.getString("COLUMN_NAME"))),
                             autoIncrement = "YES".equals(it.getString("IS_AUTOINCREMENT"), ignoreCase = true),
                             generatedColumn = "YES".equals(it.getString("IS_GENERATEDCOLUMN"), ignoreCase = true)
                         )
@@ -91,8 +95,8 @@ object MetaDataHandlers {
             val primaryKeyColumns = mutableSetOf<String>()
             val resultSet = metaData.getPrimaryKeys(connection.catalog, connection.schema, tableName.uppercase())
             while (resultSet.next()) {
-                val columnName = resultSet.getString("COLUMN_NAME")
-                primaryKeyColumns.add(columnName.lowercase())
+                val columnName = getSql(resultSet.getString("COLUMN_NAME"))
+                primaryKeyColumns.add(getSql(columnName))
             }
             resultSet.close()
             return primaryKeyColumns
@@ -113,11 +117,9 @@ object MetaDataHandlers {
 
             metaData.getIndexInfo(connection.catalog, connection.schema, tableName.uppercase(), true, true).use { rs ->
                 while (rs.next()) {
-                    val indexName = rs.getString("INDEX_NAME")
-                    val column = rs.getString("COLUMN_NAME")?.lowercase()
+                    val column = getSql(rs.getString("COLUMN_NAME"))
                     val type = rs.getShort("TYPE")
-
-                    if (indexName == null || column == null || type == 0.toShort()) continue
+                    if (type == 0.toShort()) continue
                     uniqueColumns.add(column)
                 }
             }
@@ -140,14 +142,12 @@ object MetaDataHandlers {
 
             metaData.getIndexInfo(connection.catalog, connection.schema, tableName.uppercase(), true, true).use { rs ->
                 while (rs.next()) {
-                    val indexName = rs.getString("INDEX_NAME")
-                    val column = rs.getString("COLUMN_NAME")?.lowercase()
+                    val indexName = getSql(rs.getString("INDEX_NAME"))
+                    val column = getSql(rs.getString("COLUMN_NAME"))
                     val nonUnique = rs.getBoolean("NON_UNIQUE")
                     val type = rs.getShort("TYPE")
-
-                    if (indexName == null || column == null || type == 0.toShort() || nonUnique) continue
+                    if (type == 0.toShort() || nonUnique) continue
                     if (column in primaryKeys) continue
-
                     result.computeIfAbsent(indexName) { mutableSetOf() }.add(column)
                 }
             }
@@ -170,8 +170,8 @@ object MetaDataHandlers {
 
             metaData.getIndexInfo(connection.catalog, connection.schema, tableName.uppercase(), false, true).use { rs ->
                 while (rs.next()) {
-                    val indexName = rs.getString("INDEX_NAME").lowercase()
-                    val columnName = rs.getString("COLUMN_NAME").lowercase()
+                    val indexName = getSql(rs.getString("INDEX_NAME"))
+                    val columnName = getSql(rs.getString("COLUMN_NAME"))
                     val typeCode = rs.getShort("TYPE")
 
                     val indexStructure = IndexStructure.getIndexStructure(typeCode)
@@ -183,23 +183,22 @@ object MetaDataHandlers {
                     val unique = !nonUnique
                     val isPrimaryKey = columnName in primaryKeys
 
-                    val indexMeta = indexMap.computeIfAbsent(indexName) {
-                        IndexMeta(
-                            catalog = rs.getString("TABLE_CAT").lowercase(),
-                            schema = rs.getString("TABLE_SCHEM").lowercase(),
-                            tableName = rs.getString("TABLE_NAME").lowercase(),
-                            indexName = indexName,
-                            indexStructure = indexStructure,
-                            unique = unique,
-                            cardinality = rs.getLong("CARDINALITY"),
-                            pages = rs.getLong("PAGES"),
-                            filterCondition = rs.getString("FILTER_CONDITION"),
-                            isPrimaryKey = isPrimaryKey
-                        )
-                    }
+                    val indexMeta = IndexMeta(
+                        catalog = getSqlNullable(rs.getString("TABLE_CAT")),
+                        schema = getSqlNullable(rs.getString("TABLE_SCHEM")),
+                        tableName = getSql(rs.getString("TABLE_NAME")),
+                        indexName = indexName,
+                        indexStructure = indexStructure,
+                        unique = unique,
+                        cardinality = rs.getLong("CARDINALITY"),
+                        pages = rs.getLong("PAGES"),
+                        filterCondition = SchemaConfig.getSqlCondition(rs.getString("FILTER_CONDITION")),
+                        isPrimaryKey = isPrimaryKey
+                    )
                     indexMeta.columns.add(columnName)
-                    val sort = if (rs.getString("ASC_OR_DESC").equals("A")) "asc" else "desc"
+                    val sort = if (rs.getString("ASC_OR_DESC").equals("A")) SortOrder.ASC else SortOrder.DESC
                     indexMeta.sorts.add(sort)
+                    indexMap[indexName] = indexMeta
                 }
             }
             return indexMap

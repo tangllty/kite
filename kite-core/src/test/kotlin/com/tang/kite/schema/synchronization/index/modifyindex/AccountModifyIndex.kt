@@ -7,6 +7,7 @@ import com.tang.kite.annotation.field.CreateTime
 import com.tang.kite.annotation.field.UpdateTime
 import com.tang.kite.annotation.id.Id
 import com.tang.kite.annotation.id.IdType
+import com.tang.kite.enumeration.SortOrder
 import java.time.LocalDateTime
 
 /**
@@ -14,14 +15,14 @@ import java.time.LocalDateTime
  *
  * @author Tang
  */
-@CompositeIndex(unique = true, columns = ["username", "nickname"], orders = ["asc", "desc"])
+@CompositeIndex(unique = true, columns = ["username", "nickname"], orders = [SortOrder.ASC, SortOrder.DESC])
 @Table(value = "account", comment = "Table for account modify index")
 class AccountModifyIndex(
 
     @Id(type = IdType.AUTO)
     var id: Long? = null,
 
-    @Index(order = "desc")
+    @Index(order = SortOrder.DESC)
     var username: String? = null,
 
     var nickname: String? = null,

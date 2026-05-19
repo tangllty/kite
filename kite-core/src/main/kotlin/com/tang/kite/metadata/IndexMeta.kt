@@ -1,5 +1,7 @@
 package com.tang.kite.metadata
 
+import com.tang.kite.enumeration.SortOrder
+
 /**
  * Index metadata for database tables
  *
@@ -35,7 +37,7 @@ class IndexMeta(
     /**
      * Column sort order
      */
-    val sorts: MutableList<String> = mutableListOf(),
+    val sorts: MutableList<SortOrder> = mutableListOf(),
 
     /**
      * Whether the index is unique

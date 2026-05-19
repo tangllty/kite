@@ -19,16 +19,15 @@ class SchemaSynchronization(private val databaseValue: DatabaseValue) {
      * Synchronize schema by scanning packages and synchronizing table structure
      */
     fun synchronizeSchema() {
-        val dialect = databaseValue.sqlDialect.getType().name
-        logger.info("Starting schema synchronization for '$dialect' database")
+        logger.info("Synchronizing database schema for database '${databaseValue.sqlDialect.getType().name}'")
         val entityClasses = SchemaScanner.scanEntityClasses(SchemaConfig.scanPackages)
-        logger.info("Scanned ${entityClasses.size} entity classes for schema synchronization")
+        logger.info("Found ${entityClasses.size} entity classes")
         if (entityClasses.isEmpty()) {
-            logger.warn("No entity classes found in scan packages, schema synchronization skipped")
+            logger.warn("No entity classes found, schema initialization skipped")
             return
         }
         tableSynchronization.synchronizeTables(entityClasses)
-        logger.info("Schema synchronization completed successfully")
+        logger.info("Schema synchronization completed")
     }
 
     companion object {

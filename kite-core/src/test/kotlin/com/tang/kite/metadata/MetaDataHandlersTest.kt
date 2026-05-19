@@ -16,7 +16,7 @@ class MetaDataHandlersTest : BaseDataTest() {
     fun getTable() {
         val table = MetaDataHandlers.getTable(kiteDataSource.getCurrentDatabase(), "account")
         assertNotNull(table)
-        assertEquals("account", table.tableName.lowercase())
+        assertEquals("account", table.tableName)
     }
 
     @Test
@@ -26,7 +26,7 @@ class MetaDataHandlersTest : BaseDataTest() {
         connection.close()
         assertNotNull(tables)
         assertTrue { tables.isNotEmpty() }
-        assertTrue { tables.map { it.tableName.lowercase() }.contains("account") }
+        assertTrue { tables.map { it.tableName }.contains("account") }
     }
 
     @Test
@@ -35,7 +35,7 @@ class MetaDataHandlersTest : BaseDataTest() {
         val columns = MetaDataHandlers.getColumns(kiteDataSource.getCurrentDatabase(), "account")
         connection.close()
         assertNotNull(columns)
-        assertTrue { columns.map { it.columnName.lowercase() }.contains("id") }
+        assertTrue { columns.map { it.columnName }.contains("id") }
     }
 
     @Test
@@ -44,7 +44,7 @@ class MetaDataHandlersTest : BaseDataTest() {
         val primaryKeys = MetaDataHandlers.getPrimaryKeys(kiteDataSource.getCurrentDatabase(), "account")
         connection.close()
         assertNotNull(primaryKeys)
-        assertContentEquals(listOf("id"), primaryKeys.map { it.lowercase() })
+        assertContentEquals(listOf("id"), primaryKeys.map { it })
     }
 
     @Test
@@ -53,7 +53,7 @@ class MetaDataHandlersTest : BaseDataTest() {
         val uniqueKeys = MetaDataHandlers.getUniqueKeys(kiteDataSource.getCurrentDatabase(), "account")
         connection.close()
         assertNotNull(uniqueKeys)
-        assertContentEquals(listOf("id"), uniqueKeys.map { it.lowercase() })
+        assertContentEquals(listOf("id"), uniqueKeys.map { it })
     }
 
     @Test

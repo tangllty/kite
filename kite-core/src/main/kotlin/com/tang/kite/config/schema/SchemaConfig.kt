@@ -14,6 +14,12 @@ object SchemaConfig {
     var enabled: Boolean = false
 
     /**
+     * SQL lowercase setting.
+     */
+    @JvmStatic
+    var sqlLowercase = true
+
+    /**
      * Packages to scan for entity classes
      * Supports wildcard patterns (e.g., "com.example.*", "com.example.**")
      */
@@ -61,5 +67,25 @@ object SchemaConfig {
      */
     @JvmStatic
     var dropExistingIndexes = false
+
+    @JvmStatic
+    fun getSql(sql: String): String {
+        return if (sqlLowercase) {
+            sql.lowercase()
+        } else {
+            sql.uppercase()
+        }
+    }
+
+    @JvmStatic
+    fun getSqlNullable(sql: String?): String? {
+        return sql?.let { getSql(it) }
+    }
+
+    @JvmStatic
+    fun getSqlCondition(sql: String?): String? {
+        if (sql == null) return null
+        TODO("parse sql")
+    }
 
 }

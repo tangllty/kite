@@ -1,5 +1,7 @@
 package com.tang.kite.annotation
 
+import com.tang.kite.enumeration.SortOrder
+
 /**
  * Database table index annotation
  * Supports: single column, composite, unique, full-text, spatial, prefix, sorted index
@@ -30,7 +32,7 @@ annotation class Index(
     /**
      * Index sort order (ASC / DESC)
      */
-    val order: String = "",
+    val order: SortOrder = SortOrder.ASC,
 
     /**
      * Filter condition for partial index

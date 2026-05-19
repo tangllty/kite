@@ -22,7 +22,7 @@ class ColumnMeta(
     /**
      * Table name
      */
-    val tableName: String? = null,
+    val tableName: String,
 
     /**
      * Column name

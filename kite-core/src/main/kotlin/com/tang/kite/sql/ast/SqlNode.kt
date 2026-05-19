@@ -1,5 +1,6 @@
 package com.tang.kite.sql.ast
 
+import com.tang.kite.enumeration.SortOrder
 import com.tang.kite.metadata.ColumnMeta
 import com.tang.kite.paginate.OrderItem
 import com.tang.kite.sql.Column
@@ -140,7 +141,7 @@ sealed class SqlNode {
 
     data class CreateTable(
 
-        var table: TableReference? = null,
+        var table: TableReference,
 
         val columns: MutableList<ColumnMeta> = mutableListOf(),
 
@@ -154,7 +155,7 @@ sealed class SqlNode {
 
     data class AlterTable(
 
-        var table: TableReference? = null,
+        var table: TableReference,
 
         val operations: MutableList<AlterOperation> = mutableListOf()
 
@@ -162,7 +163,7 @@ sealed class SqlNode {
 
     data class DropTable(
 
-        var table: TableReference? = null,
+        var table: TableReference,
 
         var cascade: Boolean = false
 
@@ -176,7 +177,7 @@ sealed class SqlNode {
 
         val columns: List<String>,
 
-        val sorts: List<String> = emptyList(),
+        val sorts: List<SortOrder> = emptyList(),
 
         var unique: Boolean = false,
 
@@ -194,7 +195,7 @@ sealed class SqlNode {
 
     data class TruncateTable(
 
-        var table: TableReference? = null,
+        var table: TableReference,
 
         var cascade: Boolean = false
 
