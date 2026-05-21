@@ -25,23 +25,8 @@ annotation class Index(
     val unique: Boolean = false,
 
     /**
-     * Index type
-     */
-    val type: String = "",
-
-    /**
      * Index sort order (ASC / DESC)
      */
-    val order: SortOrder = SortOrder.ASC,
-
-    /**
-     * Filter condition for partial index
-     */
-    val filterCondition: String = "",
-
-    /**
-     * Index comment
-     */
-    val comment: String = ""
+    val order: SortOrder = SortOrder.ASC
 
 )

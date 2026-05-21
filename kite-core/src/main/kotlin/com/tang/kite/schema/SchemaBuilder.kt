@@ -11,7 +11,6 @@ import com.tang.kite.config.schema.SchemaConfig.getSql
 import com.tang.kite.enumeration.SortOrder
 import com.tang.kite.metadata.ColumnMeta
 import com.tang.kite.metadata.IndexMeta
-import com.tang.kite.metadata.IndexStructure
 import com.tang.kite.sql.TableReference
 import com.tang.kite.sql.ast.SqlNode
 import com.tang.kite.sql.ast.TableConstraint
@@ -241,20 +240,20 @@ object SchemaBuilder {
 
         compositeIndexes.forEach {
             val columns = it.columns.map { column -> getSql(column) }.toMutableList()
-            indexes.add(createIndexMeta(tableName, it.unique, columns, it.orders.toMutableList(), it.filterCondition))
+            indexes.add(createIndexMeta(tableName, it.unique, columns, it.orders.toMutableList()))
         }
 
         Reflects.getSqlFields(entityClass.java).forEach { field ->
             val indexAnnotations = field.getAnnotationsByType(Index::class.java)
             indexAnnotations.forEach { index ->
                 val columnName = getSql(Reflects.getColumnName(field))
-                indexes.add(createIndexMeta(tableName, index.unique, mutableListOf(columnName), mutableListOf(index.order), index.filterCondition))
+                indexes.add(createIndexMeta(tableName, index.unique, mutableListOf(columnName), mutableListOf(index.order)))
             }
         }
         return indexes
     }
 
-    private fun createIndexMeta(tableName: String, unique: Boolean, columns: MutableList<String>, orders: MutableList<SortOrder>, filterCondition: String): IndexMeta{
+    private fun createIndexMeta(tableName: String, unique: Boolean, columns: MutableList<String>, orders: MutableList<SortOrder>): IndexMeta{
         val indexNamePrefix = getSql(if (unique) "uk_" else "idx_")
         return IndexMeta(
             tableName = tableName,
@@ -262,10 +261,6 @@ object SchemaBuilder {
             columns = columns,
             sorts = orders,
             unique = unique,
-            indexStructure = if (unique) IndexStructure.BTREE else IndexStructure.HASH,
-            cardinality = 0L,
-            pages = 0L,
-            filterCondition = filterCondition.ifBlank { null },
             isPrimaryKey = false
         )
     }

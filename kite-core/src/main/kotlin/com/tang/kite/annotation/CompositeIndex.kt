@@ -24,11 +24,6 @@ annotation class CompositeIndex(
     val unique: Boolean = false,
 
     /**
-     * Index type
-     */
-    val type: String = "",
-
-    /**
      * Column names included in the composite index
      */
     val columns: Array<String> = [],
@@ -36,16 +31,6 @@ annotation class CompositeIndex(
     /**
      * Index sort orders for each column (ASC / DESC)
      */
-    val orders: Array<SortOrder> = [],
-
-    /**
-     * Filter condition for partial index
-     */
-    val filterCondition: String = "",
-
-    /**
-     * Index comment
-     */
-    val comment: String = ""
+    val orders: Array<SortOrder> = []
 
 )

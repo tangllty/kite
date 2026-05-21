@@ -46,8 +46,7 @@ class IndexSynchronization(
             val existingIndex = existingIndexes.firstOrNull { expectedIndex.indexName.equals(it.indexName, ignoreCase = true) }
             existingIndex != null && (existingIndex.columns != expectedIndex.columns
                 || existingIndex.sorts != expectedIndex.sorts
-                || existingIndex.unique != expectedIndex.unique
-                || existingIndex.filterCondition != expectedIndex.filterCondition)
+                || existingIndex.unique != expectedIndex.unique)
         }
     }
 

@@ -82,10 +82,4 @@ object SchemaConfig {
         return sql?.let { getSql(it) }
     }
 
-    @JvmStatic
-    fun getSqlCondition(sql: String?): String? {
-        if (sql == null) return null
-        TODO("parse sql")
-    }
-
 }

@@ -21,6 +21,7 @@
 - Refactor schema synchronization logic for clarity
 - Extract column and index synchronization into separate classes
 - Use `SortOrder` enum for index annotations and fix `ColumnMeta` tableName
+- Remove unused index metadata fields
 
 ## 1.0.21
 

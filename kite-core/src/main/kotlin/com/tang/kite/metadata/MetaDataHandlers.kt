@@ -1,13 +1,11 @@
 package com.tang.kite.metadata
 
-import com.tang.kite.config.schema.SchemaConfig
 import com.tang.kite.config.schema.SchemaConfig.getSql
 import com.tang.kite.config.schema.SchemaConfig.getSqlNullable
 import com.tang.kite.datasource.DatabaseValue
 import com.tang.kite.enumeration.SortOrder
 import java.sql.DatabaseMetaData
 import java.sql.JDBCType
-import kotlin.use
 
 /**
  * @author Tang
@@ -188,15 +186,12 @@ object MetaDataHandlers {
                         schema = getSqlNullable(rs.getString("TABLE_SCHEM")),
                         tableName = getSql(rs.getString("TABLE_NAME")),
                         indexName = indexName,
-                        indexStructure = indexStructure,
                         unique = unique,
-                        cardinality = rs.getLong("CARDINALITY"),
-                        pages = rs.getLong("PAGES"),
-                        filterCondition = SchemaConfig.getSqlCondition(rs.getString("FILTER_CONDITION")),
                         isPrimaryKey = isPrimaryKey
                     )
                     indexMeta.columns.add(columnName)
-                    val sort = if (rs.getString("ASC_OR_DESC").equals("A")) SortOrder.ASC else SortOrder.DESC
+                    val ascOrDesc = rs.getString("ASC_OR_DESC") ?: "A"
+                    val sort = if (ascOrDesc == "A") SortOrder.ASC else SortOrder.DESC
                     indexMeta.sorts.add(sort)
                     indexMap[indexName] = indexMeta
                 }

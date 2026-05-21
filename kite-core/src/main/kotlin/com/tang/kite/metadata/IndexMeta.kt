@@ -45,45 +45,8 @@ class IndexMeta(
     val unique: Boolean,
 
     /**
-     * Index structure (clustered, hashed, other)
-     */
-    val indexStructure: IndexStructure,
-
-    /**
-     * Index cardinality (number of unique values)
-     */
-    val cardinality: Long,
-
-    /**
-     * Number of pages used by the index
-     */
-    val pages: Long,
-
-    /**
-     * Filter condition for partial index
-     */
-    val filterCondition: String?,
-
-    /**
      * Whether this index represents the primary key
      */
     val isPrimaryKey: Boolean
 
-) {
-
-    /**
-     * Get columns in index definition order
-     */
-    fun getColumnsInOrder(): List<String> = columns
-
-    /**
-     * Check if this is a unique constraint (non-primary key)
-     */
-    fun isUniqueConstraint(): Boolean = unique && !isPrimaryKey
-
-    /**
-     * Check if this is a regular non-unique index
-     */
-    fun isRegularIndex(): Boolean = !unique
-
-}
+)
