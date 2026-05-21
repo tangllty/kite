@@ -2,7 +2,7 @@ package com.tang.kite.schema
 
 import com.tang.kite.config.schema.SchemaConfig
 import com.tang.kite.datasource.KiteDataSourceFactory
-import com.tang.kite.enumeration.SortOrder
+import com.tang.kite.enumeration.IndexOrder
 import com.tang.kite.metadata.MetaDataHandlers
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -76,7 +76,7 @@ class SchemaSynchronizationTest {
         val addIndexMap = MetaDataHandlers.getIndexes(databaseValue, tableName)
         assertEquals(3, addIndexMap.size)
         assertTrue { addIndexMap.containsKey("uk_account_username_nickname") }
-        assertTrue { addIndexMap["uk_account_username_nickname"]!!.sorts.contains(SortOrder.DESC) }
+        assertTrue { addIndexMap["uk_account_username_nickname"]!!.sorts.contains(IndexOrder.DESC) }
         assertTrue { addIndexMap.containsKey("idx_account_username") }
         assertFalse { addIndexMap["idx_account_username"]!!.unique }
 
@@ -86,7 +86,7 @@ class SchemaSynchronizationTest {
         val modifyIndexMap = MetaDataHandlers.getIndexes(databaseValue, tableName)
         assertEquals(3, modifyIndexMap.size)
         assertTrue { modifyIndexMap.containsKey("idx_account_username") }
-        assertTrue { modifyIndexMap["idx_account_username"]!!.sorts.contains(SortOrder.DESC) }
+        assertTrue { modifyIndexMap["idx_account_username"]!!.sorts.contains(IndexOrder.DESC) }
 
         SchemaConfig.dropExistingIndexes = true
         synchronization.withPackage("com.tang.kite.schema.synchronization.index.dropindex")

@@ -8,7 +8,7 @@ import com.tang.kite.annotation.id.Id
 import com.tang.kite.annotation.id.IdType
 import com.tang.kite.config.schema.SchemaConfig
 import com.tang.kite.config.schema.SchemaConfig.getSql
-import com.tang.kite.enumeration.SortOrder
+import com.tang.kite.enumeration.IndexOrder
 import com.tang.kite.metadata.ColumnMeta
 import com.tang.kite.metadata.IndexMeta
 import com.tang.kite.sql.TableReference
@@ -253,7 +253,7 @@ object SchemaBuilder {
         return indexes
     }
 
-    private fun createIndexMeta(tableName: String, unique: Boolean, columns: MutableList<String>, orders: MutableList<SortOrder>): IndexMeta{
+    private fun createIndexMeta(tableName: String, unique: Boolean, columns: MutableList<String>, orders: MutableList<IndexOrder>): IndexMeta{
         val indexNamePrefix = getSql(if (unique) "uk_" else "idx_")
         return IndexMeta(
             tableName = tableName,

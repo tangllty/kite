@@ -1,6 +1,6 @@
 package com.tang.kite.annotation
 
-import com.tang.kite.enumeration.SortOrder
+import com.tang.kite.enumeration.IndexOrder
 
 /**
  * Database table index annotation
@@ -27,6 +27,6 @@ annotation class Index(
     /**
      * Index sort order (ASC / DESC)
      */
-    val order: SortOrder = SortOrder.ASC
+    val order: IndexOrder = IndexOrder.ASC
 
 )

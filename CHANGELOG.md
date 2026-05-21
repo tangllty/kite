@@ -22,6 +22,7 @@
 - Extract column and index synchronization into separate classes
 - Use `SortOrder` enum for index annotations and fix `ColumnMeta` tableName
 - Remove unused index metadata fields
+- Rename `SortOrder` enum to `IndexOrder`
 
 ## 1.0.21
 

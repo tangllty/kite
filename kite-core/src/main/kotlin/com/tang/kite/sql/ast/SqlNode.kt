@@ -1,6 +1,6 @@
 package com.tang.kite.sql.ast
 
-import com.tang.kite.enumeration.SortOrder
+import com.tang.kite.enumeration.IndexOrder
 import com.tang.kite.metadata.ColumnMeta
 import com.tang.kite.paginate.OrderItem
 import com.tang.kite.sql.Column
@@ -177,7 +177,7 @@ sealed class SqlNode {
 
         val columns: List<String>,
 
-        val sorts: List<SortOrder> = emptyList(),
+        val sorts: List<IndexOrder> = emptyList(),
 
         var unique: Boolean = false,
 

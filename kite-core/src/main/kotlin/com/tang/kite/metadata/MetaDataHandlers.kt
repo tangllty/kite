@@ -3,7 +3,7 @@ package com.tang.kite.metadata
 import com.tang.kite.config.schema.SchemaConfig.getSql
 import com.tang.kite.config.schema.SchemaConfig.getSqlNullable
 import com.tang.kite.datasource.DatabaseValue
-import com.tang.kite.enumeration.SortOrder
+import com.tang.kite.enumeration.IndexOrder
 import java.sql.DatabaseMetaData
 import java.sql.JDBCType
 
@@ -191,7 +191,7 @@ object MetaDataHandlers {
                     )
                     indexMeta.columns.add(columnName)
                     val ascOrDesc = rs.getString("ASC_OR_DESC") ?: "A"
-                    val sort = if (ascOrDesc == "A") SortOrder.ASC else SortOrder.DESC
+                    val sort = if (ascOrDesc == "A") IndexOrder.ASC else IndexOrder.DESC
                     indexMeta.sorts.add(sort)
                     indexMap[indexName] = indexMeta
                 }
