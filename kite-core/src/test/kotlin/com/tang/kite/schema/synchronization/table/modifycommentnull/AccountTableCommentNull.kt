@@ -1,4 +1,4 @@
-package com.tang.kite.schema.synchronization.table.initial
+package com.tang.kite.schema.synchronization.table.modifycommentnull
 
 import com.tang.kite.annotation.Table
 import com.tang.kite.annotation.id.Id
@@ -7,8 +7,8 @@ import com.tang.kite.annotation.id.IdType
 /**
  * @author Tang
  */
-@Table(value = "account", comment = "Table for account initial")
-class AccountInitial(
+@Table(value = "table_account")
+class AccountTableCommentNull(
 
     @Id(type = IdType.AUTO)
     var id: Long? = null,

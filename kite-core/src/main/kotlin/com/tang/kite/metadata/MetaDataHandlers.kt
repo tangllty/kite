@@ -177,17 +177,13 @@ object MetaDataHandlers {
                     // Skip statistic rows and invalid entries
                     if (indexStructure == IndexStructure.STATISTIC) continue
 
-                    val nonUnique = rs.getBoolean("NON_UNIQUE")
-                    val unique = !nonUnique
-                    val isPrimaryKey = columnName in primaryKeys
-
                     val indexMeta = IndexMeta(
                         catalog = getSqlNullable(rs.getString("TABLE_CAT")),
                         schema = getSqlNullable(rs.getString("TABLE_SCHEM")),
                         tableName = getSql(rs.getString("TABLE_NAME")),
                         indexName = indexName,
-                        unique = unique,
-                        isPrimaryKey = isPrimaryKey
+                        unique = rs.getBoolean("NON_UNIQUE").not(),
+                        primaryKey = columnName in primaryKeys
                     )
                     indexMeta.columns.add(columnName)
                     val ascOrDesc = rs.getString("ASC_OR_DESC") ?: "A"

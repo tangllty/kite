@@ -45,14 +45,14 @@ class ColumnMeta(
     val jdbcType: JDBCType = JDBCType.NULL,
 
     /**
-     * Column size, length, or precision
+     * Column size, length, or precision (-1 means default size)
      */
-    val columnSize: Int = 0,
+    val columnSize: Int = -1,
 
     /**
-     * Decimal digits scale
+     * Decimal digits scale (-1 means default scale)
      */
-    val decimalDigits: Int = 0,
+    val decimalDigits: Int = -1,
 
     /**
      * Whether column allows null

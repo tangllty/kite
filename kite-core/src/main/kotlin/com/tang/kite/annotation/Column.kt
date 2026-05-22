@@ -49,18 +49,21 @@ annotation class Column(
 
     /**
      * Column length for VARCHAR, CHAR, etc.
+     * When length is not specified, it will be set to 255.
      */
-    val length: Int = 255,
+    val length: Int = -1,
 
     /**
      * Numeric precision for DECIMAL, NUMERIC, etc.
+     * When precision is not specified, it will be set to 10.
      */
-    val precision: Int = 10,
+    val precision: Int = -1,
 
     /**
      * Numeric scale for DECIMAL, NUMERIC, etc.
+     * When scale is not specified, it will be set to 2.
      */
-    val scale: Int = 2,
+    val scale: Int = -1,
 
     /**
      * Whether column allows null value
@@ -70,12 +73,12 @@ annotation class Column(
     /**
      * Database column default value
      */
-    val defaultValue: String = "",
+    val defaultValue: Array<String> = [],
 
     /**
      * Database column comment
      */
-    val comment: String = "",
+    val comment: Array<String> = [],
 
     /**
      * Referenced foreign key table name

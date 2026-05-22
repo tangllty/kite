@@ -23,6 +23,7 @@
 - Use `SortOrder` enum for index annotations and fix `ColumnMeta` tableName
 - Remove unused index metadata fields
 - Rename `SortOrder` enum to `IndexOrder`
+- Reorganize schema synchronization tests and unify column modification
 
 ## 1.0.21
 

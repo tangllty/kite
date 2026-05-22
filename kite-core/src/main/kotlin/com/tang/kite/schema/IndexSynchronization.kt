@@ -26,7 +26,7 @@ class IndexSynchronization(
     fun synchronizeIndexes(entityClass: KClass<*>, tableName: String) {
         val existingIndexes = MetaDataHandlers.getIndexes(databaseValue, tableName)
             .map { it.value }
-            .filter { it.isPrimaryKey.not() }
+            .filter { it.primaryKey.not() }
         val expectedIndexes = SchemaBuilder.buildIndexes(entityClass)
 
         val missingIndexes = SchemaSynchronization.getMissing(existingIndexes, expectedIndexes) { it.indexName }

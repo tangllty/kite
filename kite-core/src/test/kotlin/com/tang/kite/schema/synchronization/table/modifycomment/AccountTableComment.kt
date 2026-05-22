@@ -1,4 +1,4 @@
-package com.tang.kite.schema.synchronization.table.tablecomment
+package com.tang.kite.schema.synchronization.table.modifycomment
 
 import com.tang.kite.annotation.Table
 import com.tang.kite.annotation.id.Id
@@ -7,7 +7,7 @@ import com.tang.kite.annotation.id.IdType
 /**
  * @author Tang
  */
-@Table(value = "account", comment = "Table for account comment")
+@Table(value = "table_account", comment = "Table for account comment")
 class AccountTableComment(
 
     @Id(type = IdType.AUTO)

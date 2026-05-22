@@ -8,7 +8,6 @@ import com.tang.kite.metadata.MetaDataHandlers
 import com.tang.kite.sql.TableReference
 import com.tang.kite.sql.ast.AlterOperation
 import com.tang.kite.sql.ast.SqlNode
-import com.tang.kite.sql.ast.ddl.SqlStatementDdlHandler
 import com.tang.kite.sql.datatype.DataType
 import com.tang.kite.utils.Reflects
 import kotlin.reflect.KClass
@@ -50,16 +49,32 @@ class ColumnSynchronization(
         if (existingColumn == expectedColumn) {
             return
         }
-        if (existingColumn.comment != expectedColumn.comment) {
-            logger.info("Updating column comment for '${existingColumn.columnName}' from '${existingColumn.comment}' to '$expectedColumn.comment'")
-            val dialect = databaseValue.sqlDialect
-            val sql = SqlStatementDdlHandler.getColumnComment(tableName, expectedColumn, dialect)
-            ddlExecutor.executeDdl(sql)
+
+        val getValue = fun(value: Any?) = if (value is String) "'$value'" else value
+        val columnChanged = fun (changed: Boolean, name: String, column: (ColumnMeta) -> Any?) {
+            if (changed) {
+                val oldValue = getValue(column(existingColumn))
+                val newValue = getValue(column(expectedColumn))
+                logger.info("Updating column $name for '${existingColumn.columnName}' from $oldValue to $newValue")
+            }
         }
+
         val expectedColumnTypeName = DataType.normalize(expectedColumn.typeName)
         val existingColumnTypeName = DataType.normalize(existingColumn.typeName)
-        if (existingColumnTypeName != expectedColumnTypeName) {
-            logger.info("Updating column type for '${existingColumn.columnName}' from '${existingColumn.typeName}' to '$expectedColumn.typeName'")
+        val typeNameChanged = existingColumnTypeName != expectedColumnTypeName
+        val columnSizeChanged = expectedColumn.columnSize != -1 && (existingColumn.columnSize != expectedColumn.columnSize)
+        val decimalDigitsChanged = expectedColumn.decimalDigits != -1 && (existingColumn.decimalDigits != expectedColumn.decimalDigits)
+        val nullableChanged = existingColumn.nullable != expectedColumn.nullable
+        val defaultValueChanged = existingColumn.defaultValue != expectedColumn.defaultValue
+        val commentChanged = existingColumn.comment != expectedColumn.comment
+        if (typeNameChanged || columnSizeChanged || decimalDigitsChanged || nullableChanged || defaultValueChanged || commentChanged) {
+            columnChanged(typeNameChanged, "type") { it.typeName }
+            columnChanged(columnSizeChanged, "size") { it.columnSize }
+            columnChanged(decimalDigitsChanged, "decimal digits") { it.decimalDigits }
+            columnChanged(nullableChanged, "nullable") { it.nullable }
+            columnChanged(defaultValueChanged, "default value") { it.defaultValue }
+            columnChanged(commentChanged, "comment") { it.comment }
+
             val alterTable = SqlNode.AlterTable(
                 table = TableReference(tableName),
                 operations = mutableListOf(AlterOperation.ModifyColumn(expectedColumn))

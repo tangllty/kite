@@ -10,21 +10,20 @@ import java.math.BigDecimal
 import java.time.LocalDateTime
 
 /**
- * Test entity with updated column comments for schema synchronization test
- *
  * @author Tang
  */
-@Table(value = "account", comment = "Table for account column comment")
+@Table(value = "column_account")
 class AccountModifyColumn(
 
     @Id(type = IdType.AUTO)
     var id: Long? = null,
 
+    @Column(length = 100)
     var username: String? = null,
 
     var password: String? = null,
 
-    @Column(comment = "Register time")
+    @Column(comment = ["Register time"])
     @CreateTime
     var createTime: LocalDateTime? = null,
 

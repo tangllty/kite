@@ -47,6 +47,6 @@ class IndexMeta(
     /**
      * Whether this index represents the primary key
      */
-    val isPrimaryKey: Boolean
+    val primaryKey: Boolean
 
 )

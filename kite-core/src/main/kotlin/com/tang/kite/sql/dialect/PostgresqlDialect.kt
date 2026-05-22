@@ -21,6 +21,4 @@ class PostgresqlDialect : AbstractSqlDialect(DatabaseType.POSTGRE_SQL) {
 
     override fun getAutoIncrementKeyword(): String = "generated always as identity"
 
-    override fun getAlterColumnKeyword(): String = "modify"
-
 }

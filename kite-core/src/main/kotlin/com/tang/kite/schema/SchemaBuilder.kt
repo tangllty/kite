@@ -140,7 +140,7 @@ object SchemaBuilder {
      */
     private fun createColumnMeta(field: Field, id: Id?, column: Column?): ColumnMeta {
         val typeName = getSql((column?.dataType ?: "").ifBlank { getDataType(field) })
-        val columnSize = if (Number::class.java.isAssignableFrom(field.type)) column?.precision ?: 0 else column?.length ?: 0
+        val columnSize = if (Number::class.java.isAssignableFrom(field.type)) column?.precision ?: -1 else column?.length ?: -1
         if (id != null) {
             return createIdColumnMeta(field, id, column, typeName, columnSize)
         }
@@ -161,8 +161,8 @@ object SchemaBuilder {
             columnSize = columnSize,
             decimalDigits = column.scale,
             nullable = column.nullable,
-            defaultValue = column.defaultValue,
-            comment = column.comment
+            defaultValue = column.defaultValue.firstOrNull(),
+            comment = column.comment.firstOrNull()
         )
     }
 
@@ -185,8 +185,8 @@ object SchemaBuilder {
             columnSize = columnSize,
             decimalDigits = column.scale,
             nullable = false,
-            defaultValue = column.defaultValue,
-            comment = column.comment,
+            defaultValue = column.defaultValue.firstOrNull(),
+            comment = column.comment.firstOrNull(),
             primaryKey = true,
             unique = true,
             autoIncrement = id.type == IdType.AUTO
@@ -209,7 +209,6 @@ object SchemaBuilder {
             LocalDate::class.java -> DataType.DATE
             LocalDateTime::class.java, Date::class.java, Timestamp::class.java,
             OffsetDateTime::class.java, ZonedDateTime::class.java -> DataType.TIMESTAMP
-
             else -> DataType.VARCHAR
         }
     }
@@ -261,7 +260,7 @@ object SchemaBuilder {
             columns = columns,
             sorts = orders,
             unique = unique,
-            isPrimaryKey = false
+            primaryKey = false
         )
     }
 

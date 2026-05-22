@@ -10,11 +10,9 @@ import java.math.BigDecimal
 import java.time.LocalDateTime
 
 /**
- * Test entity with additional column for schema synchronization test
- *
  * @author Tang
  */
-@Table(value = "account", comment = "Table for account modify column comment")
+@Table(value = "column_account")
 class AccountAddColumn(
 
     @Id(type = IdType.AUTO)
@@ -24,11 +22,11 @@ class AccountAddColumn(
 
     var password: String? = null,
 
-    @Column(comment = "Create time")
+    @Column(comment = ["Create time"])
     @CreateTime
     var createTime: LocalDateTime? = null,
 
-    @Column(comment = "Update time")
+    @Column(comment = ["Update time"])
     @UpdateTime
     var updateTime: LocalDateTime? = null,
 
