@@ -54,11 +54,16 @@ object SchemaBuilder {
             val compositeIndexes = entityClass.java.getAnnotationsByType(CompositeIndex::class.java)
             compositeIndexes.forEach { compositeIndex ->
                 val columns = compositeIndex.columns.map { getSql(it) }
+                val sorts = compositeIndex.orders.toList()
+                require(sorts.isNotEmpty() && sorts.size == columns.size) {
+                    "@CompositeIndex on ${entityClass.simpleName}: columns size (${columns.size}) and orders size (${sorts.size}) must match"
+                }
                 if (compositeIndex.unique) {
                     createIndexes.add(
                         SqlNode.CreateIndex(
                             indexName = "${getSql("uk")}_${tableName}_${columns.joinToString("_")}",
                             columns = columns.toList(),
+                            sorts = sorts,
                             table = TableReference(entityClass, SchemaConfig.sqlLowercase),
                             unique = true
                         )
@@ -68,7 +73,8 @@ object SchemaBuilder {
                         SqlNode.CreateIndex(
                             indexName = "${getSql("idx")}_${tableName}_${columns.joinToString("_")}",
                             table = TableReference(entityClass, SchemaConfig.sqlLowercase),
-                            columns = columns.toList()
+                            columns = columns.toList(),
+                            sorts = sorts
                         )
                     )
                 }
@@ -111,6 +117,7 @@ object SchemaBuilder {
                                 indexName = "${getSql("uk")}_${tableName}_$columnName",
                                 table = TableReference(entityClass, SchemaConfig.sqlLowercase),
                                 columns = listOf(columnName),
+                                sorts = listOf(index.order),
                                 unique = true
                             )
                         )
@@ -119,7 +126,8 @@ object SchemaBuilder {
                             SqlNode.CreateIndex(
                                 indexName = "${getSql("idx")}_${tableName}_$columnName",
                                 table = TableReference(entityClass, SchemaConfig.sqlLowercase),
-                                columns = listOf(columnName)
+                                columns = listOf(columnName),
+                                sorts = listOf(index.order)
                             )
                         )
                     }
@@ -140,7 +148,8 @@ object SchemaBuilder {
      */
     private fun createColumnMeta(field: Field, id: Id?, column: Column?): ColumnMeta {
         val typeName = getSql((column?.dataType ?: "").ifBlank { getDataType(field) })
-        val columnSize = if (Number::class.java.isAssignableFrom(field.type)) column?.precision ?: -1 else column?.length ?: -1
+        val isNumeric = Number::class.java.isAssignableFrom(field.type) || (field.type.isPrimitive && field.type != Boolean::class.javaPrimitiveType && field.type != Char::class.javaPrimitiveType)
+        val columnSize = if (isNumeric) column?.precision ?: -1 else column?.length ?: -1
         if (id != null) {
             return createIdColumnMeta(field, id, column, typeName, columnSize)
         }
@@ -239,7 +248,11 @@ object SchemaBuilder {
 
         compositeIndexes.forEach {
             val columns = it.columns.map { column -> getSql(column) }.toMutableList()
-            indexes.add(createIndexMeta(tableName, it.unique, columns, it.orders.toMutableList()))
+            val orders = it.orders.toMutableList()
+            require(orders.isNotEmpty() && orders.size == columns.size) {
+                "@CompositeIndex on ${entityClass.simpleName}: columns size (${columns.size}) and orders size (${orders.size}) must match"
+            }
+            indexes.add(createIndexMeta(tableName, it.unique, columns, orders))
         }
 
         Reflects.getSqlFields(entityClass.java).forEach { field ->

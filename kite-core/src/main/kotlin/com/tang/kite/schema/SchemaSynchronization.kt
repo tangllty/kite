@@ -34,20 +34,14 @@ class SchemaSynchronization(private val databaseValue: DatabaseValue) {
 
         @JvmStatic
         fun <T> getMissing(existing: List<T>, expected: List<T>, getKey: (T) -> String): List<T> {
-            return expected.filter { expectedItem ->
-                existing.none { existingItem ->
-                    getKey(existingItem).equals(getKey(expectedItem), ignoreCase = true)
-                }
-            }
+            val existingKeys = existing.map { getKey(it).lowercase() }
+            return expected.filterNot { getKey(it).lowercase() in existingKeys }
         }
 
         @JvmStatic
         fun <T> getExtra(existing: List<T>, expected: List<T>, getKey: (T) -> String): List<T> {
-            return existing.filter { existingItem ->
-                expected.none { expectedItem ->
-                    getKey(existingItem).equals(getKey(expectedItem), ignoreCase = true)
-                }
-            }
+            val expectedKeys = expected.map { getKey(it).lowercase() }
+            return existing.filterNot { getKey(it).lowercase() in expectedKeys }
         }
 
     }

@@ -46,7 +46,7 @@ class ColumnSynchronization(
     }
 
     private fun synchronizeColumn(tableName: String, existingColumn: ColumnMeta, expectedColumn: ColumnMeta) {
-        if (existingColumn == expectedColumn) {
+        if (isColumnUnchanged(existingColumn, expectedColumn)) {
             return
         }
 
@@ -81,6 +81,15 @@ class ColumnSynchronization(
             )
             ddlExecutor.executeDdlBatch(alterTable.getSqlList(databaseValue.sqlDialect))
         }
+    }
+
+    private fun isColumnUnchanged(existing: ColumnMeta, expected: ColumnMeta): Boolean {
+        return DataType.normalize(existing.typeName) == DataType.normalize(expected.typeName)
+                && (expected.columnSize == -1 || existing.columnSize == expected.columnSize)
+                && (expected.decimalDigits == -1 || existing.decimalDigits == expected.decimalDigits)
+                && existing.nullable == expected.nullable
+                && existing.defaultValue == expected.defaultValue
+                && existing.comment == expected.comment
     }
 
     private fun handleMissingColumns(tableName: String, missingColumns: List<ColumnMeta>, entityClass: KClass<*>) {
