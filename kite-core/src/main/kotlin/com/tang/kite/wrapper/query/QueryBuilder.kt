@@ -22,9 +22,7 @@ interface QueryBuilder<T : Any> {
      */
     fun one(): T? {
         val list = list()
-        if (list.size > 1) {
-            throw IllegalArgumentException("Too many results, expected one, but got ${list.size}")
-        }
+        require(list.size <= 1) { "Too many results, expected one, but got ${list.size}" }
         return list.firstOrNull()
     }
 

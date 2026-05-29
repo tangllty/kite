@@ -24,8 +24,8 @@ class SqlStatement(
         if (placeholderCount == 0) {
             return sql // No placeholders, return the SQL as is
         }
-        if (placeholderCount != parameters.size) {
-            throw IllegalArgumentException("The number of placeholders in the SQL statement does not match the number of parameters provided for a single execution.")
+        require(parameters.size == placeholderCount)  {
+            "The number of placeholders in the SQL statement does not match the number of parameters provided for a single execution."
         }
         val sqlParts = sql.split(SqlString.QUESTION_MARK)
         val resolvedSql = StringBuilder()

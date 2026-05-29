@@ -29,9 +29,7 @@ open class Column(
     constructor(name: String, tableAlias: String) : this(name, null, tableAlias)
 
     override fun toString(): String {
-        if (name == null) {
-            throw IllegalArgumentException("Column name cannot be null")
-        }
+        requireNotNull(name) { "Column name cannot be null" }
         return if (tableAlias == null) {
             name
         } else {
@@ -40,13 +38,9 @@ open class Column(
     }
 
     fun toString(withAlias: Boolean): String {
-        if (name == null) {
-            throw IllegalArgumentException("Column name cannot be null")
-        }
+        requireNotNull(name) { "Column name cannot be null" }
         return if (withAlias) {
-            if (field == null) {
-                throw IllegalArgumentException("Column field cannot be null")
-            }
+            requireNotNull(field) { "Column field cannot be null" }
             tableAlias = Reflects.getTableAlias(field.declaringClass)
             toString()
         } else {

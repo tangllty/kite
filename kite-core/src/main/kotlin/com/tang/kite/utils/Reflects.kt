@@ -216,12 +216,10 @@ object Reflects {
     fun getIdField(clazz: Class<*>): Field {
         return idFieldCache.computeIfAbsent(clazz) {
             val fields = getFields(clazz).filter { it.isAnnotationPresent(Id::class.java) }
-            if (fields.size > 1) {
-                throw IllegalArgumentException("More than one @Id field found in ${clazz.simpleName}, found: ${fields.joinToString { it.name }}")
+            require(fields.size <= 1) {
+                "More than one @Id field found in ${clazz.simpleName}, found: ${fields.joinToString { it.name }}"
             }
-            if (fields.isEmpty()) {
-                throw IllegalArgumentException("No @Id field found in ${clazz.simpleName}")
-            }
+            require(fields.isNotEmpty()) { "No @Id field found in ${clazz.simpleName}" }
             fields.first()
         }
     }
@@ -261,9 +259,8 @@ object Reflects {
             val fields = fieldList.filter {
                 it.isAnnotationPresent(Column::class.java) && it.getAnnotation(Column::class.java).value.lowercase() == lowerColumnName
             }
-            if (fields.size > 1) {
-                throw IllegalArgumentException("More than one field found for column $columnName in ${clazz.simpleName}" +
-                    ", found: ${fields.joinToString { it.name }}")
+            require(fields.size <= 1) {
+                "More than one field found for column $columnName in ${clazz.simpleName}, found: ${fields.joinToString { it.name }}"
             }
             if (fields.isEmpty()) {
                 val field = fieldList.firstOrNull {
@@ -477,9 +474,7 @@ object Reflects {
 
     @JvmStatic
     fun <T> setTableHandledFields(tableClass: Class<T>?, sqlType: SqlType, action: (String, Any?) -> Unit) {
-        if (tableClass == null) {
-            throw IllegalArgumentException("Table class is not set")
-        }
+        requireNotNull(tableClass) { "Table class is not set" }
         val fields = getSqlFields(tableClass)
         val entity = tableClass.getDeclaredConstructor().newInstance()
         fields.forEach {

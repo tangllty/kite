@@ -72,7 +72,7 @@ class Lexer(private val input: String) {
             }
             pos++
         }
-        if (pos >= input.length) throw IllegalArgumentException("Unterminated string")
+        require(pos < input.length) { "Unterminated string" }
         tokens.add(Token(TokenType.STRING, sb.toString()))
         pos++
     }

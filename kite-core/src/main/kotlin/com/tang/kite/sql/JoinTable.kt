@@ -27,9 +27,7 @@ class JoinTable(
     )
 
     fun toString(withAlias: Boolean): String {
-        if (conditions.isEmpty()) {
-            throw IllegalArgumentException("JoinTable must have conditions")
-        }
+        require(conditions.isNotEmpty()) { "JoinTable must have conditions" }
         val conditionsSql = StringBuilder()
         conditions.last().logicalOperator = null
         conditions.forEach { logicalStatement ->

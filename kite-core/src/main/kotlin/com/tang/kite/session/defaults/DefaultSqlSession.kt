@@ -565,9 +565,7 @@ class DefaultSqlSession(
     }
 
     private fun <T> getOneFromList(list: List<T>): T? {
-        if (list.size > 1) {
-            throw IllegalArgumentException("Too many results, expected one, but got ${list.size}")
-        }
+        require(list.size <= 1) { "Too many results, expected one, but got ${list.size}" }
         return list.firstOrNull()
     }
 
@@ -623,9 +621,7 @@ class DefaultSqlSession(
         val idField = Reflects.getIdField(type)
         setValue(idField, entity, parameter)
         val list = selectListWithJoins(method, mapperInterface, type, entity, emptyArray())
-        if (list.size > 1) {
-            throw IllegalArgumentException("Too many results, expected one, but got ${list.size}")
-        }
+        require(list.size <= 1) { "Too many results, expected one, but got ${list.size}" }
         if (list.isEmpty()) {
             return null
         }

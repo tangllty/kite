@@ -101,11 +101,8 @@ object DataSourceRegistry {
         if (databaseMap.containsKey(key).not()) {
             return
         }
-        if (override) {
-            logger.info("Overridden data source: [$key], database type: [${database.databaseType}]")
-        } else {
-            throw IllegalArgumentException("DataSource key already exists ($key)")
-        }
+        require(override) { "DataSource key already exists ($key)" }
+        logger.info("Overridden data source: [$key], database type: [${database.databaseType}]")
     }
 
     private fun checkExists(key: String) {

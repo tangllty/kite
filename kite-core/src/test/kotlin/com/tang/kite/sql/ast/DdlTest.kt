@@ -168,7 +168,7 @@ class DdlTest {
         )
 
         val sql = alterTable.getFirstSql(dialect)
-        val expected = "alter table account modify email varchar(150) not null"
+        val expected = "alter table account alter column email varchar(150) not null"
         assertEquals(expected, sql)
     }
 
@@ -204,7 +204,7 @@ class DdlTest {
         val sqlList = alterTable.getSqlList(dialect)
         val expected1 = "alter table account add column phone varchar(20)"
         assertEquals(expected1, sqlList[0])
-        val expected2 = "alter table account modify email varchar(150) not null"
+        val expected2 = "alter table account alter column email varchar(150) not null"
         assertEquals(expected2, sqlList[1])
         val expected3 = "alter table account drop column old_column"
         assertEquals(expected3, sqlList[2])

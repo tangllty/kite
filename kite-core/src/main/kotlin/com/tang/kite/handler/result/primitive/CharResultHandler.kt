@@ -14,11 +14,8 @@ object CharResultHandler : ResultHandler {
         val char = when (value) {
             is Char -> value
             is String -> {
-                if (value.length == 1) {
-                    value[0]
-                } else {
-                    throw IllegalArgumentException("String value must be a single character for field: ${field.name}")
-                }
+                require(value.length == 1) { "String value must be a single character for field: ${field.name}" }
+                value.first()
             }
             is Number -> value.toInt().toChar()
             else -> throw UnsupportedTypeException(value::class, field)

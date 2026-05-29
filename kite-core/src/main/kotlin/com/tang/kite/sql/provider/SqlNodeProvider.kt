@@ -82,17 +82,15 @@ class SqlNodeProvider(private val dialect: SqlDialect) : SqlProvider {
         val fieldList = getSqlFields(clazz).filter { it != idField || autoIncrementId.not() }
 
         if (isSelective) {
-            if (entities.count() == 1) {
-                val valueMap = getSqlValues(fieldList, entity, SqlType.INSERT, idField, autoIncrementId)
-                val selectiveFieldList = fieldList.filter { selectiveStrategy(valueMap[it]) }
-                sqlNode.valuesList.add(mutableListOf())
-                selectiveFieldList.forEach {
-                    sqlNode.columns.add(Column(it))
-                    sqlNode.valuesList.first().add(valueMap[it])
-                }
-                return sqlNode
+            require(entities.count() == 1) { "Only one entity can be selective inserted" }
+            val valueMap = getSqlValues(fieldList, entity, SqlType.INSERT, idField, autoIncrementId)
+            val selectiveFieldList = fieldList.filter { selectiveStrategy(valueMap[it]) }
+            sqlNode.valuesList.add(mutableListOf())
+            selectiveFieldList.forEach {
+                sqlNode.columns.add(Column(it))
+                sqlNode.valuesList.first().add(valueMap[it])
             }
-            throw IllegalArgumentException("Only one entity can be selective inserted")
+            return sqlNode
         }
 
         fieldList.forEach { sqlNode.columns.add(Column(it)) }

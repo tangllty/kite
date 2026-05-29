@@ -78,8 +78,7 @@ object ExpressionParser {
      */
     fun evaluateList(expression: String, context: Map<String, Any?>): List<*> {
         val result = evaluate(expression, context)
-        return result as? List<*>
-            ?: throw IllegalArgumentException("Expression result is not a List: $result")
+        return result as? List<*> ?: throw IllegalArgumentException("Expression result is not a List: $result")
     }
 
     /**

@@ -1,10 +1,10 @@
 package com.tang.kite.schema
 
 import com.tang.kite.config.schema.SchemaConfig
+import com.tang.kite.datasource.DataSourceRegistry
 import com.tang.kite.datasource.KiteDataSourceFactory
 import com.tang.kite.enumeration.IndexOrder
 import com.tang.kite.metadata.MetaDataHandlers
-import com.tang.kite.schema.synchronization.column.modifycolumn.AccountModifyColumn
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -45,8 +45,8 @@ class SchemaSynchronizationTest {
         val tableCommentTable = MetaDataHandlers.getTable(databaseValue, tableName)
         assertNotNull(tableCommentTable)
         assertEquals("Table for account comment", tableCommentTable.comment)
+        DataSourceRegistry.clear()
     }
-
 
     @Test
     fun synchronizeColumn() {
@@ -92,6 +92,7 @@ class SchemaSynchronizationTest {
         assertNull(balanceColumn)
         assertNull(dropCreateTimeColumnComment?.comment)
         assertNull(dropUpdateTimeColumnComment?.comment)
+        DataSourceRegistry.clear()
     }
 
     @Test
@@ -126,18 +127,13 @@ class SchemaSynchronizationTest {
         val dropIndexMap = MetaDataHandlers.getIndexes(databaseValue, tableName)
         assertEquals(2, dropIndexMap.size)
         assertFalse { dropIndexMap.containsKey("idx_index_account_username") }
+        DataSourceRegistry.clear()
     }
 
     private fun SchemaSynchronization.withPackage(packageName: String) {
         SchemaConfig.scanPackages += packageName
         synchronizeSchema()
         SchemaConfig.scanPackages.clear()
-    }
-
-    @Test
-    fun test() {
-        val columns = SchemaBuilder.buildColumns(AccountModifyColumn::class)
-        println()
     }
 
 }

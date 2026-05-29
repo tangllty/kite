@@ -25,6 +25,7 @@
 - Rename `SortOrder` enum to `IndexOrder`
 - Reorganize schema synchronization tests and unify column modification
 - Optimize schema sync key lookup
+- Replace manual checks with `require/requireNotNull`
 
 ## 1.0.21
 

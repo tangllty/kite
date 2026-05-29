@@ -13,12 +13,8 @@ class PooledDataSourceFactory(private val properties: PooledProperties) : DataSo
     }
 
     override fun getDataSource(): DataSource {
-        if (properties.driver == null) {
-            throw IllegalArgumentException("driver is required")
-        }
-        if (properties.url == null) {
-            throw IllegalArgumentException("url is required")
-        }
+        requireNotNull(properties.driver) { "driver is required" }
+        requireNotNull(properties.url) { "url is required" }
         return PooledDataSource(properties)
     }
 

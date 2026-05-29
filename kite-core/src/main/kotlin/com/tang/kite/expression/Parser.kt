@@ -131,22 +131,19 @@ class Parser(private val tokens: List<Token>) {
         loop@ while (true) {
             when {
                 match(TokenType.DOT) -> {
-                    if (match(TokenType.IDENTIFIER)) {
-                        val name = previous().value as String
-                        if (match(TokenType.LPAREN)) {
-                            val args = mutableListOf<Expr>()
-                            if (!check(TokenType.RPAREN)) {
-                                do {
-                                    args.add(parseExpression())
-                                } while (match(TokenType.COMMA))
-                            }
-                            consume(TokenType.RPAREN, "Expect ')' after function arguments")
-                            expr = Expr.MethodCall(expr, name, args)
-                        } else {
-                            expr = Expr.Property(expr, name)
+                    require(match(TokenType.IDENTIFIER)) { "Expect property or method name after '.'" }
+                    val name = previous().value as String
+                    if (match(TokenType.LPAREN)) {
+                        val args = mutableListOf<Expr>()
+                        if (!check(TokenType.RPAREN)) {
+                            do {
+                                args.add(parseExpression())
+                            } while (match(TokenType.COMMA))
                         }
+                        consume(TokenType.RPAREN, "Expect ')' after function arguments")
+                        expr = Expr.MethodCall(expr, name, args)
                     } else {
-                        throw IllegalArgumentException("Expect property or method name after '.'")
+                        expr = Expr.Property(expr, name)
                     }
                 }
                 match(TokenType.LBRACKET) -> {

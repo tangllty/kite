@@ -29,13 +29,9 @@ open class AbstractSqlHandler {
             return
         }
         val joinedClasses = joins.map { it.table.clazz }.toSet()
-        if (from == null) {
-            throw IllegalArgumentException("Table reference can not be null")
-        }
+        requireNotNull(from) { "Table reference can not be null" }
         listOf(from.clazz).plus(joinedClasses).forEach {
-            if (it == null) {
-                throw IllegalArgumentException("Table reference can not be null")
-            }
+            requireNotNull(it) { "Table reference can not be null" }
             val fields = Reflects.getSqlFields(it)
             fields.forEach { field ->
                 columns.add(Column(field))
@@ -66,9 +62,7 @@ open class AbstractSqlHandler {
     }
 
     internal fun appendWhere(sql: StringBuilder, table: TableReference?, parameters: MutableList<Any?>, where: MutableList<LogicalStatement>, sqlType: SqlType, withAlias: Boolean) {
-        if (table == null) {
-            throw IllegalArgumentException("Table reference can not be null")
-        }
+        requireNotNull(table) { "Table reference can not be null" }
         if (shouldApplyLogicalDeletion(table)) {
             val logicalField = Reflects.getLogicalField(table.clazz!!)
             val logicalValue = LogicalDeletionConfig.logicalDeletionProcessor.process(logicalField)

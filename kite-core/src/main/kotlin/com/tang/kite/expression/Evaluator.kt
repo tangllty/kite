@@ -45,7 +45,7 @@ class Evaluator(private val context: Map<String, Any?>) {
      * Get property value from object, map, or field.
      */
     private fun getProperty(target: Any?, name: String): Any? {
-        if (target == null) throw IllegalArgumentException("Cannot access property '$name' of null")
+        requireNotNull(target) { "Cannot access property '$name' of null" }
         val kClass = target::class
         if (target is Map<*, *>) {
             return target[name]
@@ -241,7 +241,7 @@ class Evaluator(private val context: Map<String, Any?>) {
     private fun evalFunctionCall(expr: Expr.FunctionCall): Any {
         val args = expr.arguments.map { evaluate(it) }
         val target = if (expr.functionName == "startsWith" || expr.functionName == "contains") {
-            if (args.isEmpty()) throw IllegalArgumentException("Function ${expr.functionName} requires a target")
+            require(args.isEmpty()) { "Function ${expr.functionName} requires a target" }
             args[0]
         } else {
             null
@@ -293,24 +293,17 @@ class Evaluator(private val context: Map<String, Any?>) {
     private fun isEqual(a: Any?, b: Any?): Boolean {
         if (a == null && b == null) return true
         if (a == null || b == null) return false
-        if (a is Collection<*> && b !is Collection<*>) {
-            throw IllegalArgumentException("Type error: Cannot compare collection '$a' with non-collection '$b'.")
-        }
-        if (b is Collection<*> && a !is Collection<*>) {
-            throw IllegalArgumentException("Type error: Cannot compare collection '$b' with non-collection '$a'.")
-        }
-        if (a is Array<*> && b !is Array<*>) {
-            throw IllegalArgumentException("Type error: Cannot compare array '$a' with non-array '$b'.")
-        }
-        if (b is Array<*> && a !is Array<*>) {
-            throw IllegalArgumentException("Type error: Cannot compare array '$b' with non-array '$a'.")
-        }
-        if ((a is Collection<*> || a is Array<*>) && b is String) {
-            throw IllegalArgumentException("Type error: Cannot compare collection/array with string.")
-        }
-        if ((b is Collection<*> || b is Array<*>) && a is String) {
-            throw IllegalArgumentException("Type error: Cannot compare collection/array with string.")
-        }
+
+        val aIsColl = a is Collection<*>
+        val bIsColl = b is Collection<*>
+        val aIsArr = a is Array<*>
+        val bIsArr = b is Array<*>
+
+        require(!aIsColl || bIsColl) { "Type error: Cannot compare collection '$a' with non-collection '$b'." }
+        require(!bIsColl || aIsColl) { "Type error: Cannot compare collection '$b' with non-collection '$a'." }
+        require(!aIsArr || bIsArr) { "Type error: Cannot compare array '$a' with non-array '$b'." }
+        require(!bIsArr || aIsArr) { "Type error: Cannot compare array '$b' with non-array '$a'." }
+
         return a == b || (a is Number && b is Number && a.toDouble() == b.toDouble())
     }
 
