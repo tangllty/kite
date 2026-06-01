@@ -120,6 +120,14 @@ class SqlNodeProvider(private val dialect: SqlDialect) : SqlProvider {
         return insert(entities).getBatchSqlStatement()
     }
 
+    private fun applyOptimisticLock(clazz: Class<*>, sqlNode: SqlNode.Update, valueMap: Map<Field, Any?>) {
+        if (OptimisticLockContext.shouldApplyOptimisticLock(clazz)) {
+            val versionField = Reflects.getVersionField(clazz)
+            val comparisonStatement = ComparisonStatement(Column(versionField), valueMap[versionField])
+            sqlNode.where.add(LogicalStatement(comparisonStatement, LogicalOperator.AND))
+        }
+    }
+
     private fun updateById(entity: Any, isSelective: Boolean = false): SqlStatement {
         val sqlNode = SqlNode.Update()
         val clazz = entity::class.java
@@ -130,11 +138,7 @@ class SqlNodeProvider(private val dialect: SqlDialect) : SqlProvider {
         val updateFieldList = fieldList.filter { it != idField && (isSelective.not() || selectiveStrategy(valueMap[it])) }
         updateFieldList.forEach { sqlNode.sets[Column(it)] = valueMap[it] }
         sqlNode.where.add(LogicalStatement(ComparisonStatement(Column(idField), valueMap[idField]), LogicalOperator.AND))
-        if (OptimisticLockContext.shouldApplyOptimisticLock(sqlNode.table?.clazz!!)) {
-            val versionField = Reflects.getVersionField(clazz)
-            val comparisonStatement = ComparisonStatement(Column(versionField), valueMap[versionField])
-            sqlNode.where.add(LogicalStatement(comparisonStatement, LogicalOperator.AND))
-        }
+        applyOptimisticLock(clazz, sqlNode, valueMap)
         return sqlNode.getSqlStatement()
     }
 
@@ -148,6 +152,7 @@ class SqlNodeProvider(private val dialect: SqlDialect) : SqlProvider {
         updateFieldList.forEach { sqlNode.sets[Column(it)] = valueMap[it] }
         val whereFieldList = getSqlFields(where::class.java)
         sqlNode.where.addAll(getWhere(whereFieldList, where))
+        applyOptimisticLock(clazz, sqlNode, valueMap)
         return sqlNode.getSqlStatement()
     }
 

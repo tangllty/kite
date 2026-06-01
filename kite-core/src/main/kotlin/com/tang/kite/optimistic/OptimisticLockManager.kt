@@ -10,20 +10,23 @@ import java.util.function.Supplier
  */
 object OptimisticLockManager {
 
+    @JvmStatic
+    internal var threadLocalEnabled: ThreadLocal<Boolean> = ThreadLocal()
+
     private fun <T> executeWithOptimisticLock(block: () -> T): T {
-        if (OptimisticLockConfig.enabled) {
+        if (OptimisticLockConfig.enabled || threadLocalEnabled.get() == true) {
             return block()
         }
-        OptimisticLockConfig.enabled = true
+        threadLocalEnabled.set(true)
         return try {
             block()
         } finally {
-            OptimisticLockConfig.enabled = false
+            threadLocalEnabled.remove()
         }
     }
 
     private fun <T> executeWithSkip(block: () -> T): T {
-        if (OptimisticLockConfig.enabled.not()) {
+        if (OptimisticLockConfig.enabled.not() && threadLocalEnabled.get() != true) {
             return block()
         }
         OptimisticLockContext.enableSkip()

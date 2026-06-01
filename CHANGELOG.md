@@ -26,6 +26,7 @@
 - Reorganize schema synchronization tests and unify column modification
 - Optimize schema sync key lookup
 - Replace manual checks with `require/requireNotNull`
+- Add optimistic locking to all update operations
 
 ## 1.0.21
 

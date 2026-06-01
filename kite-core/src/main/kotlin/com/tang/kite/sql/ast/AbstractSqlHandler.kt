@@ -2,6 +2,7 @@ package com.tang.kite.sql.ast
 
 import com.tang.kite.annotation.optimistic.Version
 import com.tang.kite.config.logical.LogicalDeletionConfig
+import com.tang.kite.config.optimistic.OptimisticLockConfig
 import com.tang.kite.config.tenant.TenantConfig
 import com.tang.kite.constants.SqlString
 import com.tang.kite.enumeration.SqlType
@@ -129,8 +130,11 @@ open class AbstractSqlHandler {
         val clazz = table?.clazz!!
         if (shouldApplyOptimisticLock(table)) {
             val versionField = Reflects.getVersionField(clazz)
-            val annotation = versionField.getAnnotation(Version::class.java)
-            val initialValue = annotation.initialValue
+            val initialValue = if (versionField.isAnnotationPresent(Version::class.java)) {
+                versionField.getAnnotation(Version::class.java).initialValue
+            } else {
+                OptimisticLockConfig.initialVersion
+            }
             applyInsertColumn(insert, versionField, initialValue)
         }
     }

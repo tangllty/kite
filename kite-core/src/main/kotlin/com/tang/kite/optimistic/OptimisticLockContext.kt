@@ -1,6 +1,9 @@
 package com.tang.kite.optimistic
 
+import com.tang.kite.annotation.optimistic.Version
 import com.tang.kite.config.optimistic.OptimisticLockConfig
+import com.tang.kite.exception.OptimisticLockException
+import com.tang.kite.utils.Reflects
 
 /**
  * Optimistic lock context for managing optimistic lock-related state
@@ -18,7 +21,7 @@ object OptimisticLockContext {
 
     @JvmStatic
     fun isEnabled(): Boolean {
-        return OptimisticLockConfig.enabled
+        return OptimisticLockConfig.enabled || OptimisticLockManager.threadLocalEnabled.get() == true
     }
 
     @JvmStatic
@@ -29,6 +32,21 @@ object OptimisticLockContext {
     @JvmStatic
     fun shouldApplyOptimisticLock(clazz: Class<*>): Boolean {
         return shouldApplyOptimisticLock() && OptimisticLockConfig.optimisticLockProcessor.processable(clazz)
+    }
+
+    @JvmStatic
+    fun <T> throwOnFailure(type: Class<T>, affectedRows: Int) {
+        if (affectedRows == 0 && shouldApplyOptimisticLock(type)) {
+            val versionField = Reflects.getVersionField(type)
+            val throwOnFailure = if (versionField.isAnnotationPresent(Version::class.java)) {
+                versionField.getAnnotation(Version::class.java).throwOnFailure
+            } else {
+                OptimisticLockConfig.throwOnFailure
+            }
+            if (throwOnFailure) {
+                throw OptimisticLockException("Version conflict: update affected 0 rows, data may have been modified by another transaction")
+            }
+        }
     }
 
     @JvmStatic

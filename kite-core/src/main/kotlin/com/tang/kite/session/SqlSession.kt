@@ -31,13 +31,13 @@ interface SqlSession : AutoCloseable {
 
     fun <M : BaseMapper<T>, T : Any> batchInsert(method: Method, mapperInterface: Class<M>, parameter: Any, batchSize: Int): Int
 
-    fun <M : BaseMapper<T>, T : Any> update(method: Method, mapperInterface: Class<M>, parameter: Any): Int
+    fun <M : BaseMapper<T>, T : Any> update(method: Method, mapperInterface: Class<M>, type: Class<T>, parameter: Any): Int
 
-    fun <M : BaseMapper<T>, T : Any> update(method: Method, mapperInterface: Class<M>, parameter: Any, condition: Any): Int
+    fun <M : BaseMapper<T>, T : Any> update(method: Method, mapperInterface: Class<M>, type: Class<T>, parameter: Any, condition: Any): Int
 
-    fun <M : BaseMapper<T>, T : Any> updateSelective(method: Method, mapperInterface: Class<M>, parameter: Any): Int
+    fun <M : BaseMapper<T>, T : Any> updateSelective(method: Method, mapperInterface: Class<M>, type: Class<T>, parameter: Any): Int
 
-    fun <M : BaseMapper<T>, T : Any> updateSelective(method: Method, mapperInterface: Class<M>, parameter: Any, condition: Any): Int
+    fun <M : BaseMapper<T>, T : Any> updateSelective(method: Method, mapperInterface: Class<M>, type: Class<T>, parameter: Any, condition: Any): Int
 
     fun <M : BaseMapper<T>, T : Any> updateWrapper(method: Method, mapperInterface: Class<M>, type: Class<T>, parameter: Any): Int
 

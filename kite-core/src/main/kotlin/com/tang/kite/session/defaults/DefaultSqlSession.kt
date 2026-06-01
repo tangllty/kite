@@ -13,6 +13,7 @@ import com.tang.kite.enumeration.MethodType
 import com.tang.kite.executor.ExecutionResult
 import com.tang.kite.executor.defaults.DefaultExecutorFactory
 import com.tang.kite.mapper.BaseMapper
+import com.tang.kite.optimistic.OptimisticLockContext
 import com.tang.kite.paginate.OrderItem
 import com.tang.kite.paginate.Page
 import com.tang.kite.proxy.MapperProxyFactory
@@ -289,10 +290,10 @@ class DefaultSqlSession(
             BaseMethodName.isInsertSelective(method) -> insertSelective(method, mapperInterface, getFirstArg(args))
             BaseMethodName.isInsertValues(method) -> insertValues(method, mapperInterface, getFirstArg(args), asInt(getSecondArg(args)))
             BaseMethodName.isBatchInsert(method) -> batchInsert(method, mapperInterface, getFirstArg(args), asInt(getSecondArg(args)))
-            BaseMethodName.isUpdate(method) -> update(method, mapperInterface, getFirstArg(args))
-            BaseMethodName.isUpdateCondition(method) -> update(method, mapperInterface, getFirstArg(args), getSecondArg(args))
-            BaseMethodName.isUpdateSelective(method) -> updateSelective(method, mapperInterface, getFirstArg(args))
-            BaseMethodName.isUpdateSelectiveCondition(method) -> updateSelective(method, mapperInterface, getFirstArg(args), getSecondArg(args))
+            BaseMethodName.isUpdate(method) -> update(method, mapperInterface, type, getFirstArg(args))
+            BaseMethodName.isUpdateCondition(method) -> update(method, mapperInterface, type, getFirstArg(args), getSecondArg(args))
+            BaseMethodName.isUpdateSelective(method) -> updateSelective(method, mapperInterface, type, getFirstArg(args))
+            BaseMethodName.isUpdateSelectiveCondition(method) -> updateSelective(method, mapperInterface, type, getFirstArg(args), getSecondArg(args))
             BaseMethodName.isUpdateWrapper(method) -> updateWrapper(method, mapperInterface, type, getFirstArg(args))
             BaseMethodName.isBatchUpdate(method) -> batchUpdate(method, mapperInterface, getFirstArg(args), asInt(getSecondArg(args)))
             BaseMethodName.isDelete(method) -> delete(method, mapperInterface, type, getFirstArg(args))
@@ -400,42 +401,40 @@ class DefaultSqlSession(
         }
     }
 
-    override fun <M : BaseMapper<T>, T : Any> update(method: Method, mapperInterface: Class<M>, parameter: Any): Int {
-        val affectedRows = returnRowsSqlStatementTemplate(
+    override fun <M : BaseMapper<T>, T : Any> update(method: Method, mapperInterface: Class<M>, type: Class<T>, parameter: Any): Int {
+        return returnRowsSqlStatementTemplate(
             method,
             mapperInterface,
             prepare = { provider.update(parameter) },
             execution = { executor.update(it, parameter) }
-        )
-
-        return affectedRows
+        ).also { OptimisticLockContext.throwOnFailure(type, it) }
     }
 
-    override fun <M : BaseMapper<T>, T : Any> update(method: Method, mapperInterface: Class<M>, parameter: Any, condition: Any): Int {
+    override fun <M : BaseMapper<T>, T : Any> update(method: Method, mapperInterface: Class<M>, type: Class<T>, parameter: Any, condition: Any): Int {
         return returnRowsSqlStatementTemplate(
             method,
             mapperInterface,
             prepare = { provider.update(parameter, condition) },
             execution = { executor.update(it, parameter) }
-        )
+        ).also { OptimisticLockContext.throwOnFailure(type, it) }
     }
 
-    override fun <M : BaseMapper<T>, T : Any> updateSelective(method: Method, mapperInterface: Class<M>, parameter: Any): Int {
+    override fun <M : BaseMapper<T>, T : Any> updateSelective(method: Method, mapperInterface: Class<M>, type: Class<T>, parameter: Any): Int {
         return returnRowsSqlStatementTemplate(
             method,
             mapperInterface,
             prepare = { provider.updateSelective(parameter) },
             execution = { executor.update(it, parameter) }
-        )
+        ).also { OptimisticLockContext.throwOnFailure(type, it) }
     }
 
-    override fun <M : BaseMapper<T>, T : Any> updateSelective(method: Method, mapperInterface: Class<M>, parameter: Any, condition: Any): Int {
+    override fun <M : BaseMapper<T>, T : Any> updateSelective(method: Method, mapperInterface: Class<M>, type: Class<T>, parameter: Any, condition: Any): Int {
         return returnRowsSqlStatementTemplate(
             method,
             mapperInterface,
             prepare = { provider.updateSelective(parameter, condition) },
             execution = { executor.update(it, parameter) }
-        )
+        ).also { OptimisticLockContext.throwOnFailure(type, it) }
     }
 
     override fun <M : BaseMapper<T>, T : Any> updateWrapper(method: Method, mapperInterface: Class<M>, type: Class<T>, parameter: Any): Int {

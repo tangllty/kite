@@ -13,6 +13,7 @@ package com.tang.kite.annotation.optimistic
 @Retention(AnnotationRetention.RUNTIME)
 @MustBeDocumented
 annotation class Version(
+
     /**
      * Initial version value (default: 0)
      */
@@ -23,4 +24,5 @@ annotation class Version(
      * If false, returns 0 affected rows instead of throwing exception
      */
     val throwOnFailure: Boolean = true
+
 )
