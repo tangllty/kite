@@ -5,6 +5,7 @@
 ### Dependencies
 
  * Change servlet dependency scope to `compileOnly`
+ * Remove servlet dependency
 
 ### Features
 
@@ -31,6 +32,8 @@
 - Add optimistic locking to all update operations
 - Replace global config mutation with thread-local flags
 - Refactor tests for datasource, logical deletion, tenant
+- Remove pagination methods depending on `HttpServletRequest`
+- Add new page config `maxPageSize`
 
 ## 1.0.21
 

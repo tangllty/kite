@@ -23,14 +23,9 @@ open class PageProperties (
     var pageSize: Long = PageConfig.pageSize,
 
     /**
-     * Default page number parameter name.
+     * Max page size.
      */
-    var pageNumberParameter: String = PageConfig.pageNumberParameter,
-
-    /**
-     * Default page size parameter name.
-     */
-    var pageSizeParameter: String = PageConfig.pageSizeParameter
+    var maxPageSize: Long = PageConfig.maxPageSize
 
 ) : PropertyApplier {
 
@@ -43,8 +38,7 @@ open class PageProperties (
     override fun applyProperties() {
         PageConfig.pageNumber = pageNumber
         PageConfig.pageSize = pageSize
-        PageConfig.pageNumberParameter = pageNumberParameter
-        PageConfig.pageSizeParameter = pageSizeParameter
+        PageConfig.maxPageSize = maxPageSize
     }
 
 }

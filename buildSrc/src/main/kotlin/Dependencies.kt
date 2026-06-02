@@ -12,8 +12,6 @@ class Versions {
     val slf4j = "2.0.17"
     // https://mvnrepository.com/artifact/ch.qos.logback/logback-classic
     val logback = "1.5.32"
-    // https://mvnrepository.com/artifact/jakarta.servlet/jakarta.servlet-api
-    val servlet = "6.1.0"
     // https://mvnrepository.com/artifact/org.freemarker/freemarker
     val freemarker = "2.3.34"
     // https://mvnrepository.com/artifact/org.springframework/spring-core
@@ -31,7 +29,6 @@ class Libraries {
     val h2 = "com.h2database:h2:${versions.h2}"
     val slf4j = "org.slf4j:slf4j-api:${versions.slf4j}"
     val logback = "ch.qos.logback:logback-classic:${versions.logback}"
-    val servlet = "jakarta.servlet:jakarta.servlet-api:${versions.servlet}"
     val freemarker = "org.freemarker:freemarker:${versions.freemarker}"
     val springContext6 = "org.springframework:spring-context:${versions.spring6}"
     val springJdbc6 = "org.springframework:spring-jdbc:${versions.spring6}"

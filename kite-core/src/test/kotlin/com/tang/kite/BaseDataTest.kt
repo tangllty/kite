@@ -6,7 +6,6 @@ import com.tang.kite.datasource.unpooled.UnpooledDataSourceFactory
 import com.tang.kite.datasource.unpooled.UnpooledProperties
 import com.tang.kite.io.Resources
 import com.tang.kite.session.factory.SqlSessionFactoryBuilder
-import jakarta.servlet.http.HttpServletRequestWrapper
 import org.yaml.snakeyaml.Yaml
 import javax.sql.DataSource
 import kotlin.test.BeforeTest
@@ -69,8 +68,6 @@ open class BaseDataTest {
         val sqlSessionFactoryBuild = SqlSessionFactoryBuilder().build(kiteDataSource)
 
         val sqlSessionFactory inline get() = sqlSessionFactoryBuild
-
-        val request = HttpServletRequestWrapper(MockHttpServletRequest())
 
     }
 

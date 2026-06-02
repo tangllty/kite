@@ -20,15 +20,9 @@ object PageConfig {
     var pageSize = 10L
 
     /**
-     * Default page number parameter name.
+     * Max page size
      */
     @JvmStatic
-    var pageNumberParameter = "pageNumber"
-
-    /**
-     * Default page size parameter name.
-     */
-    @JvmStatic
-    var pageSizeParameter = "pageSize"
+    var maxPageSize = 100L
 
 }

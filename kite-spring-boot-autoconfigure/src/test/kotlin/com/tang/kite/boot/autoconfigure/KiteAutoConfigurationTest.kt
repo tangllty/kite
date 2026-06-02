@@ -49,6 +49,7 @@ class KiteAutoConfigurationTest {
             assertEquals(kiteProperties.banner, KiteConfig.banner)
             assertEquals(kiteProperties.page.pageNumber, KiteConfig.page.pageNumber)
             assertEquals(kiteProperties.page.pageSize, KiteConfig.page.pageSize)
+            assertEquals(kiteProperties.page.maxPageSize, KiteConfig.page.maxPageSize)
         }
         DataSourceRegistry.clear()
     }

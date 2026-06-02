@@ -668,10 +668,22 @@ class DefaultSqlSession(
     }
 
     private fun <M : BaseMapper<T>, T : Any> reasonable(method: Method, mapperInterface: Class<M>, type: Class<T>, pageNumber: Long, pageSize: Long): Pair<Long, Long> {
+        val fixSize = when {
+            pageSize < 1L -> if (PageConfig.pageSize > 0) PageConfig.pageSize else 1
+            pageSize > PageConfig.maxPageSize -> if (PageConfig.maxPageSize > 0) PageConfig.maxPageSize else 1
+            else -> pageSize
+        }
+
         val count = count(method, mapperInterface, type, null)
-        val totalPage = (count / pageSize).toInt() + if (count % pageSize == 0L) 0 else 1
-        val reasonablePageNumber = if (pageNumber > totalPage) totalPage else if (pageNumber < 1) PageConfig.pageNumber else pageNumber
-        return Pair(reasonablePageNumber.toLong(), count)
+        val totalPage = (count / fixSize) + if(count % fixSize == 0L) 0 else 1
+
+        val fixPage = when {
+            pageNumber < 1L -> if (PageConfig.pageNumber > 0) PageConfig.pageNumber else 1
+            pageNumber > totalPage -> totalPage
+            else -> pageNumber
+        }
+
+        return Pair(fixPage, fixSize)
     }
 
     override fun <M : BaseMapper<T>, T : Any> paginate(method: Method, mapperInterface: Class<M>, type: Class<T>, pageNumber: Long, pageSize: Long, parameter: Any?, orderBys: Array<OrderItem<T>>): Page<T> {

@@ -1,13 +1,11 @@
 package com.tang.kite.mapper
 
 import com.tang.kite.config.KiteConfig
-import com.tang.kite.config.PageConfig
 import com.tang.kite.paginate.OrderItem
 import com.tang.kite.paginate.Page
 import com.tang.kite.wrapper.delete.DeleteWrapper
 import com.tang.kite.wrapper.query.QueryWrapper
 import com.tang.kite.wrapper.update.UpdateWrapper
-import jakarta.servlet.http.HttpServletRequest
 import java.io.Serializable
 
 /**
@@ -576,97 +574,6 @@ interface BaseMapper<T : Any> {
     }
 
     /**
-     * Parse pagination parameters from Http request and execute pagination query
-     * Default pagination parameter keys: pageNumber, pageSize, see [PageConfig] for configuration
-     *
-     * @param request Http request object (uses default values if parameters are missing)
-     * @return Pagination result object
-     */
-    fun paginate(request: HttpServletRequest): Page<T> {
-        return paginate(getPageNumber(request), getPageSize(request))
-    }
-
-    /**
-     * Parse pagination parameters from Http request and query data matching the entity conditions
-     *
-     * @param request Http request object
-     * @param entity The condition entity for query
-     * @return Pagination result object
-     */
-    fun paginate(request: HttpServletRequest, entity: T): Page<T> {
-        return paginate(getPageNumber(request), getPageSize(request), entity)
-    }
-
-    /**
-     * Parse pagination parameters from Http request, query all table data and sort by the specified field
-     *
-     * @param request Http request object
-     * @param orderBy The sort condition
-     * @return Pagination result object
-     */
-    fun paginate(request: HttpServletRequest, orderBy: OrderItem<T>): Page<T> {
-        return paginate(request, arrayOf(orderBy))
-    }
-
-    /**
-     * Parse pagination parameters from Http request, query all table data and sort by multiple fields
-     *
-     * @param request Http request object
-     * @param orderBys Array of sort conditions
-     * @return Pagination result object
-     */
-    fun paginate(request: HttpServletRequest, orderBys: Array<OrderItem<T>>): Page<T> {
-        return paginate(getPageNumber(request), getPageSize(request), orderBys)
-    }
-
-    /**
-     * Parse pagination parameters from Http request, query all table data and sort by multiple fields (list overload version)
-     *
-     * @param request Http request object
-     * @param orderBys List of sort conditions
-     * @return Pagination result object
-     */
-    fun paginate(request: HttpServletRequest, orderBys: List<OrderItem<T>>): Page<T> {
-        return paginate(request, orderBys.toTypedArray())
-    }
-
-    /**
-     * Parse pagination parameters from Http request, query data matching the entity conditions and sort by the specified field
-     *
-     * @param request Http request object
-     * @param entity The condition entity for query
-     * @param orderBy The sort condition
-     * @return Pagination result object
-     */
-    fun paginate(request: HttpServletRequest, entity: T, orderBy: OrderItem<T>): Page<T> {
-        return paginate(request, entity, arrayOf(orderBy))
-    }
-
-    /**
-     * Parse pagination parameters from Http request, query data matching the entity conditions and sort by multiple fields
-     *
-     * @param request Http request object
-     * @param entity The condition entity for query
-     * @param orderBys Array of sort conditions
-     * @return Pagination result object
-     */
-    fun paginate(request: HttpServletRequest, entity: T, orderBys: Array<OrderItem<T>>): Page<T> {
-        return paginate(getPageNumber(request), getPageSize(request), entity, orderBys)
-    }
-
-    /**
-     * Parse pagination parameters from Http request, query data matching the entity conditions and sort by multiple fields (list overload version)
-     *
-     * @param request Http request object
-     * @param entity The condition entity for query
-     * @param orderBys List of sort conditions
-     * @return Pagination result object
-     */
-    fun paginate(request: HttpServletRequest, entity: T, orderBys: List<OrderItem<T>>): Page<T> {
-        return paginate(request, entity, orderBys.toTypedArray())
-    }
-
-    /**
      * Pagination query for all table data with associated tables
      *
      * @param pageNumber Page number (starts from 1)
@@ -754,28 +661,6 @@ interface BaseMapper<T : Any> {
      */
     fun paginateWithJoins(pageNumber: Long, pageSize: Long, entity: T, orderBys: List<OrderItem<T>>): Page<T> {
         return paginateWithJoins(pageNumber, pageSize, entity, orderBys.toTypedArray())
-    }
-
-    /**
-     * Parse page number parameter from Http request
-     * Prioritizes [PageConfig.pageNumberParameter] in request, uses [PageConfig.pageNumber] as default if missing
-     *
-     * @param request Http request object
-     * @return Parsed page number (Long type, default value is 1)
-     */
-    fun getPageNumber(request: HttpServletRequest): Long {
-        return request.getParameter(PageConfig.pageNumberParameter)?.toLong() ?: PageConfig.pageNumber
-    }
-
-    /**
-     * Parse page size parameter from Http request
-     * Prioritizes [PageConfig.pageSizeParameter] in request, uses [PageConfig.pageSize] as default if missing
-     *
-     * @param request Http request object
-     * @return Parsed page size (Long type, default value is 10)
-     */
-    fun getPageSize(request: HttpServletRequest): Long {
-        return request.getParameter(PageConfig.pageSizeParameter)?.toLong() ?: PageConfig.pageSize
     }
 
 }
