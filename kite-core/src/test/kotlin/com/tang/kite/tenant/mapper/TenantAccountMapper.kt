@@ -1,7 +1,7 @@
-package com.tang.kite.session.mapper
+package com.tang.kite.tenant.mapper
 
 import com.tang.kite.mapper.BaseMapper
-import com.tang.kite.session.entity.TenantAccount
+import com.tang.kite.tenant.entity.TenantAccount
 
 /**
  * @author Tang

@@ -1,10 +1,9 @@
-package com.tang.kite.session
+package com.tang.kite.datasource
 
-import com.tang.kite.datasource.DataSourceContext
 import com.tang.kite.io.Resources
-import com.tang.kite.session.entity.DataSourceAccount
+import com.tang.kite.datasource.entity.DataSourceAccount
 import com.tang.kite.session.factory.SqlSessionFactoryBuilder
-import com.tang.kite.session.mapper.DataSourceAccountMapper
+import com.tang.kite.datasource.mapper.DataSourceAccountMapper
 import kotlin.test.Test
 
 /**

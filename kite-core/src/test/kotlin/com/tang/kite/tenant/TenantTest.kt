@@ -1,12 +1,11 @@
-package com.tang.kite.session
+package com.tang.kite.tenant
 
 import com.tang.kite.BaseDataTest
 import com.tang.kite.config.tenant.TenantConfig
 import com.tang.kite.config.tenant.TenantProcessor
-import com.tang.kite.session.entity.LogicalAccount
-import com.tang.kite.session.entity.TenantAccount
-import com.tang.kite.session.mapper.TenantAccountMapper
-import com.tang.kite.tenant.TenantManager
+import com.tang.kite.logical.entity.LogicalAccount
+import com.tang.kite.tenant.entity.TenantAccount
+import com.tang.kite.tenant.mapper.TenantAccountMapper
 import java.lang.reflect.Field
 import kotlin.test.Test
 import kotlin.test.assertTrue

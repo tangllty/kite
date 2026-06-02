@@ -1,4 +1,4 @@
-package com.tang.kite.session.entity
+package com.tang.kite.datasource.entity
 
 import com.tang.kite.annotation.Table
 import com.tang.kite.annotation.id.Id

@@ -1,4 +1,4 @@
-package com.tang.kite.session.entity
+package com.tang.kite.logical.entity
 
 import com.tang.kite.annotation.Column
 import com.tang.kite.annotation.Table

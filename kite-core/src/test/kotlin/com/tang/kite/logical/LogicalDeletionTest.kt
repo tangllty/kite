@@ -1,9 +1,8 @@
-package com.tang.kite.session
+package com.tang.kite.logical
 
 import com.tang.kite.BaseDataTest
-import com.tang.kite.logical.LogicalDeletionManager
-import com.tang.kite.session.entity.LogicalAccount
-import com.tang.kite.session.mapper.LogicalAccountMapper
+import com.tang.kite.logical.entity.LogicalAccount
+import com.tang.kite.logical.mapper.LogicalAccountMapper
 import kotlin.test.Test
 import kotlin.test.assertTrue
 
@@ -45,7 +44,13 @@ class LogicalDeletionTest : BaseDataTest() {
         val accountMapper = session.getMapper(LogicalAccountMapper::class)
         LogicalDeletionManager.withLogical {
             val account = accountMapper.queryWrapper().eq(LogicalAccount::username, "user").one()
-            val rows = accountMapper.updateSelective(LogicalAccount(id = account?.id, username = "user", password = "modified"))
+            val rows = accountMapper.updateSelective(
+                LogicalAccount(
+                    id = account?.id,
+                    username = "user",
+                    password = "modified"
+                )
+            )
             assertTrue { rows != 0 }
         }
         session.rollback()

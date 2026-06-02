@@ -1,4 +1,4 @@
-package com.tang.kite.session.entity
+package com.tang.kite.tenant.entity
 
 import com.tang.kite.annotation.Column
 import com.tang.kite.annotation.Table
@@ -27,7 +27,6 @@ class TenantAccount(
     @UpdateTime
     var updateTime: LocalDateTime? = null,
     var balance: BigDecimal? = null,
-    var deleted: Boolean? = null,
     @TenantId
     var tenantId: Long? = null
 

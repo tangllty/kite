@@ -1,7 +1,7 @@
-package com.tang.kite.session.mapper
+package com.tang.kite.datasource.mapper
 
+import com.tang.kite.datasource.entity.DataSourceAccount
 import com.tang.kite.mapper.BaseMapper
-import com.tang.kite.session.entity.DataSourceAccount
 
 /**
  * @author Tang
