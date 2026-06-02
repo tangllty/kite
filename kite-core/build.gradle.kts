@@ -5,6 +5,6 @@ plugins {
 dependencies {
     api(libs.snakeyaml)
     api(kotlin("reflect"))
-    api(libs.servlet)
+    compileOnly(libs.servlet)
     testImplementation(libs.h2)
 }

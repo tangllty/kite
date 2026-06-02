@@ -4,6 +4,8 @@
 
 ### Dependencies
 
+ * Change servlet dependency scope to `compileOnly`
+
 ### Features
 
 - Implement optimistic locking support with version field handling
