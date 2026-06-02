@@ -27,6 +27,7 @@
 - Optimize schema sync key lookup
 - Replace manual checks with `require/requireNotNull`
 - Add optimistic locking to all update operations
+- Replace global config mutation with thread-local flags
 
 ## 1.0.21
 

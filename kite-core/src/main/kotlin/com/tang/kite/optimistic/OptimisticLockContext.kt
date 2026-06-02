@@ -12,7 +12,7 @@ import com.tang.kite.utils.Reflects
  */
 object OptimisticLockContext {
 
-    private val skipFlag = ThreadLocal.withInitial { false }
+    private val skipFlag: ThreadLocal<Boolean> = ThreadLocal.withInitial { false }
 
     @JvmStatic
     fun isSkip(): Boolean {
@@ -21,7 +21,7 @@ object OptimisticLockContext {
 
     @JvmStatic
     fun isEnabled(): Boolean {
-        return OptimisticLockConfig.enabled || OptimisticLockManager.threadLocalEnabled.get() == true
+        return OptimisticLockConfig.enabled || OptimisticLockManager.threadLocalEnabled.get()
     }
 
     @JvmStatic

@@ -10,20 +10,23 @@ import java.util.function.Supplier
  */
 object TenantManager {
 
+    @JvmStatic
+    internal var threadLocalEnabled: ThreadLocal<Boolean> = ThreadLocal.withInitial { false }
+
     private fun <T> executeWithTenant(block: () -> T): T {
-        if (TenantConfig.enabled) {
+        if (TenantConfig.enabled || threadLocalEnabled.get()) {
             return block()
         }
-        TenantConfig.enabled = true
+        threadLocalEnabled.set(true)
         return try {
             block()
         } finally {
-            TenantConfig.enabled = false
+            threadLocalEnabled.remove()
         }
     }
 
     private fun <T> executeWithSkip(block: () -> T): T {
-        if (TenantConfig.enabled.not()) {
+        if (TenantConfig.enabled.not() && threadLocalEnabled.get().not()) {
             return block()
         }
         TenantContext.enableSkip()

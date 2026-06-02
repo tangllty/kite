@@ -9,8 +9,7 @@ import com.tang.kite.config.tenant.TenantConfig
  */
 object TenantContext {
 
-    private val skipFlag = ThreadLocal.withInitial { false }
-    private val currentTenantId = ThreadLocal<String?>()
+    private val skipFlag: ThreadLocal<Boolean> = ThreadLocal.withInitial { false }
 
     @JvmStatic
     fun isSkip(): Boolean {
@@ -19,7 +18,7 @@ object TenantContext {
 
     @JvmStatic
     fun isEnabled(): Boolean {
-        return TenantConfig.enabled
+        return TenantConfig.enabled || TenantManager.threadLocalEnabled.get()
     }
 
     @JvmStatic
@@ -38,19 +37,8 @@ object TenantContext {
     }
 
     @JvmStatic
-    fun getCurrentTenantId(): String? {
-        return currentTenantId.get()
-    }
-
-    @JvmStatic
-    fun setCurrentTenantId(tenantId: String?) {
-        currentTenantId.set(tenantId)
-    }
-
-    @JvmStatic
     fun clear() {
         skipFlag.remove()
-        currentTenantId.remove()
     }
 
 }

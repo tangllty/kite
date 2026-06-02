@@ -8,20 +8,23 @@ import java.util.function.Supplier
  */
 object LogicalDeletionManager {
 
+    @JvmStatic
+    internal var threadLocalEnabled: ThreadLocal<Boolean> = ThreadLocal.withInitial { false }
+
     private fun <T> executeWithLogical(block: () -> T): T {
-        if (LogicalDeletionConfig.enabled) {
+        if (LogicalDeletionConfig.enabled || threadLocalEnabled.get()) {
             return block()
         }
-        LogicalDeletionConfig.enabled = true
+        threadLocalEnabled.set(true)
         return try {
             block()
         } finally {
-            LogicalDeletionConfig.enabled = false
+            threadLocalEnabled.remove()
         }
     }
 
     private fun <T> executeWithSkip(block: () -> T): T {
-        if (LogicalDeletionConfig.enabled.not()) {
+        if (LogicalDeletionConfig.enabled.not() && threadLocalEnabled.get().not()) {
             return block()
         }
         LogicalDeletionContext.enableSkip()

@@ -22,7 +22,10 @@ import com.tang.kite.handler.field.FieldMeta
 import com.tang.kite.handler.field.FieldMetaKey
 import com.tang.kite.handler.result.ResultHandlerFactory
 import com.tang.kite.logging.LOGGER
+import com.tang.kite.logical.LogicalDeletionManager
 import com.tang.kite.mapper.BaseMapper
+import com.tang.kite.optimistic.OptimisticLockManager
+import com.tang.kite.tenant.TenantManager
 import java.lang.invoke.SerializedLambda
 import java.lang.reflect.AccessibleObject
 import java.lang.reflect.Field
@@ -353,8 +356,8 @@ object Reflects {
     @JvmStatic
     fun getLogicalField(clazz: Class<*>): Field {
         return logicalDeleteFieldCache.computeIfAbsent(clazz) {
-            if (LogicalDeletionConfig.enabled.not()) {
-                throw IllegalStateException("Logical deletion is not enabled")
+            check(LogicalDeletionConfig.enabled || LogicalDeletionManager.threadLocalEnabled.get()) {
+                "Logical deletion is not enabled"
             }
             val fields = getSqlFields(clazz)
             val logicalField = fields.firstOrNull { it.isAnnotationPresent(LogicalDeletion::class.java) }
@@ -373,8 +376,8 @@ object Reflects {
     @JvmStatic
     fun getTenantField(clazz: Class<*>): Field {
         return tenantFieldCache.computeIfAbsent(clazz) {
-            if (TenantConfig.enabled.not()) {
-                throw IllegalStateException("Tenant is not enabled")
+            check(TenantConfig.enabled || TenantManager.threadLocalEnabled.get()) {
+                "Tenant is not enabled"
             }
             val fields = getSqlFields(clazz)
             val tenantField = fields.firstOrNull { it.isAnnotationPresent(TenantId::class.java) }
@@ -393,12 +396,15 @@ object Reflects {
     @JvmStatic
     fun getVersionField(clazz: Class<*>): Field {
         return versionFieldCache.computeIfAbsent(clazz) {
+            check(OptimisticLockConfig.enabled || OptimisticLockManager.threadLocalEnabled.get()) {
+                "Optimistic lock is not enabled"
+            }
             val fields = getSqlFields(clazz)
             val versionField = fields.firstOrNull { it.isAnnotationPresent(Version::class.java) }
             if (versionField != null) {
                 return@computeIfAbsent versionField
             }
-            val versionFieldName = OptimisticLockConfig.versionFieldName
+            val versionFieldName = OptimisticLockConfig.fieldName
             val configVersionField = fields.firstOrNull { it.name == versionFieldName }
             if (configVersionField != null) {
                 return@computeIfAbsent configVersionField

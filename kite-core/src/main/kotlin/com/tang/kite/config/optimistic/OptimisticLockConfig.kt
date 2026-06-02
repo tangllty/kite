@@ -17,7 +17,7 @@ object OptimisticLockConfig {
      * The name of the version field
      */
     @JvmStatic
-    var versionFieldName: String = "version"
+    var fieldName: String = "version"
 
     /**
      * Default initial version value

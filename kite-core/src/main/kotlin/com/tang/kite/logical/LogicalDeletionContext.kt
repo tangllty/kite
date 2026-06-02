@@ -7,7 +7,7 @@ import com.tang.kite.config.logical.LogicalDeletionConfig
  */
 object LogicalDeletionContext {
 
-    private val skipFlag = ThreadLocal.withInitial { false }
+    private val skipFlag: ThreadLocal<Boolean> = ThreadLocal.withInitial { false }
 
     @JvmStatic
     fun isSkip(): Boolean {
@@ -16,11 +16,11 @@ object LogicalDeletionContext {
 
     @JvmStatic
     fun isEnabled(): Boolean {
-        return LogicalDeletionConfig.enabled
+        return LogicalDeletionConfig.enabled || LogicalDeletionManager.threadLocalEnabled.get()
     }
 
     @JvmStatic
-    fun shouldLogicalDeletion(): Boolean {
+    fun shouldApplyLogicalDeletion(): Boolean {
         return isEnabled() && isSkip().not()
     }
 

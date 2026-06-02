@@ -167,7 +167,7 @@ open class AbstractSqlHandler {
     }
 
     internal fun shouldApplyLogicalDeletion(table: TableReference?): Boolean {
-        return LogicalDeletionContext.shouldLogicalDeletion() && LogicalDeletionConfig.logicalDeletionProcessor.processable(table?.clazz!!)
+        return LogicalDeletionContext.shouldApplyLogicalDeletion() && LogicalDeletionConfig.logicalDeletionProcessor.processable(table?.clazz!!)
     }
 
     internal fun shouldApplyTenant(table: TableReference?): Boolean {

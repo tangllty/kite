@@ -11,10 +11,10 @@ import java.util.function.Supplier
 object OptimisticLockManager {
 
     @JvmStatic
-    internal var threadLocalEnabled: ThreadLocal<Boolean> = ThreadLocal()
+    internal var threadLocalEnabled: ThreadLocal<Boolean> = ThreadLocal.withInitial { false }
 
     private fun <T> executeWithOptimisticLock(block: () -> T): T {
-        if (OptimisticLockConfig.enabled || threadLocalEnabled.get() == true) {
+        if (OptimisticLockConfig.enabled || threadLocalEnabled.get()) {
             return block()
         }
         threadLocalEnabled.set(true)
@@ -26,7 +26,7 @@ object OptimisticLockManager {
     }
 
     private fun <T> executeWithSkip(block: () -> T): T {
-        if (OptimisticLockConfig.enabled.not() && threadLocalEnabled.get() != true) {
+        if (OptimisticLockConfig.enabled.not() && threadLocalEnabled.get().not()) {
             return block()
         }
         OptimisticLockContext.enableSkip()
