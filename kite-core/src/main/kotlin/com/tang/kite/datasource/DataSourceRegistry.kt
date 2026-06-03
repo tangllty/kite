@@ -1,5 +1,6 @@
 package com.tang.kite.datasource
 
+import com.tang.kite.config.DataSourceConfig
 import com.tang.kite.logging.getLogger
 import com.tang.kite.sql.enumeration.DatabaseType
 import com.tang.kite.sql.factory.defaults.DefaultSqlDialectFactory
@@ -15,12 +16,6 @@ object DataSourceRegistry {
     private val logger = getLogger
 
     private val databaseMap: ConcurrentMap<String, DatabaseValue> = ConcurrentHashMap()
-
-    /**
-     * Whether to override the existing data source when registering a new one.
-     */
-    @JvmField
-    var override: Boolean = false
 
     @JvmStatic
     fun registerBatch(databaseMap: Map<String, DatabaseValue>) {
@@ -101,7 +96,7 @@ object DataSourceRegistry {
         if (databaseMap.containsKey(key).not()) {
             return
         }
-        require(override) { "DataSource key already exists ($key)" }
+        require(DataSourceConfig.override) { "DataSource key already exists ($key)" }
         logger.info("Overridden data source: [$key], database type: [${database.databaseType}]")
     }
 

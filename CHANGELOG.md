@@ -34,6 +34,7 @@
 - Refactor tests for datasource, logical deletion, tenant
 - Remove pagination methods depending on `HttpServletRequest`
 - Add new page config `maxPageSize`
+- Add `DataSourceConfig` properties to configure override behavior
 
 ## 1.0.21
 

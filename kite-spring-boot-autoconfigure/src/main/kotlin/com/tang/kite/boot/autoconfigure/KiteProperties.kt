@@ -78,6 +78,11 @@ open class KiteProperties(
     val tenant: TenantProperties = TenantProperties(),
 
     /**
+     * Data source config properties for data source configuration.
+     */
+    val dataSourceConfig: DataSourceConfigProperties = DataSourceConfigProperties(),
+
+    /**
      * Schema properties for schema configuration.
      */
     val schema: SchemaProperties = SchemaProperties()
@@ -102,6 +107,7 @@ open class KiteProperties(
         table.applyProperties()
         logicalDeletion.applyProperties()
         tenant.applyProperties()
+        dataSourceConfig.applyProperties()
         schema.applyProperties()
     }
 

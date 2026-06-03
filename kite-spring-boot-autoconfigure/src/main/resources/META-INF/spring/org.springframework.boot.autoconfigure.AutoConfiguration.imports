@@ -5,3 +5,5 @@ com.tang.kite.boot.autoconfigure.TableProperties
 com.tang.kite.boot.autoconfigure.LogicalDeletionProperties
 com.tang.kite.boot.autoconfigure.TenantProperties
 com.tang.kite.boot.autoconfigure.DataSourceProperties
+com.tang.kite.boot.autoconfigure.DataSourceConfigProperties
+com.tang.kite.boot.autoconfigure.SchemaProperties
