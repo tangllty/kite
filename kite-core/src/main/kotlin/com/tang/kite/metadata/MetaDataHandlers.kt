@@ -8,6 +8,9 @@ import java.sql.DatabaseMetaData
 import java.sql.JDBCType
 
 /**
+ * Utility class for reading database metadata including tables, columns, primary keys,
+ * unique keys, and indexes from JDBC [DatabaseMetaData].
+ *
  * @author Tang
  */
 object MetaDataHandlers {

@@ -5,6 +5,9 @@ import com.tang.kite.session.SqlSession
 import java.lang.reflect.Proxy
 
 /**
+ * Factory for creating dynamic proxy instances of Mapper interfaces.
+ * Uses JDK dynamic proxies to generate implementations at runtime.
+ *
  * @author Tang
  */
 class MapperProxyFactory<M : BaseMapper<T>, T : Any>(private val mapperInterface: Class<M>) {

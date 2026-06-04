@@ -4,6 +4,9 @@ import java.lang.reflect.Field
 import kotlin.reflect.KClass
 
 /**
+ * Exception thrown when an unsupported type is encountered during SQL generation
+ * or result mapping operations.
+ *
  * @author Tang
  */
 class UnsupportedTypeException : RuntimeException {

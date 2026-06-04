@@ -3,6 +3,9 @@ package com.tang.kite.logical
 import com.tang.kite.config.logical.LogicalDeletionConfig
 
 /**
+ * Context for managing logical deletion state in the current thread.
+ * Provides methods to check whether logical deletion should be applied or skipped.
+ *
  * @author Tang
  */
 object LogicalDeletionContext {

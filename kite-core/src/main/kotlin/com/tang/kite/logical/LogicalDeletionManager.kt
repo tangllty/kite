@@ -4,6 +4,9 @@ import com.tang.kite.config.logical.LogicalDeletionConfig
 import java.util.function.Supplier
 
 /**
+ * Manager for controlling logical deletion behavior at runtime.
+ * Allows executing code blocks with logical deletion explicitly enabled or skipped.
+ *
  * @author Tang
  */
 object LogicalDeletionManager {

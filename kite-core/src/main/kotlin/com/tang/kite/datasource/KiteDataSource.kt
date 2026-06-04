@@ -6,6 +6,9 @@ import java.sql.Connection
 import javax.sql.DataSource
 
 /**
+ * Kite data source implementation that wraps and manages multiple JDBC DataSources.
+ * Supports dynamic data source switching via [DataSourceContext].
+ *
  * @author Tang
  */
 class KiteDataSource : AbstractDataSource {

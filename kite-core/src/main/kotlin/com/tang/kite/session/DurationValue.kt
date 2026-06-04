@@ -3,6 +3,9 @@ package com.tang.kite.session
 import com.tang.kite.executor.ExecutionResult
 
 /**
+ * Duration value container for tracking SQL execution time breakdowns.
+ * Records prepare time, execution time, mapping time, and total elapsed time.
+ *
  * @author Tang
  */
 class DurationValue {
