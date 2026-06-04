@@ -41,7 +41,22 @@ open class SchemaProperties(
     /**
      * Whether to drop extra columns in the database
      */
-    var dropExistingColumns: Boolean = SchemaConfig.dropExistingColumns
+    var dropExistingColumns: Boolean = SchemaConfig.dropExistingColumns,
+
+    /**
+     * Whether to create missing indexes
+     */
+    var createMissingIndexes: Boolean = SchemaConfig.createMissingIndexes,
+
+    /**
+     * Whether to modify existing indexes
+     */
+    var modifyIndexes: Boolean = SchemaConfig.modifyIndexes,
+
+    /**
+     * Whether to drop existing indexes
+     */
+    var dropExistingIndexes: Boolean = SchemaConfig.dropExistingIndexes
 
 ) : PropertyApplier {
 
@@ -58,6 +73,9 @@ open class SchemaProperties(
         SchemaConfig.dropExistingTables = dropExistingTables
         SchemaConfig.createMissingColumns = createMissingColumns
         SchemaConfig.dropExistingColumns = dropExistingColumns
+        SchemaConfig.createMissingIndexes = createMissingIndexes
+        SchemaConfig.modifyIndexes = modifyIndexes
+        SchemaConfig.dropExistingIndexes = dropExistingIndexes
     }
 
 }
