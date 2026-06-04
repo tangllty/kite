@@ -42,7 +42,11 @@ open class KiteAutoConfiguration {
         val kiteDataSourceBean = if (kiteProperties.datasource.isEmpty().not()) {
             KiteDataSourceBean(kiteProperties.datasource)
         } else {
-            KiteDataSourceBean(dataSourceProvider.getIfAvailable()!!)
+            val dataSource = dataSourceProvider.getIfAvailable()
+            checkNotNull(dataSource) {
+                "No DataSource found. Please configure a DataSource bean or set kite.datasource properties."
+            }
+            KiteDataSourceBean(dataSource)
         }
         kiteDataSourceBean.afterPropertiesSet()
         return kiteDataSourceBean.getObject()

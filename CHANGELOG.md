@@ -3,6 +3,7 @@
 ### Bug Fixes
 
 - Correct `selectWithJoins` delegating to `select` instead of itself
+- Add error message when `DataSource` is missing
 
 ### Dependencies
 
