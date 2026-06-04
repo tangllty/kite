@@ -16,12 +16,12 @@ open class LogicalDeletionProperties (
     /**
      * Whether logical delete is enabled
      */
-    val enabled: Boolean = LogicalDeletionConfig.enabled,
+    var enabled: Boolean = LogicalDeletionConfig.enabled,
 
     /**
      * Logical delete field name
      */
-    val fieldName: String = LogicalDeletionConfig.fieldName,
+    var fieldName: String = LogicalDeletionConfig.fieldName,
 
     /**
      * Static processor for logical delete operations

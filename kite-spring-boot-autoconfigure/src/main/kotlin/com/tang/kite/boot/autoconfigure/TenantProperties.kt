@@ -16,12 +16,12 @@ open class TenantProperties (
     /**
      * Whether tenant functionality is enabled
      */
-    val enabled: Boolean = TenantConfig.enabled,
+    var enabled: Boolean = TenantConfig.enabled,
 
     /**
      * Tenant ID field name
      */
-    val fieldName: String = TenantConfig.fieldName,
+    var fieldName: String = TenantConfig.fieldName,
 
     /**
      * Tenant processor for handling multiple tenant IDs
