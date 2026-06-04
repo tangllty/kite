@@ -2,6 +2,7 @@ package com.tang.kite.boot.autoconfigure
 
 import com.tang.kite.config.KiteConfig
 import com.tang.kite.config.SelectiveStrategy
+import com.tang.kite.config.optimistic.OptimisticLockConfig
 import com.tang.kite.handler.field.FieldHandler
 import com.tang.kite.handler.field.FieldMetaKey
 import com.tang.kite.handler.result.ResultHandler
@@ -85,7 +86,12 @@ open class KiteProperties(
     /**
      * Schema properties for schema configuration.
      */
-    val schema: SchemaProperties = SchemaProperties()
+    val schema: SchemaProperties = SchemaProperties(),
+
+    /**
+     * Optimistic lock properties for optimistic locking configuration.
+     */
+    val optimisticLock: OptimisticLockProperties = OptimisticLockProperties()
 
 ) : PropertyApplier {
 
@@ -109,6 +115,7 @@ open class KiteProperties(
         tenant.applyProperties()
         dataSourceConfig.applyProperties()
         schema.applyProperties()
+        optimisticLock.applyProperties()
     }
 
 }

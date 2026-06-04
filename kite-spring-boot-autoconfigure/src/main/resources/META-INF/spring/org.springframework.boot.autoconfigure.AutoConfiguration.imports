@@ -7,3 +7,4 @@ com.tang.kite.boot.autoconfigure.TenantProperties
 com.tang.kite.boot.autoconfigure.DataSourceProperties
 com.tang.kite.boot.autoconfigure.DataSourceConfigProperties
 com.tang.kite.boot.autoconfigure.SchemaProperties
+com.tang.kite.boot.autoconfigure.OptimisticLockProperties

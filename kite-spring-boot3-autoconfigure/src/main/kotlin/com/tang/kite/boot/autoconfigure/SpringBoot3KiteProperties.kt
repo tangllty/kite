@@ -40,3 +40,8 @@ class SpringBoot3DataSourceConfigProperties : DataSourceConfigProperties()
 @Suppress("ConfigurationProperties")
 @ConfigurationProperties(prefix = SchemaProperties.SCHEMA_PREFIX)
 class SpringBoot3SchemaProperties : SchemaProperties()
+
+
+@Suppress("ConfigurationProperties")
+@ConfigurationProperties(prefix = OptimisticLockProperties.OPTIMISTIC_LOCK_PREFIX)
+class SpringBoot3OptimisticLockProperties : OptimisticLockProperties()
