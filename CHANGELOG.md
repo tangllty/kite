@@ -35,6 +35,7 @@
 - Remove pagination methods depending on `HttpServletRequest`
 - Add new page config `maxPageSize`
 - Add `DataSourceConfig` properties to configure override behavior
+- Move data source context `with` methods to new `DataSourceManager`
 
 ## 1.0.21
 

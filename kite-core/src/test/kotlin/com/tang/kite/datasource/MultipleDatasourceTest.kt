@@ -26,7 +26,7 @@ class MultipleDatasourceTest {
     """.trimIndent()
 
         fun insertAccounts(dataSourceKey: String) {
-            DataSourceContext.with(dataSourceKey) {
+            DataSourceManager.with(dataSourceKey) {
                 val session = sqlSessionFactory.openSession()
                 val accountMapper = session.getMapper(DataSourceAccountMapper::class)
                 session.getConnection().use { connection ->
@@ -68,9 +68,9 @@ class MultipleDatasourceTest {
     @Test
     fun testDataSourceContext() {
         checkDataSourceKey("ds1")
-        DataSourceContext.with("ds2") {
+        DataSourceManager.with("ds2") {
             checkDataSourceKey("ds2")
-            DataSourceContext.with("ds1") {
+            DataSourceManager.with("ds1") {
                 checkDataSourceKey("ds1")
             }
             checkDataSourceKey("ds2")
