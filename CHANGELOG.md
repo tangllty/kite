@@ -36,6 +36,7 @@
 - Add new page config `maxPageSize`
 - Add `DataSourceConfig` properties to configure override behavior
 - Move data source context `with` methods to new `DataSourceManager`
+- Remove redundant void-returning overloads
 
 ## 1.0.21
 

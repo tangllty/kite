@@ -35,10 +35,6 @@ object LogicalDeletionManager {
         }
     }
 
-    fun withLogical(block: () -> Unit) {
-        executeWithLogical(block)
-    }
-
     fun <T> withLogical(block: () -> T): T {
         return executeWithLogical(block)
     }
@@ -51,10 +47,6 @@ object LogicalDeletionManager {
     @JvmStatic
     fun <T> withLogical(block: Supplier<T>): T {
         return executeWithLogical { block.get() }
-    }
-
-    fun withSkip(block: () -> Unit) {
-        executeWithSkip(block)
     }
 
     fun <T> withSkip(block: () -> T): T {

@@ -37,10 +37,6 @@ object TenantManager {
         }
     }
 
-    fun withTenant(block: () -> Unit) {
-        executeWithTenant(block)
-    }
-
     fun <T> withTenant(block: () -> T): T {
         return executeWithTenant(block)
     }
@@ -53,10 +49,6 @@ object TenantManager {
     @JvmStatic
     fun <T> withTenant(block: Supplier<T>): T {
         return executeWithTenant { block.get() }
-    }
-
-    fun withSkip(block: () -> Unit) {
-        executeWithSkip(block)
     }
 
     fun <T> withSkip(block: () -> T): T {

@@ -37,10 +37,6 @@ object OptimisticLockManager {
         }
     }
 
-    fun withOptimisticLock(block: () -> Unit) {
-        executeWithOptimisticLock(block)
-    }
-
     fun <T> withOptimisticLock(block: () -> T): T {
         return executeWithOptimisticLock(block)
     }
@@ -53,10 +49,6 @@ object OptimisticLockManager {
     @JvmStatic
     fun <T> withOptimisticLock(block: Supplier<T>): T {
         return executeWithOptimisticLock { block.get() }
-    }
-
-    fun withSkip(block: () -> Unit) {
-        executeWithSkip(block)
     }
 
     fun <T> withSkip(block: () -> T): T {
