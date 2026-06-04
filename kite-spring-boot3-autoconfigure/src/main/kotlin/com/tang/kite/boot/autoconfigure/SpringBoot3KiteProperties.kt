@@ -3,6 +3,10 @@ package com.tang.kite.boot.autoconfigure
 import org.springframework.boot.context.properties.ConfigurationProperties
 
 /**
+ * Spring Boot 3.x compatible Kite properties classes.
+ * These classes re-declare `@ConfigurationProperties` to work around Spring Boot 3.x
+ * limitations with `@ConfigurationProperties` on open classes.
+ *
  * @author Tang
  */
 @Suppress("ConfigurationProperties")
