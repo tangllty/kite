@@ -1,5 +1,6 @@
 package com.tang.kite.handler.result
 
+import com.tang.kite.utils.Reflects
 import java.lang.reflect.Field
 
 /**
@@ -17,7 +18,7 @@ interface ResultHandler {
      * @param instance The instance whose field is to be set.
      */
     fun <T> setNullValue(field: Field, instance: T) {
-        field.set(instance, null)
+        Reflects.setValue(field, instance, null)
     }
 
     /**
