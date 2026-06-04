@@ -95,7 +95,7 @@ class MapperProxy<M : BaseMapper<T>, T : Any>(
         return method.isDefault
     }
 
-    private fun javaInvoker(proxy: Any, method: Method, args: Array<out Any>?): Any {
+    private fun javaInvoker(proxy: Any, method: Method, args: Array<out Any>?): Any? {
         val defaultMethodHandle = javaInvokerCache.computeIfAbsent(method) {
             val methodHandle = getSpecialMethodHandle(method)
             methodHandle.bindTo(proxy)
@@ -118,7 +118,7 @@ class MapperProxy<M : BaseMapper<T>, T : Any>(
         }
     }
 
-    private fun kotlinInvoker(proxy: Any, method: Method, args: Array<out Any>?): Any {
+    private fun kotlinInvoker(proxy: Any, method: Method, args: Array<out Any>?): Any? {
         val impl = getKotlinImpl(method)
         val defaultMethod = impl.methods.first { isSameMethod(it, method) }
         return defaultMethod.invoke(null, proxy, *(args ?: arrayOf()))

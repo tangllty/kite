@@ -4,6 +4,7 @@
 
 - Correct `selectWithJoins` delegating to `select` instead of itself
 - Add error message when `DataSource` is missing
+- Fix `MapperProxy` crash when proxied method returns null
 
 ### Dependencies
 
