@@ -2,10 +2,12 @@
 
 ### Bug Fixes
 
+- Correct `selectWithJoins` delegating to `select` instead of itself
+
 ### Dependencies
 
- * Change servlet dependency scope to `compileOnly`
- * Remove servlet dependency
+- Change servlet dependency scope to `compileOnly`
+- Remove servlet dependency
 
 ### Features
 

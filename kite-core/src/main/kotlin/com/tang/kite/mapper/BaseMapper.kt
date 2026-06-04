@@ -374,7 +374,7 @@ interface BaseMapper<T : Any> {
      * @return The collection of entities
      */
     fun selectWithJoins(orderBy: OrderItem<T>): List<T> {
-        return select(arrayOf(orderBy))
+        return selectWithJoins(arrayOf(orderBy))
     }
 
     /**
@@ -392,7 +392,7 @@ interface BaseMapper<T : Any> {
      * @return The collection of entities with join data
      */
     fun selectWithJoins(orderBys: List<OrderItem<T>>): List<T> {
-        return select(orderBys.toTypedArray())
+        return selectWithJoins(orderBys.toTypedArray())
     }
 
     /**
@@ -411,7 +411,7 @@ interface BaseMapper<T : Any> {
      * @return The collection of entities with join data
      */
     fun selectWithJoins(entity: T, orderBy: OrderItem<T>): List<T> {
-        return select(entity, arrayOf(orderBy))
+        return selectWithJoins(entity, arrayOf(orderBy))
     }
 
     /**
@@ -431,7 +431,7 @@ interface BaseMapper<T : Any> {
      * @return The collection of entities with join data
      */
     fun selectWithJoins(entity: T, orderBys: List<OrderItem<T>>): List<T> {
-        return select(entity, orderBys.toTypedArray())
+        return selectWithJoins(entity, orderBys.toTypedArray())
     }
 
     /**
