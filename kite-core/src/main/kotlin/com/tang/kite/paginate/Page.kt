@@ -3,10 +3,9 @@ package com.tang.kite.paginate
 import java.io.Serializable
 
 /**
- * Page
+ * Pagination result container.
  *
  * @param T Entity type
- *
  * @author Tang
  */
 class Page<T> : Serializable {
@@ -46,8 +45,8 @@ class Page<T> : Serializable {
     var code: Int = 200
 
     /**
-     * Message
+     * Response message
      */
-    var msg: String = "Success"
+    var message: String = "Success"
 
 }
