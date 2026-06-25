@@ -1,3 +1,19 @@
+## 1.0.23
+
+### Bug Fixes
+
+### Dependencies
+
+- Bump gradle from 9.5.0 to 9.6.0
+- Bump slf4j from 2.0.17 to 2.0.18
+- Bump logback from 1.5.32 to 1.5.34
+- Bump spring6 from 6.2.18 to 6.2.19
+- Bump spring from 7.0.7 to 7.0.8
+- Bump spring-boot3 from 3.5.14 to 3.5.15
+- Bump spring-boot from 4.0.6 to 4.1.0
+
+### Features
+
 ## 1.0.22
 
 ### Bug Fixes
