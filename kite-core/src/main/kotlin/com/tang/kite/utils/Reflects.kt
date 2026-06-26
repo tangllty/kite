@@ -25,6 +25,7 @@ import com.tang.kite.logging.LOGGER
 import com.tang.kite.logical.LogicalDeletionManager
 import com.tang.kite.mapper.BaseMapper
 import com.tang.kite.optimistic.OptimisticLockManager
+import com.tang.kite.table.TableContext
 import com.tang.kite.tenant.TenantManager
 import java.lang.invoke.SerializedLambda
 import java.lang.reflect.AccessibleObject
@@ -101,6 +102,10 @@ object Reflects {
      */
     @JvmStatic
     fun getTableName(clazz: Class<*>): String {
+        val contextTableName = TableContext.current()
+        if (contextTableName != null) {
+            return contextTableName
+        }
         val hasTableAnnotation = clazz.isAnnotationPresent(Table::class.java)
         val tableAnnotation = if (hasTableAnnotation) clazz.getAnnotation(Table::class.java) else null
         val tableName = tableNameCache.computeIfAbsent(clazz) {

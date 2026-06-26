@@ -3,10 +3,14 @@ package com.tang.kite.mapper
 import com.tang.kite.config.KiteConfig
 import com.tang.kite.paginate.OrderItem
 import com.tang.kite.paginate.Page
+import com.tang.kite.table.TableManager
+import com.tang.kite.utils.Reflects
 import com.tang.kite.wrapper.delete.DeleteWrapper
 import com.tang.kite.wrapper.query.QueryWrapper
 import com.tang.kite.wrapper.update.UpdateWrapper
 import java.io.Serializable
+import java.util.function.Function
+import java.util.function.Supplier
 
 /**
  * Generic base mapper interface for data access layer, encapsulates core database operations
@@ -661,6 +665,120 @@ interface BaseMapper<T : Any> {
      */
     fun paginateWithJoins(pageNumber: Long, pageSize: Long, entity: T, orderBys: List<OrderItem<T>>): Page<T> {
         return paginateWithJoins(pageNumber, pageSize, entity, orderBys.toTypedArray())
+    }
+
+    /**
+     * Execute operations with a dynamic table name
+     *
+     * @param tableName the table name to use
+     * @param block the operations to execute
+     * @return the result of the block
+     */
+    fun <R> with(tableName: String, block: () -> R): R {
+        return TableManager.with(tableName, block)
+    }
+
+    /**
+     * Execute operations with a dynamic table name (Java API - no return value)
+     *
+     * @param tableName The target table name to use during execution
+     * @param runnable The operations to execute under the specified table context
+     */
+    fun with(tableName: String, runnable: Runnable) {
+        TableManager.with(tableName, runnable)
+    }
+
+    /**
+     * Execute operations with a dynamic table name (Java Supplier API)
+     *
+     * @param tableName The target table name to use during execution
+     * @param supplier The supplier to produce the result under the specified table context
+     * @return The result provided by the supplier
+     */
+    fun <R> with(tableName: String, supplier: Supplier<R>): R {
+        return TableManager.with(tableName, supplier)
+    }
+
+    /**
+     * Execute operations with a table name suffix
+     *
+     * Automatically resolves the base table name from the mapper's entity type and appends the suffix.
+     * Generated table name format: `baseTableName_suffix`
+     *
+     * @param suffix The suffix to append to the table name
+     * @param block The operations to execute under the suffixed table context
+     * @return The result returned by the block
+     */
+    fun <R> withSuffix(suffix: String, block: () -> R): R {
+        return TableManager.withSuffix(getEntityClazz(), suffix, block)
+    }
+
+    /**
+     * Execute operations with a table name suffix (Java API - no return value)
+     *
+     * @param suffix The suffix to append to the table name
+     * @param runnable The operations to execute under the suffixed table context
+     */
+    fun withSuffix(suffix: String, runnable: Runnable) {
+        TableManager.withSuffix(getEntityClazz(), suffix, runnable)
+    }
+
+    /**
+     * Execute operations with a table name suffix (Java Supplier API)
+     *
+     * @param suffix The suffix to append to the table name
+     * @param supplier The supplier to produce the result under the suffixed table context
+     * @return The result provided by the supplier
+     */
+    fun <R> withSuffix(suffix: String, supplier: Supplier<R>): R {
+        return TableManager.withSuffix(getEntityClazz(), suffix, supplier)
+    }
+
+    /**
+     * Execute operations with a custom table name transformation
+     *
+     * Automatically resolves the base table name from the mapper's entity type and applies the transformation.
+     *
+     * @param transformer Transformation function that receives the base table name and returns the new table name
+     * @param block The operations to execute under the transformed table context
+     * @return The result returned by the block
+     */
+    fun <R> withTransform(transformer: (tableName: String) -> String, block: () -> R): R {
+        return TableManager.withTransform(getEntityClazz(), transformer, block)
+    }
+
+    /**
+     * Execute operations with a custom table name transformation (Java API - no return value)
+     *
+     * @param transformer Transformation function that receives the base table name and returns the new table name
+     * @param runnable The operations to execute under the transformed table context
+     */
+    fun withTransform(transformer: Function<String, String>, runnable: Runnable) {
+        TableManager.withTransform(getEntityClazz(), transformer, runnable)
+    }
+
+    /**
+     * Execute operations with a custom table name transformation (Java Supplier API)
+     *
+     * @param transformer Transformation function that receives the base table name and returns the new table name
+     * @param supplier The supplier to produce the result under the transformed table context
+     * @return The result provided by the supplier
+     */
+    fun <R> withTransform(transformer: Function<String, String>, supplier: Supplier<R>): R {
+        return TableManager.withTransform(getEntityClazz(), transformer, supplier)
+    }
+
+    /**
+     * Resolves the entity class type from the mapper's generic type parameter.
+     *
+     * Uses reflection to extract the entity type `T` from the `BaseMapper<T>` interface implementation.
+     *
+     * @return The Class object representing the entity type `T`
+     */
+    @Suppress("UNCHECKED_CAST")
+    private fun <T : Any> BaseMapper<T>.getEntityClazz(): Class<T> {
+        val mapperInterface = this.javaClass.interfaces.first { BaseMapper::class.java.isAssignableFrom(it) } as Class<BaseMapper<T>>
+        return Reflects.getGenericType(mapperInterface)
     }
 
 }

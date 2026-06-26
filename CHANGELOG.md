@@ -14,6 +14,8 @@
 
 ### Features
 
+- Add dynamic table name context management and operations
+
 ## 1.0.22
 
 ### Bug Fixes
