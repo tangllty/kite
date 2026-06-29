@@ -3,6 +3,7 @@
 ### Bug Fixes
 
 - Resolve postgres alter column syntax errors and table case-sensitive matching bug
+- Fix alter column SQL syntax by removing unnecessary type keyword
 
 ### Dependencies
 

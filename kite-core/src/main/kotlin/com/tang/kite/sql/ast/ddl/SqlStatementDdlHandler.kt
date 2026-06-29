@@ -68,10 +68,7 @@ object SqlStatementDdlHandler : DdlHandler<List<String>> {
             when (operation) {
                 is AlterOperation.AddColumn -> {
                     sql.append(getSql(dialect.getAddColumnKeyword())).append(" ")
-                    appendColumnMeta(sql, operation.column, dialect, true)
-                    if (operation.column.nullable.not() && dialect.needSplitAlterTypeAndNull()) {
-                        notNullList.add(getSplitAlterTypeAndNull(operation, tableName, operation.column.columnName, dialect))
-                    }
+                    appendColumnMeta(sql, operation.column, dialect, false)
                     commentList.add(getColumnComment(tableName, operation.column, dialect))
                 }
                 is AlterOperation.DropColumn -> {
