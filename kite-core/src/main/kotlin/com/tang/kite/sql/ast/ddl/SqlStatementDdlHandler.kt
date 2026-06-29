@@ -57,6 +57,7 @@ object SqlStatementDdlHandler : DdlHandler<List<String>> {
 
     override fun handleAlterTable(alterTableNode: SqlNode.AlterTable, dialect: SqlDialect): List<String> {
         val sqlList = mutableListOf<String>()
+        val notNullList = mutableListOf<String>()
         val commentList = mutableListOf<String>()
         val tableName = alterTableNode.table.toString()
 
@@ -67,7 +68,10 @@ object SqlStatementDdlHandler : DdlHandler<List<String>> {
             when (operation) {
                 is AlterOperation.AddColumn -> {
                     sql.append(getSql(dialect.getAddColumnKeyword())).append(" ")
-                    appendColumnMeta(sql, operation.column, dialect)
+                    appendColumnMeta(sql, operation.column, dialect, true)
+                    if (operation.column.nullable.not() && dialect.needSplitAlterTypeAndNull()) {
+                        notNullList.add(getSplitAlterTypeAndNull(operation, tableName, operation.column.columnName, dialect))
+                    }
                     commentList.add(getColumnComment(tableName, operation.column, dialect))
                 }
                 is AlterOperation.DropColumn -> {
@@ -76,10 +80,16 @@ object SqlStatementDdlHandler : DdlHandler<List<String>> {
                     if (operation.cascade && dialect.supportsCascade()) {
                         sql.append(getSql(" cascade"))
                     }
+                    if (dialect.needSplitAlterTypeAndNull()) {
+                        notNullList.add(getSplitAlterTypeAndNull(operation, tableName, operation.columnName, dialect))
+                    }
                 }
                 is AlterOperation.ModifyColumn -> {
                     sql.append(getSql(dialect.getAlterColumnKeyword())).append(" ")
-                    appendColumnMeta(sql, operation.column, dialect)
+                    appendColumnMeta(sql, operation.column, dialect, true)
+                    if (operation.column.nullable.not() && dialect.needSplitAlterTypeAndNull()) {
+                        notNullList.add(getSplitAlterTypeAndNull(operation, tableName, operation.column.columnName, dialect))
+                    }
                     commentList.add(getColumnComment(tableName, operation.column, dialect))
                 }
                 is AlterOperation.RenameColumn -> {
@@ -100,6 +110,7 @@ object SqlStatementDdlHandler : DdlHandler<List<String>> {
             }
             sqlList.add(sql.toString())
         }
+        sqlList.addAll(notNullList)
         sqlList.addAll(commentList)
         return sqlList
     }
@@ -156,11 +167,14 @@ object SqlStatementDdlHandler : DdlHandler<List<String>> {
         return listOf(sql.toString())
     }
 
-    private fun appendColumnMeta(sql: StringBuilder, column: ColumnMeta, dialect: SqlDialect) {
+    private fun appendColumnMeta(sql: StringBuilder, column: ColumnMeta, dialect: SqlDialect, isAlter: Boolean = false) {
         sql.append(column.columnName)
         sql.append(" ")
+        if (isAlter && dialect.getAlterColumnTypeKeyword().isNotEmpty()) {
+            sql.append(getSql(dialect.getAlterColumnTypeKeyword() + " "))
+        }
         sql.append(getType(column))
-        if (column.nullable.not()) {
+        if (column.nullable.not() && isAlter.not()) {
             sql.append(getSql(" not null"))
         }
         if (column.defaultValue.isNullOrBlank().not()) {
@@ -169,7 +183,7 @@ object SqlStatementDdlHandler : DdlHandler<List<String>> {
         }
         if (column.autoIncrement) {
             sql.append(" ")
-            sql.append(dialect.getAutoIncrementKeyword())
+            sql.append(getSql(dialect.getAutoIncrementKeyword()))
         }
         if (column.primaryKey) {
             sql.append(getSql(" primary key"))
@@ -245,7 +259,19 @@ object SqlStatementDdlHandler : DdlHandler<List<String>> {
         return sql.toString()
     }
 
-    fun getColumnComment(tableName: String, column: ColumnMeta, dialect: SqlDialect): String {
+    private fun getSplitAlterTypeAndNull(alterOperation: AlterOperation, tableName: String, columnName: String, dialect: SqlDialect): String {
+        if (dialect.needSplitAlterTypeAndNull().not()) {
+            return ""
+        }
+        val sql = when (alterOperation) {
+            is AlterOperation.AddColumn, is AlterOperation.ModifyColumn -> "set not null"
+            is AlterOperation.DropColumn -> "drop not null"
+            else -> throw IllegalArgumentException("Operation not supported")
+        }
+        return "${getSql("alter table")} $tableName ${getSql(dialect.getAlterColumnKeyword())} $columnName ${getSql(sql)}"
+    }
+
+    private fun getColumnComment(tableName: String, column: ColumnMeta, dialect: SqlDialect): String {
         val columnName = column.columnName
         val sql = if (dialect.supportsCommentOnColumn()) {
             "${getSql("comment on column")} $tableName.$columnName ${getSql("is")} '${column.comment ?: ""}'"

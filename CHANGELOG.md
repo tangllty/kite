@@ -2,6 +2,8 @@
 
 ### Bug Fixes
 
+- Resolve postgres alter column syntax errors and table case-sensitive matching bug
+
 ### Dependencies
 
 - Bump gradle from 9.5.0 to 9.6.0

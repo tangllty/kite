@@ -1,6 +1,7 @@
 package com.tang.kite.schema
 
 import com.tang.kite.config.schema.SchemaConfig
+import com.tang.kite.config.schema.SchemaConfig.getSql
 import com.tang.kite.datasource.DataSourceRegistry
 import com.tang.kite.datasource.KiteDataSourceFactory
 import com.tang.kite.enumeration.IndexOrder
@@ -27,6 +28,7 @@ class SchemaSynchronizationTest {
 
     @Test
     fun synchronizeTable() {
+        SchemaConfig.sqlLowercase = false
         val tableName = "table_account"
 
         synchronization.withPackage("com.tang.kite.schema.synchronization.table.initialtable")
@@ -46,10 +48,12 @@ class SchemaSynchronizationTest {
         assertNotNull(tableCommentTable)
         assertEquals("Table for account comment", tableCommentTable.comment)
         DataSourceRegistry.clear()
+        SchemaConfig.sqlLowercase = true
     }
 
     @Test
     fun synchronizeColumn() {
+        SchemaConfig.sqlLowercase = false
         val tableName = "column_account"
 
         synchronization.withPackage("com.tang.kite.schema.synchronization.column.initialcolumn")
@@ -59,9 +63,9 @@ class SchemaSynchronizationTest {
         synchronization.withPackage("com.tang.kite.schema.synchronization.column.addcolumn")
         val addColumns = MetaDataHandlers.getColumns(databaseValue, tableName)
         assertEquals(6, addColumns.size)
-        val addCreateTime = addColumns.find { it.columnName.equals("create_time", ignoreCase = true) }
-        val addUpdateTime = addColumns.find { it.columnName.equals("update_time", ignoreCase = true) }
-        val addBalance = addColumns.find { it.columnName.equals("balance", ignoreCase = true) }
+        val addCreateTime = addColumns.find { it.columnName == getSql("create_time") }
+        val addUpdateTime = addColumns.find { it.columnName == getSql("update_time") }
+        val addBalance = addColumns.find { it.columnName == getSql("balance") }
         assertNotNull(addCreateTime)
         assertNotNull(addUpdateTime)
         assertNotNull(addBalance)
@@ -72,9 +76,9 @@ class SchemaSynchronizationTest {
         synchronization.withPackage("com.tang.kite.schema.synchronization.column.modifycolumn")
         val modifyColumns = MetaDataHandlers.getColumns(databaseValue, tableName)
         assertEquals(6, modifyColumns.size)
-        val modifyCreateTimeColumn = modifyColumns.find { it.columnName.equals("create_time", ignoreCase = true) }
-        val modifyUpdateTimeColumn = modifyColumns.find { it.columnName.equals("update_time", ignoreCase = true) }
-        val modifyBalanceColumn = modifyColumns.find { it.columnName.equals("balance", ignoreCase = true) }
+        val modifyCreateTimeColumn = modifyColumns.find { it.columnName == getSql("create_time") }
+        val modifyUpdateTimeColumn = modifyColumns.find { it.columnName == getSql("update_time") }
+        val modifyBalanceColumn = modifyColumns.find { it.columnName == getSql("balance") }
         assertNotNull(modifyCreateTimeColumn)
         assertNotNull(modifyUpdateTimeColumn)
         assertNotNull(modifyBalanceColumn)
@@ -86,17 +90,19 @@ class SchemaSynchronizationTest {
         SchemaConfig.dropExistingColumns = false
         val dropColumns = MetaDataHandlers.getColumns(databaseValue, tableName)
         assertEquals(3, dropColumns.size)
-        val balanceColumn = dropColumns.find { it.columnName.equals("balance", ignoreCase = true) }
-        val dropCreateTimeColumnComment = dropColumns.find { it.columnName.equals("create_time", ignoreCase = true) }
-        val dropUpdateTimeColumnComment = dropColumns.find { it.columnName.equals("update_time", ignoreCase = true) }
+        val balanceColumn = dropColumns.find { it.columnName == getSql("balance") }
+        val dropCreateTimeColumnComment = dropColumns.find { it.columnName == getSql("create_time") }
+        val dropUpdateTimeColumnComment = dropColumns.find { it.columnName == getSql("update_time") }
         assertNull(balanceColumn)
         assertNull(dropCreateTimeColumnComment?.comment)
         assertNull(dropUpdateTimeColumnComment?.comment)
         DataSourceRegistry.clear()
+        SchemaConfig.sqlLowercase = true
     }
 
     @Test
     fun synchronizeIndex() {
+        SchemaConfig.sqlLowercase = false
         val tableName = "index_account"
 
         synchronization.withPackage("com.tang.kite.schema.synchronization.index.initialindex")
@@ -108,26 +114,27 @@ class SchemaSynchronizationTest {
         synchronization.withPackage("com.tang.kite.schema.synchronization.index.addindex")
         val addIndexMap = MetaDataHandlers.getIndexes(databaseValue, tableName)
         assertEquals(3, addIndexMap.size)
-        assertTrue { addIndexMap.containsKey("uk_index_account_username_nickname") }
-        assertTrue { addIndexMap["uk_index_account_username_nickname"]!!.sorts.contains(IndexOrder.DESC) }
-        assertTrue { addIndexMap.containsKey("idx_index_account_username") }
-        assertFalse { addIndexMap["idx_index_account_username"]!!.unique }
+        assertTrue { addIndexMap.containsKey(getSql("uk_index_account_username_nickname")) }
+        assertTrue { addIndexMap[getSql("uk_index_account_username_nickname")]!!.sorts.contains(IndexOrder.DESC) }
+        assertTrue { addIndexMap.containsKey(getSql("idx_index_account_username")) }
+        assertFalse { addIndexMap[getSql("idx_index_account_username")]!!.unique }
 
         SchemaConfig.modifyIndexes = true
         synchronization.withPackage("com.tang.kite.schema.synchronization.index.modifyindex")
         SchemaConfig.modifyIndexes = false
         val modifyIndexMap = MetaDataHandlers.getIndexes(databaseValue, tableName)
         assertEquals(3, modifyIndexMap.size)
-        assertTrue { modifyIndexMap.containsKey("idx_index_account_username") }
-        assertTrue { modifyIndexMap["idx_index_account_username"]!!.sorts.contains(IndexOrder.DESC) }
+        assertTrue { modifyIndexMap.containsKey(getSql("idx_index_account_username")) }
+        assertTrue { modifyIndexMap[getSql("idx_index_account_username")]!!.sorts.contains(IndexOrder.DESC) }
 
         SchemaConfig.dropExistingIndexes = true
         synchronization.withPackage("com.tang.kite.schema.synchronization.index.dropindex")
         SchemaConfig.dropExistingIndexes = false
         val dropIndexMap = MetaDataHandlers.getIndexes(databaseValue, tableName)
         assertEquals(2, dropIndexMap.size)
-        assertFalse { dropIndexMap.containsKey("idx_index_account_username") }
+        assertFalse { dropIndexMap.containsKey(getSql("idx_index_account_username")) }
         DataSourceRegistry.clear()
+        SchemaConfig.sqlLowercase = true
     }
 
     private fun SchemaSynchronization.withPackage(packageName: String) {

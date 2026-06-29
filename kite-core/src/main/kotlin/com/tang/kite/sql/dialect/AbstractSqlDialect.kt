@@ -41,4 +41,8 @@ abstract class AbstractSqlDialect(private val databaseType: DatabaseType) : SqlD
 
     override fun getAlterColumnKeyword(): String = "alter column"
 
+    override fun getAlterColumnTypeKeyword(): String = ""
+
+    override fun needSplitAlterTypeAndNull(): Boolean = false
+
 }

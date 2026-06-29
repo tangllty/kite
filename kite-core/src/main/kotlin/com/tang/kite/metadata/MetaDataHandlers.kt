@@ -15,7 +15,7 @@ import java.sql.JDBCType
  */
 object MetaDataHandlers {
 
-    private val tableTypes = arrayOf("TABLE")
+    private val tableTypes = arrayOf("TABLE", "BASE TABLE")
 
     @JvmStatic
     fun getTable(databaseValue: DatabaseValue, tableName: String): TableMeta? {
@@ -27,7 +27,7 @@ object MetaDataHandlers {
     fun getTables(databaseValue: DatabaseValue, tableNamePattern: String? = null): List<TableMeta> {
         databaseValue.dataSource.connection.use { connection ->
             val metaData = connection.metaData
-            val resultSet = metaData.getTables(connection.catalog, connection.schema, tableNamePattern?.uppercase(), tableTypes)
+            val resultSet = metaData.getTables(connection.catalog, connection.schema, getSqlNullable(tableNamePattern), tableTypes)
             val tables = mutableListOf<TableMeta>()
             while (resultSet.next()) {
                 tables.add(
@@ -53,7 +53,7 @@ object MetaDataHandlers {
             val uniqueKeySet = getUniqueKeys(databaseValue, tableName)
 
             val columnList = mutableListOf<ColumnMeta>()
-            metaData.getColumns(connection.catalog, connection.schema, tableName.uppercase(), null).use {
+            metaData.getColumns(connection.catalog, connection.schema, getSql(tableName), null).use {
                 while (it.next()) {
                     columnList.add(
                         ColumnMeta(
@@ -94,7 +94,7 @@ object MetaDataHandlers {
         databaseValue.dataSource.connection.use { connection ->
             val metaData = connection.metaData
             val primaryKeyColumns = mutableSetOf<String>()
-            val resultSet = metaData.getPrimaryKeys(connection.catalog, connection.schema, tableName.uppercase())
+            val resultSet = metaData.getPrimaryKeys(connection.catalog, connection.schema, getSql(tableName))
             while (resultSet.next()) {
                 val columnName = getSql(resultSet.getString("COLUMN_NAME"))
                 primaryKeyColumns.add(getSql(columnName))
@@ -116,7 +116,7 @@ object MetaDataHandlers {
         databaseValue.dataSource.connection.use { connection ->
             val metaData = connection.metaData
 
-            metaData.getIndexInfo(connection.catalog, connection.schema, tableName.uppercase(), true, true).use { rs ->
+            metaData.getIndexInfo(connection.catalog, connection.schema, getSql(tableName), true, true).use { rs ->
                 while (rs.next()) {
                     val column = getSql(rs.getString("COLUMN_NAME"))
                     val type = rs.getShort("TYPE")
@@ -141,7 +141,7 @@ object MetaDataHandlers {
             val result = mutableMapOf<String, MutableSet<String>>()
             val metaData = connection.metaData
 
-            metaData.getIndexInfo(connection.catalog, connection.schema, tableName.uppercase(), true, true).use { rs ->
+            metaData.getIndexInfo(connection.catalog, connection.schema, getSql(tableName), true, true).use { rs ->
                 while (rs.next()) {
                     val indexName = getSql(rs.getString("INDEX_NAME"))
                     val column = getSql(rs.getString("COLUMN_NAME"))
@@ -169,7 +169,7 @@ object MetaDataHandlers {
             val metaData = connection.metaData
             val indexMap = mutableMapOf<String, IndexMeta>()
 
-            metaData.getIndexInfo(connection.catalog, connection.schema, tableName.uppercase(), false, true).use { rs ->
+            metaData.getIndexInfo(connection.catalog, connection.schema, getSql(tableName), false, true).use { rs ->
                 while (rs.next()) {
                     val indexName = getSql(rs.getString("INDEX_NAME"))
                     val columnName = getSql(rs.getString("COLUMN_NAME"))
@@ -228,7 +228,7 @@ object MetaDataHandlers {
         return runCatching {
             databaseValue.dataSource.connection.use { connection ->
                 val metaData = connection.metaData
-                val resultSet = metaData.getTables(connection.catalog, connection.schema, tableNamePattern.uppercase(), tableTypes)
+                val resultSet = metaData.getTables(connection.catalog, connection.schema, getSql(tableNamePattern), tableTypes)
                 resultSet.use { it.next() }
             }
         }.getOrDefault(false)

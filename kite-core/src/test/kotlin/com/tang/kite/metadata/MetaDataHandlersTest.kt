@@ -1,6 +1,8 @@
 package com.tang.kite.metadata
 
 import com.tang.kite.BaseDataTest
+import com.tang.kite.config.schema.SchemaConfig
+import com.tang.kite.config.schema.SchemaConfig.getSql
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
@@ -14,62 +16,76 @@ class MetaDataHandlersTest : BaseDataTest() {
 
     @Test
     fun getTable() {
+        SchemaConfig.sqlLowercase = false
         val table = MetaDataHandlers.getTable(kiteDataSource.getCurrentDatabase(), "account")
         assertNotNull(table)
-        assertEquals("account", table.tableName)
+        assertEquals(getSql("account"), table.tableName)
+        SchemaConfig.sqlLowercase = true
     }
 
     @Test
     fun getTables() {
+        SchemaConfig.sqlLowercase = false
         val connection = sqlSessionFactory.openSession().getConnection()
         val tables = MetaDataHandlers.getTables(kiteDataSource.getCurrentDatabase())
         connection.close()
         assertNotNull(tables)
         assertTrue { tables.isNotEmpty() }
-        assertTrue { tables.map { it.tableName }.contains("account") }
+        assertTrue { tables.map { it.tableName }.contains(getSql("account")) }
+        SchemaConfig.sqlLowercase = true
     }
 
     @Test
     fun getColumns() {
+        SchemaConfig.sqlLowercase = false
         val connection = sqlSessionFactory.openSession().getConnection()
         val columns = MetaDataHandlers.getColumns(kiteDataSource.getCurrentDatabase(), "account")
         connection.close()
         assertNotNull(columns)
-        assertTrue { columns.map { it.columnName }.contains("id") }
+        assertTrue { columns.map { it.columnName }.contains(getSql("id")) }
+        SchemaConfig.sqlLowercase = true
     }
 
     @Test
     fun getPrimaryKeys() {
+        SchemaConfig.sqlLowercase = false
         val connection = sqlSessionFactory.openSession().getConnection()
         val primaryKeys = MetaDataHandlers.getPrimaryKeys(kiteDataSource.getCurrentDatabase(), "account")
         connection.close()
         assertNotNull(primaryKeys)
-        assertContentEquals(listOf("id"), primaryKeys.map { it })
+        assertContentEquals(listOf(getSql("id")), primaryKeys.map { it })
+        SchemaConfig.sqlLowercase = true
     }
 
     @Test
     fun getUniqueKeys() {
+        SchemaConfig.sqlLowercase = false
         val connection = sqlSessionFactory.openSession().getConnection()
         val uniqueKeys = MetaDataHandlers.getUniqueKeys(kiteDataSource.getCurrentDatabase(), "account")
         connection.close()
         assertNotNull(uniqueKeys)
-        assertContentEquals(listOf("id"), uniqueKeys.map { it })
+        assertContentEquals(listOf(getSql("id")), uniqueKeys.map { it })
+        SchemaConfig.sqlLowercase = true
     }
 
     @Test
     fun getUniqueIndexes() {
+        SchemaConfig.sqlLowercase = false
         val connection = sqlSessionFactory.openSession().getConnection()
         val uniqueIndexes = MetaDataHandlers.getUniqueIndexes(kiteDataSource.getCurrentDatabase(), "account")
         connection.close()
         assertNotNull(uniqueIndexes)
+        SchemaConfig.sqlLowercase = true
     }
 
     @Test
     fun getIndexes() {
+        SchemaConfig.sqlLowercase = false
         val connection = sqlSessionFactory.openSession().getConnection()
         val indexes = MetaDataHandlers.getIndexes(kiteDataSource.getCurrentDatabase(), "account")
         connection.close()
         assertNotNull(indexes)
+        SchemaConfig.sqlLowercase = true
     }
 
     @Test

@@ -130,7 +130,7 @@ class DdlTest {
         )
 
         val sql = alterTable.getFirstSql(dialect)
-        val expected = "alter table account add column phone varchar(20)"
+        val expected = "alter table account add column phone type varchar(20)"
         assertEquals(expected, sql)
     }
 
@@ -167,9 +167,13 @@ class DdlTest {
             )
         )
 
-        val sql = alterTable.getFirstSql(dialect)
-        val expected = "alter table account alter column email varchar(150) not null"
-        assertEquals(expected, sql)
+        val sqlList = alterTable.getSqlList(dialect)
+        val expected1 = "alter table account alter column email type varchar(150)"
+        assertEquals(expected1, sqlList[0])
+        val expected2 = "alter table account alter column email set not null"
+        assertEquals(expected2, sqlList[1])
+        val expected3 = "comment on column account.email is ''"
+        assertEquals(expected3, sqlList[2])
     }
 
     @Test
@@ -202,12 +206,20 @@ class DdlTest {
         )
 
         val sqlList = alterTable.getSqlList(dialect)
-        val expected1 = "alter table account add column phone varchar(20)"
+        val expected1 = "alter table account add column phone type varchar(20)"
         assertEquals(expected1, sqlList[0])
-        val expected2 = "alter table account alter column email varchar(150) not null"
+        val expected2 = "alter table account alter column email type varchar(150)"
         assertEquals(expected2, sqlList[1])
         val expected3 = "alter table account drop column old_column"
         assertEquals(expected3, sqlList[2])
+        val expected4 = "alter table account alter column email set not null"
+        assertEquals(expected4, sqlList[3])
+        val expected5 = "alter table account alter column old_column drop not null"
+        assertEquals(expected5, sqlList[4])
+        val expected6 = "comment on column account.phone is ''"
+        assertEquals(expected6, sqlList[5])
+        val expected7 = "comment on column account.email is ''"
+        assertEquals(expected7, sqlList[6])
     }
 
     @Test
@@ -344,9 +356,11 @@ class DdlTest {
             constraints = mutableListOf()
         )
 
-        val sql = createTable.getFirstSql(dialect)
-        val expected = "create table products (price decimal(10, 2) not null default 0.00)"
-        assertEquals(expected, sql)
+        val sqlList = createTable.getSqlList(dialect)
+        val expected1 = "create table products (price decimal(10, 2) not null default 0.00)"
+        assertEquals(expected1, sqlList[0])
+        val expected2 = "comment on column products.price is 'Product price'"
+        assertEquals(expected2, sqlList[1])
     }
 
     @Test

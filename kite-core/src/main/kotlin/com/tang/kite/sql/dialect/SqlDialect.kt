@@ -28,4 +28,14 @@ interface SqlDialect {
 
     fun getAlterColumnKeyword(): String
 
+    /**
+     * Get keyword between column name and data type when altering column type
+     */
+    fun getAlterColumnTypeKeyword(): String
+
+    /**
+     * Whether to split modify type and null constraint into two separate SQL
+     */
+    fun needSplitAlterTypeAndNull(): Boolean
+
 }
