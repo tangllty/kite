@@ -22,6 +22,8 @@ import com.tang.kite.schema.DdlExecutor
 import com.tang.kite.schema.SchemaBuilder
 import com.tang.kite.session.DurationValue
 import com.tang.kite.session.SqlSession
+import com.tang.kite.sql.TableReference
+import com.tang.kite.sql.ast.SqlNode
 import com.tang.kite.sql.provider.SqlNodeProvider
 import com.tang.kite.sql.statement.BatchSqlStatement
 import com.tang.kite.sql.statement.SqlStatement
@@ -315,6 +317,8 @@ class DefaultSqlSession(
             BaseMethodName.isPaginate(method) -> processPaginate(method, mapperInterface, type, args)
             BaseMethodName.isPaginateWithJoins(method) -> processPaginateWithJoins(method, mapperInterface, type, args)
             BaseMethodName.isCreateTable(method) -> createTable(method, mapperInterface, type, getFirstArg(args))
+            BaseMethodName.isDropTable(method) -> dropTable(method, mapperInterface, type, getFirstArg(args))
+            BaseMethodName.isTruncateTable(method) -> truncateTable(method, mapperInterface, type, getFirstArg(args))
             else -> throw IllegalArgumentException("Unknown method: ${getMethodSignature(method)}")
         }
     }
@@ -739,6 +743,18 @@ class DefaultSqlSession(
         val createTable = SchemaBuilder.buildEntity(type.kotlin, tableName as String)
         val sqlList = createTable.getSqlList(databaseValue.sqlDialect)
         return ddlExecutor.executeDdlBatch(sqlList)
+    }
+
+    override fun <M : BaseMapper<T>, T : Any> dropTable(method: Method, mapperInterface: Class<M>, type: Class<T>, tableName: Any): Boolean {
+        val dropTable = SqlNode.DropTable(TableReference(clazz = type, name = tableName as String))
+        val sql = dropTable.getFirstSql(databaseValue.sqlDialect)
+        return ddlExecutor.executeDdl(sql)
+    }
+
+    override fun <M : BaseMapper<T>, T : Any> truncateTable(method: Method, mapperInterface: Class<M>, type: Class<T>, tableName: Any): Boolean {
+        val truncateTable = SqlNode.TruncateTable(TableReference(clazz = type, name = tableName as String))
+        val sql = truncateTable.getFirstSql(databaseValue.sqlDialect)
+        return ddlExecutor.executeDdl(sql)
     }
 
     override fun commit() {

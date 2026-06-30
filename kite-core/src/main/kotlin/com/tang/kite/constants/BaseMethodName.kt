@@ -237,6 +237,18 @@ object BaseMethodName {
         return method.name == CREATE_TABLE && method.countIsOne() && method.firstParameterIsString()
     }
 
+    private const val DROP_TABLE = "dropTable"
+
+    fun isDropTable(method: Method): Boolean {
+        return method.name == DROP_TABLE && method.countIsOne() && method.firstParameterIsString()
+    }
+
+    private const val TRUNCATE_TABLE = "truncateTable"
+
+    fun isTruncateTable(method: Method): Boolean {
+        return method.name == TRUNCATE_TABLE && method.countIsOne() && method.firstParameterIsString()
+    }
+
     fun isBaseMethod(method: Method): Boolean {
         val methodName = method.name
         val isBaseMethodName = when (methodName) {
@@ -248,7 +260,7 @@ object BaseMethodName {
             SELECT_WITH_JOINS, SELECT_BY_ID_WITH_JOINS,
             COUNT, COUNT_WRAPPER,
             PAGINATE, PAGINATE_WITH_JOINS,
-            CREATE_TABLE -> true
+            CREATE_TABLE, DROP_TABLE, TRUNCATE_TABLE -> true
             else -> false
         }
         if (!isBaseMethodName) return false
@@ -276,6 +288,8 @@ object BaseMethodName {
             PAGINATE -> isPaginate(method)
             PAGINATE_WITH_JOINS -> isPaginateWithJoins(method)
             CREATE_TABLE -> isCreateTable(method)
+            DROP_TABLE -> isDropTable(method)
+            TRUNCATE_TABLE -> isTruncateTable(method)
             else -> false
         }
 

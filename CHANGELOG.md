@@ -1,11 +1,30 @@
+## 1.1.0
+
+### Bug Fixes
+
+- Add methods for dropping and truncating tables in `BaseMapper` and `SqlSession`
+
+### Dependencies
+
+### Features
+
+## 1.0.24
+
+### Bug Fixes
+
+- Add `createTable` methods to `BaseMapper` for dynamic table creation
+- Add `createTable` method to `BaseService` for dynamic table creation
+
+### Dependencies
+
+### Features
+
 ## 1.0.23
 
 ### Bug Fixes
 
 - Resolve postgres alter column syntax errors and table case-sensitive matching bug
 - Fix alter column SQL syntax by removing unnecessary type keyword
-- Add `createTable` methods to `BaseMapper` for dynamic table creation
-- Add `createTable` method to `BaseService` for dynamic table creation
 
 ### Dependencies
 

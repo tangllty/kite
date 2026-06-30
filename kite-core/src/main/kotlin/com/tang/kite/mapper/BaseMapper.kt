@@ -807,6 +807,85 @@ interface BaseMapper<T : Any> {
     }
 
     /**
+     * Drop a table with the specified name
+     *
+     * @param tableName The name of the table to drop
+     * @return True if drop successful, false otherwise
+     */
+    fun dropTable(tableName: String): Boolean
+
+    /**
+     * Drop table with suffix based on entity base table name
+     *
+     * @param suffix Suffix append to base table name
+     * @return True if drop success
+     */
+    fun dropTableWithSuffix(suffix: String): Boolean {
+        return dropTable(Reflects.getTableName(getEntityClazz()) + "_" + suffix)
+    }
+
+    /**
+     * Drop table with custom name transform (Kotlin lambda)
+     *
+     * @param tableNameTransformer Receive base table name, return final table name
+     * @return True if drop success
+     */
+    fun dropTableWithTransform(tableNameTransformer: (baseTableName: String) -> String): Boolean {
+        val baseTable = Reflects.getTableName(getEntityClazz())
+        return dropTable(tableNameTransformer(baseTable))
+    }
+
+    /**
+     * Drop table with custom name transform (Java Function compatible overload)
+     *
+     * @param tableNameTransformer Java Function transform table name
+     * @return True if drop success
+     */
+    fun dropTableWithTransform(tableNameTransformer: Function<String, String>): Boolean {
+        return dropTableWithTransform { tableNameTransformer.apply(it) }
+    }
+
+    /**
+     * Truncate table by specified table name
+     * Clear all table data, retain table structure
+     *
+     * @param tableName Target table name
+     * @return True if truncate success
+     */
+    fun truncateTable(tableName: String): Boolean
+
+    /**
+     * Truncate table with suffix based on entity base table name
+     *
+     * @param suffix Suffix append to base table name
+     * @return True if truncate success
+     */
+    fun truncateTableWithSuffix(suffix: String): Boolean {
+        return truncateTable(Reflects.getTableName(getEntityClazz()) + "_" + suffix)
+    }
+
+    /**
+     * Truncate table with custom name transform (Kotlin lambda)
+     *
+     * @param tableNameTransformer Receive base table name, return final table name
+     * @return True if truncate success
+     */
+    fun truncateTableWithTransform(tableNameTransformer: (baseTableName: String) -> String): Boolean {
+        val baseTable = Reflects.getTableName(getEntityClazz())
+        return truncateTable(tableNameTransformer(baseTable))
+    }
+
+    /**
+     * Truncate table with custom name transform (Java Function compatible overload)
+     *
+     * @param tableNameTransformer Java Function transform table name
+     * @return True if truncate success
+     */
+    fun truncateTableWithTransform(tableNameTransformer: Function<String, String>): Boolean {
+        return truncateTableWithTransform { tableNameTransformer.apply(it) }
+    }
+
+    /**
      * Resolves the entity class type from the mapper's generic type parameter.
      *
      * Uses reflection to extract the entity type `T` from the `BaseMapper<T>` interface implementation.

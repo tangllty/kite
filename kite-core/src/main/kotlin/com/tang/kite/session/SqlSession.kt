@@ -73,6 +73,10 @@ interface SqlSession : AutoCloseable {
 
     fun <M : BaseMapper<T>, T : Any> createTable(method: Method, mapperInterface: Class<M>, type: Class<T>, tableName: Any): Boolean
 
+    fun <M : BaseMapper<T>, T : Any> dropTable(method: Method, mapperInterface: Class<M>, type: Class<T>, tableName: Any): Boolean
+
+    fun <M : BaseMapper<T>, T : Any> truncateTable(method: Method, mapperInterface: Class<M>, type: Class<T>, tableName: Any): Boolean
+
     fun commit()
 
     fun rollback()
