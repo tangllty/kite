@@ -5,6 +5,7 @@
 - Resolve postgres alter column syntax errors and table case-sensitive matching bug
 - Fix alter column SQL syntax by removing unnecessary type keyword
 - Add `createTable` methods to `BaseMapper` for dynamic table creation
+- Add `createTable` method to `BaseService` for dynamic table creation
 
 ### Dependencies
 

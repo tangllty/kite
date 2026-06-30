@@ -415,4 +415,14 @@ interface BaseService<T : Any> : BaseMapper<T> {
         return getMapper().paginateWithJoins(pageNumber, pageSize, entity, orderBys)
     }
 
+    /**
+     * Create a table with the specified name
+     *
+     * @param tableName The name of the table to create
+     * @return True if creation successful, false otherwise
+     */
+    override fun createTable(tableName: String): Boolean {
+        return getMapper().createTable(tableName)
+    }
+
 }
