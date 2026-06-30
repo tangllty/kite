@@ -40,6 +40,10 @@ object BaseMethodName {
         return parameterTypes[0].name == Serializable::class.java.name
     }
 
+    private fun Method.firstParameterIsString(): Boolean {
+        return parameterTypes[0].name == String::class.java.name
+    }
+
     private fun Method.secondParameterIsAny(): Boolean {
         return isAny(parameterTypes[1])
     }
@@ -227,6 +231,12 @@ object BaseMethodName {
         return method.name == PAGINATE_WITH_JOINS && isPaginateParameter(method)
     }
 
+    private const val CREATE_TABLE = "createTable"
+
+    fun isCreateTable(method: Method): Boolean {
+        return method.name == CREATE_TABLE && method.countIsOne() && method.firstParameterIsString()
+    }
+
     fun isBaseMethod(method: Method): Boolean {
         val methodName = method.name
         val isBaseMethodName = when (methodName) {
@@ -237,7 +247,8 @@ object BaseMethodName {
             QUERY_WRAPPER, SELECT_ONE_WRAPPER,
             SELECT_WITH_JOINS, SELECT_BY_ID_WITH_JOINS,
             COUNT, COUNT_WRAPPER,
-            PAGINATE, PAGINATE_WITH_JOINS -> true
+            PAGINATE, PAGINATE_WITH_JOINS,
+            CREATE_TABLE -> true
             else -> false
         }
         if (!isBaseMethodName) return false
@@ -264,6 +275,7 @@ object BaseMethodName {
             COUNT_WRAPPER -> isCountWrapper(method)
             PAGINATE -> isPaginate(method)
             PAGINATE_WITH_JOINS -> isPaginateWithJoins(method)
+            CREATE_TABLE -> isCreateTable(method)
             else -> false
         }
 

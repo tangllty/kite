@@ -18,4 +18,31 @@ class SqlSessionTest : BaseDataTest() {
         assertNotNull(accountMapper)
     }
 
+    @Test
+    fun createTable() {
+        val session = sqlSessionFactory.openSession()
+        val accountMapper = session.getMapper(AccountMapper::class)
+        accountMapper.createTable("account_test")
+        session.close()
+        assertNotNull(accountMapper)
+    }
+
+    @Test
+    fun createTableWithSuffix() {
+        val session = sqlSessionFactory.openSession()
+        val accountMapper = session.getMapper(AccountMapper::class)
+        accountMapper.createTableWithSuffix("test")
+        session.close()
+        assertNotNull(accountMapper)
+    }
+
+    @Test
+    fun createTableWithTransform() {
+        val session = sqlSessionFactory.openSession()
+        val accountMapper = session.getMapper(AccountMapper::class)
+        accountMapper.createTableWithTransform { it + "_test" }
+        session.close()
+        assertNotNull(accountMapper)
+    }
+
 }

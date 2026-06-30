@@ -52,7 +52,7 @@ class DefaultSqlSessionFactory(private val kiteDataSource: KiteDataSource) : Sql
     private fun openSession(isolationLevel: TransactionIsolationLevel?, autoCommit: Boolean): SqlSession {
         val transactionFactory = kiteDataSource.transactionFactory
         val transaction = transactionFactory.newTransaction(kiteDataSource, isolationLevel, autoCommit)
-        return DefaultSqlSession(transaction, kiteDataSource.getCurrentDatabase().sqlDialect)
+        return DefaultSqlSession(transaction, kiteDataSource.getCurrentDatabase())
     }
 
 }

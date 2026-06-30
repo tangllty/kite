@@ -41,10 +41,8 @@ object SchemaBuilder {
      * Build entity class and generate CREATE TABLE DDL node
      */
     @JvmStatic
-    fun buildEntity(entityClass: KClass<*>): SqlNode.CreateTable {
+    fun buildEntity(entityClass: KClass<*>, tableName: String): SqlNode.CreateTable {
         val tableAnnotation = entityClass.findAnnotation<Table>()
-        val tableName = getSql(Reflects.getTableName(entityClass.java))
-
         val columns = mutableListOf<ColumnMeta>()
         val constraints = mutableListOf<TableConstraint>()
         val createIndexes = mutableListOf<SqlNode.CreateIndex>()
@@ -135,12 +133,21 @@ object SchemaBuilder {
             }
         }
         return SqlNode.CreateTable(
-            table = TableReference(entityClass, SchemaConfig.sqlLowercase),
+            table = TableReference(name = tableName, clazz = entityClass.java, lowercase = SchemaConfig.sqlLowercase),
             columns = columns,
             constraints = constraints,
             createIndexes = createIndexes,
             comment = tableComment
         )
+    }
+
+    /**
+     * Build entity class and generate CREATE TABLE DDL node
+     */
+    @JvmStatic
+    fun buildEntity(entityClass: KClass<*>): SqlNode.CreateTable {
+        val tableName = getSql(Reflects.getTableName(entityClass.java))
+        return buildEntity(entityClass, tableName)
     }
 
     /**

@@ -769,6 +769,44 @@ interface BaseMapper<T : Any> {
     }
 
     /**
+     * Create a table with the specified name
+     *
+     * @param tableName The name of the table to create
+     * @return True if creation successful, false otherwise
+     */
+    fun createTable(tableName: String): Boolean
+
+    /**
+     * Create a table with the specified suffix
+     *
+     * @param suffix The suffix to append to the table name
+     * @return True if creation successful, false otherwise
+     */
+    fun createTableWithSuffix(suffix: String): Boolean {
+        return createTable(Reflects.getTableName(getEntityClazz()) + "_" + suffix)
+    }
+
+    /**
+     * Create a table with a custom transformation
+     *
+     * @param tableNameTransformer Lambda that receives the base table name and returns the new table name
+     * @return True if creation successful, false otherwise
+     */
+    fun createTableWithTransform(tableNameTransformer: (tableName: String) -> String): Boolean {
+        return createTable(tableNameTransformer(Reflects.getTableName(getEntityClazz())))
+    }
+
+    /**
+     * Create a table with a custom transformation
+     *
+     * @param tableNameTransformer Transformation function that receives the base table name and returns the new table name
+     * @return True if creation successful, false otherwise
+     */
+    fun createTableWithTransform(tableNameTransformer: Function<String, String>): Boolean {
+        return createTableWithTransform { tableNameTransformer.apply(it) }
+    }
+
+    /**
      * Resolves the entity class type from the mapper's generic type parameter.
      *
      * Uses reflection to extract the entity type `T` from the `BaseMapper<T>` interface implementation.

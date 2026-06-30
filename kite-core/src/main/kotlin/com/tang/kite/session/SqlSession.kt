@@ -71,6 +71,8 @@ interface SqlSession : AutoCloseable {
 
     fun <M : BaseMapper<T>, T : Any> paginateWithJoins(method: Method, mapperInterface: Class<M>, type: Class<T>, pageNumber: Long, pageSize: Long, parameter: Any?, orderBys: Array<OrderItem<T>>): Page<T>
 
+    fun <M : BaseMapper<T>, T : Any> createTable(method: Method, mapperInterface: Class<M>, type: Class<T>, tableName: Any): Boolean
+
     fun commit()
 
     fun rollback()

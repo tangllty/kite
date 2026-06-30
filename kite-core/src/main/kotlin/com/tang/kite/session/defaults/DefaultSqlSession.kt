@@ -8,6 +8,7 @@ import com.tang.kite.config.PageConfig
 import com.tang.kite.config.SqlConfig
 import com.tang.kite.constants.BaseMethodName
 import com.tang.kite.constants.SqlString
+import com.tang.kite.datasource.DatabaseValue
 import com.tang.kite.datasource.withDataSource
 import com.tang.kite.enumeration.MethodType
 import com.tang.kite.executor.ExecutionResult
@@ -17,9 +18,10 @@ import com.tang.kite.optimistic.OptimisticLockContext
 import com.tang.kite.paginate.OrderItem
 import com.tang.kite.paginate.Page
 import com.tang.kite.proxy.MapperProxyFactory
+import com.tang.kite.schema.DdlExecutor
+import com.tang.kite.schema.SchemaBuilder
 import com.tang.kite.session.DurationValue
 import com.tang.kite.session.SqlSession
-import com.tang.kite.sql.dialect.SqlDialect
 import com.tang.kite.sql.provider.SqlNodeProvider
 import com.tang.kite.sql.statement.BatchSqlStatement
 import com.tang.kite.sql.statement.SqlStatement
@@ -45,13 +47,15 @@ class DefaultSqlSession(
 
     transaction: Transaction,
 
-    private val sqlDialect: SqlDialect
+    private val databaseValue: DatabaseValue
 
 ) : SqlSession {
 
     private val executor = DefaultExecutorFactory.newExecutor(transaction)
 
-    private val provider = SqlNodeProvider(sqlDialect)
+    private val provider = SqlNodeProvider(databaseValue.sqlDialect)
+
+    private val ddlExecutor = DdlExecutor(databaseValue)
 
     private var isDirty = false
 
@@ -310,6 +314,7 @@ class DefaultSqlSession(
             BaseMethodName.isCountWrapper(method) -> countWrapper(method, mapperInterface, type, getFirstArg(args))
             BaseMethodName.isPaginate(method) -> processPaginate(method, mapperInterface, type, args)
             BaseMethodName.isPaginateWithJoins(method) -> processPaginateWithJoins(method, mapperInterface, type, args)
+            BaseMethodName.isCreateTable(method) -> createTable(method, mapperInterface, type, getFirstArg(args))
             else -> throw IllegalArgumentException("Unknown method: ${getMethodSignature(method)}")
         }
     }
@@ -542,7 +547,7 @@ class DefaultSqlSession(
                 val queryWrapper = parameter as QueryWrapper<*>
                 queryWrapper.setTableClassIfNotSet(type)
                 queryWrapper.setTableFillFields()
-                queryWrapper.getSqlStatement(sqlDialect)
+                queryWrapper.getSqlStatement(databaseValue.sqlDialect)
             },
             execution = { executor.query(it, type) }
         )
@@ -642,7 +647,7 @@ class DefaultSqlSession(
                 val countWrapper = parameter as QueryWrapper<*>
                 countWrapper.setTableClassIfNotSet(type)
                 countWrapper.setTableFillFields()
-                countWrapper.getSqlStatement(sqlDialect)
+                countWrapper.getSqlStatement(databaseValue.sqlDialect)
             },
             execution = { executor.count(it, type) }
         )
@@ -728,6 +733,12 @@ class DefaultSqlSession(
         }
         populateJoins(list, joins, type, method, mapperInterface)
         return Page(list, total, reasonablePageNumber, pageSize)
+    }
+
+    override fun <M : BaseMapper<T>, T : Any> createTable(method: Method, mapperInterface: Class<M>, type: Class<T>, tableName: Any): Boolean {
+        val createTable = SchemaBuilder.buildEntity(type.kotlin, tableName as String)
+        val sqlList = createTable.getSqlList(databaseValue.sqlDialect)
+        return ddlExecutor.executeDdlBatch(sqlList)
     }
 
     override fun commit() {
