@@ -425,4 +425,25 @@ interface BaseService<T : Any> : BaseMapper<T> {
         return getMapper().createTable(tableName)
     }
 
+    /**
+     * Drop a table with the specified name
+     *
+     * @param tableName The name of the table to drop
+     * @return True if drop successful, false otherwise
+     */
+    override fun dropTable(tableName: String): Boolean {
+        return getMapper().dropTable(tableName)
+    }
+
+    /**
+     * Truncate table by specified table name
+     * Clear all table data, retain table structure
+     *
+     * @param tableName Target table name
+     * @return True if truncate success
+     */
+    override fun truncateTable(tableName: String): Boolean {
+        return getMapper().truncateTable(tableName)
+    }
+
 }

@@ -3,6 +3,7 @@
 ### Bug Fixes
 
 - Add methods for dropping and truncating tables in `BaseMapper` and `SqlSession`
+- Add methods for dropping and truncating tables in `BaseService`
 
 ### Dependencies
 
