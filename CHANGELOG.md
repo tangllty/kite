@@ -7,6 +7,7 @@
 ### Features
 
 - Refactor function expression to use `FunctionRender` interface
+- Complete `POSITION`, add private method encapsulation for all functions, and rewrite `COALESCE`, `NULLIF`, `CAST`
 
 ## 1.1.0
 

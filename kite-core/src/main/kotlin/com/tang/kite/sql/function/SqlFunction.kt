@@ -196,6 +196,10 @@ object SqlFunction {
         return AggregateFunctionExpression(FunctionName.SUM, column)
     }
 
+    private fun length(column: Column): FunctionExpression {
+        return FunctionExpression(FunctionName.LENGTH, ColumnArg(column))
+    }
+
     /**
      * Returns the length of a string.
      *
@@ -203,7 +207,7 @@ object SqlFunction {
      */
     @JvmStatic
     fun length(columnName: String): FunctionExpression {
-        return FunctionExpression(FunctionName.LENGTH, columnName)
+        return length(Column(columnName))
     }
 
     /**
@@ -213,7 +217,7 @@ object SqlFunction {
      */
     @JvmStatic
     fun <T> length(column: KProperty1<T, *>): FunctionExpression {
-        return FunctionExpression(FunctionName.LENGTH, column)
+        return length(Column(column))
     }
 
     /**
@@ -223,7 +227,11 @@ object SqlFunction {
      */
     @JvmStatic
     fun <T> length(column: SFunction<T, *>): FunctionExpression {
-        return FunctionExpression(FunctionName.LENGTH, column)
+        return length(Column(column))
+    }
+
+    private fun lower(column: Column): FunctionExpression {
+        return FunctionExpression(FunctionName.LOWER, ColumnArg(column))
     }
 
     /**
@@ -233,7 +241,7 @@ object SqlFunction {
      */
     @JvmStatic
     fun lower(columnName: String): FunctionExpression {
-        return FunctionExpression(FunctionName.LOWER, columnName)
+        return lower(Column(columnName))
     }
 
     /**
@@ -243,7 +251,7 @@ object SqlFunction {
      */
     @JvmStatic
     fun <T> lower(column: KProperty1<T, *>): FunctionExpression {
-        return FunctionExpression(FunctionName.LOWER, column)
+        return lower(Column(column))
     }
 
     /**
@@ -253,7 +261,11 @@ object SqlFunction {
      */
     @JvmStatic
     fun <T> lower(column: SFunction<T, *>): FunctionExpression {
-        return FunctionExpression(FunctionName.LOWER, column)
+        return lower(Column(column))
+    }
+
+    private fun upper(column: Column): FunctionExpression {
+        return FunctionExpression(FunctionName.UPPER, ColumnArg(column))
     }
 
     /**
@@ -263,7 +275,7 @@ object SqlFunction {
      */
     @JvmStatic
     fun upper(columnName: String): FunctionExpression {
-        return FunctionExpression(FunctionName.UPPER, columnName)
+        return upper(Column(columnName))
     }
 
     /**
@@ -273,7 +285,7 @@ object SqlFunction {
      */
     @JvmStatic
     fun <T> upper(column: KProperty1<T, *>): FunctionExpression {
-        return FunctionExpression(FunctionName.UPPER, column)
+        return upper(Column(column))
     }
 
     /**
@@ -283,7 +295,7 @@ object SqlFunction {
      */
     @JvmStatic
     fun <T> upper(column: SFunction<T, *>): FunctionExpression {
-        return FunctionExpression(FunctionName.UPPER, column)
+        return upper(Column(column))
     }
 
     /**
@@ -577,6 +589,54 @@ object SqlFunction {
     }
 
     /**
+     * Returns the position of a substring within a string.
+     *
+     * @param search The substring to search for
+     * @param column Column object to search in
+     */
+    private fun position(search: Any, column: Column): FunctionExpression {
+        val renders = SpaceArgs(
+            LiteralArg(search),
+            KeywordArg(SqlKeyword.IN),
+            ColumnArg(column)
+        )
+        return FunctionExpression(FunctionName.POSITION, renders)
+    }
+
+    /**
+     * Returns the position of a substring within a string.
+     *
+     * @param search The substring to search for
+     * @param columnName Column name to search in
+     */
+    @JvmStatic
+    fun position(search: Any, columnName: String): FunctionExpression {
+        return position(search, Column(columnName))
+    }
+
+    /**
+     * Returns the position of a substring within a string.
+     *
+     * @param search The substring to search for
+     * @param column Kotlin property reference
+     */
+    @JvmStatic
+    fun <T> position(search: Any, column: KProperty1<T, *>): FunctionExpression {
+        return position(search, Column(column))
+    }
+
+    /**
+     * Returns the position of a substring within a string.
+     *
+     * @param search The substring to search for
+     * @param column Lambda expression
+     */
+    @JvmStatic
+    fun <T> position(search: Any, column: SFunction<T, *>): FunctionExpression {
+        return position(search, Column(column))
+    }
+
+    /**
      * Replaces occurrences of a substring with another substring.
      *
      * @param columnName Raw database column name
@@ -612,6 +672,10 @@ object SqlFunction {
         return replace(Column(column), search, replacement)
     }
 
+    private fun abs(column: Column): FunctionExpression {
+        return FunctionExpression(FunctionName.ABS, ColumnArg(column))
+    }
+
     /**
      * Returns the absolute value of a number.
      *
@@ -619,7 +683,7 @@ object SqlFunction {
      */
     @JvmStatic
     fun abs(columnName: String): FunctionExpression {
-        return FunctionExpression(FunctionName.ABS, columnName)
+        return abs(Column(columnName))
     }
 
     /**
@@ -629,7 +693,7 @@ object SqlFunction {
      */
     @JvmStatic
     fun <T> abs(column: KProperty1<T, *>): FunctionExpression {
-        return FunctionExpression(FunctionName.ABS, column)
+        return abs(Column(column))
     }
 
     /**
@@ -639,7 +703,15 @@ object SqlFunction {
      */
     @JvmStatic
     fun <T> abs(column: SFunction<T, *>): FunctionExpression {
-        return FunctionExpression(FunctionName.ABS, column)
+        return abs(Column(column))
+    }
+
+    private fun round(column: Column, scale: Int): FunctionExpression {
+        return FunctionExpression(FunctionName.ROUND, CommaArgs(ColumnArg(column), LiteralArg(scale)))
+    }
+
+    private fun round(column: Column): FunctionExpression {
+        return FunctionExpression(FunctionName.ROUND, CommaArgs(ColumnArg(column)))
     }
 
     /**
@@ -650,7 +722,7 @@ object SqlFunction {
      */
     @JvmStatic
     fun round(columnName: String, scale: Int): FunctionExpression {
-        return FunctionExpression(FunctionName.ROUND, CommaArgs(ColumnArg(Column(columnName)), LiteralArg(scale)))
+        return round(Column(columnName), scale)
     }
 
     /**
@@ -660,7 +732,7 @@ object SqlFunction {
      */
     @JvmStatic
     fun round(columnName: String): FunctionExpression {
-        return FunctionExpression(FunctionName.ROUND, CommaArgs(ColumnArg(Column(columnName))))
+        return round(Column(columnName))
     }
 
     /**
@@ -671,7 +743,7 @@ object SqlFunction {
      */
     @JvmStatic
     fun <T> round(column: KProperty1<T, *>, scale: Int): FunctionExpression {
-        return FunctionExpression(FunctionName.ROUND, CommaArgs(ColumnArg(Column(column)), LiteralArg(scale)))
+        return round(Column(column), scale)
     }
 
     /**
@@ -681,7 +753,7 @@ object SqlFunction {
      */
     @JvmStatic
     fun <T> round(column: KProperty1<T, *>): FunctionExpression {
-        return FunctionExpression(FunctionName.ROUND, CommaArgs(ColumnArg(Column(column))))
+        return round(Column(column))
     }
 
     /**
@@ -692,7 +764,7 @@ object SqlFunction {
      */
     @JvmStatic
     fun <T> round(column: SFunction<T, *>, scale: Int): FunctionExpression {
-        return FunctionExpression(FunctionName.ROUND, CommaArgs(ColumnArg(Column(column)), LiteralArg(scale)))
+        return round(Column(column), scale)
     }
 
     /**
@@ -702,7 +774,11 @@ object SqlFunction {
      */
     @JvmStatic
     fun <T> round(column: SFunction<T, *>): FunctionExpression {
-        return FunctionExpression(FunctionName.ROUND, CommaArgs(ColumnArg(Column(column))))
+        return round(Column(column))
+    }
+
+    private fun ceil(column: Column): FunctionExpression {
+        return FunctionExpression(FunctionName.CEIL, ColumnArg(column))
     }
 
     /**
@@ -712,7 +788,7 @@ object SqlFunction {
      */
     @JvmStatic
     fun ceil(columnName: String): FunctionExpression {
-        return FunctionExpression(FunctionName.CEIL, columnName)
+        return ceil(Column(columnName))
     }
 
     /**
@@ -722,7 +798,7 @@ object SqlFunction {
      */
     @JvmStatic
     fun <T> ceil(column: KProperty1<T, *>): FunctionExpression {
-        return FunctionExpression(FunctionName.CEIL, column)
+        return ceil(Column(column))
     }
 
     /**
@@ -732,7 +808,11 @@ object SqlFunction {
      */
     @JvmStatic
     fun <T> ceil(column: SFunction<T, *>): FunctionExpression {
-        return FunctionExpression(FunctionName.CEIL, column)
+        return ceil(Column(column))
+    }
+
+    private fun ceiling(column: Column): FunctionExpression {
+        return FunctionExpression(FunctionName.CEILING, ColumnArg(column))
     }
 
     /**
@@ -742,7 +822,7 @@ object SqlFunction {
      */
     @JvmStatic
     fun ceiling(columnName: String): FunctionExpression {
-        return FunctionExpression(FunctionName.CEILING, columnName)
+        return ceiling(Column(columnName))
     }
 
     /**
@@ -752,7 +832,7 @@ object SqlFunction {
      */
     @JvmStatic
     fun <T> ceiling(column: KProperty1<T, *>): FunctionExpression {
-        return FunctionExpression(FunctionName.CEILING, column)
+        return ceiling(Column(column))
     }
 
     /**
@@ -762,7 +842,11 @@ object SqlFunction {
      */
     @JvmStatic
     fun <T> ceiling(column: SFunction<T, *>): FunctionExpression {
-        return FunctionExpression(FunctionName.CEILING, column)
+        return ceiling(Column(column))
+    }
+
+    private fun floor(column: Column): FunctionExpression {
+        return FunctionExpression(FunctionName.FLOOR, ColumnArg(column))
     }
 
     /**
@@ -772,7 +856,7 @@ object SqlFunction {
      */
     @JvmStatic
     fun floor(columnName: String): FunctionExpression {
-        return FunctionExpression(FunctionName.FLOOR, columnName)
+        return floor(Column(columnName))
     }
 
     /**
@@ -782,7 +866,7 @@ object SqlFunction {
      */
     @JvmStatic
     fun <T> floor(column: KProperty1<T, *>): FunctionExpression {
-        return FunctionExpression(FunctionName.FLOOR, column)
+        return floor(Column(column))
     }
 
     /**
@@ -792,7 +876,11 @@ object SqlFunction {
      */
     @JvmStatic
     fun <T> floor(column: SFunction<T, *>): FunctionExpression {
-        return FunctionExpression(FunctionName.FLOOR, column)
+        return floor(Column(column))
+    }
+
+    private fun mod(column: Column, divisor: Any): FunctionExpression {
+        return FunctionExpression(FunctionName.MOD, CommaArgs(ColumnArg(column), LiteralArg(divisor)))
     }
 
     /**
@@ -803,7 +891,7 @@ object SqlFunction {
      */
     @JvmStatic
     fun mod(columnName: String, divisor: Any): FunctionExpression {
-        return FunctionExpression(FunctionName.MOD, CommaArgs(ColumnArg(Column(columnName)), LiteralArg(divisor)))
+        return mod(Column(columnName), divisor)
     }
 
     /**
@@ -814,7 +902,7 @@ object SqlFunction {
      */
     @JvmStatic
     fun <T> mod(column: KProperty1<T, *>, divisor: Any): FunctionExpression {
-        return FunctionExpression(FunctionName.MOD, CommaArgs(ColumnArg(Column(column)), LiteralArg(divisor)))
+        return mod(Column(column), divisor)
     }
 
     /**
@@ -825,7 +913,11 @@ object SqlFunction {
      */
     @JvmStatic
     fun <T> mod(column: SFunction<T, *>, divisor: Any): FunctionExpression {
-        return FunctionExpression(FunctionName.MOD, CommaArgs(ColumnArg(Column(column)), LiteralArg(divisor)))
+        return mod(Column(column), divisor)
+    }
+
+    private fun power(column: Column, exponent: Any): FunctionExpression {
+        return FunctionExpression(FunctionName.POWER, CommaArgs(ColumnArg(column), LiteralArg(exponent)))
     }
 
     /**
@@ -836,7 +928,7 @@ object SqlFunction {
      */
     @JvmStatic
     fun power(columnName: String, exponent: Any): FunctionExpression {
-        return FunctionExpression(FunctionName.POWER, CommaArgs(ColumnArg(Column(columnName)), LiteralArg(exponent)))
+        return power(Column(columnName), exponent)
     }
 
     /**
@@ -847,7 +939,7 @@ object SqlFunction {
      */
     @JvmStatic
     fun <T> power(column: KProperty1<T, *>, exponent: Any): FunctionExpression {
-        return FunctionExpression(FunctionName.POWER, CommaArgs(ColumnArg(Column(column)), LiteralArg(exponent)))
+        return power(Column(column), exponent)
     }
 
     /**
@@ -858,7 +950,11 @@ object SqlFunction {
      */
     @JvmStatic
     fun <T> power(column: SFunction<T, *>, exponent: Any): FunctionExpression {
-        return FunctionExpression(FunctionName.POWER, CommaArgs(ColumnArg(Column(column)), LiteralArg(exponent)))
+        return power(Column(column), exponent)
+    }
+
+    private fun sqrt(column: Column): FunctionExpression {
+        return FunctionExpression(FunctionName.SQRT, ColumnArg(column))
     }
 
     /**
@@ -868,7 +964,7 @@ object SqlFunction {
      */
     @JvmStatic
     fun sqrt(columnName: String): FunctionExpression {
-        return FunctionExpression(FunctionName.SQRT, columnName)
+        return sqrt(Column(columnName))
     }
 
     /**
@@ -878,7 +974,7 @@ object SqlFunction {
      */
     @JvmStatic
     fun <T> sqrt(column: KProperty1<T, *>): FunctionExpression {
-        return FunctionExpression(FunctionName.SQRT, column)
+        return sqrt(Column(column))
     }
 
     /**
@@ -888,7 +984,11 @@ object SqlFunction {
      */
     @JvmStatic
     fun <T> sqrt(column: SFunction<T, *>): FunctionExpression {
-        return FunctionExpression(FunctionName.SQRT, column)
+        return sqrt(Column(column))
+    }
+
+    private fun exp(column: Column): FunctionExpression {
+        return FunctionExpression(FunctionName.EXP, ColumnArg(column))
     }
 
     /**
@@ -898,7 +998,7 @@ object SqlFunction {
      */
     @JvmStatic
     fun exp(columnName: String): FunctionExpression {
-        return FunctionExpression(FunctionName.EXP, columnName)
+        return exp(Column(columnName))
     }
 
     /**
@@ -908,7 +1008,7 @@ object SqlFunction {
      */
     @JvmStatic
     fun <T> exp(column: KProperty1<T, *>): FunctionExpression {
-        return FunctionExpression(FunctionName.EXP, column)
+        return exp(Column(column))
     }
 
     /**
@@ -918,7 +1018,15 @@ object SqlFunction {
      */
     @JvmStatic
     fun <T> exp(column: SFunction<T, *>): FunctionExpression {
-        return FunctionExpression(FunctionName.EXP, column)
+        return exp(Column(column))
+    }
+
+    private fun log(column: Column): FunctionExpression {
+        return FunctionExpression(FunctionName.LOG, ColumnArg(column))
+    }
+
+    private fun log(base: Any, column: Column): FunctionExpression {
+        return FunctionExpression(FunctionName.LOG, LiteralArg(base), ColumnArg(column))
     }
 
     /**
@@ -928,7 +1036,7 @@ object SqlFunction {
      */
     @JvmStatic
     fun log(columnName: String): FunctionExpression {
-        return FunctionExpression(FunctionName.LOG, columnName)
+        return log(Column(columnName))
     }
 
     /**
@@ -938,7 +1046,7 @@ object SqlFunction {
      */
     @JvmStatic
     fun <T> log(column: KProperty1<T, *>): FunctionExpression {
-        return FunctionExpression(FunctionName.LOG, column)
+        return log(Column(column))
     }
 
     /**
@@ -948,22 +1056,26 @@ object SqlFunction {
      */
     @JvmStatic
     fun <T> log(column: SFunction<T, *>): FunctionExpression {
-        return FunctionExpression(FunctionName.LOG, column)
+        return log(Column(column))
     }
 
     @JvmStatic
     fun log(base: Any, columnName: String): FunctionExpression {
-        return FunctionExpression(FunctionName.LOG, LiteralArg(base), ColumnArg(Column(columnName)))
+        return log(base, Column(columnName))
     }
 
     @JvmStatic
     fun <T> log(base: Any, column: KProperty1<T, *>): FunctionExpression {
-        return FunctionExpression(FunctionName.LOG, LiteralArg(base), ColumnArg(Column(column)))
+        return log(base, Column(column))
     }
 
     @JvmStatic
     fun <T> log(base: Any, column: SFunction<T, *>): FunctionExpression {
-        return FunctionExpression(FunctionName.LOG, LiteralArg(base), ColumnArg(Column(column)))
+        return log(base, Column(column))
+    }
+
+    private fun log10(column: Column): FunctionExpression {
+        return FunctionExpression(FunctionName.LOG10, ColumnArg(column))
     }
 
     /**
@@ -973,7 +1085,7 @@ object SqlFunction {
      */
     @JvmStatic
     fun log10(columnName: String): FunctionExpression {
-        return FunctionExpression(FunctionName.LOG10, columnName)
+        return log10(Column(columnName))
     }
 
     /**
@@ -983,7 +1095,7 @@ object SqlFunction {
      */
     @JvmStatic
     fun <T> log10(column: KProperty1<T, *>): FunctionExpression {
-        return FunctionExpression(FunctionName.LOG10, column)
+        return log10(Column(column))
     }
 
     /**
@@ -993,7 +1105,11 @@ object SqlFunction {
      */
     @JvmStatic
     fun <T> log10(column: SFunction<T, *>): FunctionExpression {
-        return FunctionExpression(FunctionName.LOG10, column)
+        return log10(Column(column))
+    }
+
+    private fun sin(column: Column): FunctionExpression {
+        return FunctionExpression(FunctionName.SIN, ColumnArg(column))
     }
 
     /**
@@ -1003,7 +1119,7 @@ object SqlFunction {
      */
     @JvmStatic
     fun sin(columnName: String): FunctionExpression {
-        return FunctionExpression(FunctionName.SIN, columnName)
+        return sin(Column(columnName))
     }
 
     /**
@@ -1013,7 +1129,7 @@ object SqlFunction {
      */
     @JvmStatic
     fun <T> sin(column: KProperty1<T, *>): FunctionExpression {
-        return FunctionExpression(FunctionName.SIN, column)
+        return sin(Column(column))
     }
 
     /**
@@ -1023,7 +1139,11 @@ object SqlFunction {
      */
     @JvmStatic
     fun <T> sin(column: SFunction<T, *>): FunctionExpression {
-        return FunctionExpression(FunctionName.SIN, column)
+        return sin(Column(column))
+    }
+
+    private fun cos(column: Column): FunctionExpression {
+        return FunctionExpression(FunctionName.COS, ColumnArg(column))
     }
 
     /**
@@ -1033,7 +1153,7 @@ object SqlFunction {
      */
     @JvmStatic
     fun cos(columnName: String): FunctionExpression {
-        return FunctionExpression(FunctionName.COS, columnName)
+        return cos(Column(columnName))
     }
 
     /**
@@ -1043,7 +1163,7 @@ object SqlFunction {
      */
     @JvmStatic
     fun <T> cos(column: KProperty1<T, *>): FunctionExpression {
-        return FunctionExpression(FunctionName.COS, column)
+        return cos(Column(column))
     }
 
     /**
@@ -1053,7 +1173,11 @@ object SqlFunction {
      */
     @JvmStatic
     fun <T> cos(column: SFunction<T, *>): FunctionExpression {
-        return FunctionExpression(FunctionName.COS, column)
+        return cos(Column(column))
+    }
+
+    private fun tan(column: Column): FunctionExpression {
+        return FunctionExpression(FunctionName.TAN, ColumnArg(column))
     }
 
     /**
@@ -1063,7 +1187,7 @@ object SqlFunction {
      */
     @JvmStatic
     fun tan(columnName: String): FunctionExpression {
-        return FunctionExpression(FunctionName.TAN, columnName)
+        return tan(Column(columnName))
     }
 
     /**
@@ -1073,7 +1197,7 @@ object SqlFunction {
      */
     @JvmStatic
     fun <T> tan(column: KProperty1<T, *>): FunctionExpression {
-        return FunctionExpression(FunctionName.TAN, column)
+        return tan(Column(column))
     }
 
     /**
@@ -1083,7 +1207,11 @@ object SqlFunction {
      */
     @JvmStatic
     fun <T> tan(column: SFunction<T, *>): FunctionExpression {
-        return FunctionExpression(FunctionName.TAN, column)
+        return tan(Column(column))
+    }
+
+    private fun asin(column: Column): FunctionExpression {
+        return FunctionExpression(FunctionName.ASIN, ColumnArg(column))
     }
 
     /**
@@ -1093,7 +1221,7 @@ object SqlFunction {
      */
     @JvmStatic
     fun asin(columnName: String): FunctionExpression {
-        return FunctionExpression(FunctionName.ASIN, columnName)
+        return asin(Column(columnName))
     }
 
     /**
@@ -1103,7 +1231,7 @@ object SqlFunction {
      */
     @JvmStatic
     fun <T> asin(column: KProperty1<T, *>): FunctionExpression {
-        return FunctionExpression(FunctionName.ASIN, column)
+        return asin(Column(column))
     }
 
     /**
@@ -1113,7 +1241,11 @@ object SqlFunction {
      */
     @JvmStatic
     fun <T> asin(column: SFunction<T, *>): FunctionExpression {
-        return FunctionExpression(FunctionName.ASIN, column)
+        return asin(Column(column))
+    }
+
+    private fun acos(column: Column): FunctionExpression {
+        return FunctionExpression(FunctionName.ACOS, ColumnArg(column))
     }
 
     /**
@@ -1123,7 +1255,7 @@ object SqlFunction {
      */
     @JvmStatic
     fun acos(columnName: String): FunctionExpression {
-        return FunctionExpression(FunctionName.ACOS, columnName)
+        return acos(Column(columnName))
     }
 
     /**
@@ -1133,7 +1265,7 @@ object SqlFunction {
      */
     @JvmStatic
     fun <T> acos(column: KProperty1<T, *>): FunctionExpression {
-        return FunctionExpression(FunctionName.ACOS, column)
+        return acos(Column(column))
     }
 
     /**
@@ -1143,7 +1275,11 @@ object SqlFunction {
      */
     @JvmStatic
     fun <T> acos(column: SFunction<T, *>): FunctionExpression {
-        return FunctionExpression(FunctionName.ACOS, column)
+        return acos(Column(column))
+    }
+
+    private fun atan(column: Column): FunctionExpression {
+        return FunctionExpression(FunctionName.ATAN, ColumnArg(column))
     }
 
     /**
@@ -1153,7 +1289,7 @@ object SqlFunction {
      */
     @JvmStatic
     fun atan(columnName: String): FunctionExpression {
-        return FunctionExpression(FunctionName.ATAN, columnName)
+        return atan(Column(columnName))
     }
 
     /**
@@ -1163,7 +1299,7 @@ object SqlFunction {
      */
     @JvmStatic
     fun <T> atan(column: KProperty1<T, *>): FunctionExpression {
-        return FunctionExpression(FunctionName.ATAN, column)
+        return atan(Column(column))
     }
 
     /**
@@ -1173,7 +1309,11 @@ object SqlFunction {
      */
     @JvmStatic
     fun <T> atan(column: SFunction<T, *>): FunctionExpression {
-        return FunctionExpression(FunctionName.ATAN, column)
+        return atan(Column(column))
+    }
+
+    private fun sign(column: Column): FunctionExpression {
+        return FunctionExpression(FunctionName.SIGN, ColumnArg(column))
     }
 
     /**
@@ -1183,7 +1323,7 @@ object SqlFunction {
      */
     @JvmStatic
     fun sign(columnName: String): FunctionExpression {
-        return FunctionExpression(FunctionName.SIGN, columnName)
+        return sign(Column(columnName))
     }
 
     /**
@@ -1193,7 +1333,7 @@ object SqlFunction {
      */
     @JvmStatic
     fun <T> sign(column: KProperty1<T, *>): FunctionExpression {
-        return FunctionExpression(FunctionName.SIGN, column)
+        return sign(Column(column))
     }
 
     /**
@@ -1203,7 +1343,7 @@ object SqlFunction {
      */
     @JvmStatic
     fun <T> sign(column: SFunction<T, *>): FunctionExpression {
-        return FunctionExpression(FunctionName.SIGN, column)
+        return sign(Column(column))
     }
 
     /**
@@ -1487,39 +1627,160 @@ object SqlFunction {
         return second(getColumnName(column))
     }
 
-    // TODO
-
-
-    /**
-     * Returns the first non-null value in a list.
-     *
-     * @param col Column object
-     * @param default Default value if column is null
-     */
-    @JvmStatic
-    fun coalesce(col: Column, default: Any): FunctionExpression {
-        return FunctionExpression(FunctionName.COALESCE, ColumnArg(col), LiteralArg(default))
-    }
-
     /**
      * Returns the first non-null value in a list of expressions.
      *
-     * @param exprList Expressions to evaluate
+     * @param renders Expressions to evaluate
      */
-    @JvmStatic
-    fun coalesce(vararg exprList: FunctionRender): FunctionExpression {
-        return FunctionExpression(FunctionName.COALESCE, *exprList)
+    private fun coalesce(vararg renders: FunctionRender): FunctionExpression {
+        return FunctionExpression(FunctionName.COALESCE, CommaArgs(*renders))
     }
 
     /**
-     * Returns null if two expressions are equal, otherwise returns the first expression.
+     * Returns the first non-null value from column and default value.
      *
-     * @param expr1 First expression
-     * @param expr2 Second expression
+     * @param columnName Column name
+     * @param default Default value if column is null
      */
     @JvmStatic
-    fun nullif(expr1: FunctionRender, expr2: FunctionRender): FunctionExpression {
-        return FunctionExpression(FunctionName.NULLIF, expr1, expr2)
+    fun coalesce(columnName: String, default: Any): FunctionExpression {
+        return coalesce(ColumnArg(Column(columnName)), LiteralArg(default))
+    }
+
+    /**
+     * Returns the first non-null value from column and default value.
+     *
+     * @param column Kotlin property reference
+     * @param default Default value if column is null
+     */
+    @JvmStatic
+    fun <T> coalesce(column: KProperty1<T, *>, default: Any): FunctionExpression {
+        return coalesce(ColumnArg(Column(column)), LiteralArg(default))
+    }
+
+    /**
+     * Returns the first non-null value from column and default value.
+     *
+     * @param column Lambda expression
+     * @param default Default value if column is null
+     */
+    @JvmStatic
+    fun <T> coalesce(column: SFunction<T, *>, default: Any): FunctionExpression {
+        return coalesce(ColumnArg(Column(column)), LiteralArg(default))
+    }
+
+    /**
+     * Returns the first non-null value from multiple column names.
+     *
+     * @param columnNames Column names
+     */
+    @JvmStatic
+    fun coalesce(vararg columnNames: String): FunctionExpression {
+        val args = columnNames.map { ColumnArg(Column(it)) }.toTypedArray()
+        return coalesce(*args)
+    }
+
+    /**
+     * Returns the first non-null value from multiple columns.
+     *
+     * @param columns Kotlin property references
+     */
+    @JvmStatic
+    fun <T> coalesce(vararg columns: KProperty1<T, *>): FunctionExpression {
+        val args = columns.map { ColumnArg(Column(it)) }.toTypedArray()
+        return coalesce(*args)
+    }
+
+    /**
+     * Returns the first non-null value from multiple columns.
+     *
+     * @param columns Lambda expressions
+     */
+    @JvmStatic
+    fun <T> coalesce(vararg columns: SFunction<T, *>): FunctionExpression {
+        val args = columns.map { ColumnArg(Column(it)) }.toTypedArray()
+        return coalesce(*args)
+    }
+
+    private fun nullif(column: Column, value: Any): FunctionExpression {
+        return FunctionExpression(FunctionName.NULLIF, CommaArgs(ColumnArg(column), LiteralArg(value)))
+    }
+
+    /**
+     * Returns null if column equals value, otherwise returns the column value.
+     *
+     * @param columnName Column name
+     * @param value Value to compare
+     */
+    @JvmStatic
+    fun nullif(columnName: String, value: Any): FunctionExpression {
+        return nullif(Column(columnName), value)
+    }
+
+    /**
+     * Returns null if column equals value, otherwise returns the column value.
+     *
+     * @param column Kotlin property reference
+     * @param value Value to compare
+     */
+    @JvmStatic
+    fun <T> nullif(column: KProperty1<T, *>, value: Any): FunctionExpression {
+        return nullif(Column(column), value)
+    }
+
+    /**
+     * Returns null if column equals value, otherwise returns the column value.
+     *
+     * @param column Lambda expression
+     * @param value Value to compare
+     */
+    @JvmStatic
+    fun <T> nullif(column: SFunction<T, *>, value: Any): FunctionExpression {
+        return nullif(Column(column), value)
+    }
+
+    /**
+     * Casts a value to a specified data type.
+     *
+     * @param column Column object
+     * @param type Target data type
+     */
+    private fun cast(column: Column, type: String): FunctionExpression {
+        val renders = SpaceArgs(ColumnArg(column), KeywordArg(SqlKeyword.AS), LiteralArg(type))
+        return FunctionExpression(FunctionName.CAST, renders)
+    }
+
+    /**
+     * Converts a column to a specified data type.
+     *
+     * @param columnName Column name
+     * @param type Target data type
+     */
+    @JvmStatic
+    fun cast(columnName: String, type: String): FunctionExpression {
+        return cast(Column(columnName), type)
+    }
+
+    /**
+     * Converts a column to a specified data type.
+     *
+     * @param column Kotlin property reference
+     * @param type Target data type
+     */
+    @JvmStatic
+    fun <T> cast(column: KProperty1<T, *>, type: String): FunctionExpression {
+        return cast(Column(column), type)
+    }
+
+    /**
+     * Converts a column to a specified data type.
+     *
+     * @param column Lambda expression
+     * @param type Target data type
+     */
+    @JvmStatic
+    fun <T> cast(column: SFunction<T, *>, type: String): FunctionExpression {
+        return cast(Column(column), type)
     }
 
     /**
@@ -1596,17 +1857,6 @@ object SqlFunction {
     @JvmStatic
     fun lastValue(col: Column): FunctionExpression {
         return FunctionExpression(FunctionName.LAST_VALUE, ColumnArg(col))
-    }
-
-    /**
-     * Casts a value to a specified data type.
-     *
-     * @param col Column object
-     * @param type Target data type
-     */
-    @JvmStatic
-    fun cast(col: Column, type: String): FunctionExpression {
-        return FunctionExpression(FunctionName.CAST, ColumnArg(col), LiteralArg(type))
     }
 
 }

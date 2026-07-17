@@ -15,6 +15,7 @@ object SqlKeyword {
     const val SEPARATOR = "separator"
     const val EXISTS = "exists"
     const val IN = "in"
+    const val AS = "as"
     const val DISTINCT = "distinct"
     const val ALL = "all"
 

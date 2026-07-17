@@ -121,6 +121,12 @@ class SqlFunctionTest {
     }
 
     @Test
+    fun testPosition() {
+        assertEquals("position('@' in email)", SqlFunction.position("@", "email").render())
+        assertEquals("position('@' in email)", SqlFunction.position("@", Account::email).render())
+    }
+
+    @Test
     fun testAbs() {
         assertEquals("abs(score)", SqlFunction.abs("score").render())
         assertEquals("abs(score)", SqlFunction.abs(Account::score).render())
@@ -296,6 +302,21 @@ class SqlFunctionTest {
     fun testSecond() {
         assertEquals("extract(second from created_at)", SqlFunction.second("created_at").render())
         assertEquals("extract(second from created_at)", SqlFunction.second(Account::createdAt).render())
+    }
+
+    @Test
+    fun testCoalesce() {
+        assertEquals("coalesce(name, 'unknown')", SqlFunction.coalesce("name", "'unknown'").render())
+        assertEquals("coalesce(name, 'unknown')", SqlFunction.coalesce(Account::name, "unknown").render())
+        assertEquals("coalesce(name, email)", SqlFunction.coalesce("name", "email").render())
+        assertEquals("coalesce(name, email)", SqlFunction.coalesce(Account::name, Account::email).render())
+    }
+
+    @Test
+    fun testNullif() {
+        assertEquals("nullif(name, '')", SqlFunction.nullif("name", "").render())
+        assertEquals("nullif(name, '')", SqlFunction.nullif(Account::name, "").render())
+        assertEquals("nullif(status, 0)", SqlFunction.nullif("status", 0).render())
     }
 
 }
