@@ -41,6 +41,7 @@ import java.util.concurrent.ConcurrentMap
 import kotlin.jvm.java
 import kotlin.reflect.KCallable
 import kotlin.reflect.KMutableProperty1
+import kotlin.reflect.KProperty1
 import kotlin.reflect.full.createInstance
 import kotlin.reflect.full.isSubclassOf
 import kotlin.reflect.jvm.isAccessible
@@ -347,7 +348,7 @@ object Reflects {
     }
 
     @JvmStatic
-    fun <T> getColumnName(column: KMutableProperty1<T, *>, withAlias: Boolean = false): String {
+    fun <T> getColumnName(column: KProperty1<T, *>, withAlias: Boolean = false): String {
         val field = column.javaField!!
         return getColumnName(field, withAlias)
     }

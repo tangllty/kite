@@ -4,7 +4,8 @@ import com.tang.kite.function.SFunction
 import com.tang.kite.sql.Column
 import com.tang.kite.sql.enumeration.ComparisonOperator
 import com.tang.kite.sql.enumeration.LogicalOperator
-import com.tang.kite.sql.function.FunctionColumn
+import com.tang.kite.sql.function.ColumnArg
+import com.tang.kite.sql.function.expression.FunctionExpression
 import com.tang.kite.sql.statement.ComparisonStatement
 import com.tang.kite.sql.statement.LogicalStatement
 import kotlin.reflect.KMutableProperty1
@@ -609,6 +610,13 @@ abstract class AbstractConditionWrapper<R, T> : WrapperBuilder<T> {
         return le(column, value, true)
     }
 
+    private fun wrapColumnLike(value: FunctionExpression, wrap: (String?) -> String) {
+        val expression = value.renderList.firstOrNull() as ColumnArg
+        val colName = expression.column.name
+        value.renderList.clear()
+        value.renderList.add(ColumnArg(Column(wrap(colName))))
+    }
+
     /**
      * Like operation
      *
@@ -618,8 +626,8 @@ abstract class AbstractConditionWrapper<R, T> : WrapperBuilder<T> {
      * @return R
      */
     fun like(column: Column, value: Any?, effective: Boolean): R {
-        if (value is FunctionColumn) {
-            value.column = "%${value.column}%"
+        if (value is FunctionExpression) {
+            wrapColumnLike(value) { "%$it%" }
         }
         return compare(column, value, ComparisonOperator.LIKE, effective)
     }
@@ -713,8 +721,8 @@ abstract class AbstractConditionWrapper<R, T> : WrapperBuilder<T> {
      * @return R
      */
     fun leftLike(column: Column, value: Any?, effective: Boolean): R {
-        if (value is FunctionColumn) {
-            value.column = "%${value.column}"
+        if (value is FunctionExpression) {
+            wrapColumnLike(value) { "%$it" }
         }
         return compare(column, value, ComparisonOperator.LIKE, effective)
     }
@@ -808,8 +816,8 @@ abstract class AbstractConditionWrapper<R, T> : WrapperBuilder<T> {
      * @return R
      */
     fun rightLike(column: Column, value: Any?, effective: Boolean): R {
-        if (value is FunctionColumn) {
-            value.column = "${value.column}%"
+        if (value is FunctionExpression) {
+            wrapColumnLike(value) { "$it%" }
         }
         return compare(column, value, ComparisonOperator.LIKE, effective)
     }
@@ -1172,8 +1180,8 @@ abstract class AbstractConditionWrapper<R, T> : WrapperBuilder<T> {
      * @return R
      */
     fun notLike(column: Column, value: Any?, effective: Boolean): R {
-        if (value is FunctionColumn) {
-            value.column = "%${value.column}%"
+        if (value is FunctionExpression) {
+            wrapColumnLike(value) { "%$it%" }
         }
         return compare(column, value, ComparisonOperator.NOT_LIKE, effective)
     }
@@ -1267,8 +1275,8 @@ abstract class AbstractConditionWrapper<R, T> : WrapperBuilder<T> {
      * @return R
      */
     fun notLeftLike(column: Column, value: Any?, effective: Boolean): R {
-        if (value is FunctionColumn) {
-            value.column = "%${value.column}"
+        if (value is FunctionExpression) {
+            wrapColumnLike(value) { "%$it" }
         }
         return compare(column, value, ComparisonOperator.NOT_LIKE, effective)
     }
@@ -1362,8 +1370,8 @@ abstract class AbstractConditionWrapper<R, T> : WrapperBuilder<T> {
      * @return R
      */
     fun notRightLike(column: Column, value: Any?, effective: Boolean): R {
-        if (value is FunctionColumn) {
-            value.column = "${value.column}%"
+        if (value is FunctionExpression) {
+            wrapColumnLike(value) { "$it%" }
         }
         return compare(column, value, ComparisonOperator.NOT_LIKE, effective)
     }

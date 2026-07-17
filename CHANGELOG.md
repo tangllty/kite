@@ -2,6 +2,16 @@
 
 ### Bug Fixes
 
+### Dependencies
+
+### Features
+
+- Refactor function expression to use `FunctionRender` interface
+
+## 1.1.0
+
+### Bug Fixes
+
 - Add methods for dropping and truncating tables in `BaseMapper` and `SqlSession`
 - Add methods for dropping and truncating tables in `BaseService`
 

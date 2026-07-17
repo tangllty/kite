@@ -6,7 +6,7 @@ import com.tang.kite.constants.SqlString.COMMA_SPACE
 import com.tang.kite.constants.SqlString.LEFT_BRACKET
 import com.tang.kite.constants.SqlString.QUESTION_MARK
 import com.tang.kite.constants.SqlString.RIGHT_BRACKET
-import com.tang.kite.sql.function.FunctionColumn
+import com.tang.kite.sql.function.expression.FunctionExpression
 import com.tang.kite.sql.Column
 import com.tang.kite.sql.enumeration.ComparisonOperator
 
@@ -50,7 +50,7 @@ class ComparisonStatement(val column: Column, val value: Any?, val comparisonOpe
     }
 
     private fun getQuestionMark(): String {
-        if (value is FunctionColumn) {
+        if (value is FunctionExpression) {
             val function = SqlConfig.getSql(value.function)
             return "$function($QUESTION_MARK)"
         }
@@ -58,16 +58,15 @@ class ComparisonStatement(val column: Column, val value: Any?, val comparisonOpe
     }
 
     private fun getColumn(withAlias: Boolean): String {
-        if (column is FunctionColumn) {
-            val function = SqlConfig.getSql(column.function)
-            return "$function(${column.toString(withAlias)})"
+        if (column is FunctionExpression) {
+            return column.render()
         }
         return column.toString(withAlias)
     }
 
     private fun getColumnValue(): Any? {
-        if (value is FunctionColumn) {
-            return value.column
+        if (value is FunctionExpression) {
+            return value.renderList.first().render()
         }
         return value
     }
