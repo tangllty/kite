@@ -37,14 +37,18 @@ object FunctionName {
     const val EXP = "exp"
     const val LOG = "log"
     const val LOG10 = "log10"
+    const val LN = "ln"
     const val SIN = "sin"
     const val COS = "cos"
     const val TAN = "tan"
     const val ASIN = "asin"
     const val ACOS = "acos"
     const val ATAN = "atan"
+    const val ATAN2 = "atan2"
     const val SIGN = "sign"
     const val PI = "pi"
+    const val DEGREES = "degrees"
+    const val RADIANS = "radians"
 
     // Date Time Functions
     const val CURRENT_DATE = "current_date"

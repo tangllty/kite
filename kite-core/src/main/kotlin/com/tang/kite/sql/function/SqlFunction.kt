@@ -1109,6 +1109,40 @@ object SqlFunction {
         return log10(Column(column))
     }
 
+    private fun ln(column: Column): FunctionExpression {
+        return FunctionExpression(FunctionName.LN, ColumnArg(column))
+    }
+
+    /**
+     * Returns the natural logarithm of a number.
+     *
+     * @param columnName Column name
+     */
+    @JvmStatic
+    fun ln(columnName: String): FunctionExpression {
+        return ln(Column(columnName))
+    }
+
+    /**
+     * Returns the natural logarithm of a number.
+     *
+     * @param column Kotlin property reference
+     */
+    @JvmStatic
+    fun <T> ln(column: KProperty1<T, *>): FunctionExpression {
+        return ln(Column(column))
+    }
+
+    /**
+     * Returns the natural logarithm of a number.
+     *
+     * @param column Lambda expression
+     */
+    @JvmStatic
+    fun <T> ln(column: SFunction<T, *>): FunctionExpression {
+        return ln(Column(column))
+    }
+
     private fun sin(column: Column): FunctionExpression {
         return FunctionExpression(FunctionName.SIN, ColumnArg(column))
     }
@@ -1313,6 +1347,43 @@ object SqlFunction {
         return atan(Column(column))
     }
 
+    private fun atan2(y: Column, x: Column): FunctionExpression {
+        return FunctionExpression(FunctionName.ATAN2, CommaArgs(ColumnArg(y), ColumnArg(x)))
+    }
+
+    /**
+     * Returns the arctangent of the quotient of two numbers.
+     *
+     * @param y Column name for the y-coordinate
+     * @param x Column name for the x-coordinate
+     */
+    @JvmStatic
+    fun atan2(y: String, x: String): FunctionExpression {
+        return atan2(Column(y), Column(x))
+    }
+
+    /**
+     * Returns the arctangent of the quotient of two numbers.
+     *
+     * @param y Kotlin property reference for the y-coordinate
+     * @param x Kotlin property reference for the x-coordinate
+     */
+    @JvmStatic
+    fun <T> atan2(y: KProperty1<T, *>, x: KProperty1<T, *>): FunctionExpression {
+        return atan2(Column(y), Column(x))
+    }
+
+    /**
+     * Returns the arctangent of the quotient of two numbers.
+     *
+     * @param y Lambda expression for the y-coordinate
+     * @param x Lambda expression for the x-coordinate
+     */
+    @JvmStatic
+    fun <T> atan2(y: SFunction<T, *>, x: SFunction<T, *>): FunctionExpression {
+        return atan2(Column(y), Column(x))
+    }
+
     private fun sign(column: Column): FunctionExpression {
         return FunctionExpression(FunctionName.SIGN, ColumnArg(column))
     }
@@ -1353,6 +1424,74 @@ object SqlFunction {
     @JvmStatic
     fun pi(): FunctionExpression {
         return FunctionExpression(FunctionName.PI)
+    }
+
+    private fun degrees(column: Column): FunctionExpression {
+        return FunctionExpression(FunctionName.DEGREES, ColumnArg(column))
+    }
+
+    /**
+     * Converts radians to degrees.
+     *
+     * @param columnName Column name
+     */
+    @JvmStatic
+    fun degrees(columnName: String): FunctionExpression {
+        return degrees(Column(columnName))
+    }
+
+    /**
+     * Converts radians to degrees.
+     *
+     * @param column Kotlin property reference
+     */
+    @JvmStatic
+    fun <T> degrees(column: KProperty1<T, *>): FunctionExpression {
+        return degrees(Column(column))
+    }
+
+    /**
+     * Converts radians to degrees.
+     *
+     * @param column Lambda expression
+     */
+    @JvmStatic
+    fun <T> degrees(column: SFunction<T, *>): FunctionExpression {
+        return degrees(Column(column))
+    }
+
+    private fun radians(column: Column): FunctionExpression {
+        return FunctionExpression(FunctionName.RADIANS, ColumnArg(column))
+    }
+
+    /**
+     * Converts degrees to radians.
+     *
+     * @param columnName Column name
+     */
+    @JvmStatic
+    fun radians(columnName: String): FunctionExpression {
+        return radians(Column(columnName))
+    }
+
+    /**
+     * Converts degrees to radians.
+     *
+     * @param column Kotlin property reference
+     */
+    @JvmStatic
+    fun <T> radians(column: KProperty1<T, *>): FunctionExpression {
+        return radians(Column(column))
+    }
+
+    /**
+     * Converts degrees to radians.
+     *
+     * @param column Lambda expression
+     */
+    @JvmStatic
+    fun <T> radians(column: SFunction<T, *>): FunctionExpression {
+        return radians(Column(column))
     }
 
     /**

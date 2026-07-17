@@ -195,6 +195,12 @@ class SqlFunctionTest {
     }
 
     @Test
+    fun testLn() {
+        assertEquals("ln(score)", SqlFunction.ln("score").render())
+        assertEquals("ln(score)", SqlFunction.ln(Account::score).render())
+    }
+
+    @Test
     fun testSin() {
         assertEquals("sin(score)", SqlFunction.sin("score").render())
         assertEquals("sin(score)", SqlFunction.sin(Account::score).render())
@@ -231,6 +237,11 @@ class SqlFunctionTest {
     }
 
     @Test
+    fun testAtan2() {
+        assertEquals("atan2(y, x)", SqlFunction.atan2("y", "x").render())
+    }
+
+    @Test
     fun testSign() {
         assertEquals("sign(score)", SqlFunction.sign("score").render())
         assertEquals("sign(score)", SqlFunction.sign(Account::score).render())
@@ -239,6 +250,18 @@ class SqlFunctionTest {
     @Test
     fun testPi() {
         assertEquals("pi()", SqlFunction.pi().render())
+    }
+
+    @Test
+    fun testDegrees() {
+        assertEquals("degrees(angle)", SqlFunction.degrees("angle").render())
+        assertEquals("degrees(score)", SqlFunction.degrees(Account::score).render())
+    }
+
+    @Test
+    fun testRadians() {
+        assertEquals("radians(angle)", SqlFunction.radians("angle").render())
+        assertEquals("radians(score)", SqlFunction.radians(Account::score).render())
     }
 
     @Test

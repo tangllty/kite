@@ -1,4 +1,4 @@
-## 1.1.0
+## 1.1.1
 
 ### Bug Fixes
 
@@ -9,6 +9,7 @@
 - Refactor function expression to use `FunctionRender` interface
 - Complete `POSITION`, add private method encapsulation for all functions, and rewrite `COALESCE`, `NULLIF`, `CAST`
 - Implement `CASE` expression function
+- Implement LN, ATAN2, DEGREES, RADIANS functions
 
 ## 1.1.0
 
