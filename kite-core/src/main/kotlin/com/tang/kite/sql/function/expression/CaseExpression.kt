@@ -6,6 +6,7 @@ import com.tang.kite.sql.Column
 import com.tang.kite.sql.function.ColumnArg
 import com.tang.kite.sql.function.FunctionRender
 import com.tang.kite.sql.function.LiteralArg
+import com.tang.kite.sql.function.SqlKeyword
 import kotlin.reflect.KProperty1
 
 /**
@@ -69,22 +70,22 @@ class CaseExpression() : FunctionRender {
     }
 
     override fun render(): String {
-        val sb = StringBuilder(getSql("case"))
+        val sb = StringBuilder(getSql(SqlKeyword.CASE))
 
         if (baseColumn != null) {
             sb.append(" ").append(baseColumn?.render())
         }
 
         for ((condition, result) in whenClauses) {
-            sb.append(getSql(" when ")).append(condition.render())
-              .append(getSql(" then ")).append(result.render())
+            sb.append(getSql(" ${SqlKeyword.WHEN} ")).append(condition.render())
+              .append(getSql(" ${SqlKeyword.THEN} ")).append(result.render())
         }
 
         if (elseClause != null) {
-            sb.append(getSql(" else ")).append(elseClause?.render())
+            sb.append(getSql(" ${SqlKeyword.ELSE}  ")).append(elseClause?.render())
         }
 
-        sb.append(getSql(" end"))
+        sb.append(getSql(" ${SqlKeyword.END}"))
         return sb.toString()
     }
 

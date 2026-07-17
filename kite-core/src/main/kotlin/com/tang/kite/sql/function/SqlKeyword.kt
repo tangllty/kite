@@ -1,24 +1,33 @@
 package com.tang.kite.sql.function
 
 /**
- * Pure SQL syntax keywords
+ * SQL syntax keywords
  *
  * @author Tang
  */
 object SqlKeyword {
 
+    // Basic Symbols & Clause Keywords
     const val STAR = "*"
     const val FROM = "from"
-    const val TRIM_BOTH = "both"
-    const val TRIM_LEADING = "leading"
-    const val TRIM_TRAILING = "trailing"
-    const val SEPARATOR = "separator"
-    const val EXISTS = "exists"
-    const val IN = "in"
     const val AS = "as"
     const val DISTINCT = "distinct"
     const val ALL = "all"
+    const val IN = "in"
 
+    // Trim Modifier Keywords
+    const val TRIM_BOTH = "both"
+    const val TRIM_LEADING = "leading"
+    const val TRIM_TRAILING = "trailing"
+
+    // Case Expression Keywords
+    const val CASE = "case"
+    const val WHEN = "when"
+    const val THEN = "then"
+    const val ELSE = "else"
+    const val END = "end"
+
+    // Datetime Unit Keywords (For EXTRACT function)
     const val DATE = "date"
     const val TIME = "time"
     const val YEAR = "year"

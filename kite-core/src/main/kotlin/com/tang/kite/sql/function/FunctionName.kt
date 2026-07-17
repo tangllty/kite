@@ -57,11 +57,6 @@ object FunctionName {
     const val EXTRACT = "extract"
 
     // Conditional Functions
-    const val CASE = "case"
-    const val WHEN = "when"
-    const val THEN = "then"
-    const val ELSE = "else"
-    const val END = "end"
     const val COALESCE = "coalesce"
     const val NULLIF = "nullif"
 
