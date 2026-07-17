@@ -37,4 +37,12 @@ object SqlKeyword {
     const val MINUTE = "minute"
     const val SECOND = "second"
 
+    // Window Function Clause Keywords
+    const val OVER = "over"
+    const val PARTITION_BY = "partition by"
+    const val ORDER_BY = "order by"
+    const val ASC = "asc"
+    const val DESC = "desc"
+    const val ROWS = "rows"
+
 }

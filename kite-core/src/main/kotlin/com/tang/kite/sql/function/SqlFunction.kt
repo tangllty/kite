@@ -5,6 +5,7 @@ import com.tang.kite.sql.Column
 import com.tang.kite.sql.function.expression.AggregateFunctionExpression
 import com.tang.kite.sql.function.expression.CaseExpression
 import com.tang.kite.sql.function.expression.FunctionExpression
+import com.tang.kite.sql.function.expression.WindowFunctionExpression
 import com.tang.kite.utils.Reflects.getColumnName
 import kotlin.reflect.KProperty1
 
@@ -1970,24 +1971,24 @@ object SqlFunction {
      * Returns the row number of the current row within its partition.
      */
     @JvmStatic
-    fun rowNumber(): FunctionExpression {
-        return FunctionExpression(FunctionName.ROW_NUMBER)
+    fun rowNumber(): WindowFunctionExpression {
+        return WindowFunctionExpression(FunctionName.ROW_NUMBER)
     }
 
     /**
      * Returns the rank of the current row within its partition.
      */
     @JvmStatic
-    fun rank(): FunctionExpression {
-        return FunctionExpression(FunctionName.RANK)
+    fun rank(): WindowFunctionExpression {
+        return WindowFunctionExpression(FunctionName.RANK)
     }
 
     /**
      * Returns the dense rank of the current row within its partition.
      */
     @JvmStatic
-    fun denseRank(): FunctionExpression {
-        return FunctionExpression(FunctionName.DENSE_RANK)
+    fun denseRank(): WindowFunctionExpression {
+        return WindowFunctionExpression(FunctionName.DENSE_RANK)
     }
 
     /**
@@ -1996,50 +1997,335 @@ object SqlFunction {
      * @param numTiles Number of tiles
      */
     @JvmStatic
-    fun ntile(numTiles: Int): FunctionExpression {
-        return FunctionExpression(FunctionName.NTILE, LiteralArg(numTiles))
+    fun ntile(numTiles: Int): WindowFunctionExpression {
+        return WindowFunctionExpression(FunctionName.NTILE, LiteralArg(numTiles))
     }
 
     /**
-     * Returns the value of a column from a previous row.
+     * Returns the relative rank of the current row.
+     */
+    @JvmStatic
+    fun percentRank(): WindowFunctionExpression {
+        return WindowFunctionExpression(FunctionName.PERCENT_RANK)
+    }
+
+    /**
+     * Returns the cumulative distribution of the current row.
+     */
+    @JvmStatic
+    fun cumeDist(): WindowFunctionExpression {
+        return WindowFunctionExpression(FunctionName.CUME_DIST)
+    }
+
+    /**
+     * Returns data from a previous row.
      *
-     * @param col Column object
+     * @param columnName Column name
+     */
+    @JvmStatic
+    fun lag(columnName: String): WindowFunctionExpression {
+        return WindowFunctionExpression(FunctionName.LAG, ColumnArg(Column(columnName)))
+    }
+
+    /**
+     * Returns data from a previous row with offset.
+     *
+     * @param columnName Column name
      * @param offset Number of rows back
      */
     @JvmStatic
-    fun lag(col: Column, offset: Int = 1): FunctionExpression {
-        return FunctionExpression(FunctionName.LAG, ColumnArg(col), LiteralArg(offset))
+    fun lag(columnName: String, offset: Int): WindowFunctionExpression {
+        return WindowFunctionExpression(FunctionName.LAG, CommaArgs(ColumnArg(Column(columnName)), LiteralArg(offset)))
     }
 
     /**
-     * Returns the value of a column from a following row.
+     * Returns data from a previous row with offset and default value.
      *
-     * @param col Column object
+     * @param columnName Column name
+     * @param offset Number of rows back
+     * @param defaultValue Default value when offset exceeds partition
+     */
+    @JvmStatic
+    fun lag(columnName: String, offset: Int, defaultValue: Any): WindowFunctionExpression {
+        return WindowFunctionExpression(FunctionName.LAG, CommaArgs(ColumnArg(Column(columnName)), LiteralArg(offset), LiteralArg(defaultValue)))
+    }
+
+    /**
+     * Returns data from a previous row.
+     *
+     * @param column Kotlin property reference
+     */
+    @JvmStatic
+    fun <T> lag(column: KProperty1<T, *>): WindowFunctionExpression {
+        return lag(getColumnName(column))
+    }
+
+    /**
+     * Returns data from a previous row with offset.
+     *
+     * @param column Kotlin property reference
+     * @param offset Number of rows back
+     */
+    @JvmStatic
+    fun <T> lag(column: KProperty1<T, *>, offset: Int): WindowFunctionExpression {
+        return lag(getColumnName(column), offset)
+    }
+
+    /**
+     * Returns data from a previous row with offset and default value.
+     *
+     * @param column Kotlin property reference
+     * @param offset Number of rows back
+     * @param defaultValue Default value when offset exceeds partition
+     */
+    @JvmStatic
+    fun <T> lag(column: KProperty1<T, *>, offset: Int, defaultValue: Any): WindowFunctionExpression {
+        return lag(getColumnName(column), offset, defaultValue)
+    }
+
+    /**
+     * Returns data from a previous row.
+     *
+     * @param column Lambda expression
+     */
+    @JvmStatic
+    fun <T> lag(column: SFunction<T, *>): WindowFunctionExpression {
+        return lag(getColumnName(column))
+    }
+
+    /**
+     * Returns data from a previous row with offset.
+     *
+     * @param column Lambda expression
+     * @param offset Number of rows back
+     */
+    @JvmStatic
+    fun <T> lag(column: SFunction<T, *>, offset: Int): WindowFunctionExpression {
+        return lag(getColumnName(column), offset)
+    }
+
+    /**
+     * Returns data from a previous row with offset and default value.
+     *
+     * @param column Lambda expression
+     * @param offset Number of rows back
+     * @param defaultValue Default value when offset exceeds partition
+     */
+    @JvmStatic
+    fun <T> lag(column: SFunction<T, *>, offset: Int, defaultValue: Any): WindowFunctionExpression {
+        return lag(getColumnName(column), offset, defaultValue)
+    }
+
+    /**
+     * Returns data from a following row.
+     *
+     * @param columnName Column name
+     */
+    @JvmStatic
+    fun lead(columnName: String): WindowFunctionExpression {
+        return WindowFunctionExpression(FunctionName.LEAD, ColumnArg(Column(columnName)))
+    }
+
+    /**
+     * Returns data from a following row with offset.
+     *
+     * @param columnName Column name
      * @param offset Number of rows forward
      */
     @JvmStatic
-    fun lead(col: Column, offset: Int = 1): FunctionExpression {
-        return FunctionExpression(FunctionName.LEAD, ColumnArg(col), LiteralArg(offset))
+    fun lead(columnName: String, offset: Int): WindowFunctionExpression {
+        return WindowFunctionExpression(FunctionName.LEAD, CommaArgs(ColumnArg(Column(columnName)), LiteralArg(offset)))
     }
 
     /**
-     * Returns the first value of an expression in a window frame.
+     * Returns data from a following row with offset and default value.
      *
-     * @param col Column object
+     * @param columnName Column name
+     * @param offset Number of rows forward
+     * @param defaultValue Default value when offset exceeds partition
      */
     @JvmStatic
-    fun firstValue(col: Column): FunctionExpression {
-        return FunctionExpression(FunctionName.FIRST_VALUE, ColumnArg(col))
+    fun lead(columnName: String, offset: Int, defaultValue: Any): WindowFunctionExpression {
+        return WindowFunctionExpression(FunctionName.LEAD, CommaArgs(ColumnArg(Column(columnName)), LiteralArg(offset), LiteralArg(defaultValue)))
     }
 
     /**
-     * Returns the last value of an expression in a window frame.
+     * Returns data from a following row.
      *
-     * @param col Column object
+     * @param column Kotlin property reference
      */
     @JvmStatic
-    fun lastValue(col: Column): FunctionExpression {
-        return FunctionExpression(FunctionName.LAST_VALUE, ColumnArg(col))
+    fun <T> lead(column: KProperty1<T, *>): WindowFunctionExpression {
+        return lead(getColumnName(column))
+    }
+
+    /**
+     * Returns data from a following row with offset.
+     *
+     * @param column Kotlin property reference
+     * @param offset Number of rows forward
+     */
+    @JvmStatic
+    fun <T> lead(column: KProperty1<T, *>, offset: Int): WindowFunctionExpression {
+        return lead(getColumnName(column), offset)
+    }
+
+    /**
+     * Returns data from a following row with offset and default value.
+     *
+     * @param column Kotlin property reference
+     * @param offset Number of rows forward
+     * @param defaultValue Default value when offset exceeds partition
+     */
+    @JvmStatic
+    fun <T> lead(column: KProperty1<T, *>, offset: Int, defaultValue: Any): WindowFunctionExpression {
+        return lead(getColumnName(column), offset, defaultValue)
+    }
+
+    /**
+     * Returns data from a following row.
+     *
+     * @param column Lambda expression
+     */
+    @JvmStatic
+    fun <T> lead(column: SFunction<T, *>): WindowFunctionExpression {
+        return lead(getColumnName(column))
+    }
+
+    /**
+     * Returns data from a following row with offset.
+     *
+     * @param column Lambda expression
+     * @param offset Number of rows forward
+     */
+    @JvmStatic
+    fun <T> lead(column: SFunction<T, *>, offset: Int): WindowFunctionExpression {
+        return lead(getColumnName(column), offset)
+    }
+
+    /**
+     * Returns data from a following row with offset and default value.
+     *
+     * @param column Lambda expression
+     * @param offset Number of rows forward
+     * @param defaultValue Default value when offset exceeds partition
+     */
+    @JvmStatic
+    fun <T> lead(column: SFunction<T, *>, offset: Int, defaultValue: Any): WindowFunctionExpression {
+        return lead(getColumnName(column), offset, defaultValue)
+    }
+
+    /**
+     * Returns the first value in an ordered partition.
+     *
+     * @param columnName Column name
+     */
+    @JvmStatic
+    fun firstValue(columnName: String): WindowFunctionExpression {
+        return WindowFunctionExpression(FunctionName.FIRST_VALUE, ColumnArg(Column(columnName)))
+    }
+
+    /**
+     * Returns the first value in an ordered partition.
+     *
+     * @param column Kotlin property reference
+     */
+    @JvmStatic
+    fun <T> firstValue(column: KProperty1<T, *>): WindowFunctionExpression {
+        return firstValue(getColumnName(column))
+    }
+
+    /**
+     * Returns the first value in an ordered partition.
+     *
+     * @param column Lambda expression
+     */
+    @JvmStatic
+    fun <T> firstValue(column: SFunction<T, *>): WindowFunctionExpression {
+        return firstValue(getColumnName(column))
+    }
+
+    /**
+     * Returns the last value in an ordered partition.
+     *
+     * @param columnName Column name
+     */
+    @JvmStatic
+    fun lastValue(columnName: String): WindowFunctionExpression {
+        return WindowFunctionExpression(FunctionName.LAST_VALUE, ColumnArg(Column(columnName)))
+    }
+
+    /**
+     * Returns the last value in an ordered partition.
+     *
+     * @param column Kotlin property reference
+     */
+    @JvmStatic
+    fun <T> lastValue(column: KProperty1<T, *>): WindowFunctionExpression {
+        return lastValue(getColumnName(column))
+    }
+
+    /**
+     * Returns the last value in an ordered partition.
+     *
+     * @param column Lambda expression
+     */
+    @JvmStatic
+    fun <T> lastValue(column: SFunction<T, *>): WindowFunctionExpression {
+        return lastValue(getColumnName(column))
+    }
+
+    /**
+     * Returns the Nth value in an ordered partition.
+     *
+     * @param columnName Column name
+     * @param nth Position of the value to return
+     */
+    @JvmStatic
+    fun nthValue(columnName: String, nth: Int): WindowFunctionExpression {
+        return WindowFunctionExpression(FunctionName.NTH_VALUE, CommaArgs(ColumnArg(Column(columnName)), LiteralArg(nth)))
+    }
+
+    /**
+     * Returns the Nth value in an ordered partition.
+     *
+     * @param column Kotlin property reference
+     * @param nth Position of the value to return
+     */
+    @JvmStatic
+    fun <T> nthValue(column: KProperty1<T, *>, nth: Int): WindowFunctionExpression {
+        return nthValue(getColumnName(column), nth)
+    }
+
+    /**
+     * Returns the Nth value in an ordered partition.
+     *
+     * @param column Lambda expression
+     * @param nth Position of the value to return
+     */
+    @JvmStatic
+    fun <T> nthValue(column: SFunction<T, *>, nth: Int): WindowFunctionExpression {
+        return nthValue(getColumnName(column), nth)
+    }
+
+    /**
+     * Returns the percentile value based on a continuous distribution.
+     *
+     * @param percentile Percentile value (0.0 to 1.0)
+     */
+    @JvmStatic
+    fun percentileCont(percentile: Double): WindowFunctionExpression {
+        return WindowFunctionExpression(FunctionName.PERCENTILE_CONT, LiteralArg(percentile))
+    }
+
+    /**
+     * Returns the percentile value based on a discrete distribution.
+     *
+     * @param percentile Percentile value (0.0 to 1.0)
+     */
+    @JvmStatic
+    fun percentileDisc(percentile: Double): WindowFunctionExpression {
+        return WindowFunctionExpression(FunctionName.PERCENTILE_DISC, LiteralArg(percentile))
     }
 
 }

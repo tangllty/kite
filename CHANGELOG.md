@@ -10,6 +10,7 @@
 - Complete `POSITION`, add private method encapsulation for all functions, and rewrite `COALESCE`, `NULLIF`, `CAST`
 - Implement `CASE` expression function
 - Implement LN, ATAN2, DEGREES, RADIANS functions
+- Implement window functions with `OVER` clause support
 
 ## 1.1.0
 

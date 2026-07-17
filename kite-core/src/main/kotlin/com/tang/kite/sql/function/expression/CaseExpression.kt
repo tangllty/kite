@@ -82,7 +82,7 @@ class CaseExpression() : FunctionRender {
         }
 
         if (elseClause != null) {
-            sb.append(getSql(" ${SqlKeyword.ELSE}  ")).append(elseClause?.render())
+            sb.append(getSql(" ${SqlKeyword.ELSE} ")).append(elseClause?.render())
         }
 
         sb.append(getSql(" ${SqlKeyword.END}"))

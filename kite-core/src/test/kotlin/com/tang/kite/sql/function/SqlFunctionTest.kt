@@ -351,4 +351,137 @@ class SqlFunctionTest {
             SqlFunction.case(Account::status).`when`(1, "active").`when`(0, "inactive").`else`("unknown").render())
     }
 
+    @Test
+    fun testRowNumberWithOver() {
+        assertEquals("row_number() over()", SqlFunction.rowNumber().over().render())
+        assertEquals("row_number() over(partition by department)",
+            SqlFunction.rowNumber().over { partitionBy("department") }.render())
+        assertEquals("row_number() over(partition by department order by salary desc)",
+            SqlFunction.rowNumber().over { partitionBy("department"); orderByDesc("salary") }.render())
+    }
+
+    @Test
+    fun testRankWithOver() {
+        assertEquals("rank() over(order by score)",
+            SqlFunction.rank().over { orderBy("score") }.render())
+    }
+
+    @Test
+    fun testDenseRankWithOver() {
+        assertEquals("dense_rank() over(partition by group_id order by value)",
+            SqlFunction.denseRank().over { partitionBy("group_id"); orderBy("value") }.render())
+    }
+
+    @Test
+    fun testLagWithOver() {
+        assertEquals("lag(score) over(order by date)",
+            SqlFunction.lag("score").over { orderBy("date") }.render())
+        assertEquals("lag(score, 2) over(partition by user_id order by date)",
+            SqlFunction.lag("score", 2).over { partitionBy("user_id"); orderBy("date") }.render())
+    }
+
+    @Test
+    fun testLeadWithOver() {
+        assertEquals("lead(score) over(order by date)",
+            SqlFunction.lead("score").over { orderBy("date") }.render())
+    }
+
+    @Test
+    fun testFirstValueWithOver() {
+        assertEquals("first_value(price) over(partition by category order by date)",
+            SqlFunction.firstValue("price").over { partitionBy("category"); orderBy("date") }.render())
+    }
+
+    @Test
+    fun testLastValueWithOver() {
+        assertEquals("last_value(price) over(partition by category order by date)",
+            SqlFunction.lastValue("price").over { partitionBy("category"); orderBy("date") }.render())
+    }
+
+    @Test
+    fun testNtileWithOver() {
+        assertEquals("ntile(4) over(partition by department order by salary)",
+            SqlFunction.ntile(4).over { partitionBy("department"); orderBy("salary") }.render())
+    }
+
+    @Test
+    fun testPercentRankWithOver() {
+        assertEquals("percent_rank() over(order by score)",
+            SqlFunction.percentRank().over { orderBy("score") }.render())
+    }
+
+    @Test
+    fun testCumeDistWithOver() {
+        assertEquals("cume_dist() over(partition by group order by value)",
+            SqlFunction.cumeDist().over { partitionBy("group"); orderBy("value") }.render())
+    }
+
+    @Test
+    fun testNthValueWithOver() {
+        assertEquals("nth_value(score, 3) over(partition by class order by score)",
+            SqlFunction.nthValue("score", 3).over { partitionBy("class"); orderBy("score") }.render())
+    }
+
+    @Test
+    fun testPercentileContWithOver() {
+        assertEquals("percentile_cont(0.5) over(partition by group)",
+            SqlFunction.percentileCont(0.5).over { partitionBy("group") }.render())
+    }
+
+    @Test
+    fun testPercentileDiscWithOver() {
+        assertEquals("percentile_disc(0.5) over(order by value)",
+            SqlFunction.percentileDisc(0.5).over { orderBy("value") }.render())
+    }
+
+    @Test
+    fun testOverClauseChainedMethods() {
+        assertEquals("row_number() over(partition by department order by salary)",
+            SqlFunction.rowNumber().partitionBy("department").orderBy("salary").render())
+        assertEquals("lag(score) over(partition by user_id order by date desc)",
+            SqlFunction.lag("score").partitionBy("user_id").orderByDesc("date").render())
+    }
+
+    @Test
+    fun testOverClauseMultipleColumns() {
+        assertEquals("row_number() over(partition by dept, team order by salary, hire_date)",
+            SqlFunction.rowNumber()
+                .over {
+                    partitionBy("dept"); partitionBy("team")
+                    orderBy("salary"); orderBy("hire_date")
+                }.render())
+    }
+
+    @Test
+    fun testOverClauseWithKProperty() {
+        assertEquals("row_number() over(partition by name order by score)",
+            SqlFunction.rowNumber()
+                .over {
+                    partitionBy(Account::name)
+                    orderBy(Account::score)
+                }.render())
+    }
+
+    @Test
+    fun testOverClauseAscDescMixed() {
+        assertEquals("row_number() over(order by salary desc, hire_date)",
+            SqlFunction.rowNumber()
+                .over {
+                    orderByDesc("salary")
+                    orderBy("hire_date")
+                }.render())
+    }
+
+    @Test
+    fun testLagWithOverFullSyntax() {
+        assertEquals("lag(score, 3, 0) over(partition by user_id order by date)",
+            SqlFunction.lag("score", 3, 0).over { partitionBy("user_id"); orderBy("date") }.render())
+    }
+
+    @Test
+    fun testLeadWithOverFullSyntax() {
+        assertEquals("lead(score, 3, 0) over(partition by user_id order by date)",
+            SqlFunction.lead("score", 3, 0).over { partitionBy("user_id"); orderBy("date") }.render())
+    }
+
 }

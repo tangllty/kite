@@ -69,12 +69,14 @@ object FunctionName {
     const val RANK = "rank"
     const val DENSE_RANK = "dense_rank"
     const val NTILE = "ntile"
+    const val PERCENT_RANK = "percent_rank"
+    const val CUME_DIST = "cume_dist"
     const val LAG = "lag"
     const val LEAD = "lead"
     const val FIRST_VALUE = "first_value"
     const val LAST_VALUE = "last_value"
     const val NTH_VALUE = "nth_value"
-    const val PERCENT_RANK = "percent_rank"
-    const val CUME_DIST = "cume_dist"
+    const val PERCENTILE_CONT = "percentile_cont"
+    const val PERCENTILE_DISC = "percentile_disc"
 
 }
