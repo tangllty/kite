@@ -1,5 +1,6 @@
 package com.tang.kite.sql.function
 
+import com.tang.kite.config.SqlConfig.getSql
 import com.tang.kite.sql.Column
 
 /**
@@ -37,9 +38,9 @@ class ModifierColumnArg(column: Column) : ColumnArg(column) {
 
     override fun render(): String {
         return if (distinct) {
-            SqlKeyword.DISTINCT + " " + super.render()
+            getSql(SqlKeyword.DISTINCT) + " " + super.render()
         } else if (all) {
-            SqlKeyword.ALL + " " + super.render()
+            getSql(SqlKeyword.ALL) + " " + super.render()
         } else {
             super.render()
         }

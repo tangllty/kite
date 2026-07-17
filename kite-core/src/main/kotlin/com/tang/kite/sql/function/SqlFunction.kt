@@ -3,6 +3,7 @@ package com.tang.kite.sql.function
 import com.tang.kite.function.SFunction
 import com.tang.kite.sql.Column
 import com.tang.kite.sql.function.expression.AggregateFunctionExpression
+import com.tang.kite.sql.function.expression.CaseExpression
 import com.tang.kite.sql.function.expression.FunctionExpression
 import com.tang.kite.utils.Reflects.getColumnName
 import kotlin.reflect.KProperty1
@@ -1625,6 +1626,49 @@ object SqlFunction {
     @JvmStatic
     fun <T> second(column: SFunction<T, *>): FunctionExpression {
         return second(getColumnName(column))
+    }
+
+    /**
+     * Creates a CASE expression for conditional logic.
+     *
+     * @return CaseExpression builder
+     */
+    @JvmStatic
+    fun case(): CaseExpression {
+        return CaseExpression()
+    }
+
+    /**
+     * Creates a CASE expression with a base column for simple equality checks.
+     *
+     * @param columnName Column name
+     * @return CaseExpression builder
+     */
+    @JvmStatic
+    fun case(columnName: String): CaseExpression {
+        return CaseExpression(Column(columnName))
+    }
+
+    /**
+     * Creates a CASE expression with a base column for simple equality checks.
+     *
+     * @param column Kotlin property reference
+     * @return CaseExpression builder
+     */
+    @JvmStatic
+    fun <T> case(column: KProperty1<T, *>): CaseExpression {
+        return CaseExpression(column)
+    }
+
+    /**
+     * Creates a CASE expression with a base column for simple equality checks.
+     *
+     * @param column Lambda expression
+     * @return CaseExpression builder
+     */
+    @JvmStatic
+    fun <T> case(column: SFunction<T, *>): CaseExpression {
+        return CaseExpression(column)
     }
 
     /**

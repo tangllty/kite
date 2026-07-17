@@ -52,12 +52,15 @@ object FunctionName {
     const val CURRENT_TIMESTAMP = "current_timestamp"
     const val EXTRACT = "extract"
 
-    // TODO
     // Conditional Functions
+    const val CASE = "case"
+    const val WHEN = "when"
+    const val THEN = "then"
+    const val ELSE = "else"
+    const val END = "end"
     const val COALESCE = "coalesce"
     const val NULLIF = "nullif"
 
-    // TODO
     // Type Convert Standard Function
     const val CAST = "cast"
 

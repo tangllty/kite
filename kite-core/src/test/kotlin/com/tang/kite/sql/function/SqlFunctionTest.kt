@@ -319,4 +319,13 @@ class SqlFunctionTest {
         assertEquals("nullif(status, 0)", SqlFunction.nullif("status", 0).render())
     }
 
+    @Test
+    fun testCase() {
+        assertEquals("case when 'a' then 'b' end", SqlFunction.case().`when`("a", "b").render())
+        assertEquals("case status when 1 then 'active' when 0 then 'inactive' else 'unknown' end",
+            SqlFunction.case("status").`when`(1, "active").`when`(0, "inactive").`else`("unknown").render())
+        assertEquals("case status when 1 then 'active' when 0 then 'inactive' else 'unknown' end",
+            SqlFunction.case(Account::status).`when`(1, "active").`when`(0, "inactive").`else`("unknown").render())
+    }
+
 }
